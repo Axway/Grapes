@@ -1,0 +1,26 @@
+community:
+  issueTracker: http://somewhere.overtherainbow
+  onlineHelp: http://somewhere.overtherainbow
+http:
+  bindHost: 0.0.0.0
+  port: #HTTP_PORT#
+  adminPort: #HTTP_ADMIN_PORT#
+  adminUsername: test
+  adminPassword: test
+database:
+  host: 127.0.0.1
+  port: 27017
+  user: test
+  pwd: test
+  datastore: grapestest
+  dbsystem: test
+logging:
+  level: INFO
+  file:
+    enabled: true
+    threshold: ALL
+    currentLogFilename: target/grapes.out
+    archivedLogFilenamePattern: target/grapes_archive-%d.log.gz
+    archivedFileCount: 5
+    timeZone: UTC
+authenticationCachePolicy: maximumSize=10000, expireAfterAccess=1m

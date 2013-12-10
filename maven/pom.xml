@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.axway.grapes</groupId>
+    <artifactId>grapes-maven-plugin</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>maven-plugin</packaging>
+
+    <name>Grapes Maven Mojo</name>
+    <description>Http REST server that stores dependencies information </description>
+
+    <parent>
+        <groupId>org.axway.grapes</groupId>
+        <artifactId>grapes-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <scm>
+        <connection>scm:svn:http://anonymous@swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/client/maven/trunk</connection>
+        <developerConnection>scm:svn:http://swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/client/maven/trunk</developerConnection>
+        <url>http://anonymous@swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/client/maven/trunk</url>
+    </scm>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.axway.grapes</groupId>
+            <artifactId>grapes-commons</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.axway.grapes</groupId>
+            <artifactId>grapes-utils</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+            <version>3.0.5</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>

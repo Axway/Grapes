@@ -1,0 +1,310 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.axway.grapes.tests.acceptance</groupId>
+	<artifactId>acceptance</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+
+	<name>Grapes Acceptance Tests</name>
+	<description>High level Grapes project tests based on thucydides and JBehave</description>
+
+    <parent>
+        <groupId>org.axway.grapes</groupId>
+        <artifactId>grapes-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+	
+	<scm>
+		<connection>scm:svn:http://anonymous@swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/tests/acceptance/trunk</connection>
+		<developerConnection>scm:svn:http://swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/tests/acceptance/trunk</developerConnection>
+		<url>http://anonymous@swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/tests/acceptance/trunk</url>
+	</scm>
+
+	<properties>
+		<!-- Targeted binaries to test -->
+		<grapes.server.version>1.0.0-SNAPSHOT</grapes.server.version>
+		<grapes.utils.version>1.0.0-SNAPSHOT</grapes.utils.version>
+		<!-- Mandatory property to define before the build -->
+		<grapes.server.port>${GRAPES_PORT}</grapes.server.port>
+		<grapes.server.admin.port>${GRAPES_ADMIN_PORT}</grapes.server.admin.port>
+		<grapes.database.name>${MONGO_DB_NAME}</grapes.database.name>
+		<mongo.host>${MONGO_DB_HOST}</mongo.host>
+		<mongo.port>${MONGO_DB_PORT}</mongo.port>
+		<!-- To be use if using mongodb with authentication -->
+		<mongo.user>${MONGO_DB_USER}</mongo.user>
+		<mongo.password>${MONGO_DB_PASSWORD}</mongo.password>
+		<!-- Static test configuration -->
+		<thucydides.version>0.9.205</thucydides.version>
+		<thucydides.jbehave.version>0.9.205</thucydides.jbehave.version>
+		<webdriver.driver>htmlunit</webdriver.driver>
+		<grapes.logfile.path>${project.build.directory}/install/log/server.log</grapes.logfile.path>
+		<grapes.user.notifier>notifier</grapes.user.notifier>
+		<grapes.user.notifier.pwd>notifier</grapes.user.notifier.pwd>
+		<grapes.user.admin>admin</grapes.user.admin>
+        <grapes.user.admin.pwd>admin</grapes.user.admin.pwd>
+	</properties>
+
+	<profiles>
+		<profile>
+		    <id>local</id>
+		    <properties>
+			<grapes.server.port>8080</grapes.server.port>
+			<grapes.server.admin.port>8081</grapes.server.admin.port>
+			<grapes.database.name>test</grapes.database.name>
+			<mongo.host>localhost</mongo.host>
+			<mongo.port>27017</mongo.port>
+		    </properties>
+		</profile>
+	</profiles>
+
+	<dependencies>
+		<!-- Dependency manager -->
+		<dependency>
+		    <groupId>org.axway.grapes</groupId>
+		    <artifactId>grapes-utils</artifactId>
+		    <version>${grapes.utils.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.axway.grapes</groupId>
+		    <artifactId>grapes-server</artifactId>
+		    <version>${grapes.server.version}</version>
+		</dependency>
+		<!-- Thucydides -->
+		<dependency>
+		    <groupId>net.thucydides</groupId>
+		    <artifactId>thucydides-core</artifactId>
+		    <version>${thucydides.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>net.thucydides</groupId>
+		    <artifactId>thucydides-jbehave-plugin</artifactId>
+		    <version>${thucydides.jbehave.version}</version>
+		</dependency>
+		<!-- Logger -->
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-simple</artifactId>
+		    <version>1.7.5</version>
+		</dependency>
+		<!-- Mongo DB database -->
+		<dependency>
+		    <groupId>org.jongo</groupId>
+		    <artifactId>jongo</artifactId>
+		    <version>0.4</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-core</artifactId>
+		    <version>2.2.0</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.mongodb</groupId>
+		    <artifactId>mongo-java-driver</artifactId>
+		    <version>2.11.0</version>
+		    <scope>test</scope>
+		</dependency>
+		<!-- Jersey -->
+		<dependency>
+		    <groupId>com.sun.jersey</groupId>
+		    <artifactId>jersey-client</artifactId>
+		    <version>1.17</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.7</version>
+				<executions>
+					<!-- Get Grapes binaries -->
+					<execution>
+						<id>copy</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+								    <groupId>org.axway.grapes</groupId>
+								    <artifactId>grapes-server</artifactId>
+								    <version>${grapes.server.version}</version>
+								    <type>jar</type>
+								    <overWrite>true</overWrite>
+								    <outputDirectory>${project.build.directory}/install/lib</outputDirectory>
+								    <destFileName>server.jar</destFileName>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<!-- Setup the dependency manager and start it -->
+					<execution>
+						<id>run-grapes</id>
+						<phase>initialize</phase>
+						<configuration>
+							<target>
+								<mkdir dir="${project.build.directory}/install/log" />
+								<copy file="${basedir}/src/test/resources/template-server.conf"
+									tofile="${project.build.directory}/install/conf/server.conf" />
+								<replace file="${project.build.directory}/install/conf/server.conf"
+									token="##SERVER_PORT##" value="${grapes.server.port}" />
+								<replace file="${project.build.directory}/install/conf/server.conf"
+									token="##SERVER_ADMIN_PORT##" value="${grapes.server.admin.port}" />
+								<replace file="${project.build.directory}/install/conf/server.conf"
+									token="##MONGO_HOST##" value="${mongo.host}" />
+								<replace file="${project.build.directory}/install/conf/server.conf"
+									token="##MONGO_PORT##" value="${mongo.port}" />
+								<replace file="${project.build.directory}/install/conf/server.conf"
+									token="##MONGO_USER##" value="${mongo.user}" />
+								<replace file="${project.build.directory}/install/conf/server.conf"
+									token="##MONGO_PASSWORD##" value="${mongo.password}" />
+								<replace file="${project.build.directory}/install/conf/server.conf"
+									token="##MONGO_DATABASE##" value="${grapes.database.name}" />
+								<replace file="${project.build.directory}/install/conf/server.conf"
+									token="##MONGO_DATABASE##" value="${grapes.database.name}" />
+								<replace file="${project.build.directory}/install/conf/server.conf"
+								         token="##LOG_FILE_PATH##" value="${grapes.logfile.path}" />
+								<replace file="${project.build.directory}/install/conf/server.conf"
+								         token="##GRAPES_ADMIN_USER##" value="${grapes.user.admin}" />
+								<replace file="${project.build.directory}/install/conf/server.conf"
+								         token="##GRAPES_ADMIN_PASSWORD##" value="${grapes.user.admin.pwd}" />
+								<java jar="${project.build.directory}/install/lib/server.jar"
+									fork="true" spawn="true" maxmemory="512m">
+									<arg value="server" />
+									<arg value="${project.build.directory}/install/conf/server.conf" />
+								</java>
+								<echo message="Starting Grapes server ..." level="info" />
+								<sleep seconds="5"/>
+								<echo message="Adding test credentials ..." level="info" />
+								<exec executable="curl">
+								    <arg value="-X"/>
+								    <arg value="POST"/>
+								    <arg value="--user"/>
+								    <arg value="${grapes.user.admin}:${grapes.user.admin.pwd}"/>
+								    <arg value="-d"/>
+								    <arg value="user=${grapes.user.notifier}"/>
+								    <arg value="-d"/>
+								    <arg value="password=${grapes.user.notifier.pwd}"/>
+								    <arg value="http://localhost:${grapes.server.admin.port}/tasks/addUser"/>
+								</exec>
+								<exec executable="curl">
+								    <arg value="-X"/>
+								    <arg value="POST"/>
+								    <arg value="--user"/>
+								    <arg value="${grapes.user.admin}:${grapes.user.admin.pwd}"/>
+								    <arg value="-d"/>
+								    <arg value="user=${grapes.user.notifier}"/>
+								    <arg value="-d"/>
+								    <arg value="role=dependency_notifier"/>
+								    <arg value="http://localhost:${grapes.server.admin.port}/tasks/addRole"/>
+								</exec>
+								<exec executable="curl">
+								    <arg value="-X"/>
+								    <arg value="POST"/>
+								    <arg value="--user"/>
+								    <arg value="${grapes.user.admin}:${grapes.user.admin.pwd}"/>
+								    <arg value="-d"/>
+								    <arg value="user=${grapes.user.notifier}"/>
+								    <arg value="-d"/>
+								    <arg value="role=data_updater"/>
+								    <arg value="http://localhost:${grapes.server.admin.port}/tasks/addRole"/>
+								</exec>
+								<exec executable="curl">
+								    <arg value="-X"/>
+								    <arg value="POST"/>
+								    <arg value="--user"/>
+								    <arg value="${grapes.user.admin}:${grapes.user.admin.pwd}"/>
+								    <arg value="-d"/>
+								    <arg value="user=${grapes.user.notifier}"/>
+								    <arg value="-d"/>
+								    <arg value="role=data_deleter"/>
+								    <arg value="http://localhost:${grapes.server.admin.port}/tasks/addRole"/>
+								</exec>
+								<exec executable="curl">
+								    <arg value="-X"/>
+								    <arg value="POST"/>
+								    <arg value="--user"/>
+								    <arg value="${grapes.user.admin}:${grapes.user.admin.pwd}"/>
+								    <arg value="-d"/>
+								    <arg value="user=${grapes.user.notifier}"/>
+								    <arg value="-d"/>
+								    <arg value="role=license_checker"/>
+								    <arg value="http://localhost:${grapes.server.admin.port}/tasks/addRole"/>
+								</exec>
+								<exec executable="curl">
+								    <arg value="-X"/>
+								    <arg value="POST"/>
+								    <arg value="--user"/>
+								    <arg value="${grapes.user.admin}:${grapes.user.admin.pwd}"/>
+								    <arg value="-d"/>
+								    <arg value="user=${grapes.user.notifier}"/>
+								    <arg value="-d"/>
+								    <arg value="role=artifact_checker"/>
+								    <arg value="http://localhost:${grapes.server.admin.port}/tasks/addRole"/>
+								</exec>
+								<echo message="Adding default corporate groupId for tests ..." level="info" />
+								<exec executable="curl">
+								    <arg value="-X"/>
+								    <arg value="POST"/>
+								    <arg value="--user"/>
+								    <arg value="${grapes.user.admin}:${grapes.user.admin.pwd}"/>
+								    <arg value="-d"/>
+								    <arg value="groupId=com.company"/>
+								    <arg value="http://localhost:${grapes.server.admin.port}/tasks/addCorporateGroupId"/>
+								</exec>
+							    </target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+				    <systemPropertyVariables>
+					<grapes.server.port>${grapes.server.port}</grapes.server.port>
+					<grapes.server.admin.port>${grapes.server.admin.port}</grapes.server.admin.port>
+					<grapes.database.name>${grapes.database.name}</grapes.database.name>
+					<mongo.host>${mongo.host}</mongo.host>
+					<mongo.port>${mongo.port}</mongo.port>
+					<mongo.user>${mongo.user}</mongo.user>
+					<mongo.password>${mongo.password}</mongo.password>
+					<grapes.user.notifier>${grapes.user.notifier}</grapes.user.notifier>
+					<grapes.user.notifier.pwd>${grapes.user.notifier.pwd}</grapes.user.notifier.pwd>
+					<grapes.user.admin>${grapes.user.admin}</grapes.user.admin>
+					<grapes.user.admin.pwd>${grapes.user.admin.pwd}</grapes.user.admin.pwd>
+					<webdriver.driver>${webdriver.driver}</webdriver.driver>
+				    </systemPropertyVariables>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>net.thucydides.maven.plugins</groupId>
+				<artifactId>maven-thucydides-plugin</artifactId>
+				<version>${thucydides.version}</version>
+				<executions>
+				    <execution>
+					<id>thucydides-reports</id>
+					<phase>post-integration-test</phase>
+					<goals>
+					    <goal>aggregate</goal>
+					</goals>
+				    </execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

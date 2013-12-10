@@ -1,0 +1,25 @@
+community:
+  issueTracker: http://somewhere.overtherainbow
+  onlineHelp: http://somewhere.overtherainbow
+http:
+    bindHost: #host or IP address of the system#
+    port: #port of the server web-app#
+    adminPort: #port of the administration web-app#
+    adminUsername: #administation user#
+    adminPassword: #administration password#
+database:
+    host: #host of the mongodb database#
+    port: #port of the mongodb database#
+    user: #authentication for the database#
+    pwd: #authentication for the database#
+    datastore: #database name#
+    dbsystem: mongodb
+logging:
+    level: #Log level (recommended INFO)#
+    file:
+        enabled: #could be true or false (if false the rest of the logging configuration is useless)#
+        currentLogFilename: #name of the log output file#
+        archivedLogFilenamePattern: #log rotate archive filename pattern (recommended dependencyManager_archive-%d.log.gz)#
+        archivedFileCount: #number of log archive files#
+        timeZone: #timezone#
+authenticationCachePolicy: #authetication cache policy (recommended maximumSize=10000, expireAfterAccess=1m)#
