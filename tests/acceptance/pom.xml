@@ -9,16 +9,17 @@
 	<name>Grapes Acceptance Tests</name>
 	<description>High level Grapes project tests based on thucydides and JBehave</description>
 
-    <parent>
-        <groupId>org.axway.grapes</groupId>
-        <artifactId>grapes-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
-	
+	<parent>
+		<groupId>org.axway.grapes</groupId>
+		<artifactId>grapes-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
 	<scm>
-		<connection>scm:svn:http://anonymous@swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/tests/acceptance/trunk</connection>
-		<developerConnection>scm:svn:http://swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/tests/acceptance/trunk</developerConnection>
-		<url>http://anonymous@swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/tests/acceptance/trunk</url>
+		<connection>scm:git:git@github.com:Axway/Grapes.git</connection>
+		<url>scm:git:git@github.com:Axway/Grapes.git</url>
+		<developerConnection>scm:git:git@github.com:Axway/Grapes.git</developerConnection>
+		<tag>HEAD</tag>
 	</scm>
 
 	<properties>

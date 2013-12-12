@@ -15,11 +15,12 @@
 		<url>http://anonymous@swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/client/util/trunk</url>
 	</scm>
 
-	<parent>
-		<groupId>org.axway.grapes</groupId>
-		<artifactId>grapes-parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
-	</parent>
+	<scm>
+		<connection>scm:git:git@github.com:Axway/Grapes.git</connection>
+		<url>scm:git:git@github.com:Axway/Grapes.git</url>
+		<developerConnection>scm:git:git@github.com:Axway/Grapes.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
 
 	<dependencies>
 		<!-- Grapes client/server datamodel -->

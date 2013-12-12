@@ -7,11 +7,12 @@
 
 	<name>Grapes commons</name>
 	<description>Contains client/server datamodel and utility methods of grapes project</description>
-	
+
 	<scm>
-		<connection>scm:svn:http://anonymous@swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/commons/trunk</connection>
-		<developerConnection>scm:svn:http://swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/commons/trunk</developerConnection>
-		<url>http://anonymous@swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/commons/trunk</url>
+		<connection>scm:git:git@github.com:Axway/Grapes.git</connection>
+		<url>scm:git:git@github.com:Axway/Grapes.git</url>
+		<developerConnection>scm:git:git@github.com:Axway/Grapes.git</developerConnection>
+		<tag>HEAD</tag>
 	</scm>
 
 	<parent>

@@ -10,11 +10,11 @@
 	<name>Grapes Parent</name>
 	<description>Parent pom that holds general Grapes build information</description>
 
-	<!-- SCM -->
 	<scm>
-		<connection>scm:svn:http://anonymous@swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/parent/trunk</connection>
-		<developerConnection>scm:svn:http://swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/parent/trunk</developerConnection>
-		<url>http://anonymous@swf-svn.lab1.lab.ptx.axway.int/svn/ecd/grapes/parent/trunk</url>
+		<connection>scm:git:git@github.com:Axway/Grapes.git</connection>
+		<url>scm:git:git@github.com:Axway/Grapes.git</url>
+		<developerConnection>scm:git:git@github.com:Axway/Grapes.git</developerConnection>
+		<tag>HEAD</tag>
 	</scm>
 
 	<!-- Properties -->
