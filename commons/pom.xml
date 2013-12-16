@@ -8,13 +8,6 @@
 	<name>Grapes commons</name>
 	<description>Contains client/server datamodel and utility methods of grapes project</description>
 
-	<scm>
-		<connection>scm:git:git@github.com:Axway/Grapes.git</connection>
-		<url>scm:git:git@github.com:Axway/Grapes.git</url>
-		<developerConnection>scm:git:git@github.com:Axway/Grapes.git</developerConnection>
-		<tag>HEAD</tag>
-	</scm>
-
 	<parent>
 		<groupId>org.axway.grapes</groupId>
 		<artifactId>grapes-parent</artifactId>
