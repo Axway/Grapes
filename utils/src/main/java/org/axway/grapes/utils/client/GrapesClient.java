@@ -39,7 +39,7 @@ public class GrapesClient {
         final StringBuilder sb = new StringBuilder();
         sb.append("http://");
         sb.append(host);
-        if(port != null){
+        if(port != null && !port.isEmpty()){
             sb.append(":");
             sb.append(port);
         }
@@ -50,6 +50,11 @@ public class GrapesClient {
 
     public void setTimeout(final Integer timeout) {
         this.timeout = timeout;
+    }
+
+
+    public String getServerURL(){
+        return serverURL;
     }
 
     /**

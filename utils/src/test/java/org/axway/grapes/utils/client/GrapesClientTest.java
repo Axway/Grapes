@@ -36,15 +36,27 @@ public class GrapesClientTest {
 		serverPort = System.getProperty(PROPERTY_PORT, DEFAULT_PORT);
 		client = new GrapesClient("127.0.0.1", serverPort);
 	}
-	
-	@Test
-	public void serverIsAvailable() {
-		stubFor(get(urlEqualTo("/"))
-	            .willReturn(aResponse()
-	                .withStatus(Status.OK.getStatusCode())));
-		
-		assertTrue(client.isServerAvailable());
-	}
+
+    @Test
+    public void checkServerUrl() {
+        GrapesClient grapesClient = new GrapesClient("host", null);
+        assertEquals("http://host/", grapesClient.getServerURL());
+
+        grapesClient = new GrapesClient("host", "");
+        assertEquals("http://host/", grapesClient.getServerURL());
+
+        grapesClient = new GrapesClient("host", "12345");
+        assertEquals("http://host:12345/", grapesClient.getServerURL());
+    }
+
+    @Test
+    public void serverIsAvailable() {
+        stubFor(get(urlEqualTo("/"))
+                .willReturn(aResponse()
+                        .withStatus(Status.OK.getStatusCode())));
+
+        assertTrue(client.isServerAvailable());
+    }
 	
 	@Test
 	public void serverIsNotAvailable() {
