@@ -3,7 +3,7 @@
 
 	<groupId>org.axway.grapes</groupId>
 	<artifactId>grapes-utils</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0-rc2</version>
 
 	<name>Grapes client utils</name>
 	<description>Utility library that can be embedded or run in commandline to handle HTTP requests to Grapes.</description>
@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>org.axway.grapes</groupId>
 		<artifactId>grapes-parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.0-rc2</version>
 	</parent>
 
 	<dependencies>
@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>org.axway.grapes</groupId>
 			<artifactId>grapes-commons</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.0-rc2</version>
 			<type>jar</type>
 		</dependency>
 		<!-- Command-line Parser -->
