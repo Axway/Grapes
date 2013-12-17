@@ -452,10 +452,12 @@ public class GrapesClient {
      * @param moduleName
      * @param moduleVersion
      * @param fullRecursive
+     * @param corporate
+     * @param thirdParty
      * @return DependencyList
      * @throws GrapesCommunicationException
      */
-    public DependencyList getModuleDependencies(final String moduleName, final String moduleVersion, final Boolean fullRecursive, final Boolean corporate) throws GrapesCommunicationException {
+    public DependencyList getModuleDependencies(final String moduleName, final String moduleVersion, final Boolean fullRecursive, final Boolean corporate, final Boolean thirdParty) throws GrapesCommunicationException {
         final Client client = getClient();
         final WebResource resource = client.resource(serverURL).path(RequestUtils.getArtifactDependencies(moduleName, moduleVersion));
         final ClientResponse response = resource.queryParam(ServerAPI.SCOPE_COMPILE_PARAM, "true")
@@ -464,6 +466,7 @@ public class GrapesClient {
                 .queryParam(ServerAPI.SCOPE_TEST_PARAM, "true")
                 .queryParam(ServerAPI.RECURSIVE_PARAM, fullRecursive.toString())
                 .queryParam(ServerAPI.CORPORATE_FILTER, corporate.toString())
+                .queryParam(ServerAPI.SHOW_THIRPARTY_PARAM, thirdParty.toString())
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         client.destroy();

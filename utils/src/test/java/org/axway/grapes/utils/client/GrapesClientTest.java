@@ -760,7 +760,7 @@ public class GrapesClientTest {
 		DependencyList list2 = null;
 		
 		try{
-			list2 = client.getModuleDependencies(moduleName, moduleVersion, false, true);
+			list2 = client.getModuleDependencies(moduleName, moduleVersion, false, true, true);
 			
 		}catch (Exception e) {
 			exception = e;
@@ -781,7 +781,7 @@ public class GrapesClientTest {
 		Exception exception = null;
 		
 		try{
-			client.getModuleDependencies(moduleName, moduleVersion, false, true);
+			client.getModuleDependencies(moduleName, moduleVersion, false, true, true);
 		}catch (Exception e) {
 			exception = e;
 		}
