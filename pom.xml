@@ -41,6 +41,9 @@
 		<!-- Javadoc -->
 		<maven.javadoc.skip>false</maven.javadoc.skip>
 		<tools.javadoc.version>1.0.0-1</tools.javadoc.version>
+
+		<!-- Third Party libs versions -->
+		<jakson.version>2.2.0</jakson.version>
 	</properties>
 
 	<dependencyManagement>
@@ -48,8 +51,13 @@
 			<dependency>
 			    <groupId>com.fasterxml.jackson.jaxrs</groupId>
 			    <artifactId>jackson-jaxrs-json-provider</artifactId>
-			    <version>2.2.0</version>
+			    <version>${jakson.version}</version>
 			</dependency>
+			<dependency>
+	                    <groupId>com.fasterxml.jackson.core</groupId>
+	                    <artifactId>jackson-databind</artifactId>
+	                    <version>${jakson.version}</version>
+        	       </dependency>
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
