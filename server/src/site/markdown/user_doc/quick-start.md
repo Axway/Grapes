@@ -79,9 +79,11 @@ Notice also that if "com.mycompany" is defined as corporate groupId, all the art
 To send dependency information to Grapes, you have to use its REST API. Many solutions are available:
 
  1. Create your own HTTP REST Client: specifications are available [here](../tech_doc/clients-specs.html)
- 1. Use maven plugin: documentation is [here](../tech_doc/clients-specs.html)
- 1. Use Jenkins plugin: documentation is [here](../tech_doc/clients.html)
  1. Grapes web-app
+<!-- 1. Use Jenkins plugin: documentation is [here](../tech_doc/clients.html) under development-->
+ 1. Use maven plugin
+
+<strong>N.B.</strong> To get the documentation of Grapes Maven plug-in, run "mvn site" on the sources of Grapes Maven plug-in project.
 
 ###Try out the reports
 
@@ -95,5 +97,5 @@ Many kinds of tools are provided by Grapes to generate reports:
 
 ## To go further
 |-----------------------------------------------------------|---------|
-| [Users & roles](./authentication.html)	            | Authentication and roles policy |
+| [Authentication management](./authentication.html)	                | Authentication and roles policy |
 | [Grapes clients](../tech_doc/clients.html)			    | Grapes clients |

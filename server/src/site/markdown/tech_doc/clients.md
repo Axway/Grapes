@@ -4,7 +4,7 @@
 <h1>Grapes Clients</h1>
 </span>
 
-Grapes clients create or update dependency information via Grapes REST API.
+Grapes clients can by used to create or update information via Grapes REST API.
 
 <p class="clearfix"/>
 
@@ -22,6 +22,16 @@ Tool able to fill the license information of the third party libraries.
 * <strong> Maven plugin:</strong>
 A maven plugin is available to send dependency information of a maven project.
 
+<strong>N.B.</strong> To get the documentation of Grapes Maven plug-in, run "mvn site" on the sources of Grapes Maven plug-in project.
+
 ## Client specification
 
 It is possible to implement its own Grapes client. You will find some more information and a detailed specification [here](../tech_doc/clients-specs.html).
+
+Other topics
+-----------
+
+|-----------------------------------------------------------|---------|
+| [Quick start](../user_doc/quick-start.html)					| Minimal information to install and start Grapes |
+| [Authentication management](../user_doc/authentication.html)	| Authentication and roles policy |
+| [Grapes client specification](clients-specs.html)| Specifications to create a new Grapes client |

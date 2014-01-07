@@ -2,8 +2,8 @@
 <span class="page-header">
 <h1>Authentication management</h1>
 </span>
-To protect grapes database and configuration an authentication policy has been defined with different kinds of user: <a href="#admin">administrator</a>, <a href="#contributors">contributors</a> and <a href="#viewers">viewers</a>.
-Basic HTTP authentication is used during the authentication.
+To guarantee Grapes database and configuration integrity different kinds of user are available: <a href="#admin">administrator</a>, <a href="#contributors">contributors</a> and <a href="#viewers">viewers</a>.
+Basic HTTP authentication is used.
 
 <p class="clearfix"/>
 
@@ -17,7 +17,7 @@ The administrator is able to:
  * add or remove corporate groupIds
  * perform a garbage collection
 
-The administrator user is created while running Grapes. The name and the password are defined in the server configuration file ([see the server configuration|quick-start.html]).
+The administrator user is created while running Grapes. The name and the password are defined in the server configuration file (see the [Quick start]).
 
 	http:
       adminUsername: test
@@ -126,7 +126,7 @@ The administrator user is created while running Grapes. The name and the passwor
 
 <h2 id="contributors">Contributors</h2>
 
-Contributor users has to be created by the <a href="#admin">administrator</a>. The aim of this profile is to enhance the information stored in Grapes' database. Users with such profile interacts with Grapes via the REST API or the Data-Browser.
+Contributor users have to be created by the <a href="#admin">administrator</a>. The aim of this profile is to enhance the information stored in Grapes' database. Contributors provide information via the REST API or the Data-Browser.
 
 A contributor can have different roles:
 
@@ -141,3 +141,13 @@ These roles are attributed by the administrator.
 <h2 id="viewers">Viewers</h2>
 
 The viewers are anonymous users that can get information from Grapes via the REST API, the Data-Browser or via Sequoia.
+
+Other topics
+-----------
+
+|---------------------------------------------------------------|---------|
+| [Quick start](quick-start.html)					            | Minimal information to install and start Grapes |
+| [Grapes clients](../tech_doc/clients.html)			        | Grapes clients |
+| [Grapes client specification](../tech_doc/clients-specs.html) | Specifications to create a new Grapes client |
+
+  [Quick start]: (user_doc/quick-start.html)

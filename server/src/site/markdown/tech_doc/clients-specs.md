@@ -4,7 +4,9 @@
 <h1>Grapes Client Specifications</h1>
 </span>
 
-Grapes clients could be use to send information to Grapes (notifications) or to get information from Grapes (reporting). Grapes clients <strong>must</strong> use Grapes server REST API.
+Grapes clients can be implemented to send information to Grapes (notifications) or to get information from Grapes (reporting). Grapes clients <strong>must</strong> use Grapes server REST API.
+
+<strong>Warning:</strong> some clients has already been implemented. Before implementing a new client, please check that none of the existing ones can fits your need.
 
 <p class="clearfix"/>
 
@@ -13,11 +15,11 @@ The current version of Grapes is based on 4 objects. Because Grapes API is an HT
 
 ### Module
 
-A module is the smallest part of your software that has it own life-cycle. A module can contains:
+A module is the smallest part of your software that has it own life-cycle. A module can contain:
 
 1. sub-modules if they all have the same lifecycle
-1. artifacts if your module provide binaries (example: jar, zip, ...)
-1. dependencies if your module need external libraries to be built
+1. artifacts if your module builds binaries (example: jar, zip, ...)
+1. dependencies if your module requires external libraries to be built
 
 
 <strong>Example</strong>
@@ -94,3 +96,11 @@ License objects are used to represent the third-party library licenses (ex: Apac
 
 <p>Grapes notifications and reporting are performed via the HTTP REST API. Use HTTP GET/POST/DELETE, to interact with grapes using the data-model described in the previous paragraph.</p>
 <p>Each Grapes instance holds the documentation of its API. To check the API go on the home page of your grapes instance.</p>
+
+Other topics
+-----------
+
+|-----------------------------------------------------------|---------|
+| [Quick start](../user_doc/quick-start.html)					| Minimal information to install and start Grapes |
+| [Authentication management](../user_doc/authentication.html)	| Authentication and roles policy |
+| [Grapes clients](clients.html)			        | Grapes clients |

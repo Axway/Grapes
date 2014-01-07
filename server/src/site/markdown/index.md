@@ -34,8 +34,9 @@ Documentation
 
 |-----------------------------------------------------------|---------|
 | [Quick start](user_doc/quick-start.html)					| Minimal information to install and start Grapes |
-| [Users & roles](user_doc/authentication.html)	            | Authentication and roles policy |
+| [Authentication management](user_doc/authentication.html)	| Authentication and roles policy |
 | [Grapes clients](tech_doc/clients.html)			        | Grapes clients |
+| [Grapes client specification](tech_doc/clients-specs.html)| Specifications to create a new Grapes client |
 <br/>
 <br/>
 
