@@ -61,24 +61,24 @@ public class MongodbHandler implements RepositoryHandler {
 	private Jongo getJongoDataStore() {
 		return new Jongo(db);
 	}
-    
+
     private void save(final Object dbItem, final String DbCollectionName) {
-		final Jongo datastore = getJongoDataStore();
-		final MongoCollection collection = datastore.getCollection(DbCollectionName);
-		collection.save(dbItem);
-	}
+        final Jongo datastore = getJongoDataStore();
+        final MongoCollection collection = datastore.getCollection(DbCollectionName);
+        collection.save(dbItem);
+    }
 
     @Override
 	public void store(final DbCredential credential) {
 		final DbCredential dbCredential = getCredential(credential.getUser());
-		
-		if(dbCredential == null){
-			save(credential, DbCollections.DB_CREDENTIALS);
-		}
-		else{
+
+        if(dbCredential == null){
+            save(credential, DbCollections.DB_CREDENTIALS);
+        }
+        else{
             dbCredential.setPassword(credential.getPassword());
-			save(dbCredential, DbCollections.DB_CREDENTIALS);
-		}
+            save(dbCredential, DbCollections.DB_CREDENTIALS);
+        }
 	}
 
     @Override
@@ -137,17 +137,11 @@ public class MongodbHandler implements RepositoryHandler {
     public void store(final DbLicense license) {
         final DbLicense dbLicense = getLicense(license.getName());
 
-        if(dbLicense == null){
-            save(license, DbCollections.DB_LICENSES);
+        if(dbLicense != null){
+            license.setId(dbLicense.getId());
         }
-        else{
-            dbLicense.setLongName(license.getLongName());
-            dbLicense.setComments(license.getComments());
-            dbLicense.setRegexp(license.getRegexp());
-            dbLicense.setUrl(license.getUrl());
-            dbLicense.setApproved(license.isApproved());
-            save(dbLicense, DbCollections.DB_LICENSES);
-        }
+
+        save(license, DbCollections.DB_LICENSES);
     }
 
     @Override
@@ -351,14 +345,15 @@ public class MongodbHandler implements RepositoryHandler {
     public void store(final DbModule module) {
         final DbModule dbModule = getModule(module.getUid());
 
+        // has to be done due to mongo limitation: https://jira.mongodb.org/browse/SERVER-267
+        module.updateHasAndUse();
+
         if(dbModule != null){
             module.setId(dbModule.getId());
         }
 
-        // has to be done due to mongo limitation: https://jira.mongodb.org/browse/SERVER-267
-        module.updateHasAndUse();
-
         save(module, DbCollections.DB_MODULES);
+
     }
 
     @Override

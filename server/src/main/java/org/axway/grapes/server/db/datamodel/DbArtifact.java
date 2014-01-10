@@ -3,6 +3,7 @@ package org.axway.grapes.server.db.datamodel;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.jongo.marshall.jackson.oid.Id;
+import org.jongo.marshall.jackson.oid.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +20,10 @@ import java.util.List;
 public class DbArtifact {
 
     public static final String DATA_MODEL_VERSION = "data_model_version";
-    private String datamodelVersion = "1.2.0";
-	
-	@Id
-    @JsonProperty("_id")
-	private String id;
+    private String datamodelVersion = "1.0.0";
+
+    @ObjectId
+    private String _id;
 	
 	public static final String GAV_DB_FIELD = "gavc"; 
 	private String gavc;
@@ -64,7 +64,7 @@ public class DbArtifact {
     public static final String PROVIDER = "provider";
     private String provider = "";
 
-    public void changeDataModelVersion(final String newVersion){
+    public void setDataModelVersion(final String newVersion){
         this.datamodelVersion = newVersion;
     }
 
@@ -117,11 +117,11 @@ public class DbArtifact {
 	}
 
 	public String getId() {
-		return id;
+		return _id;
 	}
 
 	public final void setId(final String id) {
-		this.id = id;
+		this._id = id;
 	}
 
 	public String getType() {

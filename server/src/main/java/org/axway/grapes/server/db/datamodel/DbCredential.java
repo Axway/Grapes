@@ -2,6 +2,7 @@ package org.axway.grapes.server.db.datamodel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jongo.marshall.jackson.oid.Id;
+import org.jongo.marshall.jackson.oid.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
 public class DbCredential {
 
     public static final String DATA_MODEL_VERSION = "data_model_version";
-    private String datamodelVersion = "1.3.0";
+    private String datamodelVersion = "1.0.0";
 
     /**
      * All the available role for Grapes
@@ -34,10 +35,9 @@ public class DbCredential {
         // Approve or reject licenses
         LICENSE_CHECKER
     }
-	
-	@Id
-    @JsonProperty("_id")
-	private String id;
+
+    @ObjectId
+    private String _id;
 	
 	public static final String USER_FIELD = "user"; 
 	private String user;
@@ -48,7 +48,7 @@ public class DbCredential {
 	public static final String ROLES_FIELD = "roles";
 	private List<AvailableRoles> roles = new ArrayList<AvailableRoles>();
 
-    public void changeDataModelVersion(final String newVersion){
+    public void setDataModelVersion(final String newVersion){
         this.datamodelVersion = newVersion;
     }
 
@@ -57,11 +57,11 @@ public class DbCredential {
     }
 	
 	public String getId() {
-		return id;
+		return _id;
 	}
 
 	public void setId(final String id) {
-		this.id = id;
+		this._id = id;
 	}
 
 	public String getUser() {
