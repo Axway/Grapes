@@ -277,9 +277,10 @@ function getModuleOverview(){
         $("#anyAlert").show();
         return;
     }
-	var target = $('input[name=moduleId]:checked', '#targets').val().split(':');
-	var moduleName = target[0];
-	var moduleVersion = target[1];
+    var moduleId = $('input[name=moduleId]:checked', '#targets').val();
+    var splitter = moduleId.lastIndexOf(':');
+	var moduleVersion = moduleId.substring(splitter + 1);
+	var moduleName = moduleId.replace(':'+moduleVersion, '');
 
 	$.ajax({
             type: "GET",
@@ -298,9 +299,10 @@ function getModuleDependencies(){
         $("#anyAlert").show();
         return;
     }
-	var target = $('input[name=moduleId]:checked', '#targets').val().split(':');
-	var moduleName = target[0];
-	var moduleVersion = target[1];
+    var moduleId = $('input[name=moduleId]:checked', '#targets').val();
+    var splitter = moduleId.lastIndexOf(':');
+	var moduleVersion = moduleId.substring(splitter + 1);
+	var moduleName = moduleId.replace(':'+moduleVersion, '');
 
 	$.ajax({
             type: "GET",
@@ -319,9 +321,10 @@ function getModuleThirdParty(){
         $("#anyAlert").show();
         return;
     }
-	var target = $('input[name=moduleId]:checked', '#targets').val().split(':');
-	var moduleName = target[0];
-	var moduleVersion = target[1];
+    var moduleId = $('input[name=moduleId]:checked', '#targets').val();
+    var splitter = moduleId.lastIndexOf(':');
+	var moduleVersion = moduleId.substring(splitter + 1);
+	var moduleName = moduleId.replace(':'+moduleVersion, '');
 
 	$.ajax({
             type: "GET",
@@ -340,9 +343,10 @@ function getModuleAncestors(){
         $("#anyAlert").show();
         return;
     }
-	var target = $('input[name=moduleId]:checked', '#targets').val().split(':');
-	var moduleName = target[0];
-	var moduleVersion = target[1];
+    var moduleId = $('input[name=moduleId]:checked', '#targets').val();
+    var splitter = moduleId.lastIndexOf(':');
+	var moduleVersion = moduleId.substring(splitter + 1);
+	var moduleName = moduleId.replace(':'+moduleVersion, '');
 
 	$.ajax({
             type: "GET",
@@ -361,9 +365,10 @@ function getModuleLicenses(){
         $("#anyAlert").show();
         return;
     }
-	var target = $('input[name=moduleId]:checked', '#targets').val().split(':');
-	var moduleName = target[0];
-	var moduleVersion = target[1];
+    var moduleId = $('input[name=moduleId]:checked', '#targets').val();
+    var splitter = moduleId.lastIndexOf(':');
+	var moduleVersion = moduleId.substring(splitter + 1);
+	var moduleName = moduleId.replace(':'+moduleVersion, '');
 
 	$.ajax({
             type: "GET",
@@ -382,9 +387,10 @@ function getModulePromotionReport(){
         $("#anyAlert").show();
         return;
     }
-	var target = $('input[name=moduleId]:checked', '#targets').val().split(':');
-	var moduleName = target[0];
-	var moduleVersion = target[1];
+    var moduleId = $('input[name=moduleId]:checked', '#targets').val();
+    var splitter = moduleId.lastIndexOf(':');
+	var moduleVersion = moduleId.substring(splitter + 1);
+	var moduleName = moduleId.replace(':'+moduleVersion, '');
 
 	$.ajax({
             type: "GET",
