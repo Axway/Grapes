@@ -29,12 +29,20 @@
         <links>
             <item name="Axway" href="http://www.axway.com"/>
         </links>
+        <menu name="Project">
+            <item ref="project-summary"/>
+            <item ref="team-list"/>
+            <item ref="source-repository"/>
+        </menu>
         <menu name="Dependencies">
             <item ref="dependency-updates-report"/>
             <item ref="property-updates-report"/>
             <item ref="plugin-updates-report"/>
         </menu>
         <menu name="Documentation">
+            <item name="Introduction" href="index.html"/>
+            <item name="Goals" href="plugin-info.html"/>
+            <item name="Usage" href="usage.html"/>
             <item name="Javadoc" href="apidocs/index.html"/>
             <item name="Change log" href="change-log.html"/>
         </menu>

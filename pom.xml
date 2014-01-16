@@ -46,6 +46,41 @@
 		<jakson.version>2.2.0</jakson.version>
 	</properties>
 
+    <developers>
+        <developer>
+            <name>Jean-Denis Coffre</name>
+            <email>jdcoffre@gmail.com</email>
+            <url>http://fr.linkedin.com/pub/jean-denis-coffre/52/252/242</url>
+            <organization>Axway Software</organization>
+            <organizationUrl>http://www.axway.com/</organizationUrl>
+            <roles>
+                <role>creator</role>
+                <role>contributor</role>
+            </roles>
+            <timezone>Europe/Annecy</timezone>
+            <properties>
+                <picUrl>http://www.gravatar.com/avatar/4a09e212f0b946a783714db9abb81cb9.png</picUrl>
+            </properties>
+        </developer>
+    </developers>
+
+    <contributors>
+        <contributor>
+            <name>David Rautureau</name>
+            <email>drautureau@gmail.com</email>
+            <url>https://github.com/drautureau</url>
+            <organization>Axway Software</organization>
+            <organizationUrl>http://www.axway.com/</organizationUrl>
+            <roles>
+                <role>contributor</role>
+            </roles>
+            <timezone>Europe/Annecy</timezone>
+            <properties>
+                <picUrl>http://www.gravatar.com/avatar/bbabafee5fdc0a19989517459d4d5e19</picUrl>
+            </properties>
+        </contributor>
+    </contributors>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -54,10 +89,10 @@
 			    <version>${jakson.version}</version>
 			</dependency>
 			<dependency>
-	                    <groupId>com.fasterxml.jackson.core</groupId>
-	                    <artifactId>jackson-databind</artifactId>
-	                    <version>${jakson.version}</version>
-        	       </dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jakson.version}</version>
+           </dependency>
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
@@ -158,6 +193,7 @@
 									<reportSet>
 										<reports>
 											<report>index</report>
+                                            <report>project-team</report>
 											<report>scm</report>
 											<report>cim</report>
 											<report>summary</report>
@@ -254,6 +290,20 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-plugin-plugin</artifactId>
 					<version>3.2</version>
+                    <executions>
+                        <execution>
+                            <id>mojo-descriptor</id>
+                            <goals>
+                                <goal>descriptor</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>generated-helpmojo</id>
+                            <goals>
+                                <goal>helpmojo</goal>
+                            </goals>
+                        </execution>
+                    </executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

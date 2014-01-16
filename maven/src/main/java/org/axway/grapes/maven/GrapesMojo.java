@@ -8,7 +8,7 @@ import org.axway.grapes.commons.utils.JsonUtils;
 import org.axway.grapes.utils.client.GrapesClient;
 
 /**
- * Goal which send the dependency information to Grapes.
+ * Goal which gathers and send dependencies information to Grapes.
  *
  * @goal notify
  * 
@@ -17,34 +17,34 @@ import org.axway.grapes.utils.client.GrapesClient;
 public class GrapesMojo  extends AbstractMojo{
 
     /**
-     * Grapes host
+     * Host of the targeted Grapes server
      * @parameter property="grapes.host"
      * @required
      */
     private String host;
 
     /**
-     * Grapes port
+     * Port of the targeted Grapes server
      * @parameter property="grapes.port"
      */
     private String port;
 
     /**
-     * Grapes user
+     * Grapes user to use during the notification
      * @parameter property="grapes.user"
      */
     private String user;
 
     /**
-     * Grapes password
+     * Password of the Grapes user
      * @parameter property="grapes.password"
      */
     private String password;
 
     /**
+     * Indicates whether the build will continue even if there are clean errors.
      * If true, an exception will stop the maven execution on error
      * If false, the error will be logged the maven life cycle will continue.
-     *
      * @parameter property="failOnError"
      */
     private boolean failOnError = true;
