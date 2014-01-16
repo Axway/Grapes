@@ -76,7 +76,7 @@ public class ArtifactResource extends AbstractResource {
      * @param artifact the artifact to test
      * @return Boolean true only if the artifact is NOT valid
      */
-    private boolean isNotValid(final Artifact artifact) {
+    public static boolean isNotValid(final Artifact artifact) {
         if(artifact.getGroupId() == null ||
                 artifact.getGroupId().isEmpty()){
             return true;

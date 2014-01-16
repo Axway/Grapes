@@ -2,6 +2,8 @@ package org.axway.grapes.maven;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.versioning.OverConstrainedVersionException;
+import org.apache.maven.artifact.versioning.Restriction;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
@@ -83,7 +85,20 @@ public class DataMapper {
             extension = artifactHandler.getExtension();
         }
 
-        return DataModelFactory.createArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact.getClassifier(), artifact.getType(),extension);
+        String version = artifact.getVersion();
+
+        // Manage version ranges
+        if(version == null && artifact.getVersionRange() != null){
+            for(Restriction restriction : artifact.getVersionRange().getRestrictions()){
+                version = restriction.getLowerBound().toString();
+
+                if(version != null){
+                    break;
+                }
+            }
+        }
+
+        return DataModelFactory.createArtifact(artifact.getGroupId(), artifact.getArtifactId(), version, artifact.getClassifier(), artifact.getType(),extension);
     }
 
     /**

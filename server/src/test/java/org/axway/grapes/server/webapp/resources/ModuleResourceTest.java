@@ -148,6 +148,19 @@ public class ModuleResourceTest extends ResourceTest {
         response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, DataModelFactory.createModule("module", ""));
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+
+        final Module moduleWitWrongArtifact = DataModelFactory.createModule("module", "1.0.0");
+        moduleWitWrongArtifact.addArtifact(DataModelFactory.createArtifact(null, null, null, null, null, null));
+        response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, moduleWitWrongArtifact);
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+
+        final Module moduleWitWrongDependency = DataModelFactory.createModule("module", "1.0.0");
+        final Artifact artifact = DataModelFactory.createArtifact(null, null, null, null, null, null);
+        moduleWitWrongDependency.addDependency(DataModelFactory.createDependency(artifact, Scope.COMPILE));
+        response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, moduleWitWrongArtifact);
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
     }
 
     @Test

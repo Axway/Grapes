@@ -3,11 +3,14 @@ package org.axway.grapes.server.webapp.resources;
 import com.sun.jersey.api.NotFoundException;
 import com.yammer.dropwizard.jersey.params.BooleanParam;
 import org.axway.grapes.commons.api.ServerAPI;
+import org.axway.grapes.commons.datamodel.Artifact;
+import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.core.options.filters.PromotedFilter;
 import org.axway.grapes.server.core.reports.DependencyReport;
+import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.axway.grapes.server.webapp.auth.Role;
@@ -25,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Module Resource
@@ -80,7 +84,7 @@ public class ModuleResource extends AbstractResource{
      * @param module the module to test
      * @return Boolean true only if the artifact is NOT valid
      */
-    private boolean isNotValid(final Module module) {
+    public static boolean isNotValid(final Module module) {
         if(module == null){
             return true;
         }
@@ -91,6 +95,20 @@ public class ModuleResource extends AbstractResource{
         if(module.getVersion()== null ||
                 module.getVersion().isEmpty()){
             return true;
+        }
+
+        // Check artifacts
+        for(Artifact artifact: DataUtils.getAllArtifacts(module)){
+            if(ArtifactResource.isNotValid(artifact)){
+                return true;
+            }
+        }
+
+        // Check dependencies
+        for(Dependency dependency: DataUtils.getAllDependencies(module)){
+            if( ArtifactResource.isNotValid(dependency.getTarget())){
+                return true;
+            }
         }
 
         return false;
