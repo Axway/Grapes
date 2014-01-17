@@ -78,7 +78,7 @@
                   <div class="span4">
                     <img class="marketing-img" src="assets/img/web.png">
                     <h2>HTTP REST API</h2>
-                    <p>Designed for complex reports or automated tasks around dependency management. Please, refer to the <a tabindex="-1" href="http://d2d.ecd.axway.int/?page_id=354">documentation</a>.</p>
+                    <p>Designed for complex reports or automated tasks around dependency management. Please, refer to the <a tabindex="-1" href="https://github.com/Axway/Grapes/wiki">documentation</a>.</p>
                   </div>
                 </div>
 
