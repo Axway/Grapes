@@ -1,10 +1,13 @@
 package org.axway.grapes.maven;
 
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.repository.RepositorySystem;
 import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.commons.utils.JsonUtils;
+import org.axway.grapes.maven.converter.ModuleBuilder;
 import org.axway.grapes.utils.client.GrapesClient;
 
 /**
@@ -56,13 +59,24 @@ public class GrapesMojo  extends AbstractMojo{
      */
     protected MavenProject project;
 
+    /**
+     * @component
+     */
+    private RepositorySystem repositorySystem;
+
+    /**
+     * @parameter default-value="${localRepository}"
+     * @required
+     * @readonly
+     */
+    private ArtifactRepository localRepository;
 
     public void execute() throws MojoExecutionException
     {
         try {
             getLog().info("Collecting dependency information");
-            final DataMapper dataMapper = new DataMapper(getLog());
-            final Module module = dataMapper.getModule(project);
+            final ModuleBuilder dataMapper = new ModuleBuilder(repositorySystem, localRepository, project, getLog());
+            final Module module = dataMapper.build(project);
             getLog().debug("Object to send: " + JsonUtils.serialize(module));
 
             getLog().info("Connection to Grapes");
