@@ -1,8 +1,6 @@
 package org.axway.grapes.server.db.datamodel;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.jongo.marshall.jackson.oid.Id;
-import org.jongo.marshall.jackson.oid.ObjectId;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +18,7 @@ public class DbCorporateGroupIds {
     public static final String DATA_MODEL_VERSION = "data_model_version";
     private String datamodelVersion = "1.0.0";
 
-    @ObjectId
-    private String _id;
+    private ObjectId _id;
 	
 	public static final String CORPORATE_GROUPIDS_FIELD = "corporateGroupIds";
 	private List<String> corporateGroupIds = new ArrayList<String>();
@@ -34,11 +31,11 @@ public class DbCorporateGroupIds {
         return datamodelVersion;
     }
 	
-	public String getId() {
+	public ObjectId getId() {
 		return _id;
 	}
 
-	public void setId(final String id) {
+	public void setId(final ObjectId id) {
 		this._id = id;
 	}
 
