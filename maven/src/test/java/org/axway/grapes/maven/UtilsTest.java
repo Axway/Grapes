@@ -9,8 +9,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import static junit.framework.Assert.*;
-import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.*;
 
 public class UtilsTest {
 
@@ -59,7 +58,6 @@ public class UtilsTest {
 
         assertNotNull(realContent);
         assertEquals(content, realContent);
-
 
         if(testFile.exists()){
             testFile.delete();
