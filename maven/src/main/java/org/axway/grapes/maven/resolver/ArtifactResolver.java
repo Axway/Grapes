@@ -11,7 +11,6 @@ import org.apache.maven.artifact.versioning.Restriction;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;

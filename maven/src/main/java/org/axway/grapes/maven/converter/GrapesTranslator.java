@@ -1,7 +1,6 @@
 package org.axway.grapes.maven.converter;
 
 import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.versioning.Restriction;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.axway.grapes.commons.datamodel.Artifact;
