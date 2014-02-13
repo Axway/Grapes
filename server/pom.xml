@@ -3,7 +3,7 @@
 
 	<groupId>org.axway.grapes</groupId>
 	<artifactId>grapes-server</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.1.0-SNAPSHOT</version>
 	
 	<name>Grapes server</name>
 	<description>Http REST server that stores dependencies information </description>
@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>org.axway.grapes</groupId>
 		<artifactId>grapes-parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.1.0-SNAPSHOT</version>
 	</parent>
 
 	<properties>
@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>org.axway.grapes</groupId>
 			<artifactId>grapes-commons</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.1.0-SNAPSHOT</version>
 			<type>jar</type>
         	</dependency>
 		<dependency>
