@@ -62,22 +62,18 @@ public class MongodbHandler implements RepositoryHandler {
 		return new Jongo(db);
 	}
 
-    private void save(final Object dbItem, final String DbCollectionName) {
-        final Jongo datastore = getJongoDataStore();
-        final MongoCollection collection = datastore.getCollection(DbCollectionName);
-        collection.save(dbItem);
-    }
-
     @Override
 	public void store(final DbCredential credential) {
+        final Jongo datastore = getJongoDataStore();
+        final MongoCollection dbCredentials = datastore.getCollection(DbCollections.DB_CREDENTIALS);
+
 		final DbCredential dbCredential = getCredential(credential.getUser());
 
         if(dbCredential == null){
-            save(credential, DbCollections.DB_CREDENTIALS);
+            dbCredentials.save(credential);
         }
         else{
-            dbCredential.setPassword(credential.getPassword());
-            save(dbCredential, DbCollections.DB_CREDENTIALS);
+            dbCredentials.update(dbCredential.getId()).with(credential);
         }
 	}
 
@@ -135,13 +131,17 @@ public class MongodbHandler implements RepositoryHandler {
 
     @Override
     public void store(final DbLicense license) {
+        final Jongo datastore = getJongoDataStore();
+        final MongoCollection dbLicenses = datastore.getCollection(DbCollections.DB_LICENSES);
         final DbLicense dbLicense = getLicense(license.getName());
 
-        if(dbLicense != null){
-            license.setId(dbLicense.getId());
+        if(dbLicense == null){
+            dbLicenses.save(license);
+        }
+        else {
+            dbLicenses.update(dbLicense.getId()).with(license);
         }
 
-        save(license, DbCollections.DB_LICENSES);
     }
 
     @Override
@@ -234,13 +234,24 @@ public class MongodbHandler implements RepositoryHandler {
 
     @Override
     public void store(final DbArtifact artifact) {
+        final Jongo datastore = getJongoDataStore();
+        final MongoCollection dbArtifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS);
         final DbArtifact dbArtifact = getArtifact(artifact.getGavc());
 
-        if(dbArtifact != null){
-            artifact.setId(dbArtifact.getId());
+        if(dbArtifact == null){
+            dbArtifacts.save(artifact);
         }
+        else{
 
-        save(artifact, DbCollections.DB_ARTIFACTS);
+            // Important: all grapes clients do not send licenses information
+            // if licenses are not attached to the artifact & the dbArtifact contains some
+            // link between dbArtifact and licenses are preserved
+            if(artifact.getLicenses().isEmpty()){
+                artifact.setLicenses(dbArtifact.getLicenses());
+            }
+
+            dbArtifacts.update(dbArtifact.getId()).with(artifact);
+        }
     }
 
     @Override
@@ -343,16 +354,19 @@ public class MongodbHandler implements RepositoryHandler {
 
     @Override
     public void store(final DbModule module) {
+        final Jongo datastore = getJongoDataStore();
+        final MongoCollection dbModules = datastore.getCollection(DbCollections.DB_MODULES);
         final DbModule dbModule = getModule(module.getUid());
 
         // has to be done due to mongo limitation: https://jira.mongodb.org/browse/SERVER-267
         module.updateHasAndUse();
 
-        if(dbModule != null){
-            module.setId(dbModule.getId());
+        if(dbModule == null){
+            dbModules.save(module);
         }
-
-        save(module, DbCollections.DB_MODULES);
+        else{
+            dbModules.update(dbModule.getId()).with(module);
+        }
 
     }
 
@@ -468,10 +482,13 @@ public class MongodbHandler implements RepositoryHandler {
 
         if(dbCorporateGroupIds == null){
             dbCorporateGroupIds = new DbCorporateGroupIds();
+            dbCorporateGroupIds.addCorporateGroupId(corporateGroupId);
+            datastore.getCollection(DbCollections.DB_CORPORATE_GROUPIDS).save(dbCorporateGroupIds);
         }
-
-        dbCorporateGroupIds.addCorporateGroupId(corporateGroupId);
-        save(dbCorporateGroupIds, DbCollections.DB_CORPORATE_GROUPIDS);
+        else {
+            dbCorporateGroupIds.addCorporateGroupId(corporateGroupId);
+            datastore.getCollection(DbCollections.DB_CORPORATE_GROUPIDS).update(dbCorporateGroupIds.getId()).with(dbCorporateGroupIds);
+        }
     }
 
     @Override
@@ -482,12 +499,10 @@ public class MongodbHandler implements RepositoryHandler {
                 .findOne()
                 .as(DbCorporateGroupIds.class);
 
-        if(dbCorporateGroupIds == null){
-            dbCorporateGroupIds = new DbCorporateGroupIds();
+        if(dbCorporateGroupIds != null){
+            dbCorporateGroupIds.removeCorporateGroupId(corporateGroupId);
+            datastore.getCollection(DbCollections.DB_CORPORATE_GROUPIDS).update(dbCorporateGroupIds.getId()).with(dbCorporateGroupIds);
         }
-
-        dbCorporateGroupIds.removeCorporateGroupId(corporateGroupId);
-        save(dbCorporateGroupIds, DbCollections.DB_CORPORATE_GROUPIDS);
     }
 
 }
