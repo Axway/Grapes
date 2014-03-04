@@ -1,6 +1,6 @@
 package org.axway.grapes.tests.acceptance.materials.datamodel;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.axway.grapes.commons.datamodel.Artifact;
 import org.jongo.marshall.jackson.oid.Id;
 
 import java.util.ArrayList;
@@ -16,12 +16,11 @@ import java.util.List;
  * @author jdcoffre
  */
 public class DbArtifact {
-	
-	@Id
-    @JsonProperty("_id")
-	private String id;
-	
-	public static final String GAV_DB_FIELD = "gavc"; 
+
+    public static final String DATA_MODEL_VERSION = "data_model_version";
+    private String datamodelVersion = "1.0.0";
+
+    @Id
 	private String gavc;
 
 	public static final String GROUPID_DB_FIELD = "groupId"; 
@@ -51,9 +50,22 @@ public class DbArtifact {
 	public static final String DOWNLOAD_URL_DB_FIELD = "downloadUrl"; 
 	private String downloadUrl = "";
 
-	public static final String SIZE_DB_FIELD = "size"; 
-	private String size = "";
-	
+    public static final String SIZE_DB_FIELD = "size";
+    private String size = "";
+
+    public static final String DO_NOT_USE = "doNotUse";
+    private Boolean doNotUse = false;
+
+    public static final String PROVIDER = "provider";
+    private String provider = "";
+
+    public void setDataModelVersion(final String newVersion){
+        this.datamodelVersion = newVersion;
+    }
+
+    public String getDataModelVersion(){
+        return datamodelVersion;
+    }
 
 	public String getGroupId() {
 		return groupId;
@@ -97,14 +109,6 @@ public class DbArtifact {
 
 	public final void setPromoted(final boolean promoted) {
 		this.promoted = promoted;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public final void setId(final String id) {
-		this.id = id;
 	}
 
 	public String getType() {
@@ -169,6 +173,36 @@ public class DbArtifact {
 		this.size = size;
 	}
 
+    public Boolean getDoNotUse() {
+        return doNotUse;
+    }
+
+    public void setDoNotUse(final Boolean doNotUse) {
+        this.doNotUse = doNotUse;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(final String provider) {
+        this.provider = provider;
+    }
+
+    @Override
+	public String toString(){
+		final StringBuilder sb = new StringBuilder();
+
+		sb.append("GroupId: ");
+		sb.append(groupId);
+		sb.append(", ArtifactId: ");
+		sb.append(artifactId);
+		sb.append(", Version: ");
+		sb.append(version);
+		
+		return sb.toString();
+	}
+
 	public static String generateGAVC(final String groupId, final String artifactId, final String version, final String classifier, final String extension) {
 		final StringBuilder sb = new StringBuilder();
 		sb.append(groupId);
@@ -182,6 +216,10 @@ public class DbArtifact {
         sb.append(extension);
 		
 		return sb.toString();
+	}
+
+	public static String generateGAVC(final Artifact artifact) {
+		return generateGAVC(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact.getClassifier(), artifact.getExtension());
 	}
 	
 }

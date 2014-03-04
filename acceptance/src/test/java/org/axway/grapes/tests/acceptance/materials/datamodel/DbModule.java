@@ -1,7 +1,6 @@
 package org.axway.grapes.tests.acceptance.materials.datamodel;
 
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.axway.grapes.commons.datamodel.Scope;
 import org.jongo.marshall.jackson.oid.Id;
 
 import java.util.ArrayList;
@@ -11,18 +10,17 @@ import java.util.List;
  * Database Module
  * 
  * <p>Class that holds the representation of modules stored in the database. 
- * Uid composed of the name and the version of the module is used as an ID. A database index has been created on it.</p>
+ * id composed of the name and the version of the module is used as an ID. A database index has been created on it.</p>
  * @author jdcoffre
  *
  */
 public class DbModule {
-	
-	@Id
-    @JsonProperty("_id")
-	private String id;
 
-	public static final String UID_DB_FIELD = "uid"; 
-	private String uid = "";
+    public static final String DATA_MODEL_VERSION = "data_model_version";
+    private String datamodelVersion = "1.0.0";
+
+    @Id
+	private String id = "";
 
 	public static final String NAME_DB_FIELD = "name"; 
 	private String name = "";
@@ -45,13 +43,21 @@ public class DbModule {
 	public static final String DEPENDENCIES_DB_FIELD = "dependencies"; 
 	private List<DbDependency> dependencies = new ArrayList<DbDependency>();
 
+    public void setDataModelVersion(final String newVersion){
+        this.datamodelVersion = newVersion;
+    }
+
+    public String getDataModelVersion(){
+        return datamodelVersion;
+    }
+
 	public String getName() {
 		return name;
 	}
 
 	public void setName(final String name) {
 		this.name = name;
-		updateUid();
+		updateId();
 	}
 
 	public String getVersion() {
@@ -60,7 +66,7 @@ public class DbModule {
 
 	public void setVersion(final String version) {
 		this.version = version;
-		updateUid();
+		updateId();
 	}
 
 	public Boolean isPromoted() {
@@ -69,15 +75,6 @@ public class DbModule {
 
 	public void setPromoted(final boolean promoted) {
 		this.promoted = promoted;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(final String id) {
-		this.id = id;
-		
 	}
 
 	public List<String> getArtifacts() {
@@ -122,12 +119,12 @@ public class DbModule {
 		}
 	}	
 	
-	public final void updateUid(){		
-		uid = generateUID(name, version);
+	public final void updateId(){
+		id = generateID(name, version);
 	}
 
-	public String getUid() {
-		return uid;
+	public String getId() {
+		return id;
 	}
 	
 	public boolean isSubmodule() {
@@ -150,11 +147,8 @@ public class DbModule {
         this.dependencies.addAll(dependencies);
     }
 
-    public void addDependency(final String artifactGavc,final String scope) {
-        final DbDependency dependency = new DbDependency();
-        dependency.setSource(this.getUid());
-        dependency.setTarget(artifactGavc);
-        dependency.setScope(scope);
+    public void addDependency(final String artifactGavc,final Scope scope) {
+        final DbDependency dependency = new DbDependency(this.getId(), artifactGavc, scope);
         this.dependencies.add(dependency);
     }
 
@@ -174,7 +168,7 @@ public class DbModule {
 		return sb.toString();
 	}
 
-	public static String generateUID(final String moduleName, final String moduleVersion) {
+	public static String generateID(final String moduleName, final String moduleVersion) {
 		final StringBuilder sb = new StringBuilder();
 		sb.append(moduleName);
 		sb.append(":");

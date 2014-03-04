@@ -1,6 +1,8 @@
 package org.axway.grapes.tests.acceptance.materials.cases;
 
 
+import org.axway.grapes.commons.datamodel.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +47,7 @@ public class TC04_ProductCase implements TestCase {
     public static final String SLF4J_DEPENDENCY_CLASSIFIER	= "";
     public static final String SLF4J_DEPENDENCY_VERSION 	= "1.7.5";
     public static final String SLF4J_DEPENDENCY_TYPE 	    = "jar";
-    public static final Scope  SLF4J_DEPENDENCY_SCOPE 	    = Scope.PROVIDED;
+    public static final Scope SLF4J_DEPENDENCY_SCOPE 	    = Scope.PROVIDED;
 
     public static final String MIT_LICENSE_NAME             = "MIT";
     public static final String MIT_LICENSE_LONG_NAME        = "The MIT License";

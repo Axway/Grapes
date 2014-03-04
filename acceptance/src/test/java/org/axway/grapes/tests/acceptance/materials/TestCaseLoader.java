@@ -1,6 +1,7 @@
 package org.axway.grapes.tests.acceptance.materials;
 
 
+import com.mongodb.*;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.commons.datamodel.Module;
@@ -87,7 +88,7 @@ public class TestCaseLoader {
             LOG.error(result.getError());
         }
 
-        LOG.info("Module " + module.getUid() + " sent");
+        LOG.info("Module " + module.getId() + " sent");
     }
 
     private void sendLicenseDirectlyInDb(final DbLicense license){

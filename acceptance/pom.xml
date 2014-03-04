@@ -12,13 +12,13 @@
 	<parent>
 		<groupId>org.axway.grapes</groupId>
 		<artifactId>grapes-parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.1.0-SNAPSHOT</version>
 	</parent>
 
 	<properties>
 		<!-- Targeted binaries to test -->
-		<grapes.server.version>1.0.0-SNAPSHOT</grapes.server.version>
-		<grapes.utils.version>1.0.0-SNAPSHOT</grapes.utils.version>
+		<grapes.server.version>1.1.0-SNAPSHOT</grapes.server.version>
+		<grapes.utils.version>1.1.0-SNAPSHOT</grapes.utils.version>
 		<!-- Mandatory property to define before the build -->
 		<grapes.server.port>${GRAPES_PORT}</grapes.server.port>
 		<grapes.server.admin.port>${GRAPES_ADMIN_PORT}</grapes.server.admin.port>
@@ -30,8 +30,7 @@
 		<mongo.password>${MONGO_DB_PASSWORD}</mongo.password>
 		<!-- Static test configuration -->
 		<thucydides.version>0.9.205</thucydides.version>
-		<thucydides.jbehave.version>0.9.205</thucydides.jbehave.version>
-		<webdriver.driver>htmlunit</webdriver.driver>
+        <webdriver.driver>htmlunit</webdriver.driver>
 		<grapes.logfile.path>${project.build.directory}/install/log/server.log</grapes.logfile.path>
 		<grapes.user.notifier>notifier</grapes.user.notifier>
 		<grapes.user.notifier.pwd>notifier</grapes.user.notifier.pwd>
@@ -73,7 +72,7 @@
 		<dependency>
 		    <groupId>net.thucydides</groupId>
 		    <artifactId>thucydides-jbehave-plugin</artifactId>
-		    <version>${thucydides.jbehave.version}</version>
+		    <version>${thucydides.version}</version>
 		</dependency>
 		<!-- Logger -->
 		<dependency>

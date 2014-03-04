@@ -1,6 +1,5 @@
 package org.axway.grapes.tests.acceptance.materials.datamodel;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jongo.marshall.jackson.oid.Id;
 
 /**
@@ -11,12 +10,11 @@ import org.jongo.marshall.jackson.oid.Id;
  * @author jdcoffre
  */
 public class DbLicense {
-	
-	@Id
-    @JsonProperty("_id")
-	private String id;
 
-	public static final String NAME_DB_FIELD = "name"; 
+    public static final String DATA_MODEL_VERSION = "data_model_version";
+    private String datamodelVersion = "1.0.0";
+
+    @Id
 	private String name = "";
 
 	public static final String LONG_NAME_DB_FIELD = "longName"; 
@@ -33,14 +31,14 @@ public class DbLicense {
 	
 	public static final String APPROVED_DB_FIELD = "approved"; 
 	private Boolean approved = null;
-		
-	public final String getId() {
-		return id;
-	}
-	
-	public final void setId(final String id) {
-		this.id = id;
-	}
+
+    public void setDataModelVersion(final String newVersion){
+        this.datamodelVersion = newVersion;
+    }
+
+    public String getDataModelVersion(){
+        return datamodelVersion;
+    }
 	
 	public final String getName() {
 		return name;
