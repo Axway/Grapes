@@ -25,14 +25,14 @@
 				<strong>Classifier: </strong>${artifact.getClassifier()}<br/>
 				<strong>Type: </strong>${artifact.getType()}<br/>
 				<strong>Extension: </strong>${artifact.getExtension()}<br/>
+				<strong>Provider: </strong>${artifact.getProvider()}<br/>
+				<strong>DownloadUrl: </strong>${artifact.getDownloadUrl()}<br/>
 				<#if isCorporate() && moduleName??>
 				<strong>Module: </strong>${moduleName} in version ${moduleVersion}<br/>
 				</#if>
 				<#if shouldNotBeUsed()>
 				<strong>This artifact should not be used!!!</strong><br/>
 				</#if>
-				<strong>Provider: </strong>${artifact.getProvider()}<br/>
-				<strong>DownloadUrl: </strong>${artifact.getDownloadUrl()}<br/>
 			</p>
 			<br/>
 		</div>
