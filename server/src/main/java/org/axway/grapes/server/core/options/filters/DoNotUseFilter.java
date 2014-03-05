@@ -34,6 +34,9 @@ public class DoNotUseFilter implements Filter {
 
     @Override
     public Map<String, Object> artifactFilterFields() {
-        return new HashMap<String, Object>();
+        final Map<String, Object> filters =  new HashMap<String, Object>();
+        filters.put(DbArtifact.DO_NOT_USE, doNotUse);
+
+        return filters;
     }
 }
