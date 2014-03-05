@@ -75,12 +75,12 @@ public class ModuleResourceTest extends ResourceTest {
         dbModule.addSubmodule(dbSubmodule);
 
         repositoryHandler = mock(RepositoryHandler.class);
-        when(repositoryHandler.getModule(dbModule.getUid())).thenReturn(dbModule);
+        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
         when(repositoryHandler.getArtifact(artifact2.getGavc())).thenReturn(artifact2);
         when(repositoryHandler.getArtifact(artifact3.getGavc())).thenReturn(artifact3);
         when(repositoryHandler.getArtifact(artifact4.getGavc())).thenReturn(artifact4);
-        when(repositoryHandler.getModule(dbSubmodule.getUid())).thenReturn(dbSubmodule);
+        when(repositoryHandler.getModule(dbSubmodule.getId())).thenReturn(dbSubmodule);
 
         List<DbModule> modules = new ArrayList<DbModule>();
         modules.add(dbModule);
@@ -247,7 +247,7 @@ public class ModuleResourceTest extends ResourceTest {
         ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
-        verify(repositoryHandler, times(1)).deleteModule(dbModule.getUid());
+        verify(repositoryHandler, times(1)).deleteModule(dbModule.getId());
         verify(repositoryHandler, times(2)).deleteArtifact(anyString());
     }
 

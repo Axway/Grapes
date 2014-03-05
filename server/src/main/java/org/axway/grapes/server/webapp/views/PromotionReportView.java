@@ -85,7 +85,7 @@ public class PromotionReportView extends View {
 
     @JsonIgnore
     public String getModuleUid(final Module module) {
-        return DbModule.generateUID(module.getName(), module.getVersion());
+        return DbModule.generateID(module.getName(), module.getVersion());
     }
 
     public Module getRootModule() {

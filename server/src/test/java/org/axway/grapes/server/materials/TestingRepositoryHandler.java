@@ -183,7 +183,7 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     @Override
     public DbModule getModule(final String moduleId) {
         for(DbModule module: modules){
-            if(module.getUid().equals(moduleId)){
+            if(module.getId().equals(moduleId)){
                 return module;
             }
         }
@@ -262,9 +262,9 @@ public class TestingRepositoryHandler implements RepositoryHandler {
         for(DbDependency dependency: dependencies){
             final DbModule module = getModule(dependency.getTarget());
 
-            if(!treatedModuleId.contains(module.getUid())){
+            if(!treatedModuleId.contains(module.getId())){
                 axModuleDeps.add(module);
-                treatedModuleId.add(module.getUid());
+                treatedModuleId.add(module.getId());
             }
         }
 

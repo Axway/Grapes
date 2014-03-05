@@ -1,7 +1,7 @@
 package org.axway.grapes.server.db.datamodel;
 
 import org.axway.grapes.commons.datamodel.Artifact;
-import org.bson.types.ObjectId;
+import org.jongo.marshall.jackson.oid.Id;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +18,9 @@ import java.util.List;
 public class DbArtifact {
 
     public static final String DATA_MODEL_VERSION = "data_model_version";
-    private String datamodelVersion = "1.0.0";
+    private String datamodelVersion = "2.0.0";
 
-    private ObjectId _id;
-	
-	public static final String GAV_DB_FIELD = "gavc"; 
+    @Id
 	private String gavc;
 
 	public static final String GROUPID_DB_FIELD = "groupId"; 
@@ -111,14 +109,6 @@ public class DbArtifact {
 
 	public final void setPromoted(final boolean promoted) {
 		this.promoted = promoted;
-	}
-
-	public ObjectId getId() {
-		return _id;
-	}
-
-	public final void setId(final ObjectId id) {
-		this._id = id;
 	}
 
 	public String getType() {

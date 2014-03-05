@@ -1,6 +1,7 @@
 package org.axway.grapes.server.core.options.filters;
 
 import org.axway.grapes.server.db.datamodel.DbArtifact;
+import org.axway.grapes.server.db.datamodel.DbCollections;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class GavcFilter implements Filter {
     @Override
     public Map<String, Object> artifactFilterFields() {
         final Map<String, Object> fields = new HashMap<String, Object>();
-        fields.put(DbArtifact.GAV_DB_FIELD, gavc);
+        fields.put(DbCollections.DEFAULT_ID, gavc);
         return fields;
     }
 }

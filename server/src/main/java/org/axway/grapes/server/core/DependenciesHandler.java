@@ -56,10 +56,10 @@ public class DependenciesHandler {
     }
 
     private void addDependencies(final DbModule module, final List<DbDependency> dependencies, final int depth, final List<String> done) {
-        if(module == null || done.contains(module.getUid())){
+        if(module == null || done.contains(module.getId())){
             return ;
         }
-        done.add(module.getUid());
+        done.add(module.getId());
 
         for(DbDependency dependency: DataUtils.getAllDbDependencies(module)){
             if(filters.shouldBeInReport(dependency) && !dependencies.contains(dependency)){
@@ -89,7 +89,7 @@ public class DependenciesHandler {
         final DependencyReport report = new DependencyReport(moduleId);
         final List<String> done = new ArrayList<String>();
         for(DbModule submodule: DataUtils.getAllSubmodules(module)){
-            done.add(submodule.getUid());
+            done.add(submodule.getId());
         }
 
         addModuleToReport(report, module, done, 1);
@@ -98,10 +98,10 @@ public class DependenciesHandler {
     }
 
     private void addModuleToReport(final DependencyReport report, final DbModule module, final List<String> done, final int depth) {
-        if(module == null || done.contains(module.getUid())){
+        if(module == null || done.contains(module.getId())){
             return;
         }
-        done.add(module.getUid());
+        done.add(module.getId());
         for(DbDependency dependency: DataUtils.getAllDbDependencies(module)){
             addDependenciesToReport(report, dependency, done, depth);
         }
@@ -167,12 +167,12 @@ public class DependenciesHandler {
                 depModule = repoHandler.getModuleOf(dependency.getTarget());
             }
 
-            if(depModule == null || treatedModules.contains(depModule.getUid())){
+            if(depModule == null || treatedModules.contains(depModule.getId())){
                continue;
             }
 
             modules.add(depModule);
-            treatedModules.add(depModule.getUid());
+            treatedModules.add(depModule.getId());
         }
 
         return modules;

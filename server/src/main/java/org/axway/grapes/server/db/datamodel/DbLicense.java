@@ -1,6 +1,6 @@
 package org.axway.grapes.server.db.datamodel;
 
-import org.bson.types.ObjectId;
+import org.jongo.marshall.jackson.oid.Id;
 
 /**
  * Database License
@@ -12,11 +12,9 @@ import org.bson.types.ObjectId;
 public class DbLicense {
 
     public static final String DATA_MODEL_VERSION = "data_model_version";
-    private String datamodelVersion = "1.0.0";
+    private String datamodelVersion = "2.0.0";
 
-    private ObjectId _id;
-
-	public static final String NAME_DB_FIELD = "name"; 
+    @Id
 	private String name = "";
 
 	public static final String LONG_NAME_DB_FIELD = "longName"; 
@@ -41,14 +39,6 @@ public class DbLicense {
     public String getDataModelVersion(){
         return datamodelVersion;
     }
-		
-	public final ObjectId getId() {
-		return _id;
-	}
-	
-	public final void setId(final ObjectId id) {
-		this._id = id;
-	}
 	
 	public final String getName() {
 		return name;

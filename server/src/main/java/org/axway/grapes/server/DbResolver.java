@@ -25,7 +25,6 @@ public final class DbResolver {
     public static RepositoryHandler getNewRepoHandler(final DataBaseConfig config) throws DBException, UnknownHostException{
         if(MONGO.equalsIgnoreCase(config.getDbsystem())){
             final MongodbHandler dbHandler = new MongodbHandler(config);
-            dbHandler.ensureIndexes();
             return dbHandler;
         }
         

@@ -106,7 +106,7 @@ public class DataUtilsTest {
         assertEquals(artifact.getGavc(), dbModule.getArtifacts().get(0));
         assertEquals(1, dbModule.getDependencies().size());
         assertEquals(thirdparty.getGavc(), dbModule.getDependencies().get(0).getTarget());
-        assertEquals(DbModule.generateUID(module.getName(), module.getVersion()), dbModule.getDependencies().get(0).getSource());
+        assertEquals(DbModule.generateID(module.getName(), module.getVersion()), dbModule.getDependencies().get(0).getSource());
         assertEquals(dependency.getScope(), dbModule.getDependencies().get(0).getScope());
         assertEquals(1, dbModule.getSubmodules().size());
 
@@ -117,7 +117,7 @@ public class DataUtilsTest {
         assertEquals(artifact2.getGavc(), dbSubmodule.getArtifacts().get(0));
         assertEquals(1, dbSubmodule.getDependencies().size());
         assertEquals(thirdparty2.getGavc(), dbSubmodule.getDependencies().get(0).getTarget());
-        assertEquals(DbModule.generateUID(submodule.getName(), submodule.getVersion()), dbSubmodule.getDependencies().get(0).getSource());
+        assertEquals(DbModule.generateID(submodule.getName(), submodule.getVersion()), dbSubmodule.getDependencies().get(0).getSource());
         assertEquals(dependency2.getScope(), dbSubmodule.getDependencies().get(0).getScope());
 
     }

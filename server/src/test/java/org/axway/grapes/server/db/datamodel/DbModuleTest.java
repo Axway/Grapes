@@ -13,7 +13,7 @@ public class DbModuleTest {
         module.setName("module");
         module.setVersion("1.0.0-2");
 
-        assertEquals("module:1.0.0-2", module.getUid());
+        assertEquals("module:1.0.0-2", module.getId());
 
     }
 
@@ -23,7 +23,7 @@ public class DbModuleTest {
         module.setName("module");
         module.setVersion("1.0.0-2");
 
-        assertEquals(module.getUid(), DbModule.generateUID(module.getName(), module.getVersion()));
+        assertEquals(module.getId(), DbModule.generateID(module.getName(), module.getVersion()));
 
     }
 

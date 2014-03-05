@@ -387,7 +387,7 @@ public class RequestHandler {
      * @return ModuleView
      */
     public ModuleView getModule(final String name, final String version) {
-        final DbModule dbModule = repoHandler.getModule(DbModule.generateUID(name, version));
+        final DbModule dbModule = repoHandler.getModule(DbModule.generateID(name, version));
 
         if(dbModule == null){
             throw new NotFoundException();
@@ -438,7 +438,7 @@ public class RequestHandler {
      * @param version
      */
     public void deleteModule(final String name, final String version) {
-        final String moduleId = DbModule.generateUID(name, version);
+        final String moduleId = DbModule.generateID(name, version);
         final DbModule module = repoHandler.getModule(moduleId);
 
         if(module == null){
@@ -458,7 +458,7 @@ public class RequestHandler {
      * @param version
      */
     public void promoteModule(final String name, final String version) {
-        final String moduleId = DbModule.generateUID(name, version);
+        final String moduleId = DbModule.generateID(name, version);
         final DbModule module = repoHandler.getModule(moduleId);
 
         if(module == null){
@@ -484,7 +484,7 @@ public class RequestHandler {
      * @return DependencyListView that contains the ancestors
      */
     public DependencyListView getModuleAncestors(final String name, final String version, final FiltersHolder filters) {
-        final String moduleId = DbModule.generateUID(name, version);
+        final String moduleId = DbModule.generateID(name, version);
 		final DbModule module = repoHandler.getModule(moduleId);
 
         if(module == null){
@@ -511,7 +511,7 @@ public class RequestHandler {
      */
     public DependencyListView getModuleDependencies(final String name, final String version, final FiltersHolder filters, final Boolean toUpdate) {
         final VersionsHandler versionHandler = new VersionsHandler(repoHandler);
-        final String moduleId = DbModule.generateUID(name, version);
+        final String moduleId = DbModule.generateID(name, version);
         final DependenciesHandler depHandler = new DependenciesHandler(repoHandler, filters);
 
         final List<DbDependency> dbDependencies = depHandler.getDependencies(moduleId);
@@ -543,7 +543,7 @@ public class RequestHandler {
      * @return ListView
      */
     public ListView getModuleLicenses(final String name, final String version) {
-        final String moduleId = DbModule.generateUID(name, version);
+        final String moduleId = DbModule.generateID(name, version);
         final DbModule module = repoHandler.getModule(moduleId);
 
         if(module == null){
@@ -595,7 +595,7 @@ public class RequestHandler {
      * @return PromotionReportView
      */
     public PromotionReportView getPromotionReport(final String name, final String version, final FiltersHolder filters) {
-        final String moduleId = DbModule.generateUID(name, version);
+        final String moduleId = DbModule.generateID(name, version);
         final DbModule module = repoHandler.getModule(moduleId);
 
         if(module == null){
@@ -613,7 +613,7 @@ public class RequestHandler {
                 report.addUnPromotedDependency(DataModelFactory.createModule(dependency.getName(), dependency.getVersion()));
 
                 if(filters.getDepthHandler().getFullRecursive()){
-                    report.addDependencyReport(dependency.getUid(), getPromotionReport(dependency.getName(), dependency.getVersion(), filters));
+                    report.addDependencyReport(dependency.getId(), getPromotionReport(dependency.getName(), dependency.getVersion(), filters));
                 }
             }
         }
@@ -641,7 +641,7 @@ public class RequestHandler {
      * @return AbstractGraph A graph of Artifact
      */
     public AbstractGraph getModuleGraph(final String moduleName, final String moduleVersion, final FiltersHolder filters) {
-        final String moduleId = DbModule.generateUID(moduleName, moduleVersion);
+        final String moduleId = DbModule.generateID(moduleName, moduleVersion);
         final GraphsHandler builder = new GraphsHandler(repoHandler, filters);
 
         return builder.getModuleGraph(moduleId);
@@ -656,7 +656,7 @@ public class RequestHandler {
      * @return TreeNode
      */
     public TreeNode getModuleTree(final String moduleName, final String moduleVersion, final FiltersHolder filters) {
-        final String moduleId = DbModule.generateUID(moduleName, moduleVersion);
+        final String moduleId = DbModule.generateID(moduleName, moduleVersion);
         final GraphsHandler builder = new GraphsHandler(repoHandler, filters);
 
         return builder.getModuleTree(moduleId);
@@ -671,7 +671,7 @@ public class RequestHandler {
      * @return DependencyReport
      */
     public DependencyReport getDependencyReport(final String name, final String version, final FiltersHolder filters) throws NotHandledVersionException, IncomparableException {
-        final String moduleId = DbModule.generateUID(name, version);
+        final String moduleId = DbModule.generateID(name, version);
         final DependenciesHandler dependencyHandler = new DependenciesHandler(repoHandler, filters);
 
         return dependencyHandler.getReport(moduleId);

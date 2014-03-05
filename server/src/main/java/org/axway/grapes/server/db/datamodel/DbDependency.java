@@ -12,7 +12,7 @@ import org.axway.grapes.commons.datamodel.Scope;
 public class DbDependency {
 
     public static final String DATA_MODEL_VERSION = "data_model_version";
-    private String datamodelVersion = "1.0.0";
+    private String datamodelVersion = "2.0.0";
 	
 	private String source;
 	private String target;

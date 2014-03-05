@@ -102,9 +102,9 @@ public class DependenciesHandlerTest {
 
         
         repositoryHandler = mock(RepositoryHandler.class);
-        when(repositoryHandler.getModule(dbModule.getUid())).thenReturn(dbModule);
-        when(repositoryHandler.getModule(dbModule2.getUid())).thenReturn(dbModule2);
-        when(repositoryHandler.getModule(dbSubmodule.getUid())).thenReturn(dbSubmodule);
+        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
+        when(repositoryHandler.getModule(dbModule2.getId())).thenReturn(dbModule2);
+        when(repositoryHandler.getModule(dbSubmodule.getId())).thenReturn(dbSubmodule);
         when(repositoryHandler.getRootModuleOf(artifact7.getGavc())).thenReturn(dbModule2);
         when(repositoryHandler.getModuleOf(artifact7.getGavc())).thenReturn(dbModule2);
         when(repositoryHandler.getRootModuleOf(artifact9.getGavc())).thenReturn(dbModule2);
@@ -129,7 +129,7 @@ public class DependenciesHandlerTest {
 
         final DependenciesHandler dependenciesHandler = new DependenciesHandler(repositoryHandler, filters);
 
-        final List<DbDependency> dependencies = dependenciesHandler.getDependencies(dbModule.getUid());
+        final List<DbDependency> dependencies = dependenciesHandler.getDependencies(dbModule.getId());
         assertNotNull(dependencies);
         assertEquals(7, dependencies.size());
 
@@ -145,7 +145,7 @@ public class DependenciesHandlerTest {
 
         final DependenciesHandler dependenciesHandler = new DependenciesHandler(repositoryHandler, filters);
 
-        final List<DbDependency> dependencies = dependenciesHandler.getDependencies(dbModule.getUid());
+        final List<DbDependency> dependencies = dependenciesHandler.getDependencies(dbModule.getId());
         assertNotNull(dependencies);
         assertEquals(3, dependencies.size());
     }
@@ -160,7 +160,7 @@ public class DependenciesHandlerTest {
 
         final DependenciesHandler dependenciesHandler = new DependenciesHandler(repositoryHandler, filters);
 
-        final List<DbDependency> dependencies = dependenciesHandler.getDependencies(dbModule.getUid());
+        final List<DbDependency> dependencies = dependenciesHandler.getDependencies(dbModule.getId());
         assertNotNull(dependencies);
         assertEquals(4, dependencies.size());
     }
@@ -176,7 +176,7 @@ public class DependenciesHandlerTest {
 
         final DependenciesHandler dependenciesHandler = new DependenciesHandler(repositoryHandler, filters);
 
-        final List<DbDependency> dependencies = dependenciesHandler.getDependencies(dbModule.getUid());
+        final List<DbDependency> dependencies = dependenciesHandler.getDependencies(dbModule.getId());
         assertNotNull(dependencies);
         assertEquals(8, dependencies.size());
     }
@@ -193,7 +193,7 @@ public class DependenciesHandlerTest {
 
         final DependenciesHandler dependenciesHandler = new DependenciesHandler(repositoryHandler, filters);
 
-        final List<DbDependency> dependencies = dependenciesHandler.getDependencies(dbModule.getUid());
+        final List<DbDependency> dependencies = dependenciesHandler.getDependencies(dbModule.getId());
         assertNotNull(dependencies);
         assertEquals(4, dependencies.size());
     }
@@ -207,7 +207,7 @@ public class DependenciesHandlerTest {
 
         final DependenciesHandler dependenciesHandler = new DependenciesHandler(repositoryHandler, filters);
 
-        final DependencyReport report = dependenciesHandler.getReport(dbModule.getUid());
+        final DependencyReport report = dependenciesHandler.getReport(dbModule.getId());
         assertNotNull(report);
         assertEquals(6, report.getDependencies().size());
 
@@ -222,7 +222,7 @@ public class DependenciesHandlerTest {
 
         final DependenciesHandler dependenciesHandler = new DependenciesHandler(repositoryHandler, filters);
 
-        final DependencyReport report = dependenciesHandler.getReport(dbModule.getUid());
+        final DependencyReport report = dependenciesHandler.getReport(dbModule.getId());
         assertNotNull(report);
         assertEquals(3, report.getDependencies().size());
     }
@@ -237,7 +237,7 @@ public class DependenciesHandlerTest {
 
         final DependenciesHandler dependenciesHandler = new DependenciesHandler(repositoryHandler, filters);
 
-        final DependencyReport report = dependenciesHandler.getReport(dbModule.getUid());
+        final DependencyReport report = dependenciesHandler.getReport(dbModule.getId());
         assertNotNull(report);
         assertEquals(3, report.getDependencies().size());
     }
@@ -253,7 +253,7 @@ public class DependenciesHandlerTest {
 
         final DependenciesHandler dependenciesHandler = new DependenciesHandler(repositoryHandler, filters);
 
-        final DependencyReport report = dependenciesHandler.getReport(dbModule.getUid());
+        final DependencyReport report = dependenciesHandler.getReport(dbModule.getId());
         assertNotNull(report);
         assertEquals(7, report.getDependencies().size());
     }
@@ -262,7 +262,7 @@ public class DependenciesHandlerTest {
     public void getDependencyModules(){
         final FiltersHolder filters = new FiltersHolder(GrapesTestUtils.getTestCorporateGroupIds());
         final DependenciesHandler dependenciesHandler = new DependenciesHandler(repositoryHandler, filters);
-        final List<DbModule> modules = dependenciesHandler.getModuleDependencies(dbModule.getUid(), false);
+        final List<DbModule> modules = dependenciesHandler.getModuleDependencies(dbModule.getId(), false);
 
         assertEquals(2, modules.size());
         assertTrue(modules.contains(dbModule2));
@@ -273,7 +273,7 @@ public class DependenciesHandlerTest {
     public void getRootDependencyModules(){
         final FiltersHolder filters = new FiltersHolder(GrapesTestUtils.getTestCorporateGroupIds());
         final DependenciesHandler dependenciesHandler = new DependenciesHandler(repositoryHandler, filters);
-        final List<DbModule> modules = dependenciesHandler.getModuleDependencies(dbModule.getUid(), true);
+        final List<DbModule> modules = dependenciesHandler.getModuleDependencies(dbModule.getId(), true);
 
         assertEquals(1, modules.size());
         assertEquals(dbModule2, modules.get(0));
@@ -287,13 +287,13 @@ public class DependenciesHandlerTest {
         artifact8.setDoNotUse(true);
         DependenciesHandler dependenciesHandler = new DependenciesHandler(repositoryHandler, filters);
 
-        DependencyReport report = dependenciesHandler.getReport(dbModule2.getUid());
+        DependencyReport report = dependenciesHandler.getReport(dbModule2.getId());
         assertNotNull(report);
         assertEquals(1, report.shouldNotBeUsed(artifact8.getGavc()));
 
         artifact8.setDoNotUse(false);
         dependenciesHandler = new DependenciesHandler(repositoryHandler, filters);
-        report = dependenciesHandler.getReport(dbModule2.getUid());
+        report = dependenciesHandler.getReport(dbModule2.getId());
 
         assertNotNull(report);
         assertEquals(0, report.shouldNotBeUsed(artifact8.getGavc()));

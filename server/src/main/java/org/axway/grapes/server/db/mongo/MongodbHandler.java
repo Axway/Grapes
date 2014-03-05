@@ -40,16 +40,6 @@ public class MongodbHandler implements RepositoryHandler {
             db.authenticate(config.getUser(), config.getPwd());
         }
     }
-
-    /**
-     * Ensure that the mongo database indexes are built
-     */
-    public void ensureIndexes() {
-		db.getCollection(DbCollections.DB_MODULES).ensureIndex(DbModule.UID_DB_FIELD);
-        db.getCollection(DbCollections.DB_ARTIFACTS).ensureIndex(DbArtifact.GAV_DB_FIELD);
-        db.getCollection(DbCollections.DB_LICENSES).ensureIndex(DbLicense.NAME_DB_FIELD);
-        db.getCollection(DbCollections.DB_CREDENTIALS).ensureIndex(DbCredential.USER_FIELD);
-    }
     
     /**
 	 * Initialize a connection with the database using Jongo.
@@ -73,7 +63,7 @@ public class MongodbHandler implements RepositoryHandler {
             dbCredentials.save(credential);
         }
         else{
-            dbCredentials.update(dbCredential.getId()).with(credential);
+            dbCredentials.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, dbCredential.getUser())).with(credential);
         }
 	}
 
@@ -98,7 +88,7 @@ public class MongodbHandler implements RepositoryHandler {
 
         if(!credential.getRoles().contains(role)){
             credential.addRole(role);
-            credentials.update(JongoUtils.generateQuery(DbCredential.USER_FIELD, user))
+            credentials.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, user))
                     .with("{ $set: { \""+ DbCredential.ROLES_FIELD + "\": #}} " , credential.getRoles());
         }
 
@@ -117,7 +107,7 @@ public class MongodbHandler implements RepositoryHandler {
 
         if(credential.getRoles().contains(role)){
             credential.removeRole(role);
-            credentials.update(JongoUtils.generateQuery(DbCredential.USER_FIELD, user))
+            credentials.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, user))
                     .with("{ $set: { \""+ DbCredential.ROLES_FIELD + "\": #}} " , credential.getRoles());
         }
     }
@@ -125,7 +115,7 @@ public class MongodbHandler implements RepositoryHandler {
     private DbCredential getCredential(final String user) {
 		final Jongo datastore = getJongoDataStore();
         return datastore.getCollection(DbCollections.DB_CREDENTIALS)
-				.findOne(JongoUtils.generateQuery(DbCredential.USER_FIELD, user))
+				.findOne(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, user))
 					.as(DbCredential.class);
 	}
 
@@ -139,7 +129,7 @@ public class MongodbHandler implements RepositoryHandler {
             dbLicenses.save(license);
         }
         else {
-            dbLicenses.update(dbLicense.getId()).with(license);
+            dbLicenses.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, dbLicense.getName())).with(license);
         }
 
     }
@@ -164,7 +154,7 @@ public class MongodbHandler implements RepositoryHandler {
     public DbLicense getLicense(final String name) {
         final Jongo datastore = getJongoDataStore();
         return  datastore.getCollection(DbCollections.DB_LICENSES)
-                .findOne(JongoUtils.generateQuery(DbLicense.NAME_DB_FIELD, name))
+                .findOne(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, name))
                 .as(DbLicense.class);
     }
 
@@ -178,7 +168,7 @@ public class MongodbHandler implements RepositoryHandler {
         else{
             final Jongo datastore = getJongoDataStore();
             datastore.getCollection(DbCollections.DB_LICENSES)
-                    .remove(JongoUtils.generateQuery(DbLicense.NAME_DB_FIELD, name));
+                    .remove(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, name));
         }
     }
 
@@ -204,7 +194,7 @@ public class MongodbHandler implements RepositoryHandler {
 
         if(!artifact.getLicenses().contains(license.getName())){
             artifact.addLicense(license);
-            artifacts.update(JongoUtils.generateQuery(DbArtifact.GAV_DB_FIELD, artifact.getGavc()))
+            artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
                     .with("{ $set: { \""+ DbArtifact.LICENCES_DB_FIELD + "\": #}} " , artifact.getLicenses());
         }
 
@@ -217,7 +207,7 @@ public class MongodbHandler implements RepositoryHandler {
 
         if(artifact.getLicenses().contains(licenseId)){
             artifact.removeLicense(licenseId);
-            artifacts.update(JongoUtils.generateQuery(DbArtifact.GAV_DB_FIELD, artifact.getGavc()))
+            artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
                     .with("{ $set: { \""+ DbArtifact.LICENCES_DB_FIELD + "\": #}} " , artifact.getLicenses());
         }
 
@@ -228,7 +218,7 @@ public class MongodbHandler implements RepositoryHandler {
         final Jongo datastore = getJongoDataStore();
         final MongoCollection licenses = datastore.getCollection(DbCollections.DB_LICENSES);
 
-        licenses.update(JongoUtils.generateQuery(DbLicense.NAME_DB_FIELD, license.getName()))
+        licenses.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, license.getName()))
                 .with("{ $set: { \""+ DbLicense.APPROVED_DB_FIELD + "\": #}} " , approved);
     }
 
@@ -250,14 +240,14 @@ public class MongodbHandler implements RepositoryHandler {
                 artifact.setLicenses(dbArtifact.getLicenses());
             }
 
-            dbArtifacts.update(dbArtifact.getId()).with(artifact);
+            dbArtifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, dbArtifact.getGavc())).with(artifact);
         }
     }
 
     @Override
     public List<String> getGavcs(final FiltersHolder filters) {
         final Jongo datastore = getJongoDataStore();
-        return datastore.getCollection(DbCollections.DB_ARTIFACTS).distinct(DbArtifact.GAV_DB_FIELD).as(String.class);
+        return datastore.getCollection(DbCollections.DB_ARTIFACTS).distinct(DbCollections.DEFAULT_ID).as(String.class);
     }
 
     @Override
@@ -283,7 +273,7 @@ public class MongodbHandler implements RepositoryHandler {
     public DbArtifact getArtifact(final String gavc) {
         final Jongo datastore = getJongoDataStore();
         return datastore.getCollection(DbCollections.DB_ARTIFACTS)
-                .findOne(JongoUtils.generateQuery(DbArtifact.GAV_DB_FIELD, gavc))
+                .findOne(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, gavc))
                 .as(DbArtifact.class);
     }
 
@@ -297,7 +287,7 @@ public class MongodbHandler implements RepositoryHandler {
         else{
             final Jongo datastore = getJongoDataStore();
             datastore.getCollection(DbCollections.DB_ARTIFACTS)
-                    .remove(JongoUtils.generateQuery(DbArtifact.GAV_DB_FIELD, gavc));
+                    .remove(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, gavc));
         }
     }
 
@@ -306,7 +296,7 @@ public class MongodbHandler implements RepositoryHandler {
         final Jongo datastore = getJongoDataStore();
         final MongoCollection artifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS);
 
-        artifacts.update(JongoUtils.generateQuery(DbArtifact.GAV_DB_FIELD, artifact.getGavc()))
+        artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
                 .with("{ $set: { \""+ DbArtifact.DO_NOT_USE + "\": #}} " , doNotUse);
     }
 
@@ -315,7 +305,7 @@ public class MongodbHandler implements RepositoryHandler {
         final Jongo datastore = getJongoDataStore();
         final MongoCollection artifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS);
 
-        artifacts.update(JongoUtils.generateQuery(DbArtifact.GAV_DB_FIELD, artifact.getGavc()))
+        artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
                 .with("{ $set: { \""+ DbArtifact.DOWNLOAD_URL_DB_FIELD + "\": #}} " , downLoadUrl);
     }
 
@@ -324,7 +314,7 @@ public class MongodbHandler implements RepositoryHandler {
         final Jongo datastore = getJongoDataStore();
         final MongoCollection artifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS);
 
-        artifacts.update(JongoUtils.generateQuery(DbArtifact.GAV_DB_FIELD, artifact.getGavc()))
+        artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
                 .with("{ $set: { \""+ DbArtifact.PROVIDER + "\": #}} " , provider);
     }
 
@@ -356,7 +346,7 @@ public class MongodbHandler implements RepositoryHandler {
     public void store(final DbModule module) {
         final Jongo datastore = getJongoDataStore();
         final MongoCollection dbModules = datastore.getCollection(DbCollections.DB_MODULES);
-        final DbModule dbModule = getModule(module.getUid());
+        final DbModule dbModule = getModule(module.getId());
 
         // has to be done due to mongo limitation: https://jira.mongodb.org/browse/SERVER-267
         module.updateHasAndUse();
@@ -365,7 +355,7 @@ public class MongodbHandler implements RepositoryHandler {
             dbModules.save(module);
         }
         else{
-            dbModules.update(dbModule.getId()).with(module);
+            dbModules.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, dbModule.getId())).with(module);
         }
 
     }
@@ -390,7 +380,7 @@ public class MongodbHandler implements RepositoryHandler {
     public DbModule getModule(final String moduleId) {
         final Jongo datastore = getJongoDataStore();
         return datastore.getCollection(DbCollections.DB_MODULES)
-                .findOne(JongoUtils.generateQuery(DbModule.UID_DB_FIELD, moduleId))
+                .findOne(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, moduleId))
                 .as(DbModule.class);
     }
 
@@ -420,7 +410,7 @@ public class MongodbHandler implements RepositoryHandler {
         else{
             final Jongo datastore = getJongoDataStore();
             datastore.getCollection(DbCollections.DB_MODULES)
-                    .remove(JongoUtils.generateQuery(DbModule.UID_DB_FIELD, moduleId));
+                    .remove(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, moduleId));
         }
     }
 
@@ -429,7 +419,7 @@ public class MongodbHandler implements RepositoryHandler {
         final Jongo datastore = getJongoDataStore();
         final MongoCollection modules = datastore.getCollection(DbCollections.DB_MODULES);
 
-        modules.update(JongoUtils.generateQuery(DbModule.UID_DB_FIELD, module.getUid()))
+        modules.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, module.getId()))
                 .with("{ $set: { \""+ DbModule.PROMOTION_DB_FIELD + "\": #}} " , Boolean.TRUE);
     }
 

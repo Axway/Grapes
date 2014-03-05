@@ -41,7 +41,7 @@ public class GraphsHandlerTest {
     public void getGraphOfModuleWithOneArtifactWithoutDependency(){
         repoHandler.loadTestCase(new TC01_ModuleWithOneArtifactWithoutDependency());
 
-        final String moduleId = DbModule.generateUID(TC01_ModuleWithOneArtifactWithoutDependency.MODULE_NAME, TC01_ModuleWithOneArtifactWithoutDependency.MODULE_VERSION);
+        final String moduleId = DbModule.generateID(TC01_ModuleWithOneArtifactWithoutDependency.MODULE_NAME, TC01_ModuleWithOneArtifactWithoutDependency.MODULE_VERSION);
         AbstractGraph graph = graphHandler.getModuleGraph(moduleId);
 
         assertNotNull(graph);
@@ -57,7 +57,7 @@ public class GraphsHandlerTest {
     public void getGraphOfModuleWithOneArtifactAndDependencyOfEachType(){
         repoHandler.loadTestCase(new TC02_ModuleWithOneArtifactAndDependencyOfEachType());
 
-        final String moduleId = DbModule.generateUID(TC02_ModuleWithOneArtifactAndDependencyOfEachType.MODULE_NAME, TC02_ModuleWithOneArtifactAndDependencyOfEachType.MODULE_VERSION);
+        final String moduleId = DbModule.generateID(TC02_ModuleWithOneArtifactAndDependencyOfEachType.MODULE_NAME, TC02_ModuleWithOneArtifactAndDependencyOfEachType.MODULE_VERSION);
         AbstractGraph graph = graph = graphHandler.getModuleGraph(moduleId);
 
         assertNotNull(graph);
@@ -94,7 +94,7 @@ public class GraphsHandlerTest {
     public void getGraphOfModuleWithOneSubmoduleAndDependencyOfEachType(){
         repoHandler.loadTestCase(new TC03_ModuleWithOneSubmoduleAndDependencyOfEachType());
 
-        final String moduleId = DbModule.generateUID(TC03_ModuleWithOneSubmoduleAndDependencyOfEachType.MODULE_NAME, TC03_ModuleWithOneSubmoduleAndDependencyOfEachType.MODULE_VERSION);
+        final String moduleId = DbModule.generateID(TC03_ModuleWithOneSubmoduleAndDependencyOfEachType.MODULE_NAME, TC03_ModuleWithOneSubmoduleAndDependencyOfEachType.MODULE_VERSION);
         AbstractGraph graph = graphHandler.getModuleGraph(moduleId);
 
         assertNotNull(graph);
@@ -115,7 +115,7 @@ public class GraphsHandlerTest {
     public void getGraphOfModuleWithOneArtifactAndThirdParty(){
         repoHandler.loadTestCase(new TC05_ModuleWithOneArtifactAndThirdParty());
 
-        final String moduleId = DbModule.generateUID(TC05_ModuleWithOneArtifactAndThirdParty.MODULE_NAME, TC05_ModuleWithOneArtifactAndThirdParty.MODULE_VERSION);
+        final String moduleId = DbModule.generateID(TC05_ModuleWithOneArtifactAndThirdParty.MODULE_NAME, TC05_ModuleWithOneArtifactAndThirdParty.MODULE_VERSION);
         AbstractGraph graph = graphHandler.getModuleGraph(moduleId);
 
         assertNotNull(graph);
@@ -134,7 +134,7 @@ public class GraphsHandlerTest {
     public void getGraphOfModuleWithOneArtifactWithTransitiveDependencies(){
         repoHandler.loadTestCase(new TC06_ModuleWithOneArtifactWithTransitiveDependencies());
 
-        final String moduleId = DbModule.generateUID(TC06_ModuleWithOneArtifactWithTransitiveDependencies.MODULE_NAME, TC06_ModuleWithOneArtifactWithTransitiveDependencies.MODULE_VERSION);
+        final String moduleId = DbModule.generateID(TC06_ModuleWithOneArtifactWithTransitiveDependencies.MODULE_NAME, TC06_ModuleWithOneArtifactWithTransitiveDependencies.MODULE_VERSION);
         AbstractGraph graph = graphHandler.getModuleGraph(moduleId);
 
         assertNotNull(graph);
@@ -153,7 +153,7 @@ public class GraphsHandlerTest {
     public void getGraphOfModuleWithOneArtifactWithLoopDependencies(){
         repoHandler.loadTestCase(new TC07_ModuleWithOneArtifactWithLoopDependencies());
 
-        final String moduleId = DbModule.generateUID(TC07_ModuleWithOneArtifactWithLoopDependencies.MODULE_NAME, TC07_ModuleWithOneArtifactWithLoopDependencies.MODULE_VERSION);
+        final String moduleId = DbModule.generateID(TC07_ModuleWithOneArtifactWithLoopDependencies.MODULE_NAME, TC07_ModuleWithOneArtifactWithLoopDependencies.MODULE_VERSION);
         AbstractGraph graph = graphHandler.getModuleGraph(moduleId);
 
         assertNotNull(graph);
@@ -165,7 +165,7 @@ public class GraphsHandlerTest {
     public void getTreeOfModuleWithOneArtifactWithoutDependency(){
         repoHandler.loadTestCase(new TC01_ModuleWithOneArtifactWithoutDependency());
 
-        final String moduleId = DbModule.generateUID(TC01_ModuleWithOneArtifactWithoutDependency.MODULE_NAME, TC01_ModuleWithOneArtifactWithoutDependency.MODULE_VERSION);
+        final String moduleId = DbModule.generateID(TC01_ModuleWithOneArtifactWithoutDependency.MODULE_NAME, TC01_ModuleWithOneArtifactWithoutDependency.MODULE_VERSION);
         TreeNode tree = graphHandler.getModuleTree(moduleId);
 
         assertNotNull(tree);
@@ -177,7 +177,7 @@ public class GraphsHandlerTest {
     public void getTreeOfModuleWithOneSubmodule(){
         repoHandler.loadTestCase(new TC03_ModuleWithOneSubmoduleAndDependencyOfEachType());
 
-        final String moduleId = DbModule.generateUID(TC03_ModuleWithOneSubmoduleAndDependencyOfEachType.MODULE_NAME, TC03_ModuleWithOneSubmoduleAndDependencyOfEachType.MODULE_VERSION);
+        final String moduleId = DbModule.generateID(TC03_ModuleWithOneSubmoduleAndDependencyOfEachType.MODULE_NAME, TC03_ModuleWithOneSubmoduleAndDependencyOfEachType.MODULE_VERSION);
         TreeNode tree = graphHandler.getModuleTree(moduleId);
 
         assertNotNull(tree);

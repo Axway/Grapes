@@ -1,6 +1,6 @@
 package org.axway.grapes.server.db.datamodel;
 
-import org.bson.types.ObjectId;
+import org.jongo.marshall.jackson.oid.Id;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public class DbCredential {
 
     public static final String DATA_MODEL_VERSION = "data_model_version";
-    private String datamodelVersion = "1.0.0";
+    private String datamodelVersion = "2.0.0";
 
     /**
      * All the available role for Grapes
@@ -34,9 +34,7 @@ public class DbCredential {
         LICENSE_CHECKER
     }
 
-    private ObjectId _id;
-	
-	public static final String USER_FIELD = "user"; 
+    @Id
 	private String user;
 	
 	public static final String PASSWORD_FIELD = "password"; 
@@ -52,14 +50,6 @@ public class DbCredential {
     public String getDataModelVersion(){
         return datamodelVersion;
     }
-	
-	public ObjectId getId() {
-		return _id;
-	}
-
-	public void setId(final ObjectId id) {
-		this._id = id;
-	}
 
 	public String getUser() {
 		return user;
