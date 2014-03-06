@@ -38,8 +38,8 @@ public class LicenseResolver {
 
     private final Log logger;
 
-    public LicenseResolver(final RepositorySystem repositorySystem, final ArtifactRepository localRepository, final MavenProject project, final Log log){
-        this.artifactResolver = new ArtifactResolver(repositorySystem, localRepository, project, log );
+    public LicenseResolver(final RepositorySystem repositorySystem, final ArtifactRepository localRepository, final Log log){
+        this.artifactResolver = new ArtifactResolver(repositorySystem, localRepository, log );
         this.logger = log;
     }
 
@@ -51,7 +51,7 @@ public class LicenseResolver {
 
         if(licenses.isEmpty() && project.getParent() != null){
             final MavenProject parent = project.getParent();
-            licenses.addAll(resolve(parent.getGroupId(), parent.getArtifactId(), parent.getVersion()));
+            licenses.addAll(resolve(project, parent.getGroupId(), parent.getArtifactId(), parent.getVersion()));
         }
 
         return licenses;
@@ -66,9 +66,9 @@ public class LicenseResolver {
      * @return
      * @throws MojoExecutionException
      */
-    public List<License> resolve(final String groupId, final String artifactId, final String version) throws MojoExecutionException {
+    public List<License> resolve(final MavenProject project, final String groupId, final String artifactId, final String version) throws MojoExecutionException {
         final Artifact modelArtifact = getModelArtifact(groupId, artifactId, version);
-        return getLicenses(modelArtifact);
+        return getLicenses(project, modelArtifact);
     }
 
     /**
@@ -80,10 +80,10 @@ public class LicenseResolver {
      * @throws java.io.IOException
      * @throws org.codehaus.plexus.util.xml.pull.XmlPullParserException
      */
-    private List<License> getLicenses(final Artifact modelArtifact) throws MojoExecutionException{
+    private List<License> getLicenses(final MavenProject project, final Artifact modelArtifact) throws MojoExecutionException{
         try{
             final List<License> licenses = new ArrayList<License>();
-            artifactResolver.resolveArtifact(modelArtifact);
+            artifactResolver.resolveArtifact(project, modelArtifact);
 
             final Model model = reader.read(new FileReader(modelArtifact.getFile()));
             licenses.addAll(model.getLicenses());
@@ -91,7 +91,7 @@ public class LicenseResolver {
             if(model.getParent() != null){
                 final Parent parent = model.getParent();
                 final Artifact parentModel = getModelArtifact(parent.getGroupId(), parent.getArtifactId(), parent.getVersion());
-                licenses.addAll(getLicenses(parentModel));
+                licenses.addAll(getLicenses(project, parentModel));
             }
 
             return licenses;

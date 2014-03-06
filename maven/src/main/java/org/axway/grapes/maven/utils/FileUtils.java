@@ -1,4 +1,4 @@
-package org.axway.grapes.maven;
+package org.axway.grapes.maven.utils;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
@@ -7,11 +7,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * Utils
+ * FileUtils
  *
  * <p>Provides generic methods </p>
  */
-public class Utils {
+public class FileUtils {
 
     /**
      * Serialize a content into a targeted file, checking that the parent directory exists.

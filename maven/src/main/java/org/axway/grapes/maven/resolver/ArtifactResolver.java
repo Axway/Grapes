@@ -34,14 +34,11 @@ public class ArtifactResolver {
 
     private final ArtifactRepository localRepository;
 
-    private final MavenProject project;
-
     private final Log logger;
 
-    public ArtifactResolver(final RepositorySystem repositorySystem, final ArtifactRepository localRepository, final MavenProject project, final Log log){
+    public ArtifactResolver(final RepositorySystem repositorySystem, final ArtifactRepository localRepository, final Log log){
         this.repositorySystem = repositorySystem;
         this.localRepository = localRepository;
-        this.project = project;
         this.logger = log;
     }
 
@@ -51,7 +48,7 @@ public class ArtifactResolver {
      * @param artifact
      * @throws org.apache.maven.plugin.MojoExecutionException
      */
-    public void resolveArtifact(Artifact artifact) throws MojoExecutionException {
+    public void resolveArtifact(final MavenProject project, Artifact artifact) throws MojoExecutionException {
         logger.debug("Resolving artifact " + artifact.toString());
 
         final ArtifactResolutionRequest artifactRequest = new ArtifactResolutionRequest();
@@ -78,7 +75,7 @@ public class ArtifactResolver {
      * @param dependency
      * @return
      */
-    public Artifact resolveArtifact(final Dependency dependency) throws MojoExecutionException {
+    public Artifact resolveArtifact(final MavenProject project, final Dependency dependency) throws MojoExecutionException {
         // Manage version ranges
         String version = dependency.getVersion();
         try{
@@ -103,7 +100,7 @@ public class ArtifactResolver {
                 dependency.getClassifier() ,
                 handler);
 
-        resolveArtifact(artifact);
+        resolveArtifact(project, artifact);
 
         return artifact;
     }

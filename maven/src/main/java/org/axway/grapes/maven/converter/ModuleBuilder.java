@@ -12,6 +12,8 @@ import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.maven.resolver.ArtifactResolver;
 import org.axway.grapes.maven.resolver.LicenseResolver;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -23,24 +25,64 @@ import java.util.List;
  */
 public class ModuleBuilder {
 
+    private final Log log;
+
     private final LicenseResolver licenseResolver;
     private final ArtifactResolver artifactResolver;
 
-    private final Log log;
+    private Module rootModule;
+    private final List<Module> subModules = new ArrayList<Module>();
+    private Hashtable<String, String> parentDictionary = new Hashtable<String, String>();
+    private Hashtable<String, Module> modulesDictionary= new Hashtable<String, Module>();
 
-    public ModuleBuilder(final RepositorySystem repositorySystem, final ArtifactRepository localRepository, final MavenProject project, final Log log) {
-        this.licenseResolver = new LicenseResolver(repositorySystem, localRepository, project, log);
-        this.artifactResolver = new ArtifactResolver(repositorySystem, localRepository, project, log);
+    public ModuleBuilder(final RepositorySystem repositorySystem, final ArtifactRepository localRepository, final Log log) {
+        this.licenseResolver = new LicenseResolver(repositorySystem, localRepository, log);
+        this.artifactResolver = new ArtifactResolver(repositorySystem, localRepository, log);
         this.log = log;
+    }
+
+    /**
+     * Fill module information with maven project information
+     *
+     * @param project MavenProject
+     */
+    public void addModule(final MavenProject project) throws MojoExecutionException {
+        final Module module = getModule(project);
+
+        // If does not exist then root project
+        if(rootModule == null){
+            rootModule = module;
+        }
+        // If exist then sub project
+        else{
+            module.setSubmodule(true);
+            subModules.add(module);
+        }
+
+        // To easily build the module tree
+        modulesDictionary.put(project.getName(), module);
+    }
+
+    public Module build(){
+        // Build module tree
+        for(String subModule: parentDictionary.keySet()){
+            // Cannot be null otherwise the POM file does no compile
+            final String parentName = parentDictionary.get(subModule);
+            final Module parent = modulesDictionary.get(parentName);
+            parent.addSubmodule(modulesDictionary.get(subModule));
+        }
+
+        return rootModule;
     }
 
     /**
      * Turn a maven project (Maven data model) into a module (Grapes data model)
      *
-     * @param project
-     * @return
+     * @param project MavenProject
+     * @return Module
      */
-    public Module build(final MavenProject project) throws MojoExecutionException {
+    private Module getModule(final MavenProject project) throws MojoExecutionException {
+
         final Module module = GrapesTranslator.getGrapesModule(project);
         final List<License> licenses = licenseResolver.resolve(project);
 
@@ -67,11 +109,12 @@ public class ModuleBuilder {
         /* Manage Dependencies */
         for(int i = 0 ; i < project.getDependencies().size() ; i++){
             final Dependency dependency = GrapesTranslator.getGrapesDependency(
-                    artifactResolver.resolveArtifact(project.getDependencies().get(i)),
+                    artifactResolver.resolveArtifact(project, project.getDependencies().get(i)),
                         project.getDependencies().get(i).getScope());
 
             // handle licenses
             for(License license: licenseResolver.resolve(
+                    project,
                     dependency.getTarget().getGroupId(),
                     dependency.getTarget().getArtifactId(),
                     dependency.getTarget().getVersion())){
@@ -81,13 +124,19 @@ public class ModuleBuilder {
             module.addDependency(dependency);
         }
 
+        /*Prepare sub-modules*/
+        for(String subModuleName: project.getModules()){
+            parentDictionary.put(subModuleName, project.getName());
+        }
+
         return module;
     }
 
+
     /**
      * Fill the artifact with the licenses name of the license list
-     * @param mainArtifact
-     * @param licenses
+     * @param mainArtifact Artifact
+     * @param licenses List<License>
      */
     private void addLicenses(final Artifact mainArtifact, final List<License> licenses) {
         for(License license: licenses){

@@ -8,13 +8,16 @@ import org.apache.maven.repository.RepositorySystem;
 import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.commons.utils.JsonUtils;
 import org.axway.grapes.maven.converter.ModuleBuilder;
+import org.axway.grapes.maven.utils.FileUtils;
 import org.axway.grapes.utils.client.GrapesClient;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Goal which gathers and send dependencies information to Grapes.
  *
+ * @instantiationStrategy singleton
  * @goal notify
  * @phase install
  */
@@ -78,31 +81,56 @@ public class GrapesMojo  extends AbstractMojo{
      */
     private ArtifactRepository localRepository;
 
+    /**
+     * The projects in the reactor.
+     *
+     * @parameter expression="${reactorProjects}"
+     * @readonly
+     */
+    private List<MavenProject> reactorProjects;
+
+    private ModuleBuilder moduleBuilder;
+
+
     public void execute() throws MojoExecutionException {
         try {
-            getLog().info("Collecting dependency information");
-            final ModuleBuilder moduleBuilder = new ModuleBuilder(repositorySystem, localRepository, project, getLog());
-            final Module module = moduleBuilder.build(project);
-            final String serializedModule = JsonUtils.serialize(module);
-            getLog().debug("Object to send: " + serializedModule);
-
-            if(serialize){
-                final File grapesFolder = new File(project.getBuild().getDirectory() + "/grapes");
-                Utils.serialize(grapesFolder, serializedModule, "module.json");
-                getLog().info("Serializing the notification in " + grapesFolder.getPath());
+            getLog().debug("Initialisation");
+            if(moduleBuilder == null){
+                moduleBuilder = new ModuleBuilder(repositorySystem, localRepository, getLog());
             }
 
-            getLog().info("Connection to Grapes");
-            getLog().info("Host: " + host);
-            getLog().info("Port: " + port);
-            getLog().info("User: " + user);
-            final GrapesClient client = new GrapesClient(host, port);
+            getLog().info("Collecting dependency information of " + project.getName());
+           moduleBuilder.addModule(project);
 
-            if(!client.isServerAvailable()){
-                throw new MojoExecutionException("Grapes is unreachable");
+            if(isLastModule()){
+                getLog().debug("Last module to build detected!");
+                final Module module = moduleBuilder.build();
+                final String serializedModule = JsonUtils.serialize(module);
+                getLog().debug("Object to send: " + serializedModule);
+
+                if(serialize){
+                    getLog().debug("Serialize option activated.");
+
+                    final MavenProject rootProject = reactorProjects.get(0);
+                    final File grapesFolder = new File(rootProject.getBuild().getDirectory() + "/grapes");
+                    getLog().info("Serializing the notification in " + grapesFolder.getPath());
+                    FileUtils.serialize(grapesFolder, serializedModule, "module.json");
+                }
+
+                getLog().info("Connection to Grapes");
+                getLog().info("Host: " + host);
+                getLog().info("Port: " + port);
+                getLog().info("User: " + user);
+                final GrapesClient client = new GrapesClient(host, port);
+
+                if(!client.isServerAvailable()){
+                    throw new MojoExecutionException("Grapes is unreachable");
+                }
+
+                client.postModule(module, user, password);
+
+                getLog().info("Information successfully sent");
             }
-
-            client.postModule(module, user, password);
         } catch (Exception e) {
 
             if(failOnError){
@@ -115,7 +143,17 @@ public class GrapesMojo  extends AbstractMojo{
 
             return;
         }
+    }
 
-        getLog().info("Information successfully sent");
+    /**
+     * Checks if the current project is the last project to build
+     *
+     * @return boolean
+     */
+    private boolean isLastModule(){
+        final int projectSize = reactorProjects.size();
+        final MavenProject lastProject = reactorProjects.get(projectSize - 1);
+
+        return project.equals(lastProject);
     }
 }

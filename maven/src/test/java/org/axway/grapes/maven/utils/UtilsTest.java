@@ -1,4 +1,4 @@
-package org.axway.grapes.maven;
+package org.axway.grapes.maven.utils;
 
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -22,7 +22,7 @@ public class UtilsTest {
         final File testFile = new File(testdir, fileName);
         assertFalse(testFile.exists());
 
-        Utils.serialize(testdir, content, fileName);
+        FileUtils.serialize(testdir, content, fileName);
         assertTrue(testFile.exists());
 
         FileReader reader = null;
