@@ -16,6 +16,14 @@
 		<tag>HEAD</tag>
 	</scm>
 
+    <distributionManagement>
+        <repository>
+            <id>bintray-jdcoffre-grapes-snapshot</id>
+            <name>jdcoffre-grapes-snapshot</name>
+            <url>https://api.bintray.com/maven/jdcoffre/grapes/snapshot</url>
+        </repository>
+    </distributionManagement>
+
 	<properties>
 		<java.version>1.6</java.version>
 		<jv.version>1.6</jv.version>
