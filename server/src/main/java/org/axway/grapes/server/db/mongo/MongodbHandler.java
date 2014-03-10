@@ -244,11 +244,11 @@ public class MongodbHandler implements RepositoryHandler {
         }
         else{
 
-            // Important: all grapes clients do not send licenses information
-            // if licenses are not attached to the artifact & the dbArtifact contains some
-            // link between dbArtifact and licenses are preserved
-            if(artifact.getLicenses().isEmpty()){
-                artifact.setLicenses(dbArtifact.getLicenses());
+            // Important: merge existing license and new ones :
+            //    * because an existing license could have been manually enforce by a user
+            //    * because all Grapes clients are not to send license information
+            for(String license: dbArtifact.getLicenses()){
+                artifact.addLicense(license);
             }
 
             dbArtifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, dbArtifact.getGavc())).with(artifact);

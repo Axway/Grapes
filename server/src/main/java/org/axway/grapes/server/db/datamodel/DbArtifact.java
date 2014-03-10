@@ -144,13 +144,15 @@ public class DbArtifact {
 		this.licenses = licenses;
 	}
 
-	public void addLicense(final DbLicense license) {
-		final String licenseId = license.getName();
-		
-		if(!licenses.contains(licenseId)){
-			this.licenses.add(licenseId);
-		}
-	}
+    public void addLicense(final String licenseId) {
+        if(!licenses.contains(licenseId)){
+            this.licenses.add(licenseId);
+        }
+    }
+
+    public void addLicense(final DbLicense license) {
+        addLicense(license.getName());
+    }
 
 	public void removeLicense(final String licenseId) {
 		licenses.remove(licenseId);
