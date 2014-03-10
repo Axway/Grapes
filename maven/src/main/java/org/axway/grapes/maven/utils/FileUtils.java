@@ -16,9 +16,9 @@ public class FileUtils {
     /**
      * Serialize a content into a targeted file, checking that the parent directory exists.
      *
-     * @param folder
-     * @param content
-     * @param fileName
+     * @param folder File
+     * @param content String
+     * @param fileName String
      */
     public static void serialize(final File folder, final String content, final String fileName) throws MojoExecutionException {
         if(!folder.exists()){

@@ -21,8 +21,8 @@ public class GrapesTranslator {
     /**
      * Generate a Grapes module from a Maven project
      *
-     * @param project
-     * @return
+     * @param project MavenProject
+     * @return Module
      */
     public final static Module getGrapesModule(final MavenProject project) {
         final String moduleName = generateModuleName(project);
@@ -32,7 +32,7 @@ public class GrapesTranslator {
     /**
      * Generate module's name from maven project
      *
-     * @param project
+     * @param project MavenProject
      * @return String
      */
     private static String generateModuleName(final MavenProject project) {
@@ -46,8 +46,8 @@ public class GrapesTranslator {
     /**
      * Generate a Grapes artifact from a Maven artifact
      *
-     * @param mavenArtifact
-     * @return
+     * @param mavenArtifact org.apache.maven.artifact.Artifact
+     * @return Artifact
      */
     public final static Artifact getGrapesArtifact(org.apache.maven.artifact.Artifact mavenArtifact) {
         final ArtifactHandler artifactHandler = mavenArtifact.getArtifactHandler();
@@ -76,8 +76,8 @@ public class GrapesTranslator {
     /**
      * Generate a Grapes dependency from a Maven dependency
      *
-     * @param dependency
-     * @return
+     * @param dependency Dependency
+     * @return org.axway.grapes.commons.datamodel.Dependency
      * @throws MojoExecutionException
      */
     public static org.axway.grapes.commons.datamodel.Dependency getGrapesDependency(final org.apache.maven.artifact.Artifact dependency, String scope) throws MojoExecutionException {

@@ -45,7 +45,8 @@ public class ArtifactResolver {
     /**
      * Resolve an artifact from repository
      *
-     * @param artifact
+     * @param project MavenProject
+     * @param artifact Artifact
      * @throws org.apache.maven.plugin.MojoExecutionException
      */
     public void resolveArtifact(final MavenProject project, Artifact artifact) throws MojoExecutionException {
@@ -72,8 +73,9 @@ public class ArtifactResolver {
     /**
      * Resolve a dependency artifact
      *
-     * @param dependency
-     * @return
+     * @param project MavenProject
+     * @param dependency dependency
+     * @return Artifact
      */
     public Artifact resolveArtifact(final MavenProject project, final Dependency dependency) throws MojoExecutionException {
         // Manage version ranges
@@ -105,6 +107,12 @@ public class ArtifactResolver {
         return artifact;
     }
 
+    /**
+     * Finds a version out of a range
+     *
+     * @param range VersionRange
+     * @return String
+     */
     public static String getArtifactVersion(final VersionRange range){
         if(range.getRecommendedVersion() != null){
             return range.getRecommendedVersion().toString();

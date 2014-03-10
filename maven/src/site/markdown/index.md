@@ -6,7 +6,7 @@ Goals
 
 Currently Grapes Maven plugin has only one goal:
 
-* [grapes:notify] is used to send a notification that contains dependencies info of the built project to a Grapes instance
+* [grapes:notify](notify-mojo.html) is used to send a notification that contains dependencies info of the built project to a Grapes instance
 
 Usage
 ---------

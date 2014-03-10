@@ -60,10 +60,11 @@ public class LicenseResolver {
     /**
      * Resolve the licenses attached to an artifact (there is no transitive resolution here)
      *
-     * @param groupId
-     * @param artifactId
-     * @param version
-     * @return
+     * @param project MavenProject
+     * @param groupId String
+     * @param artifactId String
+     * @param version String
+     * @return List<License>
      * @throws MojoExecutionException
      */
     public List<License> resolve(final MavenProject project, final String groupId, final String artifactId, final String version) throws MojoExecutionException {
@@ -74,11 +75,10 @@ public class LicenseResolver {
     /**
      * Retrieve all the license (included parent's ones)
      *
-     * @param modelArtifact
-     * @return
+     * @param project MavenProject
+     * @param modelArtifact Artifact
+     * @return List<License>
      * @throws MojoExecutionException
-     * @throws java.io.IOException
-     * @throws org.codehaus.plexus.util.xml.pull.XmlPullParserException
      */
     private List<License> getLicenses(final MavenProject project, final Artifact modelArtifact) throws MojoExecutionException{
         try{
@@ -106,10 +106,11 @@ public class LicenseResolver {
 
     /**
      * Generate an model Artifact
-     * @param groupId
-     * @param artifactId
-     * @param version
-     * @return
+     *
+     * @param groupId String
+     * @param artifactId String
+     * @param version String
+     * @return Artifact
      */
     private Artifact getModelArtifact(final String groupId, final String artifactId, final String version ){
         final DefaultArtifactHandler handler = new DefaultArtifactHandler();

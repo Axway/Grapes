@@ -47,7 +47,7 @@ public class LicenseHandler {
      * Return null if no license is matching the licenseId
      *
      * @param licenseId
-     * @return
+     * @return DbLicense
      */
     public DbLicense resolve(final String licenseId){
 
