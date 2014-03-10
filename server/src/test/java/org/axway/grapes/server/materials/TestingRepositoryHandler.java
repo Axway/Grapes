@@ -73,13 +73,18 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
+    public List<DbLicense> getAllLicenses() {
+        return licenses;
+    }
+
+    @Override
     public DbLicense getLicense(final String name) {
         for(DbLicense dbLicense: licenses){
             if(dbLicense.getName().equals(name)){
                 return dbLicense;
             }
         }
-        
+
         return null;
     }
 

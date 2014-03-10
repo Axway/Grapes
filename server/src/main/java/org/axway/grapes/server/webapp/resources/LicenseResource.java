@@ -21,6 +21,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * License Resource
@@ -76,14 +78,31 @@ public class LicenseResource extends AbstractResource{
 	 * @return Boolean true only if the license is NOT valid
 	 */
 	private boolean isNotValid(final License license) {
+        // A license should have a name
 		if(license.getName() == null ||
-				license.getName().isEmpty()){
+			license.getName().isEmpty()){
+            LOG.error("License name should not be empty!");
 			return true;
 		}
-		if(license.getLongName() == null ||
-				license.getLongName().isEmpty()){
-			return true;
-		}
+
+        // A license should have a long name
+        if(license.getLongName() == null ||
+                license.getLongName().isEmpty()){
+            LOG.error("License long name should not be empty!");
+            return true;
+        }
+
+        // If there is a regexp, it should compile
+        if(license.getRegexp() != null &&
+                !license.getRegexp().isEmpty()){
+            try{
+                Pattern.compile(license.getRegexp());
+            }
+            catch (PatternSyntaxException e){
+                LOG.error("License regexp does not compile!");
+                return true;
+            }
+        }
 
 		return false;
 	}

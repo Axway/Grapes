@@ -68,7 +68,7 @@ public class LicenseResourceTest extends ResourceTest {
 	public void postMalformedLicenses() throws AuthenticationException, UnknownHostException{
 		client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
 		WebResource resource = client().resource("/" + ServerAPI.LICENSE_RESOURCE);
-		ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, DataModelFactory.createLicense("", "shortLongName", "BlaBla", "sdfsd", "www.somewhere.org"));
+		ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, DataModelFactory.createLicense("", "longName", "BlaBla", "sdfsd", "www.somewhere.org"));
 		assertNotNull(response);
 		assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
 
@@ -83,6 +83,10 @@ public class LicenseResourceTest extends ResourceTest {
 		response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, DataModelFactory.createLicense("shorName", null, "BlaBla", "sdfsd", "www.somewhere.org"));
 		assertNotNull(response);
 		assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+
+        response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, DataModelFactory.createLicense("shorName", "longName", "BlaBla", "[", "www.somewhere.org"));
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
 	}
 	
 	@Test

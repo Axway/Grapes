@@ -16,10 +16,7 @@ import org.jongo.MongoCollection;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Mongodb Handler
@@ -148,6 +145,20 @@ public class MongodbHandler implements RepositoryHandler {
         }
 
         return licenseNames;
+    }
+
+    @Override
+    public List<DbLicense> getAllLicenses() {
+        final List<DbLicense> licenses = new ArrayList<DbLicense>();
+        final Jongo datastore = getJongoDataStore();
+        final Iterator<DbLicense> licenseIterator = datastore.getCollection(DbCollections.DB_LICENSES)
+                .find().as(DbLicense.class).iterator();
+
+        while(licenseIterator.hasNext()){
+            licenses.add(licenseIterator.next());
+        }
+
+        return licenses;
     }
 
     @Override

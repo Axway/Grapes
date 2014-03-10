@@ -72,6 +72,13 @@ public interface RepositoryHandler {
     public DbLicense getLicense(final String name);
 
     /**
+     * Retrieve all licenses from the database
+     *
+     * @return List<DbLicense>
+     */
+    public List<DbLicense> getAllLicenses();
+
+    /**
      * Delete the targeted license from the database
      *
      * @param name

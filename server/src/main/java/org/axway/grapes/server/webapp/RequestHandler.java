@@ -9,6 +9,7 @@ import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.DependenciesHandler;
 import org.axway.grapes.server.core.GraphsHandler;
+import org.axway.grapes.server.core.LicenseHandler;
 import org.axway.grapes.server.core.VersionsHandler;
 import org.axway.grapes.server.core.graphs.AbstractGraph;
 import org.axway.grapes.server.core.graphs.TreeNode;
@@ -45,13 +46,17 @@ import java.util.Set;
 public class RequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequestHandler.class);
-    
+
+    private final LicenseHandler licenseHandler = new LicenseHandler();
     private final RepositoryHandler repoHandler;
     private final GrapesServerConfig config;
 
     public RequestHandler(final RepositoryHandler repoHandler, final GrapesServerConfig config) {
         this.repoHandler = repoHandler;
         this.config = config;
+
+        final List<DbLicense> licenses = repoHandler.getAllLicenses();
+        licenseHandler.update(licenses);
     }
 
     /**
@@ -62,6 +67,9 @@ public class RequestHandler {
     public void store(final License license) {
         final DbLicense dbLicense = DataUtils.getDbLicense(license); 
         repoHandler.store(dbLicense);
+
+        final List<DbLicense> licenses = repoHandler.getAllLicenses();
+        licenseHandler.update(licenses);
     }
 
     /**
@@ -119,6 +127,9 @@ public class RequestHandler {
             repoHandler.removeLicenseFromArtifact(artifact, name);
         }
 
+        final List<DbLicense> licenses = repoHandler.getAllLicenses();
+        licenseHandler.update(licenses);
+
     }
 
     /**
@@ -143,7 +154,17 @@ public class RequestHandler {
      */
     public void store(final Artifact artifact) {
         final DbArtifact dbArtifact = DataUtils.getDbArtifact(artifact);
+
         repoHandler.store(dbArtifact);
+
+        // Handle licenses
+        for(String licenseId: artifact.getLicenses()){
+            final DbLicense license = licenseHandler.resolve(licenseId);
+
+            if(license != null){
+                addLicenseToArtifact(dbArtifact.getGavc(), license.getName());
+            }
+        }
     }
 
     /**
