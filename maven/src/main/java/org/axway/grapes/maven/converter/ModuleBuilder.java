@@ -25,20 +25,17 @@ import java.util.List;
  */
 public class ModuleBuilder {
 
-    private final Log log;
-
     private final LicenseResolver licenseResolver;
     private final ArtifactResolver artifactResolver;
 
     private Module rootModule;
     private final List<Module> subModules = new ArrayList<Module>();
-    private Hashtable<String, String> parentDictionary = new Hashtable<String, String>();
+    private Hashtable<String, List<String>> subModuleDictionary = new Hashtable<String, List<String>>();
     private Hashtable<String, Module> modulesDictionary= new Hashtable<String, Module>();
 
     public ModuleBuilder(final RepositorySystem repositorySystem, final ArtifactRepository localRepository, final Log log) {
         this.licenseResolver = new LicenseResolver(repositorySystem, localRepository, log);
         this.artifactResolver = new ArtifactResolver(repositorySystem, localRepository, log);
-        this.log = log;
     }
 
     /**
@@ -49,11 +46,11 @@ public class ModuleBuilder {
     public void addModule(final MavenProject project) throws MojoExecutionException {
         final Module module = getModule(project);
 
-        // If does not exist then root project
+        // First module to build is always root one
         if(rootModule == null){
             rootModule = module;
         }
-        // If exist then sub project
+        // The others are sub-modules
         else{
             module.setSubmodule(true);
             subModules.add(module);
@@ -63,16 +60,26 @@ public class ModuleBuilder {
         modulesDictionary.put(project.getName(), module);
     }
 
+    /**
+     * Generate the complete module tree regarding the information that has been collected
+     *
+     * @return Module
+     */
     public Module build(){
-        // Build module tree
-        for(String subModule: parentDictionary.keySet()){
-            // Cannot be null otherwise the POM file does no compile
-            final String parentName = parentDictionary.get(subModule);
-            final Module parent = modulesDictionary.get(parentName);
-            parent.addSubmodule(modulesDictionary.get(subModule));
-        }
+        return build(rootModule);
+    }
 
-        return rootModule;
+    /**
+     * build sub-module tree of a module regarding the information that has been collected
+     *
+     * @param module Module
+     * @return Module
+     */
+    private Module build(final Module module){
+        for(Module subModule: getSubModules(module.getName())){
+            module.addSubmodule(build(subModule));
+        }
+        return module;
     }
 
     /**
@@ -125,8 +132,9 @@ public class ModuleBuilder {
         }
 
         /*Prepare sub-modules*/
+        subModuleDictionary.put(module.getName(), new ArrayList<String>());
         for(String subModuleName: project.getModules()){
-            parentDictionary.put(subModuleName, project.getName());
+            subModuleDictionary.get(module.getName()).add(subModuleName);
         }
 
         return module;
@@ -142,6 +150,22 @@ public class ModuleBuilder {
         for(License license: licenses){
             mainArtifact.addLicense(license.getName());
         }
+    }
+
+    /**
+     * Return the subModules of a module
+     *
+     * @param moduleName String
+     * @return List<Module>
+     */
+    private List<Module> getSubModules(final String moduleName) {
+        final List<Module> subModules = new ArrayList<Module>();
+
+        for(String subModule: subModuleDictionary.get(moduleName)){
+            subModules.add(modulesDictionary.get(subModule));
+        }
+
+        return subModules;
     }
 
 }
