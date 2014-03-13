@@ -2,6 +2,7 @@ package org.axway.grapes.server.core.options.filters;
 
 import org.axway.grapes.server.db.datamodel.DbArtifact;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public class TypeFilter implements Filter {
 
     @Override
     public Map<String, Object> moduleFilterFields() {
-        return new HashMap<String, Object>();
+        return Collections.emptyMap();
     }
 
     @Override

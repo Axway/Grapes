@@ -3,6 +3,7 @@ package org.axway.grapes.server.core.options.filters;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbModule;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,6 @@ public class PromotedFilter implements Filter {
 
     @Override
     public Map<String, Object> artifactFilterFields() {
-        return new HashMap<String, Object>();
+        return Collections.emptyMap();
     }
 }

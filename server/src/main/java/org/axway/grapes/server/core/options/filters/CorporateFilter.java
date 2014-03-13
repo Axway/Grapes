@@ -6,10 +6,7 @@ import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbDependency;
 import org.axway.grapes.server.db.datamodel.DbModule;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CorporateFilter implements Filter {
 
@@ -47,7 +44,7 @@ public class CorporateFilter implements Filter {
 
     @Override
     public Map<String, Object> moduleFilterFields() {
-        return new HashMap<String, Object>();
+        return Collections.emptyMap();
     }
 
     @Override
