@@ -8,6 +8,7 @@ import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.commons.exceptions.UnsupportedScopeException;
 import org.axway.grapes.maven.resolver.ArtifactResolver;
+import org.axway.grapes.maven.utils.FileUtils;
 
 /**
  * Grapes Translator
@@ -64,13 +65,22 @@ public class GrapesTranslator {
             version = ArtifactResolver.getArtifactVersion(mavenArtifact.getVersionRange());
         }
 
-        return DataModelFactory.createArtifact(
+        final Artifact artifact =  DataModelFactory.createArtifact(
                 mavenArtifact.getGroupId(),
                 mavenArtifact.getArtifactId(),
                 version,
                 mavenArtifact.getClassifier(),
                 mavenArtifact.getType(),
                 extension);
+
+        artifact.setDownloadUrl(mavenArtifact.getDownloadUrl());
+
+        final Long artifactSize = FileUtils.getSize(mavenArtifact.getFile());
+        if(artifactSize != null){
+            artifact.setSize(String.valueOf(artifactSize));
+        }
+
+        return artifact;
     }
 
     /**

@@ -46,4 +46,16 @@ public class FileUtils {
             }
         }
     }
+
+    /**
+     * Get file size
+     *
+     * @return Long
+     */
+    public static Long getSize(final File file){
+        if ( file!=null && file.exists() ){
+            return file.length();
+        }
+        return null;
+    }
 }
