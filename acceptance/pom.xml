@@ -4,7 +4,7 @@
 
 	<groupId>org.axway.grapes.tests.acceptance</groupId>
 	<artifactId>grapes-acceptance</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.2.0-SNAPSHOT</version>
 
 	<name>Grapes Acceptance Tests</name>
 	<description>High level Grapes project tests based on thucydides and JBehave</description>
@@ -12,13 +12,12 @@
 	<parent>
 		<groupId>org.axway.grapes</groupId>
 		<artifactId>grapes-parent</artifactId>
-		<version>1.1.0-SNAPSHOT</version>
+		<version>1.1.0</version>
 	</parent>
 
 	<properties>
 		<!-- Targeted binaries to test -->
-		<grapes.server.version>1.1.0-SNAPSHOT</grapes.server.version>
-		<grapes.utils.version>1.1.0-SNAPSHOT</grapes.utils.version>
+		<grapes.version>1.2.0-SNAPSHOT</grapes.version>
 		<!-- Mandatory property to define before the build -->
 		<grapes.server.port>${GRAPES_PORT}</grapes.server.port>
 		<grapes.server.admin.port>${GRAPES_ADMIN_PORT}</grapes.server.admin.port>
@@ -56,12 +55,12 @@
 		<dependency>
 		    <groupId>org.axway.grapes</groupId>
 		    <artifactId>grapes-utils</artifactId>
-		    <version>${grapes.utils.version}</version>
+		    <version>${grapes.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.axway.grapes</groupId>
 		    <artifactId>grapes-server</artifactId>
-		    <version>${grapes.server.version}</version>
+		    <version>${grapes.version}</version>
 		</dependency>
 		<!-- Thucydides -->
 		<dependency>
@@ -126,7 +125,7 @@
 								<artifactItem>
 								    <groupId>org.axway.grapes</groupId>
 								    <artifactId>grapes-server</artifactId>
-								    <version>${grapes.server.version}</version>
+								    <version>${grapes.version}</version>
 								    <type>jar</type>
 								    <overWrite>true</overWrite>
 								    <outputDirectory>${project.build.directory}/install/lib</outputDirectory>
