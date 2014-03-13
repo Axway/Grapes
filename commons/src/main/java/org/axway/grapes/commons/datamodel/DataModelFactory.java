@@ -116,27 +116,13 @@ public final class DataModelFactory {
 	 * @throws UnsupportedScopeException 
 	 */
 	public static Dependency  createDependency(final Artifact artifact, final String scope) throws UnsupportedScopeException{
-		
-		if(Scope.COMPILE.toString().equalsIgnoreCase(scope)){
-			return createDependency(artifact, Scope.COMPILE);
-		}
-		else if(Scope.RUNTIME.toString().equalsIgnoreCase(scope)){
-			return createDependency(artifact, Scope.RUNTIME);
-		}
-		else if(Scope.PROVIDED.toString().equalsIgnoreCase(scope)){
-			return createDependency(artifact, Scope.PROVIDED);
-		}
-		else if(Scope.TEST.toString().equalsIgnoreCase(scope)){
-			return createDependency(artifact, Scope.TEST);
-		}
-		else if(Scope.SYSTEM.toString().equalsIgnoreCase(scope)){
-			return createDependency(artifact, Scope.SYSTEM);
-		}
-		else if(Scope.IMPORT.toString().equalsIgnoreCase(scope)){
-			return createDependency(artifact, Scope.IMPORT);
-		}
-		
-		throw new UnsupportedScopeException();
+        try{
+            final Scope depScope = Scope.valueOf(scope.toUpperCase());
+            return createDependency(artifact, depScope);
+        }
+        catch(IllegalArgumentException e){
+            throw new UnsupportedScopeException();
+        }
 	}
 
 }
