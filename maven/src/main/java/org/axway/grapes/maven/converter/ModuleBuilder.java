@@ -1,11 +1,8 @@
 package org.axway.grapes.maven.converter;
 
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.repository.RepositorySystem;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.commons.datamodel.Module;
@@ -25,26 +22,22 @@ import java.util.List;
  */
 public class ModuleBuilder {
 
-    private final LicenseResolver licenseResolver;
-    private final ArtifactResolver artifactResolver;
 
     private Module rootModule;
-    private final List<Module> subModules = new ArrayList<Module>();
-    private Hashtable<String, List<String>> subModuleDictionary = new Hashtable<String, List<String>>();
-    private Hashtable<String, Module> modulesDictionary= new Hashtable<String, Module>();
 
-    public ModuleBuilder(final RepositorySystem repositorySystem, final ArtifactRepository localRepository, final Log log) {
-        this.licenseResolver = new LicenseResolver(repositorySystem, localRepository, log);
-        this.artifactResolver = new ArtifactResolver(repositorySystem, localRepository, log);
-    }
+    private final List<Module> subModules = new ArrayList<Module>();
+
+    private final Hashtable<String, List<String>> subModuleDictionary = new Hashtable<String, List<String>>();
+    private final Hashtable<String, Module> modulesDictionary= new Hashtable<String, Module>();
+
 
     /**
      * Fill module information with maven project information
      *
      * @param project MavenProject
      */
-    public void addModule(final MavenProject project) throws MojoExecutionException {
-        final Module module = getModule(project);
+    public void addModule(final MavenProject project, final LicenseResolver licenseResolver, final ArtifactResolver artifactResolver) throws MojoExecutionException {
+        final Module module = getModule(project, licenseResolver, artifactResolver);
 
         // First module to build is always root one
         if(rootModule == null){
@@ -57,7 +50,7 @@ public class ModuleBuilder {
         }
 
         // To easily build the module tree
-        modulesDictionary.put(project.getName(), module);
+        modulesDictionary.put(project.getBasedir().getName(), module);
     }
 
     /**
@@ -88,15 +81,10 @@ public class ModuleBuilder {
      * @param project MavenProject
      * @return Module
      */
-    private Module getModule(final MavenProject project) throws MojoExecutionException {
+    private Module getModule(final MavenProject project, final LicenseResolver licenseResolver, final ArtifactResolver artifactResolver) throws MojoExecutionException {
 
         final Module module = GrapesTranslator.getGrapesModule(project);
         final List<License> licenses = licenseResolver.resolve(project);
-
-        /* Manage Artifacts */
-        final Artifact mainArtifact = GrapesTranslator.getGrapesArtifact(project.getArtifact());
-        addLicenses(mainArtifact, licenses);
-        module.addArtifact(mainArtifact);
 
         // Trick to add project pom file as a module artifact
         final Artifact pomArtifact = GrapesTranslator.getGrapesArtifact(project.getArtifact());
@@ -106,7 +94,14 @@ public class ModuleBuilder {
         module.addArtifact(pomArtifact);
         // End of trick
 
+        /* Manage Artifacts */
+        artifactResolver.resolveArtifact(project, project.getArtifact());
+        final Artifact mainArtifact = GrapesTranslator.getGrapesArtifact(project.getArtifact());
+        addLicenses(mainArtifact, licenses);
+        module.addArtifact(mainArtifact);
+
         for(int i = 0 ; i < project.getAttachedArtifacts().size() ; i++){
+            artifactResolver.resolveArtifact(project, project.getAttachedArtifacts().get(i));
             final Artifact attachedArtifact = GrapesTranslator.getGrapesArtifact(project.getAttachedArtifacts().get(i));
             // handle licenses
             addLicenses(attachedArtifact, licenses);

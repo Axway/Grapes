@@ -8,6 +8,8 @@ import org.apache.maven.repository.RepositorySystem;
 import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.commons.utils.JsonUtils;
 import org.axway.grapes.maven.converter.ModuleBuilder;
+import org.axway.grapes.maven.resolver.ArtifactResolver;
+import org.axway.grapes.maven.resolver.LicenseResolver;
 import org.axway.grapes.maven.utils.FileUtils;
 import org.axway.grapes.utils.client.GrapesClient;
 
@@ -89,18 +91,15 @@ public class GrapesMojo  extends AbstractMojo{
      */
     private List<MavenProject> reactorProjects;
 
-    private ModuleBuilder moduleBuilder;
-
+    private final ModuleBuilder moduleBuilder = new ModuleBuilder();
 
     public void execute() throws MojoExecutionException {
         try {
-            getLog().debug("Initialisation");
-            if(moduleBuilder == null){
-                moduleBuilder = new ModuleBuilder(repositorySystem, localRepository, getLog());
-            }
+            final ArtifactResolver artifactResolver = new ArtifactResolver(repositorySystem, localRepository, getLog());
+            final LicenseResolver licenseResolver = new LicenseResolver(repositorySystem, localRepository, getLog());
 
             getLog().info("Collecting dependency information of " + project.getName());
-           moduleBuilder.addModule(project);
+            moduleBuilder.addModule(project, licenseResolver, artifactResolver);
 
             if(isLastModule()){
                 getLog().debug("Last module to build detected!");
