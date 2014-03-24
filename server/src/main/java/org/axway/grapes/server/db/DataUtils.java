@@ -122,23 +122,12 @@ public final class DataUtils {
         //SubModules
         final StringBuilder sb = new StringBuilder();
         for(Module submodule: module.getSubmodules()){
-            final DbModule dbSubmodule = getDbSubmodule(submodule, module);
+            final DbModule dbSubmodule = getDbModule(submodule);
             dbModule.addSubmodule(dbSubmodule);
             sb.setLength(0);
         }
 
         return dbModule;
-    }
-
-    private static DbModule getDbSubmodule(final Module submodule, final Module parent) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append(parent.getName());
-        sb.append(":");
-        sb.append(submodule.getName());
-
-        submodule.setName(sb.toString());
-        return getDbModule(submodule);
-
     }
 
     /**

@@ -111,7 +111,7 @@ public class DataUtilsTest {
         assertEquals(1, dbModule.getSubmodules().size());
 
         final DbModule dbSubmodule = dbModule.getSubmodules().get(0);
-        assertEquals("root:sub1" , dbSubmodule.getName());
+        assertEquals(submodule.getName() , dbSubmodule.getName());
         assertEquals(submodule.getVersion(), dbSubmodule.getVersion());
         assertEquals(1, dbSubmodule.getArtifacts().size());
         assertEquals(artifact2.getGavc(), dbSubmodule.getArtifacts().get(0));
