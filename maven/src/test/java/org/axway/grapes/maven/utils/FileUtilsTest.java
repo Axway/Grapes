@@ -11,7 +11,7 @@ import java.io.IOException;
 
 import static junit.framework.TestCase.*;
 
-public class UtilsTest {
+public class FileUtilsTest {
 
     @Test
     public void checkSerialization() throws MojoExecutionException {

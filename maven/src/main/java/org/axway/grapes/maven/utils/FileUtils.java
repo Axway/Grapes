@@ -2,9 +2,7 @@ package org.axway.grapes.maven.utils;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * FileUtils
@@ -45,6 +43,39 @@ public class FileUtils {
                 }
             }
         }
+    }
+
+    /**
+     * Reads a file and returns the result in a String
+     *
+     * @param file File
+     * @return String
+     * @throws MojoExecutionException
+     */
+    public static String read(final File file) throws MojoExecutionException {
+        final StringBuilder sb = new StringBuilder();
+        BufferedReader br = null;
+
+        try {
+            String sCurrentLine;
+
+            br = new BufferedReader(new FileReader(file));
+
+            while ((sCurrentLine = br.readLine()) != null) {
+                sb.append(sCurrentLine);
+            }
+
+        } catch (IOException e) {
+            throw new MojoExecutionException("Failed to read file: " + file.getAbsolutePath(), e);
+        } finally {
+            try {
+                if (br != null)br.close();
+            } catch (IOException e) {
+                throw new MojoExecutionException("Failed to close file reader on: " + file.getAbsolutePath(), e);
+            }
+        }
+
+        return sb.toString();
     }
 
     /**

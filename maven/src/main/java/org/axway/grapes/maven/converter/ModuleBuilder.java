@@ -22,66 +22,13 @@ import java.util.List;
  */
 public class ModuleBuilder {
 
-
-    private Module rootModule;
-
-    private final List<Module> subModules = new ArrayList<Module>();
-
-    private final Hashtable<String, List<String>> subModuleDictionary = new Hashtable<String, List<String>>();
-    private final Hashtable<String, Module> modulesDictionary= new Hashtable<String, Module>();
-
-
-    /**
-     * Fill module information with maven project information
-     *
-     * @param project MavenProject
-     */
-    public void addModule(final MavenProject project, final LicenseResolver licenseResolver, final ArtifactResolver artifactResolver) throws MojoExecutionException {
-        final Module module = getModule(project, licenseResolver, artifactResolver);
-
-        // First module to build is always root one
-        if(rootModule == null){
-            rootModule = module;
-        }
-        // The others are sub-modules
-        else{
-            module.setSubmodule(true);
-            subModules.add(module);
-        }
-
-        // To easily build the module tree
-        modulesDictionary.put(project.getBasedir().getName(), module);
-    }
-
-    /**
-     * Generate the complete module tree regarding the information that has been collected
-     *
-     * @return Module
-     */
-    public Module build(){
-        return build(rootModule);
-    }
-
-    /**
-     * build sub-module tree of a module regarding the information that has been collected
-     *
-     * @param module Module
-     * @return Module
-     */
-    private Module build(final Module module){
-        for(Module subModule: getSubModules(module.getName())){
-            module.addSubmodule(build(subModule));
-        }
-        return module;
-    }
-
     /**
      * Turn a maven project (Maven data model) into a module (Grapes data model)
      *
      * @param project MavenProject
      * @return Module
      */
-    private Module getModule(final MavenProject project, final LicenseResolver licenseResolver, final ArtifactResolver artifactResolver) throws MojoExecutionException {
+    public Module getModule(final MavenProject project, final LicenseResolver licenseResolver, final ArtifactResolver artifactResolver) throws MojoExecutionException {
 
         final Module module = GrapesTranslator.getGrapesModule(project);
         final List<License> licenses = licenseResolver.resolve(project);
@@ -126,12 +73,6 @@ public class ModuleBuilder {
             module.addDependency(dependency);
         }
 
-        /*Prepare sub-modules*/
-        subModuleDictionary.put(module.getName(), new ArrayList<String>());
-        for(String subModuleName: project.getModules()){
-            subModuleDictionary.get(module.getName()).add(subModuleName);
-        }
-
         return module;
     }
 
@@ -145,22 +86,6 @@ public class ModuleBuilder {
         for(License license: licenses){
             mainArtifact.addLicense(license.getName());
         }
-    }
-
-    /**
-     * Return the subModules of a module
-     *
-     * @param moduleName String
-     * @return List<Module>
-     */
-    private List<Module> getSubModules(final String moduleName) {
-        final List<Module> subModules = new ArrayList<Module>();
-
-        for(String subModule: subModuleDictionary.get(moduleName)){
-            subModules.add(modulesDictionary.get(subModule));
-        }
-
-        return subModules;
     }
 
 }

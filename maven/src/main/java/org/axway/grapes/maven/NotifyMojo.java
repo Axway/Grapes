@@ -20,10 +20,11 @@ import java.util.List;
  * Goal which gathers and send dependencies information to Grapes.
  *
  * @instantiationStrategy singleton
+ * @threadSafe true
  * @goal notify
  * @phase install
  */
-public class GrapesMojo  extends AbstractMojo{
+public class NotifyMojo extends AbstractMojo{
 
     /**
      * Host of the targeted Grapes server
@@ -59,12 +60,6 @@ public class GrapesMojo  extends AbstractMojo{
     private boolean failOnError = true;
 
     /**
-     * If this parameter is set at true, a notification will be serialized in target/grapes folder
-     * @parameter property="grapes.serialize"
-     */
-    private boolean serialize = false;
-
-    /**
      * @parameter property="project"
      * @required
      * @readonly
@@ -91,30 +86,30 @@ public class GrapesMojo  extends AbstractMojo{
      */
     private List<MavenProject> reactorProjects;
 
-    private final ModuleBuilder moduleBuilder = new ModuleBuilder();
+    private int i = 1;
 
     public void execute() throws MojoExecutionException {
         try {
+            final ModuleBuilder moduleBuilder = new ModuleBuilder();
             final ArtifactResolver artifactResolver = new ArtifactResolver(repositorySystem, localRepository, getLog());
             final LicenseResolver licenseResolver = new LicenseResolver(repositorySystem, localRepository, getLog());
 
             getLog().info("Collecting dependency information of " + project.getName());
-            moduleBuilder.addModule(project, licenseResolver, artifactResolver);
+            final Module module = moduleBuilder.getModule(project, licenseResolver, artifactResolver);
+            final String serializedModule = JsonUtils.serialize(module);
+            getLog().debug("Json module : " + serializedModule);
 
-            if(isLastModule()){
-                getLog().debug("Last module to build detected!");
-                final Module module = moduleBuilder.build();
-                final String serializedModule = JsonUtils.serialize(module);
-                getLog().debug("Object to send: " + serializedModule);
+            final File grapesFolder = GrapesMavenPlugin.getGrapesPluginWorkingFolder(project);
+            getLog().info("Serializing the notification in " + grapesFolder.getPath());
+            FileUtils.serialize(grapesFolder, serializedModule, GrapesMavenPlugin.TMP_MODULE_JSON_FILE_NAME);
 
-                if(serialize){
-                    getLog().debug("Serialize option activated.");
+            if(isLastModule()) {
+                getLog().info("Reports aggregation");
+                final ModuleAggregator aggregator = new ModuleAggregator(reactorProjects);
+                final Module rootModule = aggregator.aggregate();
+                aggregator.cleanTmpFiles();
 
-                    final MavenProject rootProject = reactorProjects.get(0);
-                    final File grapesFolder = new File(rootProject.getBuild().getDirectory() + "/grapes");
-                    getLog().info("Serializing the notification in " + grapesFolder.getPath());
-                    FileUtils.serialize(grapesFolder, serializedModule, "module.json");
-                }
+                getLog().info("Sending " + rootModule.getName() + "..");
 
                 getLog().info("Connection to Grapes");
                 getLog().info("Host: " + host);
@@ -126,10 +121,11 @@ public class GrapesMojo  extends AbstractMojo{
                     throw new MojoExecutionException("Grapes is unreachable");
                 }
 
-                client.postModule(module, user, password);
+                client.postModule(rootModule, user, password);
 
                 getLog().info("Information successfully sent");
             }
+
         } catch (Exception e) {
 
             if(failOnError){
@@ -139,8 +135,6 @@ public class GrapesMojo  extends AbstractMojo{
                 getLog().debug("An error occurred during Grapes server Notification.", e);
                 getLog().info("Failed to send information to Grapes");
             }
-
-            return;
         }
     }
 

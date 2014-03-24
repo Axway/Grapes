@@ -1,4 +1,4 @@
-package org.axway.grapes.maven;
+package org.axway.grapes.maven.converter;
 
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
