@@ -36,7 +36,7 @@ public class GrapesTranslator {
      * @param project MavenProject
      * @return String
      */
-    private static String generateModuleName(final MavenProject project) {
+    public static String generateModuleName(final MavenProject project) {
         final StringBuilder sb = new StringBuilder();
         sb.append(project.getArtifact().getGroupId());
         sb.append(":");

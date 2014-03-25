@@ -8,7 +8,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.*;
 
 public class FileUtilsTest {
@@ -64,4 +66,6 @@ public class FileUtilsTest {
         }
 
     }
+
+
 }

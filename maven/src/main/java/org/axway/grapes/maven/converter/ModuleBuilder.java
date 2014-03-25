@@ -9,8 +9,6 @@ import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.maven.resolver.ArtifactResolver;
 import org.axway.grapes.maven.resolver.LicenseResolver;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
 /**

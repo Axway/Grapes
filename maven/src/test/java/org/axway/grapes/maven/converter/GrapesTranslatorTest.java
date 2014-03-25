@@ -9,7 +9,6 @@ import org.apache.maven.project.MavenProject;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.commons.datamodel.Module;
-import org.axway.grapes.maven.converter.GrapesTranslator;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;

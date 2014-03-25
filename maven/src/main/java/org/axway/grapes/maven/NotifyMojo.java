@@ -7,9 +7,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
 import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.commons.utils.JsonUtils;
-import org.axway.grapes.maven.converter.ModuleBuilder;
-import org.axway.grapes.maven.resolver.ArtifactResolver;
-import org.axway.grapes.maven.resolver.LicenseResolver;
 import org.axway.grapes.maven.utils.FileUtils;
 import org.axway.grapes.utils.client.GrapesClient;
 
@@ -19,8 +16,6 @@ import java.util.List;
 /**
  * Goal which gathers and send dependencies information to Grapes.
  *
- * @instantiationStrategy singleton
- * @threadSafe true
  * @goal notify
  * @phase install
  */
@@ -67,18 +62,6 @@ public class NotifyMojo extends AbstractMojo{
     protected MavenProject project;
 
     /**
-     * @component
-     */
-    private RepositorySystem repositorySystem;
-
-    /**
-     * @parameter default-value="${localRepository}"
-     * @required
-     * @readonly
-     */
-    private ArtifactRepository localRepository;
-
-    /**
      * The projects in the reactor.
      *
      * @parameter expression="${reactorProjects}"
@@ -86,30 +69,13 @@ public class NotifyMojo extends AbstractMojo{
      */
     private List<MavenProject> reactorProjects;
 
-    private int i = 1;
-
     public void execute() throws MojoExecutionException {
-        try {
-            final ModuleBuilder moduleBuilder = new ModuleBuilder();
-            final ArtifactResolver artifactResolver = new ArtifactResolver(repositorySystem, localRepository, getLog());
-            final LicenseResolver licenseResolver = new LicenseResolver(repositorySystem, localRepository, getLog());
-
-            getLog().info("Collecting dependency information of " + project.getName());
-            final Module module = moduleBuilder.getModule(project, licenseResolver, artifactResolver);
-            final String serializedModule = JsonUtils.serialize(module);
-            getLog().debug("Json module : " + serializedModule);
-
-            final File grapesFolder = GrapesMavenPlugin.getGrapesPluginWorkingFolder(project);
-            getLog().info("Serializing the notification in " + grapesFolder.getPath());
-            FileUtils.serialize(grapesFolder, serializedModule, GrapesMavenPlugin.TMP_MODULE_JSON_FILE_NAME);
-
-            if(isLastModule()) {
-                getLog().info("Reports aggregation");
-                final ModuleAggregator aggregator = new ModuleAggregator(reactorProjects);
-                final Module rootModule = aggregator.aggregate();
-                aggregator.cleanTmpFiles();
-
-                getLog().info("Sending " + rootModule.getName() + "..");
+        // Execute only one time
+        if(project.equals(reactorProjects.get(0))){
+            try {
+                final File workingFolder = GrapesMavenPlugin.getGrapesPluginWorkingFolder(reactorProjects.get(0));
+                final Module rootModule = GrapesMavenPlugin.getModule(workingFolder, GrapesMavenPlugin.MODULE_JSON_FILE_NAME);
+                getLog().info("Sending " + rootModule.getName() + "...");
 
                 getLog().info("Connection to Grapes");
                 getLog().info("Host: " + host);
@@ -124,29 +90,16 @@ public class NotifyMojo extends AbstractMojo{
                 client.postModule(rootModule, user, password);
 
                 getLog().info("Information successfully sent");
-            }
 
-        } catch (Exception e) {
-
-            if(failOnError){
-                throw new MojoExecutionException("An error occurred during Grapes server Notification." , e);
-            }
-            else{
-                getLog().debug("An error occurred during Grapes server Notification.", e);
-                getLog().info("Failed to send information to Grapes");
+            } catch (Exception e) {
+                if(failOnError){
+                    throw new MojoExecutionException("An error occurred during Grapes server Notification." , e);
+                }
+                else{
+                    getLog().debug("An error occurred during Grapes server Notification.", e);
+                    getLog().info("Failed to send information to Grapes");
+                }
             }
         }
-    }
-
-    /**
-     * Checks if the current project is the last project to build
-     *
-     * @return boolean
-     */
-    private boolean isLastModule(){
-        final int projectSize = reactorProjects.size();
-        final MavenProject lastProject = reactorProjects.get(projectSize - 1);
-
-        return project.equals(lastProject);
     }
 }
