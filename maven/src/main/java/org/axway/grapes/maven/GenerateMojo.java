@@ -20,7 +20,7 @@ import java.util.List;
  * Goal which gathers and send dependencies information to Grapes.
  *
  * @goal generate
- * @phase install
+ * @phase package
  */
 public class GenerateMojo extends AbstractMojo{
 

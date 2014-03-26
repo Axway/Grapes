@@ -62,12 +62,6 @@ public class ArtifactResolver {
         if (!resolutionResult.isSuccess()) {
             throw new MojoExecutionException("Failed to resolved " + artifact.toString() +" artifact.");
         }
-
-        if(resolutionResult.getArtifacts().isEmpty()){
-            throw new MojoExecutionException("Failed to get artifact " + artifact.toString() +" information.");
-        }
-
-        artifact = resolutionResult.getArtifacts().iterator().next();
     }
 
     /**

@@ -40,18 +40,18 @@ public class ModuleAggregator {
      * @throws MojoExecutionException
      */
     public void aggregate() throws IOException, MojoExecutionException {
-        final Module rootModule = GrapesMavenPlugin.getModule(workingFolder, GrapesMavenPlugin.MODULE_JSON_FILE_NAME);
-        final Map<String, Module> subModules = getSubModuleReports();
+        final Map<String, File> subModules = getSubModuleReports();
 
-        for(Map.Entry<String,Module> submodule : subModules.entrySet()){
-            final MavenProject parentProject = getParentProject(submodule.getKey());
+        for(Map.Entry<String,File> submoduleReports : subModules.entrySet()){
+            final MavenProject parentProject = getParentProject(submoduleReports.getKey());
 
             if(parentProject != null){
-                final Boolean updated = updateParent(parentProject, submodule.getValue());
+                final Module subModule = JsonUtils.unserializeModule(FileUtils.read(submoduleReports.getValue()));
+                final Boolean updated = updateParent(parentProject, subModule);
 
                 // removes the children that are taken into accounts into parent reports
                 if(updated){
-                    final File subModuleFile = new File(workingFolder, GrapesMavenPlugin.getSubModuleFileName(submodule.getKey()));
+                    final File subModuleFile = new File(workingFolder, GrapesMavenPlugin.getSubModuleFileName(submoduleReports.getKey()));
                     subModuleFile.delete();
                 }
             }
@@ -98,21 +98,21 @@ public class ModuleAggregator {
     }
 
     /**
-     * Loads the available reports and returns the corresponding Modules
+     * Returns report files
      *
-     * @return Map<String,Module>
+     * @return Map<String,File>
      * @throws IOException
      * @throws MojoExecutionException
      */
-    private Map<String, Module> getSubModuleReports() throws IOException, MojoExecutionException {
-        final Map<String, Module> subModules = new HashMap<String, Module>();
+    private Map<String, File> getSubModuleReports() throws IOException, MojoExecutionException {
+        final Map<String, File> subModules = new HashMap<String, File>();
 
         for(MavenProject project: reactorProjects){
             final String fileName = GrapesMavenPlugin.getSubModuleFileName(project.getBasedir().getName());
-            final Module subModule = GrapesMavenPlugin.getModule(workingFolder, fileName);
+            final File reportFile = new File(workingFolder, fileName);
 
-            if(subModule != null){
-                subModules.put(project.getBasedir().getName(), subModule);
+            if(reportFile.exists()){
+                subModules.put(project.getBasedir().getName(), reportFile);
             }
         }
 
