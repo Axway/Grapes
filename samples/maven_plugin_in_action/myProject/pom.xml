@@ -36,19 +36,17 @@
           <plugin>
               <groupId>org.axway.grapes</groupId>
               <artifactId>grapes-maven-plugin</artifactId>
-              <version>1.1.0-SNAPSHOT</version>
+              <version>1.2.0-SNAPSHOT</version>
+              <configuration>
+                  <host>grapes.org</host>
+                  <failOnError>false</failOnError>
+              </configuration>
               <executions>
                   <execution>
-                      <phase>install</phase>
+                      <phase>package</phase>
                       <goals>
-                          <goal>notify</goal>
+                          <goal>generate</goal>
                       </goals>
-                      <configuration>
-                          <host>localhost</host>
-                          <port>12345</port>
-                          <failOnError>false</failOnError>
-                          <serialize>true</serialize>
-                      </configuration>
                   </execution>
               </executions>
           </plugin>
