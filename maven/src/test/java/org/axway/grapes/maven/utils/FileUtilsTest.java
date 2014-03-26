@@ -1,6 +1,7 @@
 package org.axway.grapes.maven.utils;
 
 
+import junit.framework.TestCase;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;
 
@@ -10,7 +11,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.*;
 
 public class FileUtilsTest {
@@ -65,6 +65,14 @@ public class FileUtilsTest {
             testFile.delete();
         }
 
+    }
+
+    @Test
+    public void checkReadMethod() throws MojoExecutionException {
+        final URL testFile = Thread.currentThread().getContextClassLoader().getResource("org/axway/grapes/maven/utils/file.txt");
+
+        assertNotNull(testFile);
+        assertEquals("Can you read this?", FileUtils.read(new File(testFile.getPath())));
     }
 
 
