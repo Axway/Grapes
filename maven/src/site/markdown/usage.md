@@ -97,3 +97,5 @@ We suggest you to avoid setting the user / password in your pom file to avoid to
 
 
 [wiki]:https://github.com/Axway/Grapes/wiki
+[grapes:generate]:generate_goal.html
+[grapes:notify]:notify_goal.html
