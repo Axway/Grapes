@@ -54,7 +54,7 @@ public class GenerateMojo extends AbstractMojo{
     /**
      * The projects in the reactor.
      *
-     * @parameter expression="${reactorProjects}"
+     * @parameter property="reactorProjects"
      * @readonly
      */
     private List<MavenProject> reactorProjects;

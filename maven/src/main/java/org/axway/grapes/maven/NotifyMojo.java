@@ -64,7 +64,7 @@ public class NotifyMojo extends AbstractMojo{
     /**
      * The projects in the reactor.
      *
-     * @parameter expression="${reactorProjects}"
+     * @parameter property="reactorProjects"
      * @readonly
      */
     private List<MavenProject> reactorProjects;
