@@ -53,25 +53,22 @@ Then in your favorite CI server or in command line run the following script:
 
 At the end of the execution a file "module.json" is created in ${project.build.directory}/grapes/.
 
-Sending dependencies without changing the pom:
-----------------------------------------------
+Sending the report to a Grapes server:
+--------------------------------------
 
-Here is the command line to send the dependencies of your project to a Grape server:
+Once the report has been built by the execution of "generate" goal, the following command line sends the report to a Grape server:
 
-        mvn org.axway.grapes:maven:notify -Dgrapes.host=http://somewhere.com -Dgrapes.user=usr -Dgrapes.password=pwd
+        mvn org.axway.grapes:maven:notify -Dgrapes.host=somewhere.com -Dgrapes.user=usr -Dgrapes.password=pwd
 
 
 Here we assume that we are using a Grapes server is configured as follow:
 
-* host: http://somewhere.com
+* host: somewhere.com
 * user: usr
 * password: pwd
 
 
-Sending dependencies changing project pom configuration:
---------------------------------------------------------
-
-Add the following information in your pom file:
+Of course, if you want you can add the configuration of the plugin in the pom file of your project:
 
         <project>
             ...
@@ -82,33 +79,20 @@ Add the following information in your pom file:
                         <groupId>org.axway.grapes</groupId>
                         <artifactId>grapes-maven-plugin</artifactId>
                         <version>1.0.0-SNAPSHOT</version>
-                        <executions>
-                            <execution>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>notify</goal>
-                                </goals>
-                                <configuration>
-                                    <host>http://somewhere.com</host>
-                                </configuration>
-                            </execution>
-                        </executions>
+                        <configuration>
+                            <host>somewhere.com</host>
+                            <port>8080</port>
+                            ...
+                        </configuration>
                         </plugin>
                 </plugins>
             </build>
         </project>
 
 
-Then in your favorite CI server or in command line run the following script:
+We suggest you to avoid setting the user / password in your pom file to avoid to spread it to everybody. Though with this configuration you can run:
 
-        mvn clean install -Dgrapes.user=usr -Dgrapes.password=pwd
-
-
-Here we assume that we are using a Grapes server is configured as follow:
-
-* host: http://somewhere.com
-* user: usr
-* password: pwd
+        mvn org.axway.grapes:maven:notify -Dgrapes.user=usr -Dgrapes.password=pwd
 
 
 
