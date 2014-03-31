@@ -7,8 +7,8 @@ import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.commons.exceptions.UnsupportedScopeException;
+import org.axway.grapes.commons.utils.FileUtils;
 import org.axway.grapes.maven.resolver.ArtifactResolver;
-import org.axway.grapes.maven.utils.FileUtils;
 
 /**
  * Grapes Translator

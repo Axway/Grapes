@@ -6,12 +6,12 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
 import org.axway.grapes.commons.datamodel.Module;
+import org.axway.grapes.commons.utils.FileUtils;
 import org.axway.grapes.commons.utils.JsonUtils;
 import org.axway.grapes.maven.converter.ModuleAggregator;
 import org.axway.grapes.maven.converter.ModuleBuilder;
 import org.axway.grapes.maven.resolver.ArtifactResolver;
 import org.axway.grapes.maven.resolver.LicenseResolver;
-import org.axway.grapes.maven.utils.FileUtils;
 
 import java.io.File;
 import java.util.List;

@@ -1,13 +1,9 @@
 package org.axway.grapes.maven;
 
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.repository.RepositorySystem;
 import org.axway.grapes.commons.datamodel.Module;
-import org.axway.grapes.commons.utils.JsonUtils;
-import org.axway.grapes.maven.utils.FileUtils;
 import org.axway.grapes.utils.client.GrapesClient;
 
 import java.io.File;

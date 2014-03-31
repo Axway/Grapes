@@ -60,7 +60,7 @@ public class ArtifactResolver {
         final ArtifactResolutionResult resolutionResult = repositorySystem.resolve(artifactRequest);
 
         if (!resolutionResult.isSuccess()) {
-            throw new MojoExecutionException("Failed to resolved " + artifact.toString() +" artifact.");
+            logger.debug("Failed to resolved " + artifact.toString() +" artifact.");
         }
     }
 

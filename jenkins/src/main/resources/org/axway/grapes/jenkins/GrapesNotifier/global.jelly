@@ -1,0 +1,48 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+    <!--
+         Global configuration
+    -->
+    <f:section title="Grapes">
+        <f:entry title="Grapes servers" field="servers">
+            <f:repeatable var="servers" items="${descriptor.getServers()}">
+                <table width="100%">
+                    <f:entry field="server">
+
+                        <f:entry title="name" field="name">
+                            <f:textbox  value="${servers.name}" checkUrl="'${rootURL}/publisher/GrapesNotifier/checkName?value='+this.value"/>
+                        </f:entry>
+                        <f:entry title="host" field="host">
+                            <f:textbox  value="${servers.host}" checkUrl="'${rootURL}/publisher/GrapesNotifier/checkHost?value='+this.value"/>
+                        </f:entry>
+                        <f:entry title="port" field="port">
+                            <f:textbox  value="${servers.port}" clazz="number"/>
+                        </f:entry>
+                        <f:entry title="Connection Timeout" field="timeout" description="in milliseconds">
+                            <f:textbox  value="${servers.timeout}" clazz="number" default="1000"/>
+                        </f:entry>
+
+                        <j:set var="publisherCredentials" value="${servers.publisherCredentials}"/>
+                        <f:optionalBlock name="publisherCredentials" value="test" checked="${publisherCredentials != null}" title="Use Publisher Credentials" field="credentials">
+                            <f:entry title="User Name">
+                                <f:textbox name="username" value="${publisherCredentials.username}"/>
+                            </f:entry>
+                            <f:entry title="Password">
+                                <f:password name="password" value="${publisherCredentials.password}"/>
+                            </f:entry>
+                        </f:optionalBlock>
+
+                        <f:validateButton title="Test Configuration" progress="${m.test_progress()}" method="testConnection"
+                                with="host,port,timeout"/>
+
+                    </f:entry>
+                    <f:entry title="">
+                        <div align="right">
+                        <f:repeatableDeleteButton/>
+                        </div>
+                    </f:entry>
+                </table>
+            </f:repeatable>
+        </f:entry>
+    </f:section>
+</j:jelly>

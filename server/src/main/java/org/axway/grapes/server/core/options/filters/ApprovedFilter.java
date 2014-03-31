@@ -3,7 +3,6 @@ package org.axway.grapes.server.core.options.filters;
 import org.axway.grapes.server.db.datamodel.DbLicense;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ApprovedFilter implements Filter {

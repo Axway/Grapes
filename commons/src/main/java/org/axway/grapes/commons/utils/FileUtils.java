@@ -1,6 +1,4 @@
-package org.axway.grapes.maven.utils;
-
-import org.apache.maven.plugin.MojoExecutionException;
+package org.axway.grapes.commons.utils;
 
 import java.io.*;
 
@@ -18,7 +16,7 @@ public class FileUtils {
      * @param content String
      * @param fileName String
      */
-    public static void serialize(final File folder, final String content, final String fileName) throws MojoExecutionException {
+    public static void serialize(final File folder, final String content, final String fileName) throws IOException {
         if(!folder.exists()){
             folder.mkdirs();
         }
@@ -32,14 +30,14 @@ public class FileUtils {
             writer.flush();
         }
         catch (Exception e){
-            throw new MojoExecutionException("Failed to serialize the notification in folder " + folder.getPath(), e);
+            throw new IOException("Failed to serialize the notification in folder " + folder.getPath(), e);
         }
         finally {
             if(writer != null){
                 try {
                     writer.close();
                 } catch (IOException e) {
-                    throw new MojoExecutionException("Failed to close the open file " + output.getPath(), e);
+                    throw new IOException("Failed to close the open file " + output.getPath(), e);
                 }
             }
         }
@@ -50,9 +48,9 @@ public class FileUtils {
      *
      * @param file File
      * @return String
-     * @throws MojoExecutionException
+     * @throws IOException
      */
-    public static String read(final File file) throws MojoExecutionException {
+    public static String read(final File file) throws IOException {
         final StringBuilder sb = new StringBuilder();
         BufferedReader br = null;
 
@@ -66,12 +64,12 @@ public class FileUtils {
             }
 
         } catch (IOException e) {
-            throw new MojoExecutionException("Failed to read file: " + file.getAbsolutePath(), e);
+            throw new IOException("Failed to read file: " + file.getAbsolutePath(), e);
         } finally {
             try {
                 if (br != null)br.close();
             } catch (IOException e) {
-                throw new MojoExecutionException("Failed to close file reader on: " + file.getAbsolutePath(), e);
+                throw new IOException("Failed to close file reader on: " + file.getAbsolutePath(), e);
             }
         }
 

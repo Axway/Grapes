@@ -7,16 +7,12 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Module;
+import org.axway.grapes.commons.utils.FileUtils;
 import org.axway.grapes.commons.utils.JsonUtils;
-import org.axway.grapes.maven.materials.stubs.SubSubModule21ProjectStub;
-import org.axway.grapes.maven.utils.FileUtils;
-import org.sonatype.aether.impl.internal.DefaultRepositorySystem;
-import sun.awt.ModalityListener;
 
 import java.io.File;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -134,7 +130,7 @@ public class GenerateMojoTest extends AbstractMojoTestCase {
 
 
         // Get generated Grapes module
-        final String serializedModule = FileUtils.read(new File(multiModuleProject.getBasedir(), "target/grapes/"+GrapesMavenPlugin.MODULE_JSON_FILE_NAME));
+        final String serializedModule = FileUtils.read(new File(multiModuleProject.getBasedir(), "target/grapes/" + GrapesMavenPlugin.MODULE_JSON_FILE_NAME));
         final Module multiModuleProjectModule = JsonUtils.unserializeModule(serializedModule);
 
         // Checks

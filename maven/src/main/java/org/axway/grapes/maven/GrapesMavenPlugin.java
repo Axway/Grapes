@@ -3,12 +3,11 @@ package org.axway.grapes.maven;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.axway.grapes.commons.datamodel.Module;
+import org.axway.grapes.commons.utils.FileUtils;
 import org.axway.grapes.commons.utils.JsonUtils;
 
 import java.io.File;
 import java.io.IOException;
-
-import static org.axway.grapes.maven.utils.FileUtils.read;
 
 /**
  * Grapes Maven plugin
@@ -57,7 +56,7 @@ public class GrapesMavenPlugin {
         final File moduleFile = new File(folder, moduleJsonFileName);
 
         if(moduleFile.exists()){
-            final String serializedModule = read(moduleFile);
+            final String serializedModule = FileUtils.read(moduleFile);
             return JsonUtils.unserializeModule(serializedModule);
         }
 

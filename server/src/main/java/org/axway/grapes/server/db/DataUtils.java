@@ -6,10 +6,7 @@ import org.axway.grapes.server.db.datamodel.DbDependency;
 import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.axway.grapes.server.db.datamodel.DbModule;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Data Utility
@@ -153,7 +150,8 @@ public final class DataUtils {
      * @return Set<Artifact>
      */
     public static Set<Artifact> getAllArtifacts(final Module module) {
-        final Set<Artifact> artifacts = module.getArtifacts();
+        final Set<Artifact> artifacts = new HashSet<Artifact>();
+        artifacts.addAll(module.getArtifacts());
 
         for(Module submodule: module.getSubmodules()){
             artifacts.addAll(getAllArtifacts(submodule));
@@ -169,7 +167,8 @@ public final class DataUtils {
      * @return Set<Dependency>
      */
     public static Set<Dependency> getAllDependencies(final Module module) {
-        final Set<Dependency> dependencies = module.getDependencies();
+        final Set<Dependency> dependencies = new HashSet<Dependency>();
+        dependencies.addAll(module.getDependencies());
 
         for(Module submodule: module.getSubmodules()){
             dependencies.addAll(getAllDependencies(submodule));

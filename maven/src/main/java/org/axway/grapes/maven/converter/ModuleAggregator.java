@@ -1,12 +1,11 @@
 package org.axway.grapes.maven.converter;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.axway.grapes.commons.datamodel.Module;
+import org.axway.grapes.commons.utils.FileUtils;
 import org.axway.grapes.commons.utils.JsonUtils;
 import org.axway.grapes.maven.GrapesMavenPlugin;
-import org.axway.grapes.maven.utils.FileUtils;
 
 import java.io.File;
 import java.io.IOException;

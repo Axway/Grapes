@@ -1,8 +1,6 @@
-package org.axway.grapes.maven.utils;
+package org.axway.grapes.commons.utils;
 
 
-import junit.framework.TestCase;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -16,7 +14,7 @@ import static junit.framework.TestCase.*;
 public class FileUtilsTest {
 
     @Test
-    public void checkSerialization() throws MojoExecutionException {
+    public void checkSerialization() throws IOException {
         final File testdir = new File(System.getProperty("user.dir") + "/target");
         final String content = "content";
         final String fileName = "test.txt";
@@ -68,8 +66,8 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void checkReadMethod() throws MojoExecutionException {
-        final URL testFile = Thread.currentThread().getContextClassLoader().getResource("org/axway/grapes/maven/utils/file.txt");
+    public void checkReadMethod() throws IOException {
+        final URL testFile = Thread.currentThread().getContextClassLoader().getResource("org/axway/grapes/commons/utils/file.txt");
 
         assertNotNull(testFile);
         assertEquals("Can you read this?", FileUtils.read(new File(testFile.getPath())));
