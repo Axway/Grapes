@@ -11,7 +11,6 @@ import org.axway.grapes.commons.utils.JsonUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 

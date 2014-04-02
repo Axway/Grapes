@@ -5,7 +5,10 @@ import org.axway.grapes.jenkins.GrapesPlugin;
 import org.axway.grapes.jenkins.config.GrapesConfig;
 import org.axway.grapes.utils.client.GrapesClient;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 /**
