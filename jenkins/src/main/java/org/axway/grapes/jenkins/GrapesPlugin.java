@@ -11,6 +11,9 @@ import org.axway.grapes.commons.utils.JsonUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 /**
  * Placeholder for plugin entry point.
@@ -21,7 +24,7 @@ import java.io.IOException;
  */
 public class GrapesPlugin extends Plugin {
 
-    public static final String REPORT_FOLDER = "grapesReports";
+    public static final String REPORT_FILE = "grapesReports/module.json";
 
     public static final String GRAPES_WORKING_FOLDER = "grapes";
 
@@ -47,7 +50,7 @@ public class GrapesPlugin extends Plugin {
      */
     public static FilePath getReportFolder(AbstractBuild<?, ?> build) {
         assert build != null;
-        File reportFolder = new File(build.getRootDir(), REPORT_FOLDER);
+        File reportFolder = new File(build.getRootDir(), REPORT_FILE);
         return  new FilePath(reportFolder);
     }
 
@@ -66,5 +69,14 @@ public class GrapesPlugin extends Plugin {
         }
 
         return null;
+    }
+
+    /**
+     * Returns Grapes Jenkins plugin logger
+     *
+     * @return Logger
+     */
+    public static Logger getLogger(){
+        return LogManager.getLogManager().getLogger("org.axway.grapes.jenkins.GrapesPlugin");
     }
 }

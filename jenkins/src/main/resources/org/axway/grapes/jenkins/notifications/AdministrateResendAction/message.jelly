@@ -1,0 +1,11 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+   <div class="warning">
+      <form method="post" action="${rootURL}/${it.url}/act" name="${it.id}">
+        ${%You have old Grapes notifications that you should resend.}
+        <st:nbsp/>
+        <st:nbsp/>
+        <f:submit name="yes" value="${%Manage}"/>
+      </form>
+    </div>
+</j:jelly>
