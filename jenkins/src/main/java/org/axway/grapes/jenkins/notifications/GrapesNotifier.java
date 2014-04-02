@@ -257,7 +257,8 @@ public class GrapesNotifier extends Notifier {
          */
         @Override
         public boolean isApplicable(@SuppressWarnings("rawtypes") final Class<? extends AbstractProject> jobType) {
-            return AbstractMavenProject.class.isAssignableFrom(jobType);
+            return AbstractMavenProject.class.isAssignableFrom(jobType) &&
+                    servers != null && !servers.isEmpty();
         }
 
         /**
