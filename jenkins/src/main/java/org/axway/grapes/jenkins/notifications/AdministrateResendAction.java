@@ -91,7 +91,7 @@ public class AdministrateResendAction extends ManagementLink /*AdministrativeMon
         // Only administrator can create a new site.
         Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
 
-
+        // TODO: display the progression
 
         for(ResendProjectAction resendAction: resendActions){
             try {
