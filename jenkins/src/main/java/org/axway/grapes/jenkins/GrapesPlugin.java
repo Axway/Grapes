@@ -76,6 +76,6 @@ public class GrapesPlugin extends Plugin {
      * @return Logger
      */
     public static Logger getLogger(){
-        return LogManager.getLogManager().getLogger("org.axway.grapes.jenkins.GrapesPlugin");
+        return LogManager.getLogManager().getLogger("hudson.WebAppMain");
     }
 }

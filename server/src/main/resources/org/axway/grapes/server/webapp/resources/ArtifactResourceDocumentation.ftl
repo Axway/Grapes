@@ -93,6 +93,16 @@
                         </tr>
                         <tr>
                             <td>GET</td>
+                            <td>/artifact/{gavc}/versions</td>
+                            <td>Display all the available versions of an artifact.</td>
+                        </tr>
+                        <tr>
+                            <td>GET</td>
+                            <td>/artifact/{gavc}/lastversion</td>
+                            <td>Returns the last version of an artifact.</td>
+                        </tr>
+                        <tr>
+                            <td>GET</td>
                             <td>/artifact/{gavc}/ancestors</td>
                             <td>Display the information about the artifact ancestors.<br/>
                                 Available parameters: scopeComp, scopePro, scopeRun, scopeTest.</td>

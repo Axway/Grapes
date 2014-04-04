@@ -294,6 +294,54 @@ public class ArtifactResourceTest extends ResourceTest {
         assertEquals(license.getName(), licenses.get(0));
     }
 
+
+    @Test
+    public void getVersions() throws UnknownHostException {
+        final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId("groupId");
+        artifact.setArtifactId("artifactId");
+        artifact.setVersion("version");
+        final List<String> versions = new ArrayList<String>();
+        versions.add("1");
+
+        when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
+        when(repositoryHandler.getArtifactVersions(artifact)).thenReturn(versions);
+
+        WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_VERSIONS);
+        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+
+        ArrayList<String> receivedVersions = response.getEntity(ArrayList.class);
+        assertNotNull(receivedVersions);
+        assertEquals(1, receivedVersions.size());
+        assertEquals("1", receivedVersions.get(0));
+    }
+
+
+    @Test
+    public void getLastVersion() throws UnknownHostException {
+        final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId("groupId");
+        artifact.setArtifactId("artifactId");
+        artifact.setVersion("version");
+        final List<String> versions = new ArrayList<String>();
+        versions.add("1");
+        versions.add("2");
+
+        when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
+        when(repositoryHandler.getArtifactVersions(artifact)).thenReturn(versions);
+
+        WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_LAST_VERSION);
+        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+
+        String lastVersion = response.getEntity(String.class);
+        assertNotNull(lastVersion);
+        assertEquals("2", lastVersion);
+    }
+
     @Test
     public void getAddLicenseToArtifact() throws AuthenticationException, UnknownHostException {
         final DbArtifact artifact = new DbArtifact();
@@ -447,6 +495,16 @@ public class ArtifactResourceTest extends ResourceTest {
 
         resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/wrongGavc"  + ServerAPI.GET_PROVIDER);
         response = resource.queryParam(ServerAPI.PROVIDER_PARAM, "test").post(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
+
+        resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/wrongGavc"  + ServerAPI.GET_VERSIONS);
+        response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
+
+        resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/wrongGavc"  + ServerAPI.GET_LAST_VERSION);
+        response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
     }

@@ -21,6 +21,7 @@ import org.axway.grapes.server.core.options.filters.LicenseIdFilter;
 import org.axway.grapes.server.core.reports.DependencyReport;
 import org.axway.grapes.server.core.version.IncomparableException;
 import org.axway.grapes.server.core.version.NotHandledVersionException;
+import org.axway.grapes.server.core.version.Version;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
@@ -38,7 +39,7 @@ import java.util.Set;
 
 /**
  * Request Handler
- * 
+ *
  * <p>This class holds all the request that provides from the resources.<br/>
  * It handles the datamodel transformation between the client/server model and the database model.</p>
  * @author jdcoffre
@@ -61,11 +62,11 @@ public class RequestHandler {
 
     /**
      * Add or update a license to the database
-     * 
+     *
      * @param license
      */
     public void store(final License license) {
-        final DbLicense dbLicense = DataUtils.getDbLicense(license); 
+        final DbLicense dbLicense = DataUtils.getDbLicense(license);
         repoHandler.store(dbLicense);
 
         final List<DbLicense> licenses = repoHandler.getAllLicenses();
@@ -74,16 +75,16 @@ public class RequestHandler {
 
     /**
      * Return a list of license names. This list can either be serialized in HTML or in JSON
-     * 
+     *
      * @param filters
      * @return ListView
      */
     public ListView getLicensesNames(final FiltersHolder filters) {
         final List<String> names = repoHandler.getLicenseNames(filters);
-		final ListView view = new ListView("License names view", "license");
-		view.addAll(names);
-		
-		return view;
+        final ListView view = new ListView("License names view", "license");
+        view.addAll(names);
+
+        return view;
     }
 
 
@@ -267,9 +268,6 @@ public class RequestHandler {
         return view;
     }
 
-
-
-
     /**
      * Return the list of licenses attached to an artifact
      *
@@ -301,6 +299,67 @@ public class RequestHandler {
         }
 
         return view;
+    }
+
+    /**
+     * Returns a the list of available version of an artifact
+     *
+     * @param gavc String
+     * @return List<String>
+     */
+    public List<String> getArtifactVersions(final String gavc) {
+        final DbArtifact artifact = repoHandler.getArtifact(gavc);
+
+        if(artifact == null){
+            throw new NotFoundException();
+        }
+
+        final List<String> versions = repoHandler.getArtifactVersions(artifact);
+        Collections.sort(versions);
+
+        return versions;
+    }
+
+    /**
+     * Returns a the last available version of an artifact
+     *
+     * @param gavc String
+     * @return String
+     */
+    public String getArtifactLastVersion(final String gavc) {
+        final List<String> versions = getArtifactVersions(gavc);
+        String lastVersion = null;
+
+        try{
+            Version lastVersionUntilNow = null;
+
+            for(String version: versions){
+                if(lastVersionUntilNow == null ){
+                    lastVersionUntilNow = new Version(version);
+                }
+                else{
+                    Version newVersion = new Version(version);
+
+                    if(lastVersionUntilNow.compare(newVersion) < 0){
+                        lastVersionUntilNow=newVersion;
+                    }
+
+                }
+            }
+
+            lastVersion = lastVersionUntilNow.toString();
+
+        } catch (NotHandledVersionException e) {
+            // nothing to do
+        } catch (IncomparableException e) {
+            // nothing to do
+        }
+
+        if(lastVersion == null){
+            return Collections.max(versions);
+        }
+
+        return lastVersion;
     }
 
     /**
@@ -351,7 +410,7 @@ public class RequestHandler {
         // Add the artifacts
         final Set<Artifact> artifacts = DataUtils.getAllArtifacts(module);
         for(Artifact artifact: artifacts){
-           store(artifact);
+            store(artifact);
         }
 
         // Add dependencies that does not exist
@@ -506,7 +565,7 @@ public class RequestHandler {
      */
     public DependencyListView getModuleAncestors(final String name, final String version, final FiltersHolder filters) {
         final String moduleId = DbModule.generateID(name, version);
-		final DbModule module = repoHandler.getModule(moduleId);
+        final DbModule module = repoHandler.getModule(moduleId);
 
         if(module == null){
             throw  new NotFoundException();

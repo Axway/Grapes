@@ -2,6 +2,7 @@ package org.axway.grapes.utils.client;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.naming.AuthenticationException;
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -119,7 +121,7 @@ public class GrapesClient {
      * @param user
      * @param password
      * @throws GrapesCommunicationException
-     * @throws AuthenticationException
+     * @throws javax.naming.AuthenticationException
      */
     public void postModule(final Module module, final String user, final String password) throws GrapesCommunicationException, AuthenticationException {
         final Client client = getClient(user, password);
@@ -139,7 +141,7 @@ public class GrapesClient {
      * @param name
      * @param version
      * @throws GrapesCommunicationException
-     * @throws AuthenticationException
+     * @throws javax.naming.AuthenticationException
      */
     public void deleteModule(final String name, final String version, final String user, final String password) throws GrapesCommunicationException, AuthenticationException{
         final Client client = getClient(user, password);
@@ -181,7 +183,7 @@ public class GrapesClient {
      * @param name
      * @param version
      * @throws GrapesCommunicationException
-     * @throws AuthenticationException
+     * @throws javax.naming.AuthenticationException
      */
     public void promoteModule(final String name, final String version, final String user, final String password) throws GrapesCommunicationException, AuthenticationException{
         final Client client = getClient(user, password);
@@ -224,7 +226,7 @@ public class GrapesClient {
      * @param user
      * @param password
      * @throws GrapesCommunicationException
-     * @throws AuthenticationException
+     * @throws javax.naming.AuthenticationException
      */
     public void postArtifact(final Artifact artifact, final String user, final String password) throws GrapesCommunicationException, AuthenticationException {
         final Client client = getClient(user, password);
@@ -243,7 +245,7 @@ public class GrapesClient {
      *
      * @param gavc
      * @throws GrapesCommunicationException
-     * @throws AuthenticationException
+     * @throws javax.naming.AuthenticationException
      */
     public void deleteArtifact(final String gavc, final String user, final String password) throws GrapesCommunicationException, AuthenticationException{
         final Client client = getClient(user, password);
@@ -324,13 +326,59 @@ public class GrapesClient {
         }
     }
 
+
+    /**
+     * Returns the artifact available versions
+     *
+     * @param gavc String
+     * @return List<String>
+     */
+    public List<String> getArtifactVersions(final String gavc) throws GrapesCommunicationException {
+        final Client client = getClient();
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getArtifactVersions(gavc));
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
+            LOG.error("Failed to get Corporate filters. Http status: " + response.getStatus());
+            throw new GrapesCommunicationException(response.getStatus());
+        }
+
+        return response.getEntity(new GenericType<List<String>>(){});
+
+    }
+
+
+    /**
+     * Returns the artifact last version
+     *
+     * @param gavc String
+     * @return String
+     */
+    public String getArtifactLastVersion(final String gavc) throws GrapesCommunicationException {
+        final Client client = getClient();
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getArtifactLastVersion(gavc));
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
+            LOG.error("Failed to get Corporate filters. Http status: " + response.getStatus());
+            throw new GrapesCommunicationException(response.getStatus());
+        }
+
+        return response.getEntity(String.class);
+
+    }
+
     /**
      * Add a license to an artifact
      *
      * @param gavc
      * @param licenseId
      * @throws GrapesCommunicationException
-     * @throws AuthenticationException
+     * @throws javax.naming.AuthenticationException
      */
     public void addLicense(final String gavc, final String licenseId, final String user, final String password) throws GrapesCommunicationException, AuthenticationException{
         final Client client = getClient(user, password);
@@ -351,7 +399,7 @@ public class GrapesClient {
      * @param user
      * @param password
      * @throws GrapesCommunicationException
-     * @throws AuthenticationException
+     * @throws javax.naming.AuthenticationException
      */
     public void postLicense(final License license, final String user, final String password) throws GrapesCommunicationException, AuthenticationException {
         final Client client = getClient(user, password);
@@ -370,7 +418,7 @@ public class GrapesClient {
      *
      * @param licenseId
      * @throws GrapesCommunicationException
-     * @throws AuthenticationException
+     * @throws javax.naming.AuthenticationException
      */
     public void deleteLicense(final String licenseId, final String user, final String password) throws GrapesCommunicationException, AuthenticationException{
         final Client client = getClient(user, password);
@@ -411,7 +459,7 @@ public class GrapesClient {
      * @param licenseId
      * @param approve
      * @throws GrapesCommunicationException
-     * @throws AuthenticationException
+     * @throws javax.naming.AuthenticationException
      */
     public void approveLicense(final String licenseId, final Boolean approve, final String user, final String password) throws GrapesCommunicationException, AuthenticationException{
         final Client client = getClient(user, password);
@@ -484,4 +532,24 @@ public class GrapesClient {
     }
 
 
+    /**
+     * Returns the list of corporate filters
+     *
+     * @return List<String>
+     */
+    public List<String> getCorporateFilters() throws GrapesCommunicationException, IOException {
+        final Client client = getClient();
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getCorporateFilters());
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
+            LOG.error("Failed to get Corporate filters. Http status: " + response.getStatus());
+            throw new GrapesCommunicationException(response.getStatus());
+        }
+
+        return response.getEntity(new GenericType<List<String>>(){});
+
+    }
 }

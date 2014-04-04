@@ -21,6 +21,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,7 +42,7 @@ public class ArtifactResource extends AbstractResource {
     }
 
     /**
-     * Handle artifact posts when the server got a request POST <dm_url>/artifact & MIME that contains the artifact.
+     * Handle artifact posts when the server got a request POST <grapes_url>/artifact & MIME that contains the artifact.
      *
      * @param roles
      * @param artifact The artifact to add to Grapes database
@@ -94,7 +95,7 @@ public class ArtifactResource extends AbstractResource {
 
     /**
      * Return a list of gavc, stored in Grapes, regarding the filters passed in the query parameters.
-     * This method is call via GET <dm_url>/artifact/gavcs
+     * This method is call via GET <grapes_url>/artifact/gavcs
      *
      * @return Response A list (in HTML or JSON) of gavc
      */
@@ -120,7 +121,7 @@ public class ArtifactResource extends AbstractResource {
 
     /**
      * Return a list of groupIds, stored in Grapes.
-     * This method is call via GET <dm_url>/artifact/groupids
+     * This method is call via GET <grapes_url>/artifact/groupids
      *
      * @return Response A list (in HTML or JSON) of gavc
      */
@@ -145,8 +146,71 @@ public class ArtifactResource extends AbstractResource {
     }
 
     /**
+     * Returns the list of available versions of an artifact
+     * This method is call via GET <grapes_url>/artifact/<gavc>/versions
+     *
+     * @return Response a list of versions in JSON
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{gavc}" + ServerAPI.GET_VERSIONS)
+    public Response getVersions(@PathParam("gavc") final String gavc){
+        LOG.info("Got a get artifact verisons request.");
+
+        if(gavc == null){
+            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
+        }
+
+        List<String> versions = Collections.emptyList();
+        try {
+            versions = getRequestHandler().getArtifactVersions(gavc);
+
+        } catch (NotFoundException e) {
+            LOG.error("Gavc not found: " + gavc);
+            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
+        } catch (Exception e) {
+            LOG.error("Failed retrieve the artifact versions: " + gavc, e);
+            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
+        }
+
+        return Response.ok(versions).build();
+    }
+
+    /**
+     * Returns the list of available versions of an artifact
+     * This method is call via GET <grapes_url>/artifact/<gavc>/versions
+     *
+     * @return Response a list of versions in JSON
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{gavc}" + ServerAPI.GET_LAST_VERSION)
+    public Response getLastVersion(@PathParam("gavc") final String gavc){
+        LOG.info("Got a get artifact verisons request.");
+
+        if(gavc == null){
+            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
+        }
+
+        String lastVersion = "";
+        try {
+            lastVersion = getRequestHandler().getArtifactLastVersion(gavc);
+
+
+        } catch (NotFoundException e) {
+            LOG.error("Gavc not found: " + gavc);
+            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
+        } catch (Exception e) {
+            LOG.error("Failed retrieve the artifact versions: " + gavc, e);
+            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
+        }
+
+        return Response.ok(lastVersion).build();
+    }
+
+    /**
      * Return an Artifact regarding its gavc.
-     * This method is call via GET <dm_url>/artifact/<gavc>
+     * This method is call via GET <grapes_url>/artifact/<gavc>
      *
      * @return Response An artifact in HTML or JSON
      */
@@ -177,7 +241,7 @@ public class ArtifactResource extends AbstractResource {
 
     /**
      * Update an artifact download url.
-     * This method is call via GET <dm_url>/artifact/<gavc>/downloadurl?url=<targetUrl>
+     * This method is call via GET <grapes_url>/artifact/<gavc>/downloadurl?url=<targetUrl>
      *
      */
     @POST
@@ -209,7 +273,7 @@ public class ArtifactResource extends AbstractResource {
 
     /**
      * Update an artifact download url.
-     * This method is call via GET <dm_url>/artifact/<gavc>/downloadurl?url=<targetUrl>
+     * This method is call via GET <grapes_url>/artifact/<gavc>/downloadurl?url=<targetUrl>
      *
      */
     @POST
@@ -241,7 +305,7 @@ public class ArtifactResource extends AbstractResource {
 
     /**
      * Delete an Artifact regarding its gavc.
-     * This method is call via DELETE <dm_url>/artifact/<gavc>
+     * This method is call via DELETE <grapes_url>/artifact/<gavc>
      *
      * @param roles
      * @param gavc
@@ -311,7 +375,7 @@ public class ArtifactResource extends AbstractResource {
 
     /**
      * Return true if the targeted artifact is flagged with "DO_NOT_USE".
-     * This method is call via GET <dm_url>/artifact/<gavc>/donotuse
+     * This method is call via GET <grapes_url>/artifact/<gavc>/donotuse
      *
      * @return Response
      */
@@ -342,7 +406,7 @@ public class ArtifactResource extends AbstractResource {
 
     /**
      * Return the list of ancestor of an artifact.
-     * This method is call via GET <dm_url>/artifact/<gavc>/ancestors
+     * This method is call via GET <grapes_url>/artifact/<gavc>/ancestors
      *
      * @return Response A list of ancestor in HTML or JSON
      */
@@ -361,7 +425,7 @@ public class ArtifactResource extends AbstractResource {
         filters.init(uriInfo.getQueryParameters());
 
         try {
-			ancestors = getRequestHandler().getAncestors(gavc,filters);
+            ancestors = getRequestHandler().getAncestors(gavc,filters);
 
         } catch (NotFoundException e) {
             LOG.error("Gavc not found: " + gavc);
@@ -377,7 +441,7 @@ public class ArtifactResource extends AbstractResource {
     /**
      *
      * Return the list of licenses used by an artifact.
-     * This method is call via GET <dm_url>/artifact/{gavc}/licenses
+     * This method is call via GET <grapes_url>/artifact/{gavc}/licenses
      *
      * @param gavc
      * @return Response A list of dependencies in HTML or JSON
@@ -479,7 +543,7 @@ public class ArtifactResource extends AbstractResource {
 
     /**
      * Return all the artifacts that matches the filters.
-     * This method is call via GET <dm_url>/artifact/<gavc>
+     * This method is call via GET <grapes_url>/artifact/<gavc>
      * Following filters can be used: artifactId, classifier, groupId, hasLicense, licenseId, type, uriInfo, version
      *
      * @return Response An artifact in HTML or JSON

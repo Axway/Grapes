@@ -19,6 +19,7 @@ import org.axway.grapes.jenkins.GrapesPlugin;
 import org.axway.grapes.jenkins.config.GrapesConfig;
 import org.axway.grapes.jenkins.notifications.resend.ResendBuildAction;
 import org.axway.grapes.jenkins.notifications.resend.ResendProjectAction;
+import org.axway.grapes.jenkins.reports.GrapesBuildAction;
 import org.axway.grapes.utils.client.GrapesClient;
 import org.axway.grapes.utils.client.GrapesCommunicationException;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -95,11 +96,12 @@ public class GrapesNotifier extends Notifier {
                 logger.println("[GRAPES] Host: " + config.getHost());
                 logger.println("[GRAPES] Port: " + config.getPort());
 
-                // Notification to the server
+                // Manage Exchanges with the server
                 try {
                     final GrapesClient client = new GrapesClient(config.getHost(), String.valueOf(config.getPort()));
 
                     if (client.isServerAvailable()) {
+                        // Notification to the server
                         String user = null, password = null;
 
                         if (config.getPublisherCredentials() != null) {
@@ -109,22 +111,27 @@ public class GrapesNotifier extends Notifier {
 
                         client.postModule(module, user, password);
                         logger.println("[GRAPES] Information successfully sent");
-                        sent = true;
+
+                        // Clean up previous ResendActions if any
                         cleanUpResendAction(project, module);
+                        sent = true;
+
+                        // Generate build action with the dependency report
+                        logger.println("[GRAPES] Creation of the dependency report ...");
+                        final GrapesBuildAction buildAction = new GrapesBuildAction(module, client);
+
+                        if(buildAction.isInitOk()){
+                            build.addAction(buildAction);
+                            logger.println("[GRAPES] Report successfully built.");
+                        }
 
                     } else {
                         logger.println("[GRAPES] Notification not sent.");
                         logger.println("[GRAPES] Grapes server is not reachable.");
                     }
-                } catch (GrapesCommunicationException e) {
-                    logger.println("[GRAPES] Failed send module report");
-                    GrapesPlugin.getLogger().log(Level.SEVERE, "[GRAPES] Failed to send notification: ", e);
-                } catch (AuthenticationException e) {
-                    logger.println("[GRAPES] Failed send module report");
-                    GrapesPlugin.getLogger().log(Level.SEVERE, "[GRAPES] Failed to send notification: ", e);
-                } catch (ClientHandlerException e) {
-                    logger.println("[GRAPES] Failed send module report");
-                    GrapesPlugin.getLogger().log(Level.SEVERE, "[GRAPES] Failed to send notification: ", e);
+                } catch (Exception e) {
+                    logger.println("[GRAPES] An error occurred!");
+                    GrapesPlugin.getLogger().log(Level.SEVERE, "[GRAPES] An error occurred! ", e);
                 }
 
                 // Keep the Json file in the build history

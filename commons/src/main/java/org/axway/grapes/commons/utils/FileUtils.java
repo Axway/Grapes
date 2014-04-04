@@ -87,4 +87,38 @@ public class FileUtils {
         }
         return null;
     }
+
+    /**
+     * Creates a file
+     *
+     * @param folder File
+     * @param fileName String
+     * @throws IOException
+     */
+    public static void touch(final File folder , final String fileName) throws IOException {
+        if(!folder.exists()){
+            folder.mkdirs();
+        }
+
+        final File touchedFile = new File(folder, fileName);
+
+        // The JVM will only 'touch' the file if you instantiate a
+        // FileOutputStream instance for the file in question.
+        // You don't actually write any data to the file through
+        // the FileOutputStream.  Just instantiate it and close it.
+        FileOutputStream doneFOS = null;
+
+        try {
+            doneFOS = new FileOutputStream(touchedFile);
+        }
+        catch (FileNotFoundException e) {
+            // Handle error
+        }
+        finally {
+            if(doneFOS != null){
+                doneFOS.close();
+            }
+        }
+    }
+
 }
