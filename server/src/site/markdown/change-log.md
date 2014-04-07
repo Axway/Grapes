@@ -2,6 +2,9 @@
 -------------
 * Add get Corporate groupId request to retrieve all the groupId that are configured as corporate dependencies
 * Add get last version of an artifact request
+* Fix duplication of dependencies during the notifications
+* [Github issue #8](https://github.com/Axway/Grapes/issues/8) Remove module internal dependencies from ancestor lists
+* Remove module internal dependencies for module dependency lists
 
 1.1.0
 -------------
