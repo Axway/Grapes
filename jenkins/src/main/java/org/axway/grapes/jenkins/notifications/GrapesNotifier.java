@@ -1,7 +1,6 @@
 package org.axway.grapes.jenkins.notifications;
 
 
-import com.sun.jersey.api.client.ClientHandlerException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -21,12 +20,10 @@ import org.axway.grapes.jenkins.notifications.resend.ResendBuildAction;
 import org.axway.grapes.jenkins.notifications.resend.ResendProjectAction;
 import org.axway.grapes.jenkins.reports.GrapesBuildAction;
 import org.axway.grapes.utils.client.GrapesClient;
-import org.axway.grapes.utils.client.GrapesCommunicationException;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.naming.AuthenticationException;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;

@@ -7,11 +7,9 @@ import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.commons.utils.ModuleUtils;
 import org.axway.grapes.jenkins.GrapesPlugin;
-import org.axway.grapes.jenkins.config.GrapesConfig;
 import org.axway.grapes.utils.client.GrapesClient;
 import org.axway.grapes.utils.client.GrapesCommunicationException;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
