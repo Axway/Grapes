@@ -209,5 +209,8 @@ public class DbModule {
         for(DbDependency dependency: dependencies){
             uses.add(dependency.getTarget());
         }
+
+        //Remove all the artifacts that the module produces from "use" field
+        uses.removeAll(has);
     }
 }

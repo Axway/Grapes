@@ -267,9 +267,11 @@ public class ModuleResourceTest extends ResourceTest {
         final DbModule module1 = new DbModule();
         module1.setName("module1");
         module1.setVersion("1");
+
         module1.addDependency(artifact3.getGavc(), Scope.IMPORT);
 
         List<DbModule> list1 = new ArrayList<DbModule>();
+        list1.add(dbModule);
         list1.add(module1);
 
         when(repositoryHandler.getAncestors(eq(artifact3.getGavc()), (FiltersHolder) anyObject())).thenReturn(list1);
@@ -457,8 +459,6 @@ public class ModuleResourceTest extends ResourceTest {
         assertEquals(0, results.getUnPromotedDependencies().size());
         assertTrue(results.canBePromoted());
     }
-
-
 
     @Test
     public void checkAuthenticationOnPostAndDeleteMethods(){

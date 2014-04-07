@@ -242,27 +242,15 @@ public class RequestHandler {
      * @return DependencyListView that contains the ancestors
      */
     public DependencyListView getAncestors(final String gavc, final FiltersHolder filters) {
-        if(repoHandler.getArtifact(gavc) == null){
+        final DbArtifact dbArtifact = repoHandler.getArtifact(gavc);
+        if(dbArtifact == null){
             throw new NotFoundException();
         }
 
-        final List<DbModule> dbAncestors = repoHandler.getAncestors(gavc, filters);
-        final DependencyListView view = new DependencyListView("Ancestor List Of " + gavc, filters);
-        view.setShowTarget(false);
+        final AncestorListView view = new AncestorListView("Ancestor List Of " + gavc, filters);
 
-        final DbArtifact dbArtifact = repoHandler.getArtifact(gavc);
-        final Artifact artifact = DataUtils.getArtifact(dbArtifact);
-
-        for(DbModule dbAncestor : dbAncestors){
-            final List<DbDependency> dependencies = DataUtils.getAllDbDependencies(dbAncestor);
-            for(DbDependency dbDependency: dependencies){
-                if(gavc.equals(dbDependency.getTarget())){
-                    final Dependency dependency = DataModelFactory.createDependency(artifact,dbDependency.getScope());
-                    dependency.setSourceName(DataUtils.getModuleName(dbDependency.getSource()));
-                    dependency.setSourceVersion(DataUtils.getModuleVersion(dbDependency.getSource()));
-                    view.addDependency(dependency);
-                }
-            }
+        for(DbModule dbAncestor : repoHandler.getAncestors(gavc, filters)){
+            view.addAncestor(dbAncestor, DataUtils.getArtifact(dbArtifact));
         }
 
         return view;
@@ -571,11 +559,15 @@ public class RequestHandler {
             throw  new NotFoundException();
         }
 
-        final DependencyListView view = new DependencyListView("Ancestor List Of " + name +" in version " + version , filters);
-
+        final AncestorListView view = new AncestorListView("Ancestor List Of " + name +" in version " + version , filters);
         final List<String> artifacts = DataUtils.getAllArtifacts(module);
         for(String gavc: artifacts){
-            view.addAll(getAncestors(gavc, filters).getDependencies());
+            final DbArtifact dbArtifact = repoHandler.getArtifact(gavc);
+            for(DbModule dbAncestor : repoHandler.getAncestors(gavc, filters)){
+                if (!dbAncestor.getId().equals(module.getId())) {
+                    view.addAncestor(dbAncestor, DataUtils.getArtifact(dbArtifact));
+                }
+            }
         }
 
         return view;
