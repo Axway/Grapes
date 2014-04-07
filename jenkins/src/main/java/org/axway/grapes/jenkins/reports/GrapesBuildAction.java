@@ -13,6 +13,7 @@ import org.axway.grapes.utils.client.GrapesCommunicationException;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -56,6 +57,7 @@ public class GrapesBuildAction implements Action {
         // Init the report with Grapes server information
         try{
             final List<String> corporateFilters = grapesClient.getCorporateFilters();
+            dependencies = new HashMap<Dependency, String>();
 
             final List<Dependency> dependencies = ModuleUtils.getCorporateDependencies(module, corporateFilters);
             for(Dependency dependency: dependencies){
