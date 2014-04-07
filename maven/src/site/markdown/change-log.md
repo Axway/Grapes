@@ -1,7 +1,7 @@
-1.2.0-1
+1.2.0
 -------------
 * Split the data collection and the notification in two goals
-* Create a file ".notSent" when the notification failed
+* Collect artifacts size in the report
 
 1.1.0
 -------------
