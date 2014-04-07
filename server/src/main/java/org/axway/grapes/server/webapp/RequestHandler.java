@@ -582,23 +582,32 @@ public class RequestHandler {
      * @return DependencyListView
      */
     public DependencyListView getModuleDependencies(final String name, final String version, final FiltersHolder filters, final Boolean toUpdate) {
-        final VersionsHandler versionHandler = new VersionsHandler(repoHandler);
         final String moduleId = DbModule.generateID(name, version);
+        final DbModule module = repoHandler.getModule(moduleId);
+        if(module == null){
+            throw  new NotFoundException();
+        }
+
+        final VersionsHandler versionHandler = new VersionsHandler(repoHandler);
         final DependenciesHandler depHandler = new DependenciesHandler(repoHandler, filters);
 
         final List<DbDependency> dbDependencies = depHandler.getDependencies(moduleId);
+        final List<String> artifacts = DataUtils.getAllArtifacts(module);
 
         final DependencyListView view = new DependencyListView("Dependency List Of " + name + " in version " + version, filters);
 
         for(DbDependency dbDependency: dbDependencies){
-            final DbArtifact artifact = repoHandler.getArtifact(dbDependency.getTarget());
-            final Dependency dependency = DataModelFactory.createDependency(DataUtils.getArtifact(artifact), dbDependency.getScope());
-            dependency.setSourceName(DataUtils.getModuleName(dbDependency.getSource()));
-            dependency.setSourceVersion(DataUtils.getModuleVersion(dbDependency.getSource()));
+            // Avoid to get internal dependencies in module dependencies
+            if(!artifacts.contains(dbDependency.getTarget())){
+                final DbArtifact artifact = repoHandler.getArtifact(dbDependency.getTarget());
+                final Dependency dependency = DataModelFactory.createDependency(DataUtils.getArtifact(artifact), dbDependency.getScope());
+                dependency.setSourceName(DataUtils.getModuleName(dbDependency.getSource()));
+                dependency.setSourceVersion(DataUtils.getModuleVersion(dbDependency.getSource()));
 
-            // Filter Dependencies if toUpdate parameters has been provided buy the client
-            if(toUpdate == null || toUpdate != versionHandler.isUpToDate(artifact)){
-                view.addDependency(dependency);
+                // Filter Dependencies if toUpdate parameters has been provided buy the client
+                if(toUpdate == null || toUpdate != versionHandler.isUpToDate(artifact)){
+                    view.addDependency(dependency);
+                }
             }
         }
 
