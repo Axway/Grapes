@@ -23,3 +23,8 @@ You will see that the plugin try to establish a connection to grapes.org to send
 If you want that the failure of the Grapes Maven plugin does not impact the maven execution you can run:
 
         mvn org.axway.grapes:grapes-maven-plugin:1.2.0-SNAPSHOT:notify -Dgrapes.failOnError=false
+
+You can also override the configuration of the grapes server:
+
+        mvn org.axway.grapes:grapes-maven-plugin:1.2.0-SNAPSHOT:notify -Dgrapes.host=<new_host> -Dgrapes.port=<new_port> -Dgrapes.user=<user_with_notification_rights>  -Dgrapes.password=<user_password>
+
