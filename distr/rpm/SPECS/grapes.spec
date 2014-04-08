@@ -35,7 +35,7 @@ Group: CI/grapes
 URL: http://www.grapes-project.org/
 Vendor: Grapes-Project-OSS
 Packager: Grapes-Project-OSS
-License: ASLv2
+License: The Apache Software License, Version 2.0
 BuildArch:  noarch
 
 %define ciapp             		  grapes
@@ -78,7 +78,7 @@ Source8: server-conf.yml.skel
 Source9: logrotate.skel
 
 %description
-Grapes v%{APP_VERSION}
+Grapes server v%{APP_VERSION}
 
 %prep
 
