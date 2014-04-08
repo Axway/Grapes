@@ -1,0 +1,7 @@
+@@SKEL_LOGDIR@@/server.log {
+ copytruncate
+ daily
+ rotate 7
+ compress
+ missingok
+}

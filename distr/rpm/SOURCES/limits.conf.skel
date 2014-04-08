@@ -1,0 +1,10 @@
+#
+# set limit for @@SKEL_USER@@
+#
+
+@@SKEL_USER@@        soft nofile 32768
+@@SKEL_USER@@        hard nofile 32768
+
+@@SKEL_USER@@        soft nproc  1024
+@@SKEL_USER@@        hard nproc  2048
+

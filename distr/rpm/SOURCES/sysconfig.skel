@@ -1,0 +1,46 @@
+#
+# App Configuration
+#
+# Vars starting with APP_ are used to replace contents in skeletons files
+#
+
+APP_HTTP_PORT=12445
+APP_HTTP_HOST=0.0.0.0
+
+APP_RMIREGISTRY_PORT=12448
+APP_RMISERVER_PORT=12449
+
+APP_JMX_READER_USER=reader
+APP_JMX_READER_PASSWORD=@@SKEL_RO_PWD@@
+
+APP_JMX_ADMIN_USER=admin
+APP_JMX_ADMIN_PASSWORD=@@SKEL_RW_PWD@@
+
+#
+# Linux Service variables
+#
+APP_HOME="@@SKEL_APPDIR@@"
+APP_PID="/var/run/@@SKEL_APP@@.pid"
+SHUTDOWN_WAIT=10
+
+APP_JAVA_OPTS="-server -Xms128m -Xmx512m"
+APP_JAVA_OPTS="$APP_JAVA_OPTS -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.ssl=false"
+APP_JAVA_OPTS="$APP_JAVA_OPTS -Dcom.sun.management.jmxremote.authenticate=true -Dcom.sun.management.jmxremote.port=$APP_RMIREGISTRY_PORT"
+APP_JAVA_OPTS="$APP_JAVA_OPTS -Dcom.sun.management.jmxremote.password.file=$APP_HOME/conf/jmxremote.password -Dcom.sun.management.jmxremote.access.file=$APP_HOME/conf/jmxremote.access"
+APP_JAVA_OPTS="$APP_JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=@@SKEL_LOGDIR@@"
+APP_JAVA_OPTS="$APP_JAVA_OPTS -Djava.io.tmpdir=@@SKEL_TMPDIR@@"
+
+#
+# Make sure to use D2D JAVA_HOME if /etc/profile.d/ci.sh exist
+# In this case remove env vars defined by OS like openSUSE 12.2
+#
+
+if [ -f /etc/profile.d/ci.sh ]; then
+
+  unset JAVA_HOME
+  unset JRE_HOME
+  unset JDK_HOME
+  unset SDK_HOME
+
+  source /etc/profile.d/ci.sh
+fi
