@@ -1,9 +1,12 @@
 package org.axway.grapes.server.core;
 
+import org.axway.grapes.commons.datamodel.License;
+import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +69,21 @@ public class LicenseHandler {
         LOG.error("No matching pattern for license " + licenseId);
         return null;
 
+    }
+
+
+    /**
+     * Returns all the available license in client/server data model
+     *
+     * @return List<License>
+     */
+    public List<License> getLicenses(){
+        List<License> licenses = new ArrayList<License>();
+        for(DbLicense dbLicense: licensesRegexp.values()){
+            licenses.add(DataUtils.getLicense(dbLicense));
+        }
+
+        return licenses;
     }
 
 }

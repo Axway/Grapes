@@ -28,6 +28,25 @@ public class DataUtilsTest {
     }
 
     @Test
+    public void testGetLicense() throws Exception {
+        final DbLicense dbLicense = new DbLicense() ;
+        dbLicense.setName("name");
+        dbLicense.setLongName("long name");
+        dbLicense.setComments("comment");
+        dbLicense.setRegexp("regexp");
+        dbLicense.setUrl("url");
+
+        final License license = DataUtils.getLicense(dbLicense);
+
+        assertEquals(dbLicense.getName(), license.getName());
+        assertEquals(dbLicense.getLongName(), license.getLongName());
+        assertEquals(dbLicense.getComments(), license.getComments());
+        assertEquals(dbLicense.getRegexp(), license.getRegexp());
+        assertEquals(dbLicense.getUrl(), license.getUrl());
+
+    }
+
+    @Test
     public void testGetDbArtifact(){
         final Artifact artifact = DataModelFactory.createArtifact("groupId", "artifactId", "version", "classifier", "type", "extension");
         artifact.setSize("10Mo");

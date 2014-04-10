@@ -311,6 +311,7 @@ function getModuleDependencies(){
             dataType: "html",
             success: function(data, textStatus) {
                 $("#results").empty().append($(data).filter(".row-fluid"));
+                $('.sortable').tablesorter();
             }
         })
 }
@@ -333,6 +334,7 @@ function getModuleThirdParty(){
             dataType: "html",
             success: function(data, textStatus) {
                 $("#results").empty().append($(data).filter(".row-fluid"));
+                $('.sortable').tablesorter();
             }
         })
 }
@@ -355,6 +357,7 @@ function getModuleAncestors(){
             dataType: "html",
             success: function(data, textStatus) {
                 $("#results").empty().append($(data).filter(".row-fluid"));
+                $('.sortable').tablesorter();
             }
         })
 }
@@ -486,6 +489,7 @@ function getArtifactAncestors(){
             dataType: "html",
             success: function(data, textStatus) {
                 $("#results").empty().append($(data).filter(".row-fluid"));
+                $('.sortable').tablesorter();
             }
         })
 }

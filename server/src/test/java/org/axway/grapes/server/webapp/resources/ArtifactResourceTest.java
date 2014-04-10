@@ -1,6 +1,7 @@
 package org.axway.grapes.server.webapp.resources;
 
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.yammer.dropwizard.auth.AuthenticationException;
@@ -9,8 +10,8 @@ import com.yammer.dropwizard.views.ViewMessageBodyWriter;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
+import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.commons.datamodel.Scope;
-import org.axway.grapes.commons.reports.DependencyList;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
@@ -170,7 +171,7 @@ public class ArtifactResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArrayList<String> gavcsResults = response.getEntity(ArrayList.class);
+        final List<String> gavcsResults = response.getEntity(new GenericType<List<String>>(){});
         assertNotNull(gavcsResults);
         assertEquals(1, gavcsResults.size());
         assertEquals("gavc1", gavcsResults.get(0));
@@ -187,7 +188,7 @@ public class ArtifactResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArrayList<String> results = response.getEntity(ArrayList.class);
+        final List<String> results = response.getEntity(new GenericType<List<String>>(){});
         assertNotNull(results);
         assertEquals(1, results.size());
         assertEquals("groupId1", results.get(0));
@@ -262,13 +263,13 @@ public class ArtifactResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        DependencyList dependencyList = response.getEntity(DependencyList.class);
+        final List<Dependency> dependencyList = response.getEntity(new GenericType<List<Dependency>>(){});
         assertNotNull(dependencyList);
-        assertEquals(1, dependencyList.getDependencies().size());
-        assertEquals(module.getName(), dependencyList.getDependencies().get(0).getSourceName());
-        assertEquals(module.getVersion(), dependencyList.getDependencies().get(0).getSourceVersion());
-        assertEquals(artifact.getGavc(), dependencyList.getDependencies().get(0).getTarget().getGavc());
-        assertEquals(Scope.TEST, dependencyList.getDependencies().get(0).getScope());
+        assertEquals(1, dependencyList.size());
+        assertEquals(module.getName(), dependencyList.get(0).getSourceName());
+        assertEquals(module.getVersion(), dependencyList.get(0).getSourceVersion());
+        assertEquals(artifact.getGavc(), dependencyList.get(0).getTarget().getGavc());
+        assertEquals(Scope.TEST, dependencyList.get(0).getScope());
     }
 
     @Test
@@ -288,7 +289,7 @@ public class ArtifactResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArrayList<String> licenses = response.getEntity(ArrayList.class);
+        final List<String> licenses = response.getEntity(new GenericType<List<String>>(){});
         assertNotNull(licenses);
         assertEquals(1, licenses.size());
         assertEquals(license.getName(), licenses.get(0));
@@ -312,7 +313,7 @@ public class ArtifactResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArrayList<String> receivedVersions = response.getEntity(ArrayList.class);
+        final List<String> receivedVersions = response.getEntity(new GenericType<List<String>>(){});
         assertNotNull(receivedVersions);
         assertEquals(1, receivedVersions.size());
         assertEquals("1", receivedVersions.get(0));

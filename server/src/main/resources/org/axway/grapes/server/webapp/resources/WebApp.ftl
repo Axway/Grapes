@@ -11,6 +11,9 @@
 
         <link rel="shortcut icon" type="image/x-icon" href="assets/img/grapes_small.gif"/>
 
+		<!-- Grapes css -->
+		<link href="/assets/css/grapes-table.css" rel="stylesheet">
+
 	</head>
 	<body>
 		<div class="row-fluid">
@@ -220,5 +223,9 @@
  		<script src="/public/twitter-bootstrap-2.3.2/js/bootstrap.min.js"></script>
  		<script src="/assets/js/grapes-webApp.js"></script>
  		<script src="/assets/js/grapes-commons.js"></script>
+
+ 		<!-- Make the table sortable -->
+        <script src="/public/jquery-tablesorter-1.10.2/jquery.tablesorter.min.js"></script>
+
 	</body>
 </html>

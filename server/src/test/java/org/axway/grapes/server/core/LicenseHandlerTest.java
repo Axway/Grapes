@@ -4,8 +4,7 @@ package org.axway.grapes.server.core;
 import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -17,11 +16,8 @@ public class LicenseHandlerTest {
         license.setName("Test");
         license.setRegexp("\\w*");
 
-        final List<DbLicense> licenses = new ArrayList<DbLicense>();
-        licenses.add(license);
-
         final LicenseHandler licenseHandler = new LicenseHandler();
-        licenseHandler.update(licenses);
+        licenseHandler.update(Collections.singletonList(license));
 
 
         assertEquals(license, licenseHandler.resolve(license.getName()));
@@ -32,11 +28,8 @@ public class LicenseHandlerTest {
         final DbLicense license = new DbLicense();
         license.setName("Test");
 
-        final List<DbLicense> licenses = new ArrayList<DbLicense>();
-        licenses.add(license);
-
         final LicenseHandler licenseHandler = new LicenseHandler();
-        licenseHandler.update(licenses);
+        licenseHandler.update(Collections.singletonList(license));
 
 
         assertEquals(license, licenseHandler.resolve(license.getName()));
@@ -49,11 +42,8 @@ public class LicenseHandlerTest {
         license.setName("Test");
         license.setRegexp("x^[");
 
-        final List<DbLicense> licenses = new ArrayList<DbLicense>();
-        licenses.add(license);
-
         final LicenseHandler licenseHandler = new LicenseHandler();
-        licenseHandler.update(licenses);
+        licenseHandler.update(Collections.singletonList(license));
 
         Exception exception = null;
         DbLicense resolvedLicense = null;
@@ -70,7 +60,14 @@ public class LicenseHandlerTest {
     }
 
     @Test
-    public void test(){
-        System.out.println("The Apache Software License, Version 2.0".matches("^(ASL|Apache|The Apache Software License)(.*)(2\\.0|2)"));
+    public void getAllTheAvailableLicenses(){
+        final DbLicense license = new DbLicense();
+        license.setName("Test");
+
+        final LicenseHandler licenseHandler = new LicenseHandler();
+        licenseHandler.update(Collections.singletonList(license));
+
+
+        assertEquals(1, licenseHandler.getLicenses().size());
     }
 }

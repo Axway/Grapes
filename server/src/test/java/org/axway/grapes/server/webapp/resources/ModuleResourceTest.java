@@ -1,6 +1,7 @@
 package org.axway.grapes.server.webapp.resources;
 
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.yammer.dropwizard.auth.AuthenticationException;
@@ -8,7 +9,6 @@ import com.yammer.dropwizard.testing.ResourceTest;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.*;
-import org.axway.grapes.commons.reports.DependencyList;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
@@ -16,7 +16,6 @@ import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.axway.grapes.server.db.datamodel.DbModule;
-import org.axway.grapes.server.webapp.auth.CredentialManager;
 import org.axway.grapes.server.webapp.auth.GrapesAuthProvider;
 import org.axway.grapes.server.webapp.views.PromotionReportView;
 import org.eclipse.jetty.http.HttpStatus;
@@ -39,7 +38,6 @@ public class ModuleResourceTest extends ResourceTest {
     private ArgumentCaptor<FiltersHolder> filters = ArgumentCaptor.forClass(FiltersHolder.class);
 
     private RepositoryHandler repositoryHandler;
-    private final CredentialManager credentialManager = new CredentialManager(GrapesTestUtils.getConfigMock());
 
     @Override
     protected void setUpResources() throws Exception {
@@ -174,7 +172,7 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArrayList<String> results = response.getEntity(ArrayList.class);
+        final List<String> results = response.getEntity(new GenericType<List<String>>(){});
         assertNotNull(results);
         assertEquals(1, results.size());
         assertEquals("module1", results.get(0));
@@ -191,7 +189,7 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArrayList<String> results = response.getEntity(ArrayList.class);
+        final List<String> results = response.getEntity(new GenericType<List<String>>(){});
         assertNotNull(results);
         assertEquals(1, results.size());
         assertEquals("1.0.0-6", results.get(0));
@@ -235,7 +233,7 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArrayList<Module> results = response.getEntity(ArrayList.class);
+        List<Module> results = response.getEntity(new GenericType<List<Module>>(){});
         assertNotNull(results);
         assertEquals(1, results.size());
     }
@@ -280,12 +278,12 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        final DependencyList results = response.getEntity(DependencyList.class);
+        final List<Dependency> results = response.getEntity(new GenericType<List<Dependency>>(){});
         assertNotNull(results);
-        assertEquals(1, results.getDependencies().size());
-        assertEquals(artifact3.getGavc(), results.getDependencies().get(0).getTarget().getGavc());
-        assertEquals(module1.getName(), results.getDependencies().get(0).getSourceName());
-        assertEquals(module1.getVersion(), results.getDependencies().get(0).getSourceVersion());
+        assertEquals(1, results.size());
+        assertEquals(artifact3.getGavc(), results.get(0).getTarget().getGavc());
+        assertEquals(module1.getName(), results.get(0).getSourceName());
+        assertEquals(module1.getVersion(), results.get(0).getSourceVersion());
     }
 
     @Test
@@ -310,7 +308,7 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        final DependencyList results = response.getEntity(DependencyList.class);
+        final List<Dependency> results = response.getEntity(new GenericType<List<Dependency>>(){});
         assertNotNull(results);
     }
 
@@ -323,9 +321,9 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        final DependencyList results = response.getEntity(DependencyList.class);
+        final List<Dependency> results = response.getEntity(new GenericType<List<Dependency>>(){});
         assertNotNull(results);
-        assertEquals(2, results.getDependencies().size());
+        assertEquals(2, results.size());
     }
 
     @Test
@@ -356,7 +354,7 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        final ArrayList<String> results = response.getEntity(ArrayList.class);
+        final List<String> results = response.getEntity(new GenericType<List<String>>(){});
         assertNotNull(results);
         assertEquals(3, results.size());
     }

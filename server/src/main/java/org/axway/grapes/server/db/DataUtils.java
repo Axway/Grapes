@@ -38,6 +38,21 @@ public final class DataUtils {
 		return dbLicense;
 	}
 
+
+    /**
+     * Transform a license from database model to client/server model
+     *
+     * @param license DbLicense the license to transform
+     * @return License return a license in database model
+     */
+    public static License getLicense(final DbLicense license) {
+        return DataModelFactory.createLicense(license.getName(),
+                license.getLongName(),
+                license.getComments(),
+                license.getRegexp(),
+                license.getUrl());
+    }
+
     /**
      * Transform an artifact from client/server model to database model
      *
@@ -304,6 +319,4 @@ public final class DataUtils {
             n = newn;
         }
     }
-
-
 }

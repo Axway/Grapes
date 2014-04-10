@@ -180,7 +180,7 @@ public class ArtifactResource extends AbstractResource {
      * Returns the list of available versions of an artifact
      * This method is call via GET <grapes_url>/artifact/<gavc>/versions
      *
-     * @return Response a list of versions in JSON
+     * @return Response String version in JSON
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)

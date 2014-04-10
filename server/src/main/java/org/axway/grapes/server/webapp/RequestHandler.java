@@ -247,10 +247,18 @@ public class RequestHandler {
             throw new NotFoundException();
         }
 
-        final AncestorListView view = new AncestorListView("Ancestor List Of " + gavc, filters);
+        final DependencyListView view = new DependencyListView("Ancestor List Of " + gavc, licenseHandler.getLicenses());
+        view.setShowLicense(false);
 
         for(DbModule dbAncestor : repoHandler.getAncestors(gavc, filters)){
-            view.addAncestor(dbAncestor, DataUtils.getArtifact(dbArtifact));
+            for(DbDependency dbDependency: DataUtils.getAllDbDependencies(dbAncestor)){
+                if(dbDependency.getTarget().equals(gavc)){
+                    final Dependency dependency = DataModelFactory.createDependency(DataUtils.getArtifact(dbArtifact), dbDependency.getScope());
+                    dependency.setSourceName(dbAncestor.getName());
+                    dependency.setSourceVersion(dbAncestor.getVersion());
+                    view.addDependency(dependency);
+                }
+            }
         }
 
         return view;
@@ -559,13 +567,22 @@ public class RequestHandler {
             throw  new NotFoundException();
         }
 
-        final AncestorListView view = new AncestorListView("Ancestor List Of " + name +" in version " + version , filters);
+        final DependencyListView view = new DependencyListView("Ancestor List Of " + name +" in version " + version , licenseHandler.getLicenses());
+        view.setShowLicense(false);
+
         final List<String> artifacts = DataUtils.getAllArtifacts(module);
         for(String gavc: artifacts){
             final DbArtifact dbArtifact = repoHandler.getArtifact(gavc);
             for(DbModule dbAncestor : repoHandler.getAncestors(gavc, filters)){
                 if (!dbAncestor.getId().equals(module.getId())) {
-                    view.addAncestor(dbAncestor, DataUtils.getArtifact(dbArtifact));
+                    for(DbDependency dbDependency: DataUtils.getAllDbDependencies(dbAncestor)){
+                        if(dbDependency.getTarget().equals(gavc)){
+                            final Dependency dependency = DataModelFactory.createDependency(DataUtils.getArtifact(dbArtifact), dbDependency.getScope());
+                            dependency.setSourceName(dbAncestor.getName());
+                            dependency.setSourceVersion(dbAncestor.getVersion());
+                            view.addDependency(dependency);
+                        }
+                    }
                 }
             }
         }
@@ -594,7 +611,7 @@ public class RequestHandler {
         final List<DbDependency> dbDependencies = depHandler.getDependencies(moduleId);
         final List<String> artifacts = DataUtils.getAllArtifacts(module);
 
-        final DependencyListView view = new DependencyListView("Dependency List Of " + name + " in version " + version, filters);
+        final DependencyListView view = new DependencyListView("Dependency List Of " + name + " in version " + version, licenseHandler.getLicenses());
 
         for(DbDependency dbDependency: dbDependencies){
             // Avoid to get internal dependencies in module dependencies
@@ -610,8 +627,6 @@ public class RequestHandler {
                 }
             }
         }
-
-
 
         return view;
     }
