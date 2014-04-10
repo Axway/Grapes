@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.commons.datamodel.Module;
-import org.axway.grapes.commons.reports.DependencyList;
 
 import java.io.IOException;
 
@@ -74,19 +73,5 @@ public final class JsonUtils {
         mapper.disable(MapperFeature.USE_GETTERS_AS_SETTERS);
 		return mapper.readValue(license, License.class);
 	}
-
-	/**
-	 * Un-serialize a report with Json
-	 * @param depList String
-	 * @return DependencyList
-	 * @throws IOException 
-	 */
-	public static DependencyList unserializeDependencyList(final String depList) throws IOException {
-		final ObjectMapper mapper = new ObjectMapper();
-        mapper.disable(MapperFeature.USE_GETTERS_AS_SETTERS);
-		return mapper.readValue(depList, DependencyList.class);
-	}
-
-	
 	
 }

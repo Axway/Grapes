@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.sun.jersey.api.client.ClientResponse.Status;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.*;
-import org.axway.grapes.commons.reports.DependencyList;
 import org.axway.grapes.commons.utils.JsonUtils;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -792,9 +791,9 @@ public class GrapesClientTest {
 
     @Test
     public void getModuleAncestors() throws IOException {
-        final DependencyList list = new DependencyList();
+        final List<Dependency> list = new ArrayList<Dependency>();
         final Dependency dependency = DataModelFactory.createDependency(DataModelFactory.createArtifact("", "ancestor", "", "", "", ""), Scope.COMPILE);
-        list.addDependency(dependency);
+        list.add(dependency);
 
         final String moduleName = "module";
         final String moduleVersion = "1.0.0-SNAPSHOT";
@@ -806,7 +805,7 @@ public class GrapesClientTest {
                         .withStatus(Status.OK.getStatusCode())));
 
         Exception exception = null;
-        DependencyList list2 = null;
+        List<Dependency> list2 = null;
 
         try{
             list2 = client.getModuleAncestors(moduleName, moduleVersion);
@@ -839,9 +838,9 @@ public class GrapesClientTest {
 
     @Test
     public void getModuleDependencies() throws IOException {
-        final DependencyList list = new DependencyList();
+        final List<Dependency> list = new ArrayList<Dependency>();
         final Dependency dependency = DataModelFactory.createDependency(DataModelFactory.createArtifact("", "target", "", "", "", ""), Scope.COMPILE);
-        list.addDependency(dependency);
+        list.add(dependency);
 
         final String moduleName = "module";
         final String moduleVersion = "1.0.0-SNAPSHOT";
@@ -853,7 +852,7 @@ public class GrapesClientTest {
                         .withStatus(Status.OK.getStatusCode())));
 
         Exception exception = null;
-        DependencyList list2 = null;
+        List<Dependency> list2 = null;
 
         try{
             list2 = client.getModuleDependencies(moduleName, moduleVersion, false, true, true);

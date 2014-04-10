@@ -1,7 +1,6 @@
 package org.axway.grapes.commons.utils;
 
 import org.axway.grapes.commons.datamodel.*;
-import org.axway.grapes.commons.reports.DependencyList;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -83,24 +82,5 @@ public class JsonUtilsTest {
 		assertNull(exception);
 		assertNotNull(module2);
 		assertTrue(module1.equals(module2));
-	}
-
-	@Test
-	public void testDependencyListUnserialization() throws Exception {
-		final DependencyList list = new DependencyList();
-		
-		final Dependency dependency = DataModelFactory.createDependency(DataModelFactory.createArtifact("groupId", "artifactId", "version", "classifier", "type", "extention"), Scope.COMPILE);
-		list.addDependency(dependency);
-		
-		Exception exception = null;
-		
-		try{
-			String serializedDep = JsonUtils.serialize(list);
-			JsonUtils.unserializeDependencyList(serializedDep);		
-		}catch (Exception e) {
-			exception = e;
-		} 
-
-		assertNull(exception);
 	}
 }

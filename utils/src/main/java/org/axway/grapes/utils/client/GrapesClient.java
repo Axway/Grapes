@@ -9,9 +9,9 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.Artifact;
+import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.commons.datamodel.Module;
-import org.axway.grapes.commons.reports.DependencyList;
 import org.axway.grapes.utils.data.model.ArtifactList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -478,10 +478,10 @@ public class GrapesClient {
      *
      * @param moduleName
      * @param moduleVersion
-     * @return DependencyList
+     * @return List<Dependency>
      * @throws GrapesCommunicationException
      */
-    public DependencyList getModuleAncestors(final String moduleName, final String moduleVersion) throws GrapesCommunicationException {
+    public List<Dependency> getModuleAncestors(final String moduleName, final String moduleVersion) throws GrapesCommunicationException {
         final Client client = getClient();
         final WebResource resource = client.resource(serverURL).path(RequestUtils.getArtifactAncestors(moduleName, moduleVersion));
         final ClientResponse response = resource.queryParam(ServerAPI.SCOPE_COMPILE_PARAM, "true")
@@ -496,7 +496,7 @@ public class GrapesClient {
             throw new GrapesCommunicationException(response.getStatus());
         }
 
-        return response.getEntity(DependencyList.class);
+        return response.getEntity(new GenericType<List<Dependency>>(){});
     }
 
     /**
@@ -507,10 +507,10 @@ public class GrapesClient {
      * @param fullRecursive
      * @param corporate
      * @param thirdParty
-     * @return DependencyList
+     * @return List<Dependency>
      * @throws GrapesCommunicationException
      */
-    public DependencyList getModuleDependencies(final String moduleName, final String moduleVersion, final Boolean fullRecursive, final Boolean corporate, final Boolean thirdParty) throws GrapesCommunicationException {
+    public List<Dependency> getModuleDependencies(final String moduleName, final String moduleVersion, final Boolean fullRecursive, final Boolean corporate, final Boolean thirdParty) throws GrapesCommunicationException {
         final Client client = getClient();
         final WebResource resource = client.resource(serverURL).path(RequestUtils.getArtifactDependencies(moduleName, moduleVersion));
         final ClientResponse response = resource.queryParam(ServerAPI.SCOPE_COMPILE_PARAM, "true")
@@ -528,7 +528,7 @@ public class GrapesClient {
             throw new GrapesCommunicationException(response.getStatus());
         }
 
-        return response.getEntity(DependencyList.class);
+        return response.getEntity(new GenericType<List<Dependency>>(){});
     }
 
 

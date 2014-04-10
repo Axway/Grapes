@@ -64,7 +64,7 @@ public class GrapesBuildAction implements Action {
             }
 
             thirdParty = ModuleUtils.getThirdPartyLibraries(module, corporateFilters);
-            ancestors = grapesClient.getModuleAncestors(module.getName(), module.getVersion()).getDependencies();
+            ancestors = grapesClient.getModuleAncestors(module.getName(), module.getVersion());
 
             initOk = true;
 
