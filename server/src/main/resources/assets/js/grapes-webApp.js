@@ -322,6 +322,8 @@ function getModuleDependencies(){
         $("#anyAlert").show();
         return;
     }
+
+    $("#results").empty().append('<img src="/assets/img/spinner.gif" alt="" id="loader-indicator" />');
     var moduleId = $('input[name=moduleId]:checked', '#targets').val();
     var splitter = moduleId.lastIndexOf(':');
 	var moduleVersion = moduleId.substring(splitter + 1);
@@ -347,6 +349,8 @@ function getModuleThirdParty(){
         $("#anyAlert").show();
         return;
     }
+
+    $("#results").empty().append('<img src="/assets/img/spinner.gif" alt="" id="loader-indicator" />');
     var moduleId = $('input[name=moduleId]:checked', '#targets').val();
     var splitter = moduleId.lastIndexOf(':');
 	var moduleVersion = moduleId.substring(splitter + 1);
@@ -372,6 +376,8 @@ function getModuleAncestors(){
         $("#anyAlert").show();
         return;
     }
+
+    $("#results").empty().append('<img src="/assets/img/spinner.gif" alt="" id="loader-indicator" />');
     var moduleId = $('input[name=moduleId]:checked', '#targets').val();
     var splitter = moduleId.lastIndexOf(':');
 	var moduleVersion = moduleId.substring(splitter + 1);
@@ -395,6 +401,7 @@ function getModuleLicenses(){
         $("#anyAlert").show();
         return;
     }
+    $("#results").empty().append('<img src="/assets/img/spinner.gif" alt="" id="loader-indicator" />');
     var moduleId = $('input[name=moduleId]:checked', '#targets').val();
     var splitter = moduleId.lastIndexOf(':');
 	var moduleVersion = moduleId.substring(splitter + 1);
@@ -428,6 +435,8 @@ function getModulePromotionReport(){
         $("#anyAlert").show();
         return;
     }
+
+    $("#results").empty().append('<img src="/assets/img/spinner.gif" alt="" id="loader-indicator" />');
     var moduleId = $('input[name=moduleId]:checked', '#targets').val();
     var splitter = moduleId.lastIndexOf(':');
 	var moduleVersion = moduleId.substring(splitter + 1);
