@@ -3,6 +3,7 @@ package org.axway.grapes.server.webapp.views;
 
 import com.google.common.collect.Lists;
 import org.axway.grapes.commons.datamodel.*;
+import org.axway.grapes.server.core.options.Decorator;
 import org.axway.grapes.server.webapp.views.utils.Row;
 import org.axway.grapes.server.webapp.views.utils.Table;
 import org.junit.Test;
@@ -16,7 +17,7 @@ public class DependencyListViewTest {
 
     @Test
     public void checkEmptyDependencyList(){
-        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST);
+        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST, new Decorator());
         final Table results = depList.getTable();
 
         assertNotNull(results);
@@ -25,33 +26,35 @@ public class DependencyListViewTest {
 
     @Test
     public void checkColumnConfiguration(){
-        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST);
-        depList.setShowSourceName(true);
-        depList.setShowSourceVersion(false);
-        depList.setShowTarget(false);
-        depList.setShowTargetDownloadUrl(false);
-        depList.setShowSize(false);
-        depList.setShowScope(false);
-        depList.setShowLicense(false);
-        depList.setShowLicenseComment(false);
-        depList.setShowLicenseLongName(false);
-        depList.setShowLicenseUrl(false);
+        final Decorator decorator = new Decorator();
+        decorator.setShowSources(true);
+        decorator.setShowSourcesVersion(false);
+        decorator.setShowTargets(false);
+        decorator.setShowTargetsDownloadUrl(false);
+        decorator.setShowTargetsSize(false);
+        decorator.setShowScopes(false);
+        decorator.setShowLicenses(false);
+        decorator.setShowLicensesComment(false);
+        decorator.setShowLicensesLongName(false);
+        decorator.setShowLicensesUrl(false);
 
+        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST, decorator);
         Table results = depList.getTable();
 
         assertNotNull(results);
         assertEquals(1, results.getHeaders().size());
 
-        depList.setShowSourceName(true);
-        depList.setShowSourceVersion(true);
-        depList.setShowTarget(true);
-        depList.setShowTargetDownloadUrl(true);
-        depList.setShowSize(true);
-        depList.setShowScope(true);
-        depList.setShowLicense(true);
-        depList.setShowLicenseComment(true);
-        depList.setShowLicenseLongName(true);
-        depList.setShowLicenseUrl(true);
+
+        decorator.setShowSources(true);
+        decorator.setShowSourcesVersion(true);
+        decorator.setShowTargets(true);
+        decorator.setShowTargetsDownloadUrl(true);
+        decorator.setShowTargetsSize(true);
+        decorator.setShowScopes(true);
+        decorator.setShowLicenses(true);
+        decorator.setShowLicensesComment(true);
+        decorator.setShowLicensesLongName(true);
+        decorator.setShowLicensesUrl(true);
 
         results = depList.getTable();
 
@@ -71,18 +74,20 @@ public class DependencyListViewTest {
 
     @Test
     public void checkDependenciesInformationOfTheTable(){
+        final Decorator decorator = new Decorator();
+        decorator.setShowSources(true);
+        decorator.setShowSourcesVersion(true);
+        decorator.setShowTargets(true);
+        decorator.setShowTargetsDownloadUrl(true);
+        decorator.setShowTargetsSize(true);
+        decorator.setShowScopes(true);
+        decorator.setShowLicenses(true);
+        decorator.setShowLicensesComment(true);
+        decorator.setShowLicensesLongName(true);
+        decorator.setShowLicensesUrl(true);
+
         final License license = DataModelFactory.createLicense("name", "long name", "comment", "", "url");
-        final DependencyListView depList = new DependencyListView("test", Collections.singletonList(license));
-        depList.setShowSourceName(true);
-        depList.setShowSourceVersion(true);
-        depList.setShowTarget(true);
-        depList.setShowTargetDownloadUrl(true);
-        depList.setShowSize(true);
-        depList.setShowScope(true);
-        depList.setShowLicense(true);
-        depList.setShowLicenseComment(true);
-        depList.setShowLicenseLongName(true);
-        depList.setShowLicenseUrl(true);
+        final DependencyListView depList = new DependencyListView("test", Collections.singletonList(license), decorator);
 
         final Artifact artifact = DataModelFactory.createArtifact("com.my.company", "test", "1", null, "jar", "jar");
         artifact.setDownloadUrl("http://");
@@ -115,17 +120,19 @@ public class DependencyListViewTest {
 
     @Test
     public void checkDependenciesInformationOfTheTableIfDependencyWithNoLicense(){
-        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST);
-        depList.setShowSourceName(true);
-        depList.setShowSourceVersion(true);
-        depList.setShowTarget(true);
-        depList.setShowTargetDownloadUrl(true);
-        depList.setShowSize(true);
-        depList.setShowScope(true);
-        depList.setShowLicense(true);
-        depList.setShowLicenseComment(true);
-        depList.setShowLicenseLongName(true);
-        depList.setShowLicenseUrl(true);
+        final Decorator decorator = new Decorator();
+        decorator.setShowSources(true);
+        decorator.setShowSourcesVersion(true);
+        decorator.setShowTargets(true);
+        decorator.setShowTargetsDownloadUrl(true);
+        decorator.setShowTargetsSize(true);
+        decorator.setShowScopes(true);
+        decorator.setShowLicenses(true);
+        decorator.setShowLicensesComment(true);
+        decorator.setShowLicensesLongName(true);
+        decorator.setShowLicensesUrl(true);
+
+        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST, decorator);
 
         final Artifact artifact = DataModelFactory.createArtifact("com.my.company", "test", "1", null, "jar", "jar");
         artifact.setDownloadUrl("http://");
@@ -157,17 +164,19 @@ public class DependencyListViewTest {
 
     @Test
     public void checkThatIfALicenseDoesNotExistAFakeOneIsCreated(){
-        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST);
-        depList.setShowSourceName(true);
-        depList.setShowSourceVersion(true);
-        depList.setShowTarget(true);
-        depList.setShowTargetDownloadUrl(true);
-        depList.setShowSize(true);
-        depList.setShowScope(true);
-        depList.setShowLicense(true);
-        depList.setShowLicenseComment(true);
-        depList.setShowLicenseLongName(true);
-        depList.setShowLicenseUrl(true);
+        final Decorator decorator = new Decorator();
+        decorator.setShowSources(true);
+        decorator.setShowSourcesVersion(true);
+        decorator.setShowTargets(true);
+        decorator.setShowTargetsDownloadUrl(true);
+        decorator.setShowTargetsSize(true);
+        decorator.setShowScopes(true);
+        decorator.setShowLicenses(true);
+        decorator.setShowLicensesComment(true);
+        decorator.setShowLicensesLongName(true);
+        decorator.setShowLicensesUrl(true);
+
+        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST, decorator);
 
         final Artifact artifact = DataModelFactory.createArtifact("com.my.company", "test", "1", null, "jar", "jar");
         artifact.setDownloadUrl("http://");
@@ -204,7 +213,7 @@ public class DependencyListViewTest {
         final License license1 = DataModelFactory.createLicense("name1", "long name1", "comment1", "", "url1");
         final License license2 = DataModelFactory.createLicense("name2", "long name2", "comment2", "", "url2");
 
-        final DependencyListView depList = new DependencyListView("test", Lists.newArrayList(license1, license2));
+        final DependencyListView depList = new DependencyListView("test", Lists.newArrayList(license1, license2), new Decorator());
 
         final Artifact artifact = DataModelFactory.createArtifact("com.my.company", "test", "1", null, "jar", "jar");
         artifact.setDownloadUrl("http://");

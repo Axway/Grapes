@@ -5,6 +5,7 @@ import com.yammer.dropwizard.views.View;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.commons.datamodel.License;
+import org.axway.grapes.server.core.options.Decorator;
 import org.axway.grapes.server.webapp.views.serialization.DependencyListSerializer;
 import org.axway.grapes.server.webapp.views.utils.Table;
 
@@ -27,65 +28,38 @@ public class DependencyListView extends View {
     // Title of the HTML page
     private final String title;
 
+    // Gathers all the display options
+    private Decorator decorator;
+
     // Value of the header of the column "source" in the dependency table
     public final static String SOURCE_FIELD = "Source Name";
-
-    // Should we display the column "source" in the dependency table
-    private boolean showSourceName = true;
 
     // Value of the header of the column "source version" in the dependency table
     public final static String SOURCE_VERSION_FIELD = "Source Version";
 
-    // Should we display the column "source version" in the dependency table
-    private boolean showSourceVersion = true;
-
     // Value of the header of the column "target" in the dependency table
     public final static String TARGET_FIELD = "Target";
-
-    // Should we display the column "target" in the dependency table
-    private boolean showTarget = true;
 
     // Value of the header of the column "download url" in the dependency table
     public final static String DOWNLOAD_URL_FIELD = "Download Url";
 
-    // Should we display the column "download url" in the dependency table
-    private boolean showTargetDownloadUrl = false;
-
     // Value of the header of the column "size" in the dependency table
     public final static String SIZE_FIELD = "Size";
-
-    // Should we display the column "size" in the dependency table
-    private boolean showSize = false;
 
     // Value of the header of the column "scope" in the dependency table
     public final static String SCOPE_FIELD = "Scope";
 
-    // Should we display the column "scope" in the dependency table
-    private boolean showScope = true;
-
     // Value of the header of the column "license" in the dependency table
-    public final static String LICENSE_FIELD = "License(s)";
-
-    // Should we display the column "license" in the dependency table
-    private boolean showLicense = true;
+    public final static String LICENSE_FIELD = "License";
 
     // Value of the header of the column "License Long Name" in the dependency table
-    public final static String LICENSE_LONG_NAME__FIELD = "License(s) (full name)";
-
-    // Should we display the column "license long name" in the dependency table
-    private boolean showLicenseLongName = false;
+    public final static String LICENSE_LONG_NAME__FIELD = "License Full Name";
 
     // Value of the header of the column "license url" in the dependency table
     public final static String LICENSE_URL_FIELD = "License Url";
 
-    // Should we display the column "license url" in the dependency table
-    private boolean showLicenseUrl = false;
-
     // Value of the header of the column "license commentary" in the dependency table
-    public final static String LICENSE_COMMENT_FIELD = "Do not use";
-
-    // Should we display the column "license commentary" in the dependency table
-    private boolean showLicenseComment = false;
+    public final static String LICENSE_COMMENT_FIELD = "License Comment";
 
     // The dependency list to display
     private final List<Dependency> dependencies = new ArrayList<Dependency>();
@@ -93,10 +67,11 @@ public class DependencyListView extends View {
     // The available licenses to complete dependencies' information
     private Map<String, License> licenseDictionary = new Hashtable<String, License>();
 
-    public DependencyListView(final String title, final List<License> licenses) {
+    public DependencyListView(final String title, final List<License> licenses, final Decorator decorator) {
         super("DependencyListView.ftl");
         this.title = title;
         setLicenses(licenses);
+        this.decorator = decorator;
     }
 
     /**
@@ -190,43 +165,43 @@ public class DependencyListView extends View {
     private String[] getHeaders() {
         final List<String> headers = new ArrayList<String>();
 
-        if(showSourceName){
+        if(decorator.getShowSources()){
             headers.add(SOURCE_FIELD);
         }
 
-        if(showSourceVersion){
+        if(decorator.getShowSourcesVersion()){
             headers.add(SOURCE_VERSION_FIELD);
         }
 
-        if(showTarget){
+        if(decorator.getShowTargets()){
             headers.add(TARGET_FIELD);
         }
 
-        if(showTargetDownloadUrl){
+        if(decorator.getShowTargetsDownloadUrl()){
             headers.add(DOWNLOAD_URL_FIELD);
         }
 
-        if(showSize){
+        if(decorator.getShowTargetsSize()){
             headers.add(SIZE_FIELD);
         }
 
-        if(showScope){
+        if(decorator.getShowScopes()){
             headers.add(SCOPE_FIELD);
         }
 
-        if(showLicense){
+        if(decorator.getShowLicenses()){
             headers.add(LICENSE_FIELD);
         }
 
-        if(showLicenseLongName){
+        if(decorator.getShowLicensesLongName()){
             headers.add(LICENSE_LONG_NAME__FIELD);
         }
 
-        if(showLicenseUrl){
+        if(decorator.getShowLicensesUrl()){
             headers.add(LICENSE_URL_FIELD);
         }
 
-        if(showLicenseComment){
+        if(decorator.getShowLicensesComment()){
             headers.add(LICENSE_COMMENT_FIELD);
         }
 
@@ -243,87 +218,47 @@ public class DependencyListView extends View {
     private String[] getDependencyCells(final Dependency dependency, final License license) {
         final List<String> cells = new ArrayList<String>();
 
-        if(showSourceName){
+        if(decorator.getShowSources()){
             cells.add(dependency.getSourceName());
         }
 
-        if(showSourceVersion){
+        if(decorator.getShowSourcesVersion()){
             cells.add(dependency.getSourceVersion());
         }
 
-        if(showTarget){
+        if(decorator.getShowTargets()){
             cells.add(dependency.getTarget().getGavc());
         }
 
-        if(showTargetDownloadUrl){
+        if(decorator.getShowTargetsDownloadUrl()){
             cells.add(dependency.getTarget().getDownloadUrl());
         }
 
-        if(showSize){
+        if(decorator.getShowTargetsSize()){
             cells.add(dependency.getTarget().getSize());
         }
 
-        if(showScope){
+        if(decorator.getShowScopes()){
             cells.add(dependency.getScope().name());
         }
 
-        if(showLicense){
+        if(decorator.getShowLicenses()){
             cells.add(license.getName());
         }
 
-        if(showLicenseLongName){
+        if(decorator.getShowLicensesLongName()){
             cells.add(license.getLongName());
         }
 
-        if(showLicenseUrl){
+        if(decorator.getShowLicensesUrl()){
             cells.add(license.getUrl());
         }
 
-        if(showLicenseComment){
+        if(decorator.getShowLicensesComment()){
             cells.add(license.getComments());
         }
 
         return cells.toArray(new String[cells.size()]);
-    }
-
-    public void setShowSourceName(boolean showSourceName) {
-        this.showSourceName = showSourceName;
-    }
-
-    public void setShowSourceVersion(boolean showSourceVersion) {
-        this.showSourceVersion = showSourceVersion;
-    }
-
-    public void setShowTarget(boolean showTarget) {
-        this.showTarget = showTarget;
-    }
-
-    public void setShowTargetDownloadUrl(boolean showTargetDownloadUrl) {
-        this.showTargetDownloadUrl = showTargetDownloadUrl;
-    }
-
-    public void setShowSize(boolean showSize) {
-        this.showSize = showSize;
-    }
-
-    public void setShowScope(boolean showScope) {
-        this.showScope = showScope;
-    }
-
-    public void setShowLicense(boolean showLicense) {
-        this.showLicense = showLicense;
-    }
-
-    public void setShowLicenseLongName(boolean showLicenseLongName) {
-        this.showLicenseLongName = showLicenseLongName;
-    }
-
-    public void setShowLicenseUrl(boolean showLicenseUrl) {
-        this.showLicenseUrl = showLicenseUrl;
-    }
-
-    public void setShowLicenseComment(boolean showLicenseComment) {
-        this.showLicenseComment = showLicenseComment;
     }
 
     private void setLicenses(final List<License> licenses) {

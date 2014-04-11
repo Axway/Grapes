@@ -422,6 +422,7 @@ public class ArtifactResource extends AbstractResource {
         }
 
         final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+        filters.getDecorator().setShowLicenses(false);
         filters.init(uriInfo.getQueryParameters());
 
         try {

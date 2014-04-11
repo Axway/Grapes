@@ -267,6 +267,7 @@ public class ModuleResource extends AbstractResource{
         }
 
         final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+        filters.getDecorator().setShowLicenses(false);
         filters.init(uriInfo.getQueryParameters());
         DependencyListView view;
 
@@ -307,7 +308,6 @@ public class ModuleResource extends AbstractResource{
 
         final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
         filters.init(uriInfo.getQueryParameters());
-
 
         Boolean toUpdate = null;
         if(toUpdateParam != null){

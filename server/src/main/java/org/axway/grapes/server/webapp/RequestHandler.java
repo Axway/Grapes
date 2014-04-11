@@ -247,8 +247,7 @@ public class RequestHandler {
             throw new NotFoundException();
         }
 
-        final DependencyListView view = new DependencyListView("Ancestor List Of " + gavc, licenseHandler.getLicenses());
-        view.setShowLicense(false);
+        final DependencyListView view = new DependencyListView("Ancestor List Of " + gavc, licenseHandler.getLicenses(), filters.getDecorator());
 
         for(DbModule dbAncestor : repoHandler.getAncestors(gavc, filters)){
             for(DbDependency dbDependency: DataUtils.getAllDbDependencies(dbAncestor)){
@@ -567,8 +566,7 @@ public class RequestHandler {
             throw  new NotFoundException();
         }
 
-        final DependencyListView view = new DependencyListView("Ancestor List Of " + name +" in version " + version , licenseHandler.getLicenses());
-        view.setShowLicense(false);
+        final DependencyListView view = new DependencyListView("Ancestor List Of " + name +" in version " + version , licenseHandler.getLicenses(), filters.getDecorator());
 
         final List<String> artifacts = DataUtils.getAllArtifacts(module);
         for(String gavc: artifacts){
@@ -611,7 +609,7 @@ public class RequestHandler {
         final List<DbDependency> dbDependencies = depHandler.getDependencies(moduleId);
         final List<String> artifacts = DataUtils.getAllArtifacts(module);
 
-        final DependencyListView view = new DependencyListView("Dependency List Of " + name + " in version " + version, licenseHandler.getLicenses());
+        final DependencyListView view = new DependencyListView("Dependency List Of " + name + " in version " + version, licenseHandler.getLicenses(), filters.getDecorator());
 
         for(DbDependency dbDependency: dbDependencies){
             // Avoid to get internal dependencies in module dependencies
