@@ -40,6 +40,18 @@ public class GrapesBuildAction implements Action {
 
     private boolean initOk = false;
 
+    // Title of the report
+    private String title;
+
+    /**
+     * Returns the title of the report
+     *
+     * @return String
+     */
+    public String getReportName(){
+        return title;
+    }
+
     /**
      * Initiate the report
      *
@@ -51,6 +63,8 @@ public class GrapesBuildAction implements Action {
                 module == null ){
             return;
         }
+
+        title = "Dependency  report of " + module.getName() + " in version " + module.getVersion();
 
         // Init the report with Grapes server information
         try{

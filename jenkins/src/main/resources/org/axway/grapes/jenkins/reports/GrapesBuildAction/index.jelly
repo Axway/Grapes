@@ -2,7 +2,7 @@
 	<l:layout title="Grapes Report">
         <l:main-panel>
 
-            <h1>${%Dependency report}</h1>
+            <h1>${it.getReportName()}</h1>
 
             <j:set var="corporateDependencies" value="${it.getCorporateDependencies()}"/>
             <j:if test="${!empty(corporateDependencies)}">
@@ -10,7 +10,7 @@
                 <p>
                     <table class="sortable pane bigtable" id="CorporateDependencyTable">
                         <tr>
-                          <th align="center">${%Artifact Source}</th>
+                          <th align="center">${%Dependency GAVC}</th>
                           <th align="center">${%Last Version}</th>
                           <th align="center">${%Scope}</th>
                         </tr>
@@ -28,11 +28,11 @@
 
             <j:set var="ancestors" value="${it.getAncestors()}"/>
             <j:if test="${!ancestors.isEmpty()}">
-                <h2>${%Corporate Users}</h2>
+                <h2>${%Used by}</h2>
                 <p>
                     <table class="sortable pane bigtable" id="AncestorsTable">
                         <tr>
-                          <th align="center">${%Artifact Source}</th>
+                          <th align="center">${%GAVC}</th>
                           <th align="center">${%Scope}</th>
                         </tr>
 
@@ -52,7 +52,7 @@
                 <p>
                     <table class="sortable pane bigtable" id="ThirdPartyLibrariesTable">
                         <tr>
-                          <th align="center">${%Artifact Source}</th>
+                          <th align="center">${%Third party GAVC}</th>
                           <th align="center">${%Scope}</th>
                           <th align="center">${%License}</th>
                         </tr>
