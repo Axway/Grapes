@@ -32,7 +32,7 @@ public class DependencyListView extends View {
     private Decorator decorator;
 
     // Value of the header of the column "source" in the dependency table
-    public final static String SOURCE_FIELD = "Source Name";
+    public final static String SOURCE_FIELD = "Source";
 
     // Value of the header of the column "source version" in the dependency table
     public final static String SOURCE_VERSION_FIELD = "Source Version";

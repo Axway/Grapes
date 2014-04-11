@@ -122,11 +122,23 @@ public interface ServerAPI {
     /** Value - {@value}, boolean query parameter used to show the licenses in reports.*/
     public static final String SHOW_LICENSE_PARAM = "showLicenses";
 
+    /** Value - {@value}, boolean query parameter used to show the license comments in reports.*/
+    public static final String SHOW_LICENSE_COMMENT_PARAM = "showLicenseComments";
+
+    /** Value - {@value}, boolean query parameter used to show the license urls in reports.*/
+    public static final String SHOW_LICENSE_URL_PARAM = "showLicenseUrls";
+
+    /** Value - {@value}, boolean query parameter used to show the license long names in reports.*/
+    public static final String SHOW_LICENSE_FULL_NAME_PARAM = "showLicenseFullNames";
+
     /** Value - {@value}, boolean query parameter used to show the sizes in reports.*/
     public static final String SHOW_SIZE = "showSize";
 
+    /** Value - {@value}, boolean query parameter used to show the target GAVC in reports.*/
+    public static final String SHOW_TARGET_PARAM = "showTargets";
+
     /** Value - {@value}, boolean query parameter used to show the download URLs in reports.*/
-    public static final String SHOW_URL_PARAM = "showURLs";
+    public static final String SHOW_TARGET_URL_PARAM = "showTargetUrls";
 
     /** Value - {@value}, boolean query parameter used to show the scopes in reports.*/
     public static final String SHOW_SCOPE_PARAM = "showScopes";
@@ -139,6 +151,9 @@ public interface ServerAPI {
 
     /** Value - {@value}, boolean query parameter used to show dependency sources in reports.*/
     public static final String SHOW_SOURCES_PARAM = "showSources";
+
+    /** Value - {@value}, boolean query parameter used to show dependency sources version in reports.*/
+    public static final String SHOW_SOURCES_VERSION_PARAM = "showSourceVersions";
 
     /** Value - {@value}, boolean query parameter used to show artifacts provider in reports.*/
     public static final String SHOW_PROVIDERS_PARAM = "showProviders";
@@ -184,5 +199,4 @@ public interface ServerAPI {
 
     /** Value - {@value}, String query parameter used to filter artifacts.*/
     public static final String PROVIDER_PARAM = "provider";
-
 }

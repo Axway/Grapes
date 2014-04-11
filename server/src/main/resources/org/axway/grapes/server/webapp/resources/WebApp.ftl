@@ -99,10 +99,12 @@
                     <div class="span12" id="actions" style="margin-top:8px;padding:8px">
                         <div class="row-fluid">
                             <div class="span12" id="action"></div>
-                            </div>
                         </div>
                         <div class="row-fluid">
-                            <div class="span12" id="results"></div>
+                            <div class="span12" id="optional-action"></div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12" id="results" style="padding:10px"></div>
                         </div>
                         <div class="row-fluid">
                             <div class="span12" id="extra-action"></div>
@@ -226,6 +228,9 @@
 
  		<!-- Make the table sortable -->
         <script src="/public/jquery-tablesorter-1.10.2/jquery.tablesorter.min.js"></script>
+
+ 		<!-- Handle CSV exports -->
+        <script src="/assets/js/export-csv.js"></script>
 
 	</body>
 </html>

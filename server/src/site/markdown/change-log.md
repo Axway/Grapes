@@ -5,6 +5,9 @@
 * Fix duplication of dependencies during the notifications
 * [Github issue #8](https://github.com/Axway/Grapes/issues/8) Remove module internal dependencies from ancestor lists
 * Remove module internal dependencies for module dependency lists
+* Make dependency lists sortable
+* Enhance module license report in data browser
+* Add spinner in data browser during request processing
 
 1.1.0
 -------------

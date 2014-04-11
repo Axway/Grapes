@@ -21,13 +21,13 @@ function displayModuleOptions(){
 	$("#filters").empty().append(moduleFilters);
 	var moduleActions = ""
 	moduleActions += "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
-	moduleActions += "   <div class=\"row-fluid\">\n";
+	moduleActions += "   <div id=\"moduleActions\" class=\"row-fluid\">\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleOverview();' id=\"overviewButton\">Overview</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleDependencies();'>Dependencies</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleThirdParty();'>Third Party</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleAncestors();'>Ancestors</button>\n";
-	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleLicenses();'>Licenses</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModulePromotionReport();'>Promotion Report</button>\n";
+	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='displayModuleLicenseOptions();'>Licenses</button>\n";
 	moduleActions += "   </div>\n";
 	moduleActions += "</div>\n";
 	$("#action").empty().append(moduleActions);
@@ -118,12 +118,29 @@ function displayLicenseOptions(){
 
 	$("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getLicenseList(\"licenseName\", \"toBeValidated\", \"validated\", \"unvalidated\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
 }
+/**************************************************************************************************/
+/*             Add optional actions to the web-app regarding the selected action                  */
+/**************************************************************************************************/
+function displayModuleLicenseOptions(){
+	var moduleLicenseOptionalActions = ""
+	moduleLicenseOptionalActions += "<button id=\"fullRecursive\" type=\"button\" class=\"btn btn-primary action-button\" data-toggle=\"button\" onclick='updateLicenseReport();' >On full corporate tree</button>\n";
+	moduleLicenseOptionalActions += "<a href=\"#\" class=\"btn btn-primary action-button export\">CSV export</a>\n";
+	$("#optional-action").empty().append(moduleLicenseOptionalActions);
+
+	getModuleLicenses();
+
+	$(".export").on('click', function (event) {
+        exportTableToCSV.apply(this, [$('#table'), 'export.csv']);
+    });
+
+}
 
 /********************************************************************/
 /*          Fill web-app targets regarding the filters               */
 /********************************************************************/
 function getModuleList(moduleNameFieldId, moduleVersionFieldId, promotedFieldId, targetedFieldId){
     $("#" + targetedFieldId).empty();
+    $('.alert').hide();
     cleanAction();
     var moduleName = $("#" + moduleNameFieldId).val();
     var moduleVersion = $("#" + moduleVersionFieldId).val();
@@ -168,6 +185,7 @@ function getModuleList(moduleNameFieldId, moduleVersionFieldId, promotedFieldId,
 
 function getArtifactList(groupIdFieldId, artifactIdFieldId, versionFieldId, doNotUseFieldId, targetedFieldId){
     $("#" + targetedFieldId).empty();
+    $('.alert').hide();
     cleanAction();
     var groupId = $("#" + groupIdFieldId).val();
     var artifactId = $("#" + artifactIdFieldId).val();
@@ -224,6 +242,7 @@ function getArtifactList(groupIdFieldId, artifactIdFieldId, versionFieldId, doNo
 
 function getLicenseList(licenseNameFieldId, toBeValidatedFieldId, validatedFieldId, unvalidatedFieldId, targetedFieldId){
     $("#" + targetedFieldId).empty();
+    $('.alert').hide();
     cleanAction();
 
     var licenceName = $("#" + licenseNameFieldId).val();
@@ -272,6 +291,8 @@ function getLicenseList(licenseNameFieldId, toBeValidatedFieldId, validatedField
 /*               Actions definitions                    */
 /********************************************************/
 function getModuleOverview(){
+    $("#optional-action").empty();
+
     if($('input[name=moduleId]:checked', '#targets').size() == 0){
         $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
         $("#anyAlert").show();
@@ -294,6 +315,8 @@ function getModuleOverview(){
 }
 
 function getModuleDependencies(){
+    $("#optional-action").empty();
+
     if($('input[name=moduleId]:checked', '#targets').size() == 0){
         $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
         $("#anyAlert").show();
@@ -317,6 +340,8 @@ function getModuleDependencies(){
 }
 
 function getModuleThirdParty(){
+    $("#optional-action").empty();
+
     if($('input[name=moduleId]:checked', '#targets').size() == 0){
         $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
         $("#anyAlert").show();
@@ -340,6 +365,8 @@ function getModuleThirdParty(){
 }
 
 function getModuleAncestors(){
+    $("#optional-action").empty();
+
     if($('input[name=moduleId]:checked', '#targets').size() == 0){
         $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
         $("#anyAlert").show();
@@ -372,19 +399,30 @@ function getModuleLicenses(){
     var splitter = moduleId.lastIndexOf(':');
 	var moduleVersion = moduleId.substring(splitter + 1);
 	var moduleName = moduleId.replace(':'+moduleVersion, '');
+	var queryParams = "showScopes=false&showLicenseUrls=true&showLicenseFullNames=true&showThirdparty=true&corporate=false";
+
+	if($('#fullRecursive').hasClass('active')){
+	    queryParams += "&showSources=true&showLicenses=false&fullRecursive=true";
+	}
+	else{
+	     queryParams += "&showSources=false&showLicenses=true";
+	}
 
 	$.ajax({
             type: "GET",
-            url: "/module/"+ moduleName + "/" + moduleVersion + "/licenses" ,
+            url: "/module/"+ moduleName + "/" + moduleVersion + "/dependencies?" + queryParams ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
                 $("#results").empty().append($(data).filter(".row-fluid"));
+                $('.sortable').tablesorter();
             }
         })
 }
 
 function getModulePromotionReport(){
+    $("#optional-action").empty();
+
     if($('input[name=moduleId]:checked', '#targets').size() == 0){
         $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
         $("#anyAlert").show();
@@ -808,6 +846,7 @@ function rejectLicense(){
 function cleanAction(){
     $(".action-button").removeClass('active');
     $("#results").empty();
+    $("#optional-action").empty();
     $("#extra-action").empty();
 }
 
@@ -840,5 +879,12 @@ function updateLicenseAction(){
 function updateLicenseOptions(){
     setTimeout(function(){
       displayLicenseOptions();
+    }, 500);
+}
+
+/*WorkAround*/
+function updateLicenseReport(){
+    setTimeout(function(){
+      getModuleLicenses();
     }, 500);
 }
