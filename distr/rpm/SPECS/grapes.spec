@@ -224,17 +224,19 @@ if [ "$1" == "1" ]; then
   # start application at first install (uncomment next line this behaviour not expected)
   # %{_initrddir}/%{ciapp} start
 
-  # Configure mongo
-  # set mongodb listen port and restart it
-  sed -i 's|#port = 27017|port = %{cimongoport}|g' %{_sysconfdir}/mongodb.conf
-  service mongodb restart
-  sleep 10
+  if [ -f %{_sysconfdir}/mongodb.conf ]; then
+    # Configure mongo
+    # set mongodb listen port and restart it
+    sed -i 's|#port = 27017|port = %{cimongoport}|g' %{_sysconfdir}/mongodb.conf
+    service mongodb restart
+    sleep 10
 
-  # add grapes user & db
-  cat << EOF1 | mongo --port %{cimongoport}
+    # add grapes user & db
+    cat << EOF1 | mongo --port %{cimongoport}
 use %{cimongodb}
 db.addUser("%{cimongouser}","%{cimongopassword}");
 EOF1
+  fi
 
 else
   # Update time, restart application if it was running
