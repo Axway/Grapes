@@ -18,7 +18,7 @@
 # ex: 1.0.0, 2.0.1-8, 3.5.0-1
 #
 %if 0%{?APP_VERSION}
-%define app_ver %{JENKINS_REL}
+%define app_ver %{APP_VERSION}
 %else
 %define app_ver 1.1.0
 %endif
