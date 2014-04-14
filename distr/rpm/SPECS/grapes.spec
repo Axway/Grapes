@@ -209,11 +209,11 @@ fi
 # First install time, register service, generate random passwords and start application
 if [ "$1" == "1" ]; then
   # register app as service
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos} || 0%{?suse_version} < 1200
+  chkconfig %{ciapp} on
+%else
   systemctl enable %{ciapp}.service >/dev/null 2>&1
-
-  %if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
-    chkconfig %{ciapp} on
-  %endif
+%endif
 
   # Generated random password for RO and RW accounts
   RANDOMVAL=`echo $RANDOM | md5sum | sed "s| -||g" | tr -d " "`
