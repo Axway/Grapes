@@ -274,7 +274,7 @@ fi
 %attr(0755,%{ciappusername},%{ciappusername}) %dir %{ciapptmpdir}
 
 %changelog
-* Mon Apr 14 2014 jdcoffre@gmail.com 1.1.0-3
+* Mon Apr 14 2014 henri.gomez@gmail.com 1.1.0-3
 - Update spec file for OBS
 
 * Tue Apr 8 2014 jdcoffre@gmail.com 1.1.0-2
