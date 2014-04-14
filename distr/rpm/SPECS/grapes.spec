@@ -26,7 +26,7 @@
 #
 # RPM release, to be updated when app_ver/app_rel don't change but spec file has been updated
 #
-%define rpm_rel    2
+%define rpm_rel    3
 
 
 
@@ -274,6 +274,9 @@ fi
 %attr(0755,%{ciappusername},%{ciappusername}) %dir %{ciapptmpdir}
 
 %changelog
+* Mon Apr 14 2014 jdcoffre@gmail.com 1.1.0-3
+- Update spec file for OBS
+
 * Tue Apr 8 2014 jdcoffre@gmail.com 1.1.0-2
 - Use open source binaries
 
