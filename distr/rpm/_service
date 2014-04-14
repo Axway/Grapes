@@ -1,0 +1,26 @@
+<services>
+
+  <service name="tar_scm">
+    <param name="scm">git</param>
+    <param name="url">https://github.com/Axway/Grapes.git</param>
+  </service>
+
+  <service name="recompress">
+    <param name="compression">gz</param>
+    <param name="file">*.tar</param>
+  </service>
+
+  <service name="extract_file">
+    <param name="archive">*Grapes*.tar.gz</param>
+    <param name="files">Grapes*/distr/rpm/SOURCES/*</param>
+    <param name="files">Grapes*/distr/rpm/SPECS/*.spec</param>
+  </service>
+
+  <service name="download_url">
+   <param name="host">github.com</param>
+   <param name="protocol">https</param>
+   <param name="path">/Axway/Grapes/releases/download/1.1.0/grapes-1.1.0.zip</param>
+   <param name="filename">grapes-1.1.0.zip</param>
+  </service>
+
+</services>
