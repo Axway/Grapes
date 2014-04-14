@@ -67,9 +67,15 @@ BuildRoot: %{_tmppath}/build-%{name}-%{version}-%{release}
 
 BuildRequires: unzip
 
-Requires: java = 1:1.6.0
+%if 0%{?suse_version}
+Requires: java >= 1.6.0
 Requires: mongodb
-Requires: ciprovisioning-all
+%endif
+
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
+Requires: java >= 1:1.6.0
+Requires: mongodb-org
+%endif
 
 Source0: https://github.com/Axway/Grapes/releases/download/%{app_ver}/grapes-%{app_ver}.zip
 Source1: initd.skel
