@@ -189,7 +189,7 @@ if [ -f %{_sysconfdir}/mongodb.conf ]; then
 %if 0%{?fedora} || 0%{?rhel} || 0%{?centos} || 0%{?suse_version} < 1200
     service mongodb restart
 %else
-    %{_sysconfdir}/init.d/mongodb restart
+    %{_initrddir}/mongodb restart
 %endif
 fi
 
@@ -240,7 +240,7 @@ if [ "$1" == "1" ]; then
 %if 0%{?fedora} || 0%{?rhel} || 0%{?centos} || 0%{?suse_version} < 1200
     service mongodb restart
 %else
-    %{_sysconfdir}/init.d/mongodb restart
+    %{_initrddir}/mongodb restart
 %endif
     sleep 10
 
@@ -276,10 +276,10 @@ if [ "$1" == "0" ]; then
   %{_initrddir}/%{ciapp} stop
 
   # unregister app from services
-  systemctl disable %{ciapp}.service >/dev/null 2>&1
-
-%if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos} || 0%{?suse_version} < 1200
   chkconfig %{ciapp} off
+%else
+  systemctl disable %{ciapp}.service >/dev/null 2>&1
 %endif
 fi
 
