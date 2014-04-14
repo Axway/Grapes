@@ -53,7 +53,7 @@ BuildArch:  noarch
 %define ciappexec         %{ciappbindir}/server.sh
 %define ciappdatadir      %{_var}/lib/%{ciapp}
 %define ciapplogdir       %{_var}/log/%{ciapp}
-%define ciapptmpdir       /tmp/%{ciapp}
+%define ciapptmpdir       %{_var}/run/%{ciapp}
 
 %define cimongouser       admin
 %define cimongopassword   admin
@@ -223,6 +223,19 @@ if [ "$1" == "1" ]; then
 
   # start application at first install (uncomment next line this behaviour not expected)
   # %{_initrddir}/%{ciapp} start
+
+  # Configure mongo
+  # set mongodb listen port and restart it
+  sed -i 's|#port = 27017|port = %{cimongoport}|g' %{_sysconfdir}/mongodb.conf
+  service mongodb restart
+  sleep 10
+
+  # add grapes user & db
+  cat << EOF1 | mongo --port %{cimongoport}
+use %{cimongodb}
+db.addUser("%{cimongouser}","%{cimongopassword}");
+EOF1
+
 else
   # Update time, restart application if it was running
   if [ "$1" == "2" ]; then
@@ -232,21 +245,6 @@ else
       rm -f %{ciapplogdir}/rpm-update-stop
     fi
   fi
-fi
-
-# Configure mongo
-if [ "$1" == "1" ]; then
-
-# set mongodb listen port and restart it
-sed -i 's|#port = 27017|port = %{cimongoport}|g' %{_sysconfdir}/mongodb.conf
-service mongodb restart
-sleep 10
-
-# add grapes user & db
-cat << EOF1 | mongo --port %{cimongoport}
-use %{cimongodb}
-db.addUser("%{cimongouser}","%{cimongopassword}");
-EOF1
 fi
 
 # Ensure that installation is sucessfull even if the mongo credentials are not stored
