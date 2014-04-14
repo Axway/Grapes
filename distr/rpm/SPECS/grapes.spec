@@ -278,8 +278,14 @@ fi
 
 %files
 %defattr(-,root,root)
+%dir %{ciappdir}
 %attr(0755,root,root) %{_initrddir}/%{ciapp}
+
+%if 0%{?suse_version} > 1140
+%dir %{_systemddir}
+%dir %{_systemdir}
 %attr(0644,root,root) %{_systemdir}/%{ciapp}.service
+%endif
 
 %if 0%{?suse_version} > 1000
 %{_var}/adm/fillup-templates/sysconfig.%{ciapp}
