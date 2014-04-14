@@ -136,6 +136,11 @@ sed -i 's|@@SKEL_USER@@|%{ciappusername}|g' %{buildroot}%{_sysconfdir}/sysconfig
 sed -i 's|@@SKEL_CONFDIR@@|%{ciappconfdir}|g' %{buildroot}%{_sysconfdir}/sysconfig/%{ciapp}
 sed -i 's|@@SKEL_TMPDIR@@|%{ciapptmpdir}|g' %{buildroot}%{_sysconfdir}/sysconfig/%{ciapp}
 
+%if 0%{?suse_version} > 1000
+mkdir -p %{buildroot}%{_var}/adm/fillup-templates
+mv %{buildroot}%{_sysconfdir}/sysconfig/%{ciapp} %{buildroot}%{_var}/adm/fillup-templates/sysconfig.%{ciapp}
+%endif
+
 # JMX (including JMX Remote)
 cp %{SOURCE3}  %{buildroot}%{ciappconfdir}
 cp %{SOURCE4}  %{buildroot}%{ciappconfdir}
@@ -272,7 +277,14 @@ fi
 %defattr(-,root,root)
 %attr(0755,root,root) %{_initrddir}/%{ciapp}
 %attr(0644,root,root) %{_systemdir}/%{ciapp}.service
+
+%if 0%{?suse_version} > 1000
+%{_var}/adm/fillup-templates/sysconfig.%{ciapp}
+%else
+%dir %{_sysconfdir}/sysconfig
 %config(noreplace) %{_sysconfdir}/sysconfig/%{ciapp}
+%endif
+
 %config %{_sysconfdir}/logrotate.d/%{ciapp}
 %config %{_sysconfdir}/security/limits.d/%{ciapp}.conf
 %{ciappdir}/bin
