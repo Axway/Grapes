@@ -202,6 +202,9 @@ fi
 %if 0%{?suse_version} > 1140
 %service_add_post %{ciapp}.service
 %endif
+%if 0%{?suse_version} > 1000
+%fillup_only -n %{ciapp}
+%endif
 
 # First install time, register service, generate random passwords and start application
 if [ "$1" == "1" ]; then
