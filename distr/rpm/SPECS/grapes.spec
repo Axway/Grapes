@@ -154,10 +154,12 @@ sed -i 's|@@SKEL_LOGDIR@@|%{ciapplogdir}|g' %{buildroot}%{ciappbindir}/server.sh
 cp %{SOURCE6} %{buildroot}%{_sysconfdir}/security/limits.d/%{ciapp}.conf
 sed -i 's|@@SKEL_USER@@|%{ciappusername}|g' %{buildroot}%{_sysconfdir}/security/limits.d/%{ciapp}.conf
 
+%if 0%{?suse_version} > 1140
 # Setup Systemd
 cp %{SOURCE7} %{buildroot}%{_systemdir}/%{ciapp}.service
 sed -i 's|@@SKEL_APP@@|%{ciapp}|g' %{buildroot}%{_systemdir}/%{ciapp}.service
 sed -i 's|@@SKEL_EXEC@@|%{ciappexec}|g' %{buildroot}%{_systemdir}/%{ciapp}.service
+%endif
 
 # Setup application configuration
 cp %{SOURCE8} %{buildroot}%{ciappconfdir}/server-conf.yml
