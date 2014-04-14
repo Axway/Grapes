@@ -17,8 +17,11 @@
 # app_ver is application version provided by build script from Maven Artifact version
 # ex: 1.0.0, 2.0.1-8, 3.5.0-1
 #
-
-%define app_ver    %{APP_VERSION}
+%if 0%{?APP_VERSION}
+%define app_ver %{JENKINS_REL}
+%else
+%define app_ver 1.1.0
+%endif
 
 #
 # RPM release, to be updated when app_ver/app_rel don't change but spec file has been updated
@@ -30,7 +33,7 @@
 Name: grapes
 Version: %{app_ver}
 Release: %{rpm_rel}
-Summary: Grapes v%{APP_VERSION}
+Summary: Grapes v%{app_ver}
 Group: CI/grapes
 URL: http://www.grapes-project.org/
 Vendor: Grapes-Project-OSS
@@ -66,7 +69,7 @@ Requires: java = 1:1.6.0
 Requires: mongodb
 Requires: ciprovisioning-all
 
-Source0: %{APP_FILE}
+Source0: https://github.com/Axway/Grapes/releases/download/%{app_ver}/grapes-%{app_ver}.zip
 Source1: initd.skel
 Source2: sysconfig.skel
 Source3: jmxremote.access.skel
