@@ -58,9 +58,10 @@ BuildArch:  noarch
 %define cimongouser       admin
 %define cimongopassword   admin
 %define cimongoport   	  12441
-%define cimongodb   	  grapes
+%define cimongodb   	    grapes
 
-%define _systemdir        /lib/systemd/system
+%define _systemddir       /lib/systemd
+%define _systemdir        %{_systemddir}/system
 %define _initrddir        %{_sysconfdir}/init.d
 
 BuildRoot: %{_tmppath}/build-%{name}-%{version}-%{release}
