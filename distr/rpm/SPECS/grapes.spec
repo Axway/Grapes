@@ -185,7 +185,9 @@ rm -rf %{buildroot}
 %if 0%{?suse_version} > 1140
 %service_add_pre %{ciapp}.service
 %endif
-service mongodb restart
+if [ -f %{_sysconfdir}/mongodb.conf ]; then
+  service mongodb restart
+fi
 
 # First install time, add user and group
 if [ "$1" == "1" ]; then
