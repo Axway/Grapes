@@ -186,7 +186,11 @@ rm -rf %{buildroot}
 %service_add_pre %{ciapp}.service
 %endif
 if [ -f %{_sysconfdir}/mongodb.conf ]; then
-  service mongodb restart
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos} || 0%{?suse_version} < 1200
+    service mongodb restart
+%else
+    %{_sysconfdir}/init.d/mongodb restart
+%endif
 fi
 
 # First install time, add user and group
@@ -233,7 +237,11 @@ if [ "$1" == "1" ]; then
     # Configure mongo
     # set mongodb listen port and restart it
     sed -i 's|#port = 27017|port = %{cimongoport}|g' %{_sysconfdir}/mongodb.conf
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos} || 0%{?suse_version} < 1200
     service mongodb restart
+%else
+    %{_sysconfdir}/init.d/mongodb restart
+%endif
     sleep 10
 
     # add grapes user & db
