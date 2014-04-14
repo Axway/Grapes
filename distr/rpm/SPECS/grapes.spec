@@ -297,6 +297,7 @@ fi
 %endif
 
 %config %{_sysconfdir}/logrotate.d/%{ciapp}
+%dir %{_sysconfdir}/security/limits.d
 %config %{_sysconfdir}/security/limits.d/%{ciapp}.conf
 %{ciappdir}/bin
 %{ciappdir}/conf
