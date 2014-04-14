@@ -89,7 +89,7 @@ Source8: server-conf.yml.skel
 Source9: logrotate.skel
 
 %description
-Grapes server v%{APP_VERSION}
+Grapes server v%{app_ver}
 
 %prep
 
