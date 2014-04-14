@@ -65,6 +65,8 @@ BuildArch:  noarch
 
 BuildRoot: %{_tmppath}/build-%{name}-%{version}-%{release}
 
+BuildRequires: unzip
+
 Requires: java = 1:1.6.0
 Requires: mongodb
 Requires: ciprovisioning-all
@@ -107,7 +109,9 @@ mkdir -p %{buildroot}%{ciappdatadir}/repository
 mkdir -p %{buildroot}%{ciapptmpdir}
 
 # copy jar
-cp %{SOURCE0} %{buildroot}%{ciapplibdir}/server.jar
+unzip %{SOURCE0}
+mv grapes-%{app_ver}/grapes-server-%{app_ver}.jar %{buildroot}%{ciapplibdir}/server.jar
+rm -rf grapes-%{app_ver}
 
 # init.d
 cp  %{SOURCE1} %{buildroot}%{_initrddir}/%{ciapp}

@@ -44,13 +44,12 @@ download_file_if_needed()
 }
 
 download_file_if_needed ${DOWNLOADURL} SOURCES/grapes-${ARTIFACT_VERSION}.zip
-unzip SOURCES/grapes-${ARTIFACT_VERSION}.zip -d SOURCES/
 
 # prepare fresh directories
 rm -rf BUILD RPMS SRPMS TEMP
 mkdir -p BUILD RPMS SRPMS TEMP
 
 # Build using rpmbuild (use double-quote for define to have shell resolv vars !)
-rpmbuild -bb --define="_topdir $PWD" --define="_tmppath $PWD/TEMP" --define="APP_VERSION ${ARTIFACT_VERSION}"  --define="APP_RELEASE $ARTIFACT_RPM_RELEASE" --define "APP_FILE grapes-server-${ARTIFACT_VERSION}.jar" SPECS/grapes.spec
+rpmbuild -bb --define="_topdir $PWD" --define="_tmppath $PWD/TEMP" --define="APP_VERSION ${ARTIFACT_VERSION}"  --define="APP_RELEASE $ARTIFACT_RPM_RELEASE" SPECS/grapes.spec
 
 rpm -qpi --changelog RPMS/noarch/*.rpm
