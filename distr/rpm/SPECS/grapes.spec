@@ -174,11 +174,11 @@ chmod 755 %{buildroot}%{ciappbindir}/*.sh
 rm -rf %{buildroot}
 
 %pre
-service mongodb restart
-
 %if 0%{?suse_version} > 1140
 %service_add_pre %{ciapp}.service
 %endif
+service mongodb restart
+
 # First install time, add user and group
 if [ "$1" == "1" ]; then
   %{_sbindir}/groupadd -r -g %{ciappgroupid} %{ciappusername} 2>/dev/null || :
