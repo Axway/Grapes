@@ -1,16 +1,16 @@
 http:
-  bindHost: @@APP_HTTP_HOST@@
-  port: @@APP_HTTP_PORT@@
-  adminPort: @@APP_HTTP_ADMIN_PORT@@
-  adminUsername: @@APP_ADMIN_USERNAME@@
-  adminPassword: @@APP_ADMIN_PASSWORD@@
+  bindHost: @APP_HTTP_HOST@
+  port: @APP_HTTP_PORT@
+  adminPort: @APP_HTTP_ADMIN_PORT@
+  adminUsername: @APP_ADMIN_USERNAME@
+  adminPassword: @APP_ADMIN_PASSWORD@
 database:
-  host: @@APP_DATABASE_HOST@@
-  port: @@APP_DATABASE_PORT@@
-  user: @@APP_DATABASE_USER@@
-  pwd: @@APP_DATABASE_PASSWORD@@
-  datastore: @@APP_DATABASE_DATASTORE@@
-  dbsystem: @@APP_DATABASE_DBSYSTEM@@
+  host: @APP_DATABASE_HOST@
+  port: @APP_DATABASE_PORT@
+  user: @APP_DATABASE_USER@
+  pwd: @APP_DATABASE_PASSWORD@
+  datastore: @APP_DATABASE_DATASTORE@
+  dbsystem: @APP_DATABASE_DBSYSTEM@
 logging:
   level: INFO
   file:
