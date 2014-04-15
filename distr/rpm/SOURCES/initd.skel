@@ -49,13 +49,15 @@ start() {
       XREPLACE="$XREPLACE | sed 's|@${RES_KEY}@|$RES_VAL|g'"
     done
 
-    for XFILE in $APP_HOME/conf/jmxremote.access.skel $APP_HOME/conf/jmxremote.password.skel; do
+    for XFILE in $APP_HOME/conf/server-conf.yml.skel $APP_HOME/conf/jmxremote.access.skel $APP_HOME/conf/jmxremote.password.skel; do
       DXFILE=${XFILE%.skel}
       eval "cat ${XFILE} $XREPLACE > ${DXFILE}"
     done
 
+	chmod 400 $APP_HOME/conf/server-conf.yml
 	chmod 400 $APP_HOME/conf/jmxremote.access
 	chmod 400 $APP_HOME/conf/jmxremote.password
+	chown $user:$user $APP_HOME/conf/server-conf.yml
 	chown $user:$user $APP_HOME/conf/jmxremote.access
 	chown $user:$user $APP_HOME/conf/jmxremote.password
 

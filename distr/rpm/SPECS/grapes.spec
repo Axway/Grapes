@@ -35,7 +35,7 @@ Version: %{app_ver}
 Release: %{rpm_rel}
 Summary: Grapes v%{app_ver}
 Group: Development/Tools/Building
-URL: http://www.grapes-project.org/
+URL: https://github.com/Axway/Grapes/wiki
 Vendor: Grapes-Project-OSS
 Packager: Grapes-Project-OSS
 License: The Apache Software License, Version 2.0
@@ -54,11 +54,6 @@ BuildArch:  noarch
 %define ciappdatadir      %{_var}/lib/%{ciapp}
 %define ciapplogdir       %{_var}/log/%{ciapp}
 %define ciapptmpdir       %{_var}/run/%{ciapp}
-
-%define cimongouser       admin
-%define cimongopassword   admin
-%define cimongoport   	  12441
-%define cimongodb   	    grapes
 
 %define _systemddir       /lib/systemd
 %define _systemdir        %{_systemddir}/system
@@ -81,12 +76,10 @@ BuildRequires: unzip
 
 %if 0%{?suse_version}
 Requires: java >= 1.6.0
-Requires: mongodb
 %endif
 
 %if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
 Requires: java >= 1:1.6.0
-Requires: mongodb-org
 %endif
 
 Source0: https://github.com/Axway/Grapes/releases/download/%{app_ver}/grapes-%{app_ver}.zip
@@ -176,13 +169,9 @@ sed -i 's|@@SKEL_EXEC@@|%{ciappexec}|g' %{buildroot}%{_systemdir}/%{ciapp}.servi
 %endif
 
 # Setup application configuration
-cp %{SOURCE8} %{buildroot}%{ciappconfdir}/server-conf.yml
-sed -i 's|@@SKEL_APP@@|%{ciapp}|g' %{buildroot}%{ciappconfdir}/server-conf.yml
-sed -i 's|@@SKEL_LOGDIR@@|%{ciapplogdir}|g' %{buildroot}%{ciappconfdir}/server-conf.yml
-sed -i 's|@@DATABASE_PORT@@|%{cimongoport}|g' %{buildroot}%{ciappconfdir}/server-conf.yml
-sed -i 's|@@DATABASE_USER@@|%{cimongouser}|g' %{buildroot}%{ciappconfdir}/server-conf.yml
-sed -i 's|@@DATABASE_PASSWORD@@|%{cimongopassword}|g' %{buildroot}%{ciappconfdir}/server-conf.yml
-sed -i 's|@@DATABASE_NAME@@|%{cimongodb}|g' %{buildroot}%{ciappconfdir}/server-conf.yml
+cp %{SOURCE8} %{buildroot}%{ciappconfdir}/server-conf.yml.skel
+sed -i 's|@@SKEL_APP@@|%{ciapp}|g' %{buildroot}%{ciappconfdir}/server-conf.yml.skel
+sed -i 's|@@SKEL_LOGDIR@@|%{ciapplogdir}|g' %{buildroot}%{ciappconfdir}/server-conf.yml.skel
 
 # Install logrotate
 cp %{SOURCE9} %{buildroot}%{_sysconfdir}/logrotate.d/%{ciapp}
@@ -198,13 +187,6 @@ rm -rf %{buildroot}
 %if 0%{?suse_version} > 1140
 %service_add_pre %{ciapp}.service
 %endif
-if [ -f %{_sysconfdir}/mongodb.conf ]; then
-%if 0%{?fedora} || 0%{?rhel} || 0%{?centos} || 0%{?suse_version} < 1200
-    service mongodb restart
-%else
-    %{_initrddir}/mongodb restart
-%endif
-fi
 
 # First install time, add user and group
 if [ "$1" == "1" ]; then
@@ -245,24 +227,6 @@ if [ "$1" == "1" ]; then
 
   # start application at first install (uncomment next line this behaviour not expected)
   # %{_initrddir}/%{ciapp} start
-
-  if [ -f %{_sysconfdir}/mongodb.conf ]; then
-    # Configure mongo
-    # set mongodb listen port and restart it
-    sed -i 's|#port = 27017|port = %{cimongoport}|g' %{_sysconfdir}/mongodb.conf
-%if 0%{?fedora} || 0%{?rhel} || 0%{?centos} || 0%{?suse_version} < 1200
-    service mongodb restart
-%else
-    %{_initrddir}/mongodb restart
-%endif
-    sleep 10
-
-    # add grapes user & db
-    cat << EOF1 | mongo --port %{cimongoport}
-use %{cimongodb}
-db.addUser("%{cimongouser}","%{cimongopassword}");
-EOF1
-  fi
 
 else
   # Update time, restart application if it was running
@@ -335,6 +299,10 @@ exit 0
 %attr(0755,%{ciappusername},%{ciappusername}) %dir %{ciappdatadir}/repository
 
 %changelog
+* Tue Apr 15 2014 henri.gomez@gmail.com 1.1.0-4
+- Remove Mongo requirements, server could be hosted elsewhere
+- Modify init.d to generate server-conf.yml at startup time from server-conf.yml.skel 
+
 * Mon Apr 14 2014 henri.gomez@gmail.com 1.1.0-3
 - Update spec file for OBS
 
