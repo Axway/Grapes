@@ -17,21 +17,24 @@
 # app_ver is application version provided by build script from Maven Artifact version
 # ex: 1.0.0, 2.0.1-8, 3.5.0-1
 #
-
-%define app_ver    %{APP_VERSION}
+%if 0%{?APP_VERSION}
+%define app_ver %{APP_VERSION}
+%else
+%define app_ver 1.1.0
+%endif
 
 #
 # RPM release, to be updated when app_ver/app_rel don't change but spec file has been updated
 #
-%define rpm_rel    2
+%define rpm_rel    3
 
 
 
 Name: grapes
 Version: %{app_ver}
 Release: %{rpm_rel}
-Summary: Grapes v%{APP_VERSION}
-Group: CI/grapes
+Summary: Grapes v%{app_ver}
+Group: Development/Tools/Building
 URL: http://www.grapes-project.org/
 Vendor: Grapes-Project-OSS
 Packager: Grapes-Project-OSS
@@ -50,23 +53,43 @@ BuildArch:  noarch
 %define ciappexec         %{ciappbindir}/server.sh
 %define ciappdatadir      %{_var}/lib/%{ciapp}
 %define ciapplogdir       %{_var}/log/%{ciapp}
-%define ciapptmpdir       /tmp/%{ciapp}
+%define ciapptmpdir       %{_var}/run/%{ciapp}
 
 %define cimongouser       admin
 %define cimongopassword   admin
 %define cimongoport   	  12441
-%define cimongodb   	  grapes
+%define cimongodb   	    grapes
 
-%define _systemdir        /lib/systemd/system
+%define _systemddir       /lib/systemd
+%define _systemdir        %{_systemddir}/system
 %define _initrddir        %{_sysconfdir}/init.d
 
 BuildRoot: %{_tmppath}/build-%{name}-%{version}-%{release}
 
-Requires: java = 1:1.6.0
-Requires: mongodb
-Requires: ciprovisioning-all
+%if 0%{?suse_version} > 1140
+BuildRequires: systemd
+%{?systemd_requires}
+%else
+%define systemd_requires %{nil}
+%endif
 
-Source0: %{APP_FILE}
+%if 0%{?suse_version} > 1000
+PreReq: %fillup_prereq
+%endif
+
+BuildRequires: unzip
+
+%if 0%{?suse_version}
+Requires: java >= 1.6.0
+Requires: mongodb
+%endif
+
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
+Requires: java >= 1:1.6.0
+Requires: mongodb-org
+%endif
+
+Source0: https://github.com/Axway/Grapes/releases/download/%{app_ver}/grapes-%{app_ver}.zip
 Source1: initd.skel
 Source2: sysconfig.skel
 Source3: jmxremote.access.skel
@@ -78,7 +101,7 @@ Source8: server-conf.yml.skel
 Source9: logrotate.skel
 
 %description
-Grapes server v%{APP_VERSION}
+Grapes server v%{app_ver}
 
 %prep
 
@@ -104,7 +127,9 @@ mkdir -p %{buildroot}%{ciappdatadir}/repository
 mkdir -p %{buildroot}%{ciapptmpdir}
 
 # copy jar
-cp %{SOURCE0} %{buildroot}%{ciapplibdir}/server.jar
+unzip %{SOURCE0}
+mv grapes-%{app_ver}/grapes-server-%{app_ver}.jar %{buildroot}%{ciapplibdir}/server.jar
+rm -rf grapes-%{app_ver}
 
 # init.d
 cp  %{SOURCE1} %{buildroot}%{_initrddir}/%{ciapp}
@@ -123,6 +148,11 @@ sed -i 's|@@SKEL_USER@@|%{ciappusername}|g' %{buildroot}%{_sysconfdir}/sysconfig
 sed -i 's|@@SKEL_CONFDIR@@|%{ciappconfdir}|g' %{buildroot}%{_sysconfdir}/sysconfig/%{ciapp}
 sed -i 's|@@SKEL_TMPDIR@@|%{ciapptmpdir}|g' %{buildroot}%{_sysconfdir}/sysconfig/%{ciapp}
 
+%if 0%{?suse_version} > 1000
+mkdir -p %{buildroot}%{_var}/adm/fillup-templates
+mv %{buildroot}%{_sysconfdir}/sysconfig/%{ciapp} %{buildroot}%{_var}/adm/fillup-templates/sysconfig.%{ciapp}
+%endif
+
 # JMX (including JMX Remote)
 cp %{SOURCE3}  %{buildroot}%{ciappconfdir}
 cp %{SOURCE4}  %{buildroot}%{ciappconfdir}
@@ -131,15 +161,19 @@ cp %{SOURCE4}  %{buildroot}%{ciappconfdir}
 cp %{SOURCE5} %{buildroot}%{ciappbindir}/server.sh
 sed -i 's|@@SKEL_APP@@|%{ciapp}|g' %{buildroot}%{ciappbindir}/server.sh
 sed -i 's|@@SKEL_LOGDIR@@|%{ciapplogdir}|g' %{buildroot}%{ciappbindir}/server.sh
+sed -i 's|@@SKEL_VERSION@@|version %{version} release %{release}|g' %{buildroot}%{ciappbindir}/server.sh
+sed -i 's|@@SKEL_TMPDIR@@|%{ciapptmpdir}|g' %{buildroot}%{ciappbindir}/server.sh
 
 # Setup user limits
 cp %{SOURCE6} %{buildroot}%{_sysconfdir}/security/limits.d/%{ciapp}.conf
 sed -i 's|@@SKEL_USER@@|%{ciappusername}|g' %{buildroot}%{_sysconfdir}/security/limits.d/%{ciapp}.conf
 
+%if 0%{?suse_version} > 1140
 # Setup Systemd
 cp %{SOURCE7} %{buildroot}%{_systemdir}/%{ciapp}.service
 sed -i 's|@@SKEL_APP@@|%{ciapp}|g' %{buildroot}%{_systemdir}/%{ciapp}.service
 sed -i 's|@@SKEL_EXEC@@|%{ciappexec}|g' %{buildroot}%{_systemdir}/%{ciapp}.service
+%endif
 
 # Setup application configuration
 cp %{SOURCE8} %{buildroot}%{ciappconfdir}/server-conf.yml
@@ -161,11 +195,17 @@ chmod 755 %{buildroot}%{ciappbindir}/*.sh
 rm -rf %{buildroot}
 
 %pre
-service mongodb restart
-
 %if 0%{?suse_version} > 1140
 %service_add_pre %{ciapp}.service
 %endif
+if [ -f %{_sysconfdir}/mongodb.conf ]; then
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos} || 0%{?suse_version} < 1200
+    service mongodb restart
+%else
+    %{_initrddir}/mongodb restart
+%endif
+fi
+
 # First install time, add user and group
 if [ "$1" == "1" ]; then
   %{_sbindir}/groupadd -r -g %{ciappgroupid} %{ciappusername} 2>/dev/null || :
@@ -184,15 +224,18 @@ fi
 %if 0%{?suse_version} > 1140
 %service_add_post %{ciapp}.service
 %endif
+%if 0%{?suse_version} > 1000
+%fillup_only -n %{ciapp}
+%endif
 
 # First install time, register service, generate random passwords and start application
 if [ "$1" == "1" ]; then
   # register app as service
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos} || 0%{?suse_version} < 1200
+  chkconfig %{ciapp} on
+%else
   systemctl enable %{ciapp}.service >/dev/null 2>&1
-
-  %if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
-    chkconfig %{ciapp} on
-  %endif
+%endif
 
   # Generated random password for RO and RW accounts
   RANDOMVAL=`echo $RANDOM | md5sum | sed "s| -||g" | tr -d " "`
@@ -202,6 +245,25 @@ if [ "$1" == "1" ]; then
 
   # start application at first install (uncomment next line this behaviour not expected)
   # %{_initrddir}/%{ciapp} start
+
+  if [ -f %{_sysconfdir}/mongodb.conf ]; then
+    # Configure mongo
+    # set mongodb listen port and restart it
+    sed -i 's|#port = 27017|port = %{cimongoport}|g' %{_sysconfdir}/mongodb.conf
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos} || 0%{?suse_version} < 1200
+    service mongodb restart
+%else
+    %{_initrddir}/mongodb restart
+%endif
+    sleep 10
+
+    # add grapes user & db
+    cat << EOF1 | mongo --port %{cimongoport}
+use %{cimongodb}
+db.addUser("%{cimongouser}","%{cimongopassword}");
+EOF1
+  fi
+
 else
   # Update time, restart application if it was running
   if [ "$1" == "2" ]; then
@@ -213,22 +275,7 @@ else
   fi
 fi
 
-# Configure mongo
-if [ "$1" == "1" ]; then
-
-# set mongodb listen port and restart it
-sed -i 's|#port = 27017|port = %{cimongoport}|g' %{_sysconfdir}/mongodb.conf
-service mongodb restart
-sleep 10
-
-# add grapes user & db
-cat << EOF1 | mongo --port %{cimongoport}
-use %{cimongodb}
-db.addUser("%{cimongouser}","%{cimongopassword}");
-EOF1
-fi
-
-# Ensure that installation is sucessfull even if the mongo credentials are not stored
+# Ensure that installation is successfull
 exit 0
 
 %preun
@@ -242,12 +289,15 @@ if [ "$1" == "0" ]; then
   %{_initrddir}/%{ciapp} stop
 
   # unregister app from services
-  systemctl disable %{ciapp}.service >/dev/null 2>&1
-
-%if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos} || 0%{?suse_version} < 1200
   chkconfig %{ciapp} off
+%else
+  systemctl disable %{ciapp}.service >/dev/null 2>&1
 %endif
 fi
+
+# Ensure that un-installation is successfull
+exit 0
 
 %postun
 %if 0%{?suse_version} > 1140
@@ -257,20 +307,37 @@ fi
 
 %files
 %defattr(-,root,root)
+%dir %{ciappdir}
 %attr(0755,root,root) %{_initrddir}/%{ciapp}
+
+%if 0%{?suse_version} > 1140
+%dir %{_systemddir}
+%dir %{_systemdir}
 %attr(0644,root,root) %{_systemdir}/%{ciapp}.service
+%endif
+
+%if 0%{?suse_version} > 1000
+%{_var}/adm/fillup-templates/sysconfig.%{ciapp}
+%else
+%dir %{_sysconfdir}/sysconfig
 %config(noreplace) %{_sysconfdir}/sysconfig/%{ciapp}
+%endif
+
 %config %{_sysconfdir}/logrotate.d/%{ciapp}
+%dir %{_sysconfdir}/security/limits.d
 %config %{_sysconfdir}/security/limits.d/%{ciapp}.conf
 %{ciappdir}/bin
 %{ciappdir}/conf
 %{ciappdir}/lib
+%ghost %{ciapptmpdir}
 %attr(0755,%{ciappusername},%{ciappusername}) %dir %{ciappdatadir}
 %attr(0755,%{ciappusername},%{ciappusername}) %dir %{ciapplogdir}
 %attr(0755,%{ciappusername},%{ciappusername}) %dir %{ciappdatadir}/repository
-%attr(0755,%{ciappusername},%{ciappusername}) %dir %{ciapptmpdir}
 
 %changelog
+* Mon Apr 14 2014 henri.gomez@gmail.com 1.1.0-3
+- Update spec file for OBS
+
 * Tue Apr 8 2014 jdcoffre@gmail.com 1.1.0-2
 - Use open source binaries
 
