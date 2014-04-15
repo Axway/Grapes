@@ -129,6 +129,7 @@ sed -i 's|@@SKEL_APP@@|%{ciapp}|g' %{buildroot}%{_initrddir}/%{ciapp}
 sed -i 's|@@SKEL_USER@@|%{ciappusername}|g' %{buildroot}%{_initrddir}/%{ciapp}
 sed -i 's|@@SKEL_VERSION@@|version %{version} release %{release}|g' %{buildroot}%{_initrddir}/%{ciapp}
 sed -i 's|@@SKEL_EXEC@@|%{ciappexec}|g' %{buildroot}%{_initrddir}/%{ciapp}
+sed -i 's|@@SKEL_TMPDIR@@|%{ciapptmpdir}|g' %{buildroot}%{_initrddir}/%{ciapp}
 
 # sysconfig
 cp  %{SOURCE2}  %{buildroot}%{_sysconfdir}/sysconfig/%{ciapp}

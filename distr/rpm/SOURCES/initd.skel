@@ -54,12 +54,18 @@ start() {
       eval "cat ${XFILE} $XREPLACE > ${DXFILE}"
     done
 
-	chmod 400 $APP_HOME/conf/server-conf.yml
-	chmod 400 $APP_HOME/conf/jmxremote.access
-	chmod 400 $APP_HOME/conf/jmxremote.password
-	chown $user:$user $APP_HOME/conf/server-conf.yml
-	chown $user:$user $APP_HOME/conf/jmxremote.access
-	chown $user:$user $APP_HOME/conf/jmxremote.password
+  	# Create Run/Temp dir if not existing
+    if [ ! -d @@SKEL_TMPDIR@@ ]; then
+      mkdir -p @@SKEL_TMPDIR@@
+   	  chown $user:$user @@SKEL_TMPDIR@@
+    fi
+
+	  chmod 400 $APP_HOME/conf/server-conf.yml
+	  chmod 400 $APP_HOME/conf/jmxremote.access
+	  chmod 400 $APP_HOME/conf/jmxremote.password
+	  chown $user:$user $APP_HOME/conf/server-conf.yml
+	  chown $user:$user $APP_HOME/conf/jmxremote.access
+	  chown $user:$user $APP_HOME/conf/jmxremote.password
 
     # start_daemon on Suse, daemon on RH
     if [ -x /sbin/start_daemon ]; then
