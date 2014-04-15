@@ -34,7 +34,7 @@ Name: grapes
 Version: %{app_ver}
 Release: %{rpm_rel}
 Summary: Grapes v%{app_ver}
-Group: CI/grapes
+Group: Development/Tools/Building
 URL: http://www.grapes-project.org/
 Vendor: Grapes-Project-OSS
 Packager: Grapes-Project-OSS
