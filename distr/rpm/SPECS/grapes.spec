@@ -24,11 +24,10 @@
 %endif
 
 #
-# RPM release, to be updated when app_ver/app_rel don't change but spec file has been updated
+# RPM release, to be updated when app_ver/app_rel don't change but spec file has been updated 
+# Note : OBS will generate RPM release number by itself, incremented at each build
 #
-%define rpm_rel    3
-
-
+%define rpm_rel    4
 
 Name: grapes
 Version: %{app_ver}
