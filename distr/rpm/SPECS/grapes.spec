@@ -150,6 +150,7 @@ cp %{SOURCE4}  %{buildroot}%{ciappconfdir}
 cp %{SOURCE5} %{buildroot}%{ciappbindir}/server.sh
 sed -i 's|@@SKEL_APP@@|%{ciapp}|g' %{buildroot}%{ciappbindir}/server.sh
 sed -i 's|@@SKEL_LOGDIR@@|%{ciapplogdir}|g' %{buildroot}%{ciappbindir}/server.sh
+sed -i 's|@@SKEL_VERSION@@|version %{version} release %{release}|g' %{buildroot}%{ciappbindir}/server.sh
 
 # Setup user limits
 cp %{SOURCE6} %{buildroot}%{_sysconfdir}/security/limits.d/%{ciapp}.conf
