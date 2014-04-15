@@ -66,6 +66,17 @@ BuildArch:  noarch
 
 BuildRoot: %{_tmppath}/build-%{name}-%{version}-%{release}
 
+%if 0%{?suse_version} > 1140
+BuildRequires: systemd
+%{?systemd_requires}
+%else
+%define systemd_requires %{nil}
+%endif
+
+%if 0%{?suse_version} > 1000
+PreReq: %fillup_prereq
+%endif
+
 BuildRequires: unzip
 
 %if 0%{?suse_version}
