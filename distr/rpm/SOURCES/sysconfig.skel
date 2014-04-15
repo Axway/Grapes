@@ -30,17 +30,3 @@ APP_JAVA_OPTS="$APP_JAVA_OPTS -Dcom.sun.management.jmxremote.password.file=$APP_
 APP_JAVA_OPTS="$APP_JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=@@SKEL_LOGDIR@@"
 APP_JAVA_OPTS="$APP_JAVA_OPTS -Djava.io.tmpdir=@@SKEL_TMPDIR@@"
 
-#
-# Make sure to use D2D JAVA_HOME if /etc/profile.d/ci.sh exist
-# In this case remove env vars defined by OS like openSUSE 12.2
-#
-
-if [ -f /etc/profile.d/ci.sh ]; then
-
-  unset JAVA_HOME
-  unset JRE_HOME
-  unset JDK_HOME
-  unset SDK_HOME
-
-  source /etc/profile.d/ci.sh
-fi
