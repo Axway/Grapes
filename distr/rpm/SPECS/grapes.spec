@@ -162,6 +162,7 @@ cp %{SOURCE5} %{buildroot}%{ciappbindir}/server.sh
 sed -i 's|@@SKEL_APP@@|%{ciapp}|g' %{buildroot}%{ciappbindir}/server.sh
 sed -i 's|@@SKEL_LOGDIR@@|%{ciapplogdir}|g' %{buildroot}%{ciappbindir}/server.sh
 sed -i 's|@@SKEL_VERSION@@|version %{version} release %{release}|g' %{buildroot}%{ciappbindir}/server.sh
+sed -i 's|@@SKEL_TMPDIR@@|%{ciapptmpdir}|g' %{buildroot}%{ciappbindir}/server.sh
 
 # Setup user limits
 cp %{SOURCE6} %{buildroot}%{_sysconfdir}/security/limits.d/%{ciapp}.conf
@@ -325,10 +326,10 @@ fi
 %{ciappdir}/bin
 %{ciappdir}/conf
 %{ciappdir}/lib
+%ghost %{ciapptmpdir}
 %attr(0755,%{ciappusername},%{ciappusername}) %dir %{ciappdatadir}
 %attr(0755,%{ciappusername},%{ciappusername}) %dir %{ciapplogdir}
 %attr(0755,%{ciappusername},%{ciappusername}) %dir %{ciappdatadir}/repository
-%attr(0755,%{ciappusername},%{ciappusername}) %dir %{ciapptmpdir}
 
 %changelog
 * Mon Apr 14 2014 henri.gomez@gmail.com 1.1.0-3
