@@ -275,7 +275,7 @@ else
   fi
 fi
 
-# Ensure that installation is sucessfull even if the mongo credentials are not stored
+# Ensure that installation is successfull
 exit 0
 
 %preun
@@ -295,6 +295,9 @@ if [ "$1" == "0" ]; then
   systemctl disable %{ciapp}.service >/dev/null 2>&1
 %endif
 fi
+
+# Ensure that un-installation is successfull
+exit 0
 
 %postun
 %if 0%{?suse_version} > 1140
