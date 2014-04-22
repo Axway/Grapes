@@ -602,8 +602,13 @@ function getArtifactLicenses(){
             data: {},
             dataType: "json",
             success: function(data, textStatus) {
-                $.each(data, function(i, licenseName) {
-                    html += "<tr id=\""+licenseName+"-row\"><td onclick=\"removeLicenseAction('"+licenseName+"');\">" + licenseName + "</td></tr>\n";
+                $.each(data, function(i, license) {
+                    if(license.unknown){
+                        html += "<tr id=\""+license.name+"-row\"><td onclick=\"removeLicenseAction('"+license.name+"');\"><strong>" + license.name + "</strong> (to be identified)</td></tr>\n";
+                    }
+                    else{
+                        html += "<tr id=\""+license.name+"-row\"><td onclick=\"removeLicenseAction('"+license.name+"');\">" + license.name + "</td></tr>\n";
+                    }
                 });
 
 	            html += "</tbody>\n";
@@ -641,7 +646,6 @@ function removeLicenseAction(licenseId){
     $('#removeLicenseModal-button').attr('onclick', 'removeLicense(\''+licenseId+'\');');
 
     var gavc = $('input[name=gavc]:checked', '#targets').val();
-    var html ="<div class=\"row-fluid\">The following license has been associated with <strong>"+gavc+"</strong></div>\n";
 
 	$.ajax({
         type: "GET",
@@ -649,9 +653,20 @@ function removeLicenseAction(licenseId){
         data: {},
         dataType: "html",
         success: function(data, textStatus) {
+            var html ="<div class=\"row-fluid\">The following license has been associated with <strong>"+gavc+"</strong></div>\n";
             html += $(data).filter(".row-fluid").html();
             html += "\n<div class=\"row-fluid\">Would you like to remove this association?</div>\n";
             $("#removeLicenseModal-text").empty().append(html);
+        },
+        error:function (xhr, ajaxOptions, thrownError){
+            if(xhr.status==404) {
+            var html ="<div class=\"row-fluid\">An unknown license as been associated to <strong>"+gavc+"</strong></div>\n";
+            html += "\n<div class=\"row-fluid\"><br/>Two cases are possible:<br/>"+
+                    " - identify the license among the existing ones then remove this association<br/>"+
+                    " - create a new license and then add it to this artifact, then remove this association<br/><br/></div>\n";
+            html += "\n<div class=\"row-fluid\">Would you like to remove this association now?</div>\n";
+            $("#removeLicenseModal-text").empty().append(html);
+            }
         }
     }).done($('#removeLicenseModal').modal('show'));
 }
@@ -679,6 +694,9 @@ function removeLicense(licenseId){
             url: "/artifact/" + gavc + "/licenses?licenseId=" + licenseId ,
             data: {},
             dataType: "html",
+            success: function(data, textStatus) {
+                getArtifactLicenses();
+            },
             error: function(xhr, error){
                 alert("The action cannot be performed: status " + xhr.status);
             }

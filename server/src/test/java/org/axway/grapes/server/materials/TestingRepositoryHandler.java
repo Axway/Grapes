@@ -99,7 +99,7 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
-    public void addLicenseToArtifact(DbArtifact artifact, DbLicense license) {
+    public void addLicenseToArtifact(DbArtifact artifact, String licenseId) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 

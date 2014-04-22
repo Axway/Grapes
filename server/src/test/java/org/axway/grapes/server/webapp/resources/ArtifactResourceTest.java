@@ -8,13 +8,11 @@ import com.yammer.dropwizard.auth.AuthenticationException;
 import com.yammer.dropwizard.testing.ResourceTest;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
 import org.axway.grapes.commons.api.ServerAPI;
-import org.axway.grapes.commons.datamodel.Artifact;
-import org.axway.grapes.commons.datamodel.DataModelFactory;
-import org.axway.grapes.commons.datamodel.Dependency;
-import org.axway.grapes.commons.datamodel.Scope;
+import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
+import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbLicense;
@@ -289,10 +287,10 @@ public class ArtifactResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        final List<String> licenses = response.getEntity(new GenericType<List<String>>(){});
+        final List<License> licenses = response.getEntity(new GenericType<List<License>>(){});
         assertNotNull(licenses);
         assertEquals(1, licenses.size());
-        assertEquals(license.getName(), licenses.get(0));
+        assertEquals(DataUtils.getLicense(license), licenses.get(0));
     }
 
 
@@ -360,7 +358,7 @@ public class ArtifactResourceTest extends ResourceTest {
         ClientResponse response = resource.queryParam(ServerAPI.LICENSE_ID_PARAM, license.getName()).post(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
-        verify(repositoryHandler, times(1)).addLicenseToArtifact(artifact, license);
+        verify(repositoryHandler, times(1)).addLicenseToArtifact(artifact, license.getName());
     }
 
     @Test

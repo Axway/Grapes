@@ -8,8 +8,8 @@ import org.apache.maven.repository.RepositorySystem;
 import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.commons.utils.FileUtils;
 import org.axway.grapes.commons.utils.JsonUtils;
-import org.axway.grapes.maven.converter.ModuleAggregator;
-import org.axway.grapes.maven.converter.ModuleBuilder;
+import org.axway.grapes.maven.report.ModuleAggregator;
+import org.axway.grapes.maven.report.ModuleBuilder;
 import org.axway.grapes.maven.resolver.ArtifactResolver;
 import org.axway.grapes.maven.resolver.LicenseResolver;
 
@@ -71,7 +71,7 @@ public class GenerateMojo extends AbstractMojo{
             getLog().info("Collecting dependency information of " + project.getName());
             final Module module = moduleBuilder.getModule(project, licenseResolver, artifactResolver);
 
-            // Serialize the collected information */
+            // Serialize the collected information
             final String serializedModule = JsonUtils.serialize(module);
             getLog().debug("Json module : " + serializedModule);
 

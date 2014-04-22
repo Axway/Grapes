@@ -11,6 +11,7 @@ import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.axway.grapes.server.webapp.auth.Role;
 import org.axway.grapes.server.webapp.views.ArtifactView;
 import org.axway.grapes.server.webapp.views.DependencyListView;
+import org.axway.grapes.server.webapp.views.LicenseListView;
 import org.axway.grapes.server.webapp.views.ListView;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
@@ -452,7 +453,7 @@ public class ArtifactResource extends AbstractResource {
     @Path("/{gavc}" + ServerAPI.GET_LICENSES)
     public Response getLicenses(@PathParam("gavc") final String gavc, @Context final UriInfo uriInfo){
         LOG.info("Got a get artifact licenses request.");
-        ListView licenses;
+        LicenseListView licenses;
 
         if(gavc == null){
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();

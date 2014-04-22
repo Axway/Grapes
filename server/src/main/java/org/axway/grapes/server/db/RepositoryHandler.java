@@ -97,9 +97,9 @@ public interface RepositoryHandler {
      * Add a license to an existing artifact
      *
      * @param artifact
-     * @param license
+     * @param licenseId
      */
-    public void addLicenseToArtifact(final DbArtifact artifact, final DbLicense license);
+    public void addLicenseToArtifact(final DbArtifact artifact, final String licenseId);
 
     /**
      * Remove a license from an existing artifact

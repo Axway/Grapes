@@ -1,4 +1,4 @@
-package org.axway.grapes.maven.converter;
+package org.axway.grapes.maven.report;
 
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.MojoExecutionException;

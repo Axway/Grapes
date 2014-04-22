@@ -151,7 +151,8 @@ public class DependencyListView extends View {
         License license = licenseDictionary.get(licenseId);
 
         if(license == null){
-            license = DataModelFactory.createLicense("#" + licenseId + "#", "not identified yet", "not identified yet", "not identified yet", "not identified yet" );
+            license = DataModelFactory.createLicense("#" + licenseId + "# (to be identified)", "not identified yet", "not identified yet", "not identified yet", "not identified yet" );
+            license.setUnknown(true);
         }
 
         return license;

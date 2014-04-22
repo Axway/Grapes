@@ -343,18 +343,18 @@ public class ModuleResourceTest extends ResourceTest {
         license1.setName("license1");
         final DbLicense license2 = new DbLicense();
         license2.setName("license2");
-        artifact2.addLicense(license1);
-        artifact2.addLicense(license2);
+        artifact.addLicense(license1);
+        artifact.addLicense(license2);
         final DbLicense license3 = new DbLicense();
         license3.setName("license3");
-        artifact4.addLicense(license3);
+        artifact3.addLicense(license3);
 
         final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.GET_LICENSES);
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        final List<String> results = response.getEntity(new GenericType<List<String>>(){});
+        final List<License> results = response.getEntity(new GenericType<List<License>>(){});
         assertNotNull(results);
         assertEquals(3, results.size());
     }

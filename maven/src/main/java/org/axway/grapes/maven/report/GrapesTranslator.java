@@ -1,4 +1,4 @@
-package org.axway.grapes.maven.converter;
+package org.axway.grapes.maven.report;
 
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.plugin.MojoExecutionException;

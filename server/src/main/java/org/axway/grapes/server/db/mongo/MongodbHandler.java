@@ -199,15 +199,12 @@ public class MongodbHandler implements RepositoryHandler {
     }
 
     @Override
-    public void addLicenseToArtifact(final DbArtifact artifact, final DbLicense license) {
+    public void addLicenseToArtifact(final DbArtifact artifact, final String licenseId) {
         final Jongo datastore = getJongoDataStore();
         final MongoCollection artifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS);
-
-        if(!artifact.getLicenses().contains(license.getName())){
-            artifact.addLicense(license);
-            artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
-                    .with("{ $set: { \""+ DbArtifact.LICENCES_DB_FIELD + "\": #}} " , artifact.getLicenses());
-        }
+        artifact.addLicense(licenseId);
+        artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
+                .with("{ $set: { \""+ DbArtifact.LICENCES_DB_FIELD + "\": #}} " , artifact.getLicenses());
 
     }
 

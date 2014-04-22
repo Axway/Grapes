@@ -139,8 +139,7 @@
                         <tr>
                             <td>GET</td>
                             <td>/module/{name}/{version}/licenses</td>
-                            <td>Provide the list of licenses used by the third party of the module.<br/>
-                                Available parameter: validated, toBeValidated.</td>
+                            <td>Provide the list of licenses used by the module.</td>
                         </tr>
                     </tbody>
                 </table>

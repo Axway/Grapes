@@ -15,8 +15,6 @@ import org.axway.grapes.server.core.graphs.AbstractGraph;
 import org.axway.grapes.server.core.graphs.TreeNode;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.core.options.filters.CorporateFilter;
-import org.axway.grapes.server.core.options.filters.Filter;
-import org.axway.grapes.server.core.options.filters.HasLicenseFilter;
 import org.axway.grapes.server.core.options.filters.LicenseIdFilter;
 import org.axway.grapes.server.core.reports.DependencyReport;
 import org.axway.grapes.server.core.version.IncomparableException;
@@ -48,7 +46,6 @@ public class RequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequestHandler.class);
 
-    private final LicenseHandler licenseHandler = new LicenseHandler();
     private final RepositoryHandler repoHandler;
     private final GrapesServerConfig config;
 
@@ -57,7 +54,6 @@ public class RequestHandler {
         this.config = config;
 
         final List<DbLicense> licenses = repoHandler.getAllLicenses();
-        licenseHandler.update(licenses);
     }
 
     /**
@@ -68,9 +64,6 @@ public class RequestHandler {
     public void store(final License license) {
         final DbLicense dbLicense = DataUtils.getDbLicense(license);
         repoHandler.store(dbLicense);
-
-        final List<DbLicense> licenses = repoHandler.getAllLicenses();
-        licenseHandler.update(licenses);
     }
 
     /**
@@ -128,9 +121,6 @@ public class RequestHandler {
             repoHandler.removeLicenseFromArtifact(artifact, name);
         }
 
-        final List<DbLicense> licenses = repoHandler.getAllLicenses();
-        licenseHandler.update(licenses);
-
     }
 
     /**
@@ -159,13 +149,8 @@ public class RequestHandler {
         repoHandler.store(dbArtifact);
 
         // Handle licenses
-        for(String licenseId: artifact.getLicenses()){
-            final DbLicense license = licenseHandler.resolve(licenseId);
-
-            if(license != null){
-                addLicenseToArtifact(dbArtifact.getGavc(), license.getName());
-            }
-        }
+        final LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
+        licenseHandler.updateArtifact(artifact.getGavc(), artifact.getLicenses());
     }
 
     /**
@@ -247,6 +232,7 @@ public class RequestHandler {
             throw new NotFoundException();
         }
 
+        final LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
         final DependencyListView view = new DependencyListView("Ancestor List Of " + gavc, licenseHandler.getLicenses(), filters.getDecorator());
 
         for(DbModule dbAncestor : repoHandler.getAncestors(gavc, filters)){
@@ -266,29 +252,31 @@ public class RequestHandler {
     /**
      * Return the list of licenses attached to an artifact
      *
-     * @param gavc
-     * @param filters
-     * @return ListView
+     * @param gavc String
+     * @param filters FiltersHolder
+     * @return LicenseListView
      */
-    public ListView getArtifactLicenses(final String gavc, final FiltersHolder filters) {
+    public LicenseListView getArtifactLicenses(final String gavc, final FiltersHolder filters) {
         final DbArtifact artifact = repoHandler.getArtifact(gavc);
 
         if(artifact == null){
             throw new NotFoundException();
         }
 
-        final ListView view = new ListView("Licenses of " + gavc, "license");
+        final LicenseListView view = new LicenseListView("Licenses of " + gavc);
 
         for(String name: artifact.getLicenses()){
-            final DbLicense license = repoHandler.getLicense(name);
+            final DbLicense dbLicense = repoHandler.getLicense(name);
 
-            if(license == null){
-                // Should never happen
-                LOG.error("Reference to a non existing license detected: " + name);
+            // Here is a license to identify
+            if(dbLicense == null){
+                final License notIdentifiedLicense = DataModelFactory.createLicense(name, "", "", "", "");
+                notIdentifiedLicense.setUnknown(true);
+                view.add(notIdentifiedLicense);
             }
             // The license has to be validated
-            else if(filters.shouldBeInReport(license)){
-                view.add(name);
+            else if(filters.shouldBeInReport(dbLicense)){
+                view.add(DataUtils.getLicense(dbLicense));
             }
 
         }
@@ -371,7 +359,7 @@ public class RequestHandler {
             throw new NotFoundException();
         }
 
-        repoHandler.addLicenseToArtifact(artifact, license);
+        repoHandler.addLicenseToArtifact(artifact, license.getName());
 
     }
 
@@ -566,6 +554,7 @@ public class RequestHandler {
             throw  new NotFoundException();
         }
 
+        final LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
         final DependencyListView view = new DependencyListView("Ancestor List Of " + name +" in version " + version , licenseHandler.getLicenses(), filters.getDecorator());
 
         final List<String> artifacts = DataUtils.getAllArtifacts(module);
@@ -609,6 +598,8 @@ public class RequestHandler {
         final List<DbDependency> dbDependencies = depHandler.getDependencies(moduleId);
         final List<String> artifacts = DataUtils.getAllArtifacts(module);
 
+
+        final LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
         final DependencyListView view = new DependencyListView("Dependency List Of " + name + " in version " + version, licenseHandler.getLicenses(), filters.getDecorator());
 
         for(DbDependency dbDependency: dbDependencies){
@@ -630,13 +621,13 @@ public class RequestHandler {
     }
 
     /**
-     * Return a licenses view of the targeted module, regarding the filters
+     * Return a licenses view of the targeted module
      *
-     * @param name
-     * @param version
-     * @return ListView
+     * @param name String
+     * @param version String
+     * @return LicenseListView
      */
-    public ListView getModuleLicenses(final String name, final String version) {
+    public LicenseListView getModuleLicenses(final String name, final String version) {
         final String moduleId = DbModule.generateID(name, version);
         final DbModule module = repoHandler.getModule(moduleId);
 
@@ -645,19 +636,10 @@ public class RequestHandler {
         }
 
         final FiltersHolder filters = new FiltersHolder(config.getCorporateGroupIds());
-        filters.getDepthHandler().setFullRecursive(true);
-        filters.getDecorator().setShowThirdparty(true);
+        final LicenseListView view = new LicenseListView("Licenses of " + name + " in version " + version);
 
-        final Filter hasLicenseFilter = new HasLicenseFilter(true);
-        filters.addFilter(hasLicenseFilter);
-
-        final DependenciesHandler depsHandler = new DependenciesHandler(repoHandler, filters);
-
-        final ListView view = new ListView("Licenses of " + name + " in version " + version, "license");
-
-        for(DbDependency dependency: depsHandler.getDependencies(moduleId)){
-            final DbArtifact artifact = repoHandler.getArtifact(dependency.getTarget());
-            view.addAll(artifact.getLicenses());
+        for(String gavc: DataUtils.getAllArtifacts(module)){
+            view.addAll(getArtifactLicenses(gavc, filters).getLicenses());
         }
 
         return view;

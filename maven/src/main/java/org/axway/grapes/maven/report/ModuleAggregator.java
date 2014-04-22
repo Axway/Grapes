@@ -1,4 +1,4 @@
-package org.axway.grapes.maven.converter;
+package org.axway.grapes.maven.report;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -81,7 +81,7 @@ public class ModuleAggregator {
 
             return true;
         }
-        // parent is serialized into module.son file
+        // parent is serialized into module.json file
         else if(contains(rootModule, parentProject)){
             final Module parentModule = getSubModule(rootModule, parentProject);
             parentModule.addSubmodule(subModule);

@@ -14,10 +14,7 @@ import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.axway.grapes.server.webapp.auth.Role;
-import org.axway.grapes.server.webapp.views.DependencyListView;
-import org.axway.grapes.server.webapp.views.ListView;
-import org.axway.grapes.server.webapp.views.ModuleView;
-import org.axway.grapes.server.webapp.views.PromotionReportView;
+import org.axway.grapes.server.webapp.views.*;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -384,7 +381,7 @@ public class ModuleResource extends AbstractResource{
             return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
         }
 
-        ListView view;
+        LicenseListView view;
 
         try {
             view = getRequestHandler().getModuleLicenses(name, version);

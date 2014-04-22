@@ -201,7 +201,7 @@ public class DependencyListViewTest {
         assertEquals(dependency.getTarget().getDownloadUrl(), result.get(3));
         assertEquals(dependency.getTarget().getSize(), result.get(4));
         assertEquals(dependency.getScope().name(), result.get(5));
-        assertEquals("#test#", result.get(6));
+        assertEquals("#test# (to be identified)", result.get(6));
         assertEquals("not identified yet", result.get(7));
         assertEquals("not identified yet", result.get(8));
         assertEquals("not identified yet", result.get(9));

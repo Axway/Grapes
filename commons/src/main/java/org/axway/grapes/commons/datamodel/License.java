@@ -21,8 +21,13 @@ public class License {
 	
 	private boolean approved = false;
 
-	
-	protected License() {
+    // This field is never taken into account by the server
+    // it provides an extra information to clients to warn them if the licenses exist
+    // in the database of the server
+    private boolean unknown = false;
+
+
+    protected License() {
 		// Should only be instantiated via the DataModelObjectFactory
 	}
 	
@@ -74,6 +79,14 @@ public class License {
 	public void setApproved(final boolean approved) {
 		this.approved = approved;
 	}
+
+    public boolean isUnknown() {
+        return unknown;
+    }
+
+    public void setUnknown(boolean unknown) {
+        this.unknown = unknown;
+    }
 	
 	/**
 	 * Checks if the dependency is the same than an other one.
@@ -102,5 +115,5 @@ public class License {
 		
         return sb.toString().hashCode();
     }
-	
+
 }
