@@ -20,3 +20,6 @@ logging:
     archivedLogFilenamePattern: @@SKEL_LOGDIR@@/grapes_archive-%d.log.gz
     archivedFileCount: 5
     timeZone: UTC
+community:
+  issueTracker: https://github.com/Axway/Grapes/issues
+  onlineHelp: https://github.com/Axway/Grapes/wiki
