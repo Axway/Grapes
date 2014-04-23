@@ -7,6 +7,7 @@
 * Remove module internal dependencies for module dependency lists
 * Make dependency lists sortable
 * Enhance module license report in data browser
+* Update license resolution during module notification
 * Add spinner in data browser during request processing
 
 1.1.0

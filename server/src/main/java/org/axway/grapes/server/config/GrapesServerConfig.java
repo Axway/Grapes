@@ -40,7 +40,7 @@ public class GrapesServerConfig extends Configuration{
 	
 	@Valid
     @JsonProperty
-    private static final String authenticationCachePolicy = "maximumSize=10000, expireAfterAccess=10m";
+    private final String authenticationCachePolicy = "maximumSize=10000, expireAfterAccess=10m";
 
     private boolean maintenanceModeActif = false;
 
