@@ -3,7 +3,7 @@
 
     <groupId>org.axway.grapes</groupId>
     <artifactId>grapes-jenkins-plugin</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.0-rc1</version>
     <packaging>hpi</packaging>
     <name>Grapes Jenkins plugin</name>
 
@@ -99,4 +99,8 @@
     </build>
 
 
+
+  <scm>
+    <tag>1.2.0-rc1</tag>
+  </scm>
 </project>
