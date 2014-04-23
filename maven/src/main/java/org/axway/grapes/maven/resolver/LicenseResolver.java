@@ -36,11 +36,8 @@ public class LicenseResolver {
 
     private final ArtifactResolver artifactResolver;
 
-    private final Log logger;
-
     public LicenseResolver(final RepositorySystem repositorySystem, final ArtifactRepository localRepository, final Log log){
         this.artifactResolver = new ArtifactResolver(repositorySystem, localRepository, log );
-        this.logger = log;
     }
 
 

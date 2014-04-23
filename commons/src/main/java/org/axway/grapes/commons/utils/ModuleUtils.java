@@ -16,6 +16,11 @@ import java.util.regex.Pattern;
  */
 public class ModuleUtils {
 
+
+    private ModuleUtils(){
+        // hide utility class constructor
+    }
+
     /**
      * Returns all the Artifacts of the module
      *

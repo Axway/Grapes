@@ -27,4 +27,13 @@ public class Row extends ArrayList<Object>{
 
         return sb.toString().hashCode();
     }
+
+    @Override
+    public boolean equals(final Object obj){
+        if(obj instanceof Row){
+            return this.hashCode() == obj.hashCode();
+        }
+
+        return false;
+    }
 }

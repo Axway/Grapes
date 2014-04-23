@@ -59,8 +59,6 @@ public class GenerateMojo extends AbstractMojo{
      */
     private List<MavenProject> reactorProjects;
 
-    private int i = 1;
-
     public void execute() throws MojoExecutionException {
         try {
             final ModuleAggregator aggregator = new ModuleAggregator(reactorProjects);

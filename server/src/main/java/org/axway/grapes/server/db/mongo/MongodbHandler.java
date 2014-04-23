@@ -493,7 +493,7 @@ public class MongodbHandler implements RepositoryHandler {
     public void removeCorporateGroupId(final String corporateGroupId) {
         final Jongo datastore = getJongoDataStore();
 
-        DbCorporateGroupIds dbCorporateGroupIds = datastore.getCollection(DbCollections.DB_CORPORATE_GROUPIDS)
+        final DbCorporateGroupIds dbCorporateGroupIds = datastore.getCollection(DbCollections.DB_CORPORATE_GROUPIDS)
                 .findOne()
                 .as(DbCorporateGroupIds.class);
 

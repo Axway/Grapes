@@ -1,6 +1,5 @@
 package org.axway.grapes.jenkins.reports;
 
-import hudson.model.AbstractProject;
 import hudson.model.Action;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Dependency;
@@ -26,10 +25,7 @@ import java.util.logging.Logger;
  */
 public class GrapesBuildAction implements Action {
 
-    private final static String REPORT_ACTION_ICON = "img/report-icon.png";
-
-    // The action is attached to a build of this project
-    private AbstractProject<?, ?> project;
+    private static final String REPORT_ACTION_ICON = "img/report-icon.png";
 
     // The module file that has been sent during the build is this one
     private Module module;
@@ -71,8 +67,8 @@ public class GrapesBuildAction implements Action {
             final List<String> corporateFilters = grapesClient.getCorporateFilters();
             dependencies = new HashMap<Dependency, String>();
 
-            final List<Dependency> dependencies = ModuleUtils.getCorporateDependencies(module, corporateFilters);
-            for(Dependency dependency: dependencies){
+            final List<Dependency> moduleDependencies = ModuleUtils.getCorporateDependencies(module, corporateFilters);
+            for(Dependency dependency: moduleDependencies){
                 final String lastVersion = getLastVersion(grapesClient, dependency);
                 this.dependencies.put(dependency, lastVersion);
             }

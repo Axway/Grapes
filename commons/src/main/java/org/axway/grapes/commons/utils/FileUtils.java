@@ -9,6 +9,10 @@ import java.io.*;
  */
 public class FileUtils {
 
+    private FileUtils(){
+        // hide utility class constructor
+    }
+
     /**
      * Serialize a content into a targeted file, checking that the parent directory exists.
      *
@@ -34,11 +38,7 @@ public class FileUtils {
         }
         finally {
             if(writer != null){
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    throw new IOException("Failed to close the open file " + output.getPath(), e);
-                }
+                writer.close();
             }
         }
     }
@@ -66,11 +66,7 @@ public class FileUtils {
         } catch (IOException e) {
             throw new IOException("Failed to read file: " + file.getAbsolutePath(), e);
         } finally {
-            try {
-                if (br != null)br.close();
-            } catch (IOException e) {
-                throw new IOException("Failed to close file reader on: " + file.getAbsolutePath(), e);
-            }
+            if (br != null){br.close();}
         }
 
         return sb.toString();

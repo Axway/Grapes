@@ -69,7 +69,8 @@ public class GrapesNotifier extends Notifier {
     @Override
     public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher, final BuildListener listener) throws InterruptedException, IOException {
         // No Publication for failed builds
-        if (build.getResult().isWorseThan(Result.SUCCESS)) {
+        if (build.getResult() == null ||
+                build.getResult().isWorseThan(Result.SUCCESS)) {
             listener.getLogger().println("[GRAPES] Skipping notification to Grapes because the result of this build is worth than success.");
             return true;
         }
@@ -182,7 +183,7 @@ public class GrapesNotifier extends Notifier {
      * @return
      */
     @Override
-    public Collection<? extends Action> getProjectActions(AbstractProject<?, ?> project) {
+    public Collection<? extends Action> getProjectActions(final AbstractProject<?, ?> project) {
         final List<ResendBuildAction> resendBuildActions = new ArrayList<ResendBuildAction>();
 
         try {

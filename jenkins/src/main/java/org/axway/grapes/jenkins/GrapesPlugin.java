@@ -35,7 +35,7 @@ public class GrapesPlugin extends Plugin {
      * @return resource path
      */
     public static String getPluginResourcePath() {
-        PluginWrapper wrapper = Hudson.getInstance().getPluginManager()
+        final PluginWrapper wrapper = Hudson.getInstance().getPluginManager()
                 .getPlugin(GrapesPlugin.class);
 
         return "/plugin/" + wrapper.getShortName() + "/";
@@ -47,9 +47,9 @@ public class GrapesPlugin extends Plugin {
      * @param build AbstractBuild
      * @return FilePath
      */
-    public static FilePath getReportFolder(AbstractBuild<?, ?> build) {
+    public static FilePath getReportFolder(final AbstractBuild<?, ?> build) {
         assert build != null;
-        File reportFolder = new File(build.getRootDir(), REPORT_FILE);
+        final File reportFolder = new File(build.getRootDir(), REPORT_FILE);
         return  new FilePath(reportFolder);
     }
 

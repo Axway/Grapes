@@ -19,13 +19,17 @@ import org.axway.grapes.maven.resolver.ArtifactResolver;
  */
 public class GrapesTranslator {
 
+    private GrapesTranslator(){
+        // hide utility class constructor
+    }
+
     /**
      * Generate a Grapes module from a Maven project
      *
      * @param project MavenProject
      * @return Module
      */
-    public final static Module getGrapesModule(final MavenProject project) {
+    public static final Module getGrapesModule(final MavenProject project) {
         final String moduleName = generateModuleName(project);
         return DataModelFactory.createModule(moduleName, project.getVersion());
     }
@@ -36,7 +40,7 @@ public class GrapesTranslator {
      * @param project MavenProject
      * @return String
      */
-    public static String generateModuleName(final MavenProject project) {
+    public static final String generateModuleName(final MavenProject project) {
         final StringBuilder sb = new StringBuilder();
         sb.append(project.getArtifact().getGroupId());
         sb.append(":");
@@ -50,7 +54,7 @@ public class GrapesTranslator {
      * @param mavenArtifact org.apache.maven.artifact.Artifact
      * @return Artifact
      */
-    public final static Artifact getGrapesArtifact(org.apache.maven.artifact.Artifact mavenArtifact) {
+    public static final Artifact getGrapesArtifact(final org.apache.maven.artifact.Artifact mavenArtifact) {
         final ArtifactHandler artifactHandler = mavenArtifact.getArtifactHandler();
         String extension = mavenArtifact.getType();
 
@@ -90,7 +94,7 @@ public class GrapesTranslator {
      * @return org.axway.grapes.commons.datamodel.Dependency
      * @throws MojoExecutionException
      */
-    public static org.axway.grapes.commons.datamodel.Dependency getGrapesDependency(final org.apache.maven.artifact.Artifact dependency, String scope) throws MojoExecutionException {
+    public static final org.axway.grapes.commons.datamodel.Dependency getGrapesDependency(final org.apache.maven.artifact.Artifact dependency, final String scope) throws MojoExecutionException {
         try {
 
             final Artifact target = getGrapesArtifact(dependency);

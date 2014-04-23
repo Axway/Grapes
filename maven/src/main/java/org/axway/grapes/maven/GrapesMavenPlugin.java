@@ -19,9 +19,13 @@ import java.io.IOException;
  */
 public class GrapesMavenPlugin {
 
-    public final static String MODULE_JSON_FILE_NAME = "module.json";
+    public static final String MODULE_JSON_FILE_NAME = "module.json";
 
-    public final static String TMP_MODULE_FILE_SUFFIX = "_tmp.json";
+    public static final String TMP_MODULE_FILE_SUFFIX = "_tmp.json";
+
+    private GrapesMavenPlugin(){
+        // hide utility class constructor
+    }
 
     /**
      * Returns Grapes working folder of a project

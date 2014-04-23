@@ -62,7 +62,7 @@ public final class GrapesAuthProvider implements InjectableProvider<Role, Type> 
         return new AuthInjectable(credentialManager, config.getAuthenticationCachePolicy());
     }
 
-    private class AuthInjectable extends AbstractHttpContextInjectable<List<AvailableRoles>> {
+    private final class AuthInjectable extends AbstractHttpContextInjectable<List<AvailableRoles>> {
         private static final String PREFIX = "Basic";
         private static final String HEADER_NAME = "WWW-Authenticate";
         private static final String HEADER_VALUE = PREFIX + " realm=\"%s\"";

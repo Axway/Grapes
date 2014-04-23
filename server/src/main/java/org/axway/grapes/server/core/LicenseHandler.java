@@ -86,7 +86,7 @@ public class LicenseHandler {
      * @return List<License>
      */
     public List<License> getLicenses(){
-        List<License> licenses = new ArrayList<License>();
+        final List<License> licenses = new ArrayList<License>();
         for(DbLicense dbLicense: licensesRegexp.values()){
             licenses.add(DataUtils.getLicense(dbLicense));
         }

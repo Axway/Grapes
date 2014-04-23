@@ -40,7 +40,7 @@ public class GrapesServerConfig extends Configuration{
 	
 	@Valid
     @JsonProperty
-    private final String authenticationCachePolicy = "maximumSize=10000, expireAfterAccess=10m";
+    private static final String authenticationCachePolicy = "maximumSize=10000, expireAfterAccess=10m";
 
     private boolean maintenanceModeActif = false;
 
@@ -125,9 +125,6 @@ public class GrapesServerConfig extends Configuration{
     }
 
     public List<DbCredential> getCredentials() {
-        final List<DbCredential> credentials = new ArrayList<DbCredential>();
-        credentials.addAll(this.credentials);
-
         return credentials;
     }
 

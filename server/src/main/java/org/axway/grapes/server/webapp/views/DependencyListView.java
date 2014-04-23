@@ -32,34 +32,34 @@ public class DependencyListView extends View {
     private Decorator decorator;
 
     // Value of the header of the column "source" in the dependency table
-    public final static String SOURCE_FIELD = "Source";
+    public static final String SOURCE_FIELD = "Source";
 
     // Value of the header of the column "source version" in the dependency table
-    public final static String SOURCE_VERSION_FIELD = "Source Version";
+    public static final String SOURCE_VERSION_FIELD = "Source Version";
 
     // Value of the header of the column "target" in the dependency table
-    public final static String TARGET_FIELD = "Target";
+    public static final String TARGET_FIELD = "Target";
 
     // Value of the header of the column "download url" in the dependency table
-    public final static String DOWNLOAD_URL_FIELD = "Download Url";
+    public static final String DOWNLOAD_URL_FIELD = "Download Url";
 
     // Value of the header of the column "size" in the dependency table
-    public final static String SIZE_FIELD = "Size";
+    public static final String SIZE_FIELD = "Size";
 
     // Value of the header of the column "scope" in the dependency table
-    public final static String SCOPE_FIELD = "Scope";
+    public static final String SCOPE_FIELD = "Scope";
 
     // Value of the header of the column "license" in the dependency table
-    public final static String LICENSE_FIELD = "License";
+    public static final String LICENSE_FIELD = "License";
 
     // Value of the header of the column "License Long Name" in the dependency table
-    public final static String LICENSE_LONG_NAME__FIELD = "License Full Name";
+    public static final String LICENSE_LONG_NAME__FIELD = "License Full Name";
 
     // Value of the header of the column "license url" in the dependency table
-    public final static String LICENSE_URL_FIELD = "License Url";
+    public static final String LICENSE_URL_FIELD = "License Url";
 
     // Value of the header of the column "license commentary" in the dependency table
-    public final static String LICENSE_COMMENT_FIELD = "License Comment";
+    public static final String LICENSE_COMMENT_FIELD = "License Comment";
 
     // The dependency list to display
     private final List<Dependency> dependencies = new ArrayList<Dependency>();

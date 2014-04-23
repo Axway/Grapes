@@ -10,7 +10,6 @@ import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException
 import org.apache.maven.artifact.versioning.Restriction;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.model.Dependency;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -24,11 +23,6 @@ import org.apache.maven.repository.RepositorySystem;
  * @author jdcoffre
  */
 public class ArtifactResolver {
-
-    /**
-     * Pom parser
-     */
-    private final MavenXpp3Reader reader = new MavenXpp3Reader();
 
     private final RepositorySystem repositorySystem;
 
@@ -49,7 +43,7 @@ public class ArtifactResolver {
      * @param artifact Artifact
      * @throws org.apache.maven.plugin.MojoExecutionException
      */
-    public void resolveArtifact(final MavenProject project, Artifact artifact) throws MojoExecutionException {
+    public void resolveArtifact(final MavenProject project, final Artifact artifact) throws MojoExecutionException {
         logger.debug("Resolving artifact " + artifact.toString());
 
         final ArtifactResolutionRequest artifactRequest = new ArtifactResolutionRequest();

@@ -27,7 +27,7 @@ public class CommunityConfig extends Configuration{
         return issueTracker;
     }
 
-    public void setIssueTracker(String issueTracker) {
+    public void setIssueTracker(final String issueTracker) {
         this.issueTracker = issueTracker;
     }
 
@@ -35,7 +35,7 @@ public class CommunityConfig extends Configuration{
         return onlineHelp;
     }
 
-    public void setOnlineHelp(String onlineHelp) {
+    public void setOnlineHelp(final String onlineHelp) {
         this.onlineHelp = onlineHelp;
     }
 }

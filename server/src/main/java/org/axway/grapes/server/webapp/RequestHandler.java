@@ -321,7 +321,7 @@ public class RequestHandler {
                     lastVersionUntilNow = new Version(version);
                 }
                 else{
-                    Version newVersion = new Version(version);
+                    final Version newVersion = new Version(version);
 
                     if(lastVersionUntilNow.compare(newVersion) < 0){
                         lastVersionUntilNow=newVersion;
