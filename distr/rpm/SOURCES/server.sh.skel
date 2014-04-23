@@ -35,11 +35,6 @@ start() {
     	fi
 	fi
 	
-	# Create Run/Temp dir if not existing
-  if [ ! -d @@SKEL_TMPDIR@@ ]; then
-    mkdir -p @@SKEL_TMPDIR@@
-  fi
-
 	# Start service, APP_HTTP_HOST define interfaces where it will listen
 	java $APP_JAVA_OPTS -jar $APP_HOME/lib/server.jar server $APP_HOME/conf/server-conf.yml >> @@SKEL_LOGDIR@@/server.log 2>&1 &
 
