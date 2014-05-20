@@ -1,3 +1,8 @@
+1.3.0
+-------------
+* Manage Maven project configuration for Maven central deployment
+* Add Sonatype OSS parent heritage
+
 1.2.0
 -------------
 * Add get Corporate groupId request to retrieve all the groupId that are configured as corporate dependencies
