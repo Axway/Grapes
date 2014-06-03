@@ -11,6 +11,6 @@ Grapes gives you the opportunity to centralized the dependency information of yo
 For more information visit our [wiki](https://github.com/Axway/Grapes/wiki).
 If you have any question about Grapes, you can check our [FAQ](wiki/FAQ). You can also contact the Grapes team, and reach the community by subscribing to the [Google Groups](https://groups.google.com/forum/#!forum/grapes-dm).
 
-Give a try to Grapes, more information about the demo instance on [this wiki page)](https://github.com/Axway/Grapes/wiki/Cali).
+Give a try to Grapes, more information about the demo instance on [this wiki page](https://github.com/Axway/Grapes/wiki/Cali).
 
 **N.B:** This project is under [Apache 2 license](https://github.com/Axway/Grapes/blob/master/LICENSE).
