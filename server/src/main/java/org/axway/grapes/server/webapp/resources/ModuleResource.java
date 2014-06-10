@@ -1,6 +1,7 @@
 package org.axway.grapes.server.webapp.resources;
 
 import com.sun.jersey.api.NotFoundException;
+import com.yammer.dropwizard.jersey.caching.CacheControl;
 import com.yammer.dropwizard.jersey.params.BooleanParam;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.Artifact;
@@ -25,6 +26,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Module Resource
@@ -253,6 +255,7 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}" + ServerAPI.GET_ANCESTORS)
+    @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getAncestors(@PathParam("name") final String name,
                                  @PathParam("version") final String version,
                                  @Context final UriInfo uriInfo){
@@ -291,6 +294,7 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}" + ServerAPI.GET_DEPENDENCIES)
+    @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getDependencies(@PathParam("name") final String name,
                                     @PathParam("version") final String version,
                                     @QueryParam(ServerAPI.TO_UPDATE_PARAM) final BooleanParam toUpdateParam,
@@ -334,6 +338,7 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}" + ServerAPI.GET_DEPENDENCIES + ServerAPI.GET_REPORT)
+    @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getDependencyReport(@PathParam("name") final String name,
                                     @PathParam("version") final String version,
                                     @Context final UriInfo uriInfo){
@@ -372,6 +377,7 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}" + ServerAPI.GET_LICENSES)
+    @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getLicenses(@PathParam("name") final String name,
                                 @PathParam("version") final String version){
 
@@ -471,6 +477,7 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}" + ServerAPI.PROMOTION + ServerAPI.GET_REPORT)
+    @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getPromotionStatusReport(@PathParam("name") final String name, @PathParam("version") final String version, @Context final UriInfo uriInfo){
         LOG.info("Got a get promotion report request.");
 
@@ -543,6 +550,7 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path(ServerAPI.GET_ALL)
+    @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getAllModules(@Context final UriInfo uriInfo){
         LOG.info("Got a get all modules request.");
 
