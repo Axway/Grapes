@@ -5,6 +5,7 @@ import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.yammer.dropwizard.auth.AuthenticationException;
+import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.testing.ResourceTest;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
 import org.axway.grapes.commons.api.ServerAPI;
@@ -14,9 +15,10 @@ import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
+import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.axway.grapes.server.db.datamodel.DbModule;
-import org.axway.grapes.server.webapp.auth.GrapesAuthProvider;
+import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.axway.grapes.server.webapp.views.PromotionReportView;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
@@ -25,6 +27,7 @@ import org.mockito.ArgumentCaptor;
 import javax.ws.rs.core.MediaType;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -84,9 +87,12 @@ public class ModuleResourceTest extends ResourceTest {
         modules.add(dbModule);
         when(repositoryHandler.getModules(filters.capture())).thenReturn(modules);
 
-        final GrapesServerConfig dmConfig = GrapesTestUtils.getConfigMock();
-        ModuleResource resource = new ModuleResource(repositoryHandler, dmConfig);
-        addProvider(new GrapesAuthProvider(dmConfig));
+        final RepositoryHandler repoHandler = GrapesTestUtils.getRepoHandlerMock();
+
+        final GrapesServerConfig config =mock(GrapesServerConfig.class);
+        when(config.getCorporateGroupIds()).thenReturn(Collections.singletonList(GrapesTestUtils.CORPORATE_GROUPID_4TEST));
+        ModuleResource resource = new ModuleResource(repositoryHandler, config);
+        addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repoHandler), "test auth"));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);
     }

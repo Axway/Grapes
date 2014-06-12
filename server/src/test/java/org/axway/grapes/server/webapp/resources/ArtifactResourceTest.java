@@ -5,6 +5,7 @@ import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.yammer.dropwizard.auth.AuthenticationException;
+import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.testing.ResourceTest;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
 import org.axway.grapes.commons.api.ServerAPI;
@@ -15,9 +16,10 @@ import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
+import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.axway.grapes.server.db.datamodel.DbModule;
-import org.axway.grapes.server.webapp.auth.GrapesAuthProvider;
+import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
 
@@ -38,11 +40,9 @@ public class ArtifactResourceTest extends ResourceTest {
 
     @Override
     protected void setUpResources() throws Exception {
-        repositoryHandler = mock(RepositoryHandler.class);
-        final GrapesServerConfig dmConfig = GrapesTestUtils.getConfigMock();
-        ArtifactResource resource = new ArtifactResource(repositoryHandler, dmConfig);
-
-        addProvider(new GrapesAuthProvider(dmConfig));
+        repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
+        ArtifactResource resource = new ArtifactResource(repositoryHandler, mock(GrapesServerConfig.class));
+        addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repositoryHandler), "test auth"));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);
     }

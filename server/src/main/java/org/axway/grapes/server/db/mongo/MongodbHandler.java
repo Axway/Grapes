@@ -1,5 +1,8 @@
 package org.axway.grapes.server.db.mongo;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
@@ -26,6 +29,9 @@ import java.util.*;
  * @author jdcoffre
  */
 public class MongodbHandler implements RepositoryHandler {
+    // cache for credentials
+    private LoadingCache<String, DbCredential> credentialCache;
+    // DB connection
     private final DB db;
 
     public MongodbHandler(final DataBaseConfig config) throws UnknownHostException {
@@ -36,6 +42,16 @@ public class MongodbHandler implements RepositoryHandler {
         if(config.getUser() != null && config.getPwd() != null){
             db.authenticate(config.getUser(), config.getPwd());
         }
+
+        // Init credentials' cache
+        credentialCache = CacheBuilder.newBuilder()
+                .maximumSize(1000)
+                .build(
+                        new CacheLoader<String, DbCredential>() {
+                            public DbCredential load(String user) {
+                                return getCredential(user);
+                            }
+                        });
     }
     
     /**
@@ -62,14 +78,8 @@ public class MongodbHandler implements RepositoryHandler {
         else{
             dbCredentials.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, dbCredential.getUser())).with(credential);
         }
-	}
 
-    @Override
-	public Iterable<DbCredential> getCredentials() {
-		final Jongo datastore = getJongoDataStore();
-		
-		return datastore.getCollection(DbCollections.DB_CREDENTIALS)
-				.find().as(DbCredential.class);
+        credentialCache.invalidate(credential.getUser());
 	}
 
     @Override
@@ -89,6 +99,8 @@ public class MongodbHandler implements RepositoryHandler {
                     .with("{ $set: { \""+ DbCredential.ROLES_FIELD + "\": #}} " , credential.getRoles());
         }
 
+        credentialCache.invalidate(credential.getUser());
+
     }
 
     @Override
@@ -107,9 +119,11 @@ public class MongodbHandler implements RepositoryHandler {
             credentials.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, user))
                     .with("{ $set: { \""+ DbCredential.ROLES_FIELD + "\": #}} " , credential.getRoles());
         }
+        credentialCache.invalidate(credential.getUser());
     }
 
-    private DbCredential getCredential(final String user) {
+    @Override
+    public DbCredential getCredential(final String user) {
 		final Jongo datastore = getJongoDataStore();
         return datastore.getCollection(DbCollections.DB_CREDENTIALS)
 				.findOne(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, user))

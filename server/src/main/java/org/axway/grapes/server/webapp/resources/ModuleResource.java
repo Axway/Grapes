@@ -1,6 +1,7 @@
 package org.axway.grapes.server.webapp.resources;
 
 import com.sun.jersey.api.NotFoundException;
+import com.yammer.dropwizard.auth.Auth;
 import com.yammer.dropwizard.jersey.caching.CacheControl;
 import com.yammer.dropwizard.jersey.params.BooleanParam;
 import org.axway.grapes.commons.api.ServerAPI;
@@ -13,8 +14,8 @@ import org.axway.grapes.server.core.options.filters.PromotedFilter;
 import org.axway.grapes.server.core.reports.DependencyReport;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
-import org.axway.grapes.server.webapp.auth.Role;
 import org.axway.grapes.server.webapp.views.*;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
@@ -48,14 +49,14 @@ public class ModuleResource extends AbstractResource{
 
     /**
      * Handle the update/addition of a module in Grapes database
-     * @param roles
+     * @param credential DbCredential
      * @param module
      * @return Response
      */
     @POST
     @Produces(MediaType.TEXT_HTML)
-    public Response postModule(@Role final List<AvailableRoles> roles, final Module module){
-        if(!roles.contains(AvailableRoles.DEPENDENCY_NOTIFIER)){
+    public Response postModule(@Auth final DbCredential credential, final Module module){
+        if(!credential.getRoles().contains(AvailableRoles.DEPENDENCY_NOTIFIER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
@@ -211,15 +212,15 @@ public class ModuleResource extends AbstractResource{
      * Delete a module.
      * This method is call via DELETE <dm_url>/module/<name>/<version>
      *
-     * @param roles
+     * @param credential DbCredential
      * @param name
      * @param version
      * @return Response
      */
     @DELETE
     @Path("/{name}/{version}")
-    public Response delete(@Role final List<AvailableRoles> roles, @PathParam("name") final String name, @PathParam("version") final String version){
-        if(!roles.contains(AvailableRoles.DATA_DELETER)){
+    public Response delete(@Auth final DbCredential credential, @PathParam("name") final String name, @PathParam("version") final String version){
+        if(!credential.getRoles().contains(AvailableRoles.DATA_DELETER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
         LOG.info("Got a delete module request.");
@@ -411,8 +412,8 @@ public class ModuleResource extends AbstractResource{
      */
     @POST
     @Path("/{name}/{version}" + ServerAPI.PROMOTION)
-    public Response promote(@Role final List<AvailableRoles> roles, @PathParam("name") final String name, @PathParam("version") final String version){
-        if(!roles.contains(AvailableRoles.DEPENDENCY_NOTIFIER)){
+    public Response promote(@Auth final DbCredential credential, @PathParam("name") final String name, @PathParam("version") final String version){
+        if(!credential.getRoles().contains(AvailableRoles.DEPENDENCY_NOTIFIER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 

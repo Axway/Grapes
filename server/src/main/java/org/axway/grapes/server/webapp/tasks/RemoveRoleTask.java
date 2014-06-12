@@ -22,13 +22,11 @@ import java.net.UnknownHostException;
  */
 public class RemoveRoleTask extends Task{
 
-	private final GrapesServerConfig config;
 	private final RepositoryHandler repoHandler;
 
-	public RemoveRoleTask(final RepositoryHandler repoHandler, final GrapesServerConfig config) {
+	public RemoveRoleTask(final RepositoryHandler repoHandler) {
 		super("removeRole");
 		this.repoHandler = repoHandler;
-		this.config = config;
 	}
 
 	@Override
@@ -44,7 +42,6 @@ public class RemoveRoleTask extends Task{
         }
         
 		repoHandler.removeUserRole(user, role);
-        config.loadCredentials(repoHandler);
 
 		printer.println("Task performed successfully.");
 	}

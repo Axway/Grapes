@@ -33,8 +33,7 @@ public class SequoiaTest extends ResourceTest {
     @Override
     protected void setUpResources() throws Exception {
         repositoryHandler = mock(RepositoryHandler.class);
-        final GrapesServerConfig dmConfig = GrapesTestUtils.getConfigMock();
-        Sequoia resource = new Sequoia(repositoryHandler, dmConfig);
+        Sequoia resource = new Sequoia(repositoryHandler, mock(GrapesServerConfig.class));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);
     }

@@ -18,8 +18,7 @@ public class AddRoleTaskTest {
     @Test
     public void testAddRole(){
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final GrapesServerConfig config = GrapesTestUtils.getConfigMock();
-        final AddRoleTask task = new AddRoleTask(repositoryHandler,config);
+        final AddRoleTask task = new AddRoleTask(repositoryHandler);
 
         final ImmutableMultimap.Builder<String, String> builder = new ImmutableMultimap.Builder<String, String>();
         builder.put(ServerAPI.USER_PARAM, "user");
@@ -34,7 +33,6 @@ public class AddRoleTaskTest {
 
         assertNull(exception);
         verify(repositoryHandler, times(1)).addUserRole("user", AvailableRoles.DATA_UPDATER);
-        verify(config, times(1)).loadCredentials(repositoryHandler);
 
     }
 }

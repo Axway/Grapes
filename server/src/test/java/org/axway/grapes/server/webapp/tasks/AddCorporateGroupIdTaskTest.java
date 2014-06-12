@@ -24,7 +24,7 @@ public class AddCorporateGroupIdTaskTest {
         final List<String> groupIds = new ArrayList<String>();
         groupIds.add("groupId");
         when(repoHandler.getCorporateGroupIds()).thenReturn(groupIds);
-        final GrapesServerConfig config = GrapesTestUtils.getConfigMock();
+        final GrapesServerConfig config = mock(GrapesServerConfig.class);
         final AddCorporateGroupIdTask task = new AddCorporateGroupIdTask(repoHandler, config);
 
         Exception exception = null;

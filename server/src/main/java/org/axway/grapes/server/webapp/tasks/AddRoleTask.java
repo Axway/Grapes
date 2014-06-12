@@ -22,13 +22,11 @@ import java.net.UnknownHostException;
  */
 public class AddRoleTask extends Task{
 
-	private final GrapesServerConfig config;
 	private final RepositoryHandler repoHandler;
 
-	public AddRoleTask(final RepositoryHandler repoHandler, final GrapesServerConfig config) {
+	public AddRoleTask(final RepositoryHandler repoHandler) {
 		super("addRole");
 		this.repoHandler = repoHandler;
-		this.config = config;
 	}
 
 	@Override
@@ -44,7 +42,6 @@ public class AddRoleTask extends Task{
         }
         
 		repoHandler.addUserRole(user, role);
-        config.loadCredentials(repoHandler);
 
 		printer.println("Task performed successfully.");
 	}

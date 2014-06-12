@@ -37,11 +37,6 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
-    public List<DbCredential> getCredentials() {
-        return credentials;
-    }
-
-    @Override
     public void addUserRole(String user, DbCredential.AvailableRoles role) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -51,7 +46,7 @@ public class TestingRepositoryHandler implements RepositoryHandler {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    private DbCredential getCredential(final String user) {
+    public DbCredential getCredential(final String user) {
         for(DbCredential dbCredential: credentials){
             if(dbCredential.getUser().equals(user)){
                 return dbCredential;

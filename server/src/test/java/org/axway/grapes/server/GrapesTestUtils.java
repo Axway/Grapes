@@ -1,9 +1,9 @@
 package org.axway.grapes.server;
 
-import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
-import org.axway.grapes.server.webapp.auth.CredentialManager;
+import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,29 +25,26 @@ public class GrapesTestUtils {
         return corporateGroupIds;
     }
 
-    public static GrapesServerConfig getConfigMock() {
-        final GrapesServerConfig config = mock(GrapesServerConfig.class);
+    public static RepositoryHandler getRepoHandlerMock() {
+        final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
 
         try{
-            final List<DbCredential> credentials = new ArrayList<DbCredential>();
 
             final DbCredential user = new DbCredential();
             user.setUser(USER_4TEST);
-            user.setPassword(CredentialManager.encrypt(PASSWORD_4TEST));
+            user.setPassword(GrapesAuthenticator.encrypt(PASSWORD_4TEST));
             user.addRole(AvailableRoles.ARTIFACT_CHECKER);
             user.addRole(AvailableRoles.DATA_DELETER);
             user.addRole(AvailableRoles.DATA_UPDATER);
             user.addRole(AvailableRoles.DEPENDENCY_NOTIFIER);
             user.addRole(AvailableRoles.LICENSE_CHECKER);
-            credentials.add(user);
 
-            when(config.getCredentials()).thenReturn(credentials);
-            when(config.getCorporateGroupIds()).thenReturn(getTestCorporateGroupIds());
-            when(config.getAuthenticationCachePolicy()).thenReturn("maximumSize=1000, expireAfterAccess=10m");
+            when(repositoryHandler.getCredential(USER_4TEST)).thenReturn(user);
+
         }catch (Exception e){
             System.err.println("Failed to mock Grapes configuration due to password encryption error.");
         }
 
-        return config;
+        return repositoryHandler;
     }
 }

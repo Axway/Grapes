@@ -1,14 +1,15 @@
 package org.axway.grapes.server.webapp.resources;
 
 import com.sun.jersey.api.NotFoundException;
+import com.yammer.dropwizard.auth.Auth;
 import com.yammer.dropwizard.jersey.params.BooleanParam;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
-import org.axway.grapes.server.webapp.auth.Role;
 import org.axway.grapes.server.webapp.views.LicenseView;
 import org.axway.grapes.server.webapp.views.ListView;
 import org.eclipse.jetty.http.HttpStatus;
@@ -20,7 +21,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -49,8 +49,8 @@ public class LicenseResource extends AbstractResource{
 	 * @return Response An acknowledgment:<br/>- 400 if the artifact is MIME is malformed<br/>- 500 if internal error<br/>- 201 if ok
 	 */
 	@POST
-	public Response postLicense(@Role final List<AvailableRoles> roles, final License license){
-        if(!roles.contains(AvailableRoles.DATA_UPDATER)){
+	public Response postLicense(@Auth final DbCredential credential, final License license){
+        if(!credential.getRoles().contains(AvailableRoles.DATA_UPDATER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
@@ -172,8 +172,8 @@ public class LicenseResource extends AbstractResource{
     @DELETE
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}")
-    public Response delete(@Role final List<AvailableRoles> roles, @PathParam("name") final String name){
-        if(!roles.contains(AvailableRoles.DATA_DELETER)){
+    public Response delete(@Auth final DbCredential credential, @PathParam("name") final String name){
+        if(!credential.getRoles().contains(AvailableRoles.DATA_DELETER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
@@ -203,8 +203,8 @@ public class LicenseResource extends AbstractResource{
     @POST
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}")
-    public Response approve(@Role final List<AvailableRoles> roles, @PathParam("name") final String name, @QueryParam(ServerAPI.APPROVED_PARAM) final BooleanParam approved){
-        if(!roles.contains(AvailableRoles.LICENSE_CHECKER)){
+    public Response approve(@Auth final DbCredential credential, @PathParam("name") final String name, @QueryParam(ServerAPI.APPROVED_PARAM) final BooleanParam approved){
+        if(!credential.getRoles().contains(AvailableRoles.LICENSE_CHECKER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 

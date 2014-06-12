@@ -3,7 +3,6 @@ package org.axway.grapes.server.config;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yammer.dropwizard.config.Configuration;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,11 +52,6 @@ public class GrapesServerConfig extends Configuration{
      * This information is stored in the database and modified using tasks
      */
     private final List<String> corporateGroupIds = new ArrayList<String>();
-
-    /**
-     * List of the credentials that are stored in Grapes database
-     */
-    private final List<DbCredential> credentials = new ArrayList<DbCredential>();
 	
 	/**
 	 * Returns the complete Grapes root URL
@@ -102,30 +96,6 @@ public class GrapesServerConfig extends Configuration{
         groupIds.addAll(corporateGroupIds);
 
         return groupIds;
-    }
-
-    /**
-     * Loads the available credentials
-     */
-    public void loadCredentials(final RepositoryHandler repoHandler)  {
-        try{
-            final Iterable<DbCredential> dbCredentials = repoHandler.getCredentials();
-
-            if(dbCredentials != null){
-                credentials.clear();
-                for(DbCredential credential: dbCredentials){
-                    credentials.add(credential);
-                }
-            }
-
-
-        }catch (Exception e){
-            LOG.error("Failed to update the credentials.", e);
-        }
-    }
-
-    public List<DbCredential> getCredentials() {
-        return credentials;
     }
 
     public boolean isInMaintenance() {

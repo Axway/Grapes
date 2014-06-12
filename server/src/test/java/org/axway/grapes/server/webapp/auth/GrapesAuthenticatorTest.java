@@ -4,7 +4,8 @@ import com.google.common.base.Optional;
 import com.yammer.dropwizard.auth.AuthenticationException;
 import com.yammer.dropwizard.auth.basic.BasicCredentials;
 import org.axway.grapes.server.GrapesTestUtils;
-import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.junit.Test;
 
@@ -13,7 +14,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class CredentialManagerTest {
+public class GrapesAuthenticatorTest {
     
     @Test
 	public void testEncryption() {
@@ -22,8 +23,8 @@ public class CredentialManagerTest {
 		String encryptedPassword1 = null,  encryptedPassword2 = null;
 		
 		try {
-			encryptedPassword1 = CredentialManager.encrypt(password);
-			encryptedPassword2 = CredentialManager.encrypt(password); 
+			encryptedPassword1 = GrapesAuthenticator.encrypt(password);
+			encryptedPassword2 = GrapesAuthenticator.encrypt(password);
 		} catch (Exception e) {
 			exception = e;
 		}
@@ -41,7 +42,7 @@ public class CredentialManagerTest {
 		Exception exception = null;
 		
 		try {
-			CredentialManager.encrypt(password);
+            GrapesAuthenticator.encrypt(password);
 		} catch (Exception e) {
 			exception = e;
 		}
@@ -51,14 +52,14 @@ public class CredentialManagerTest {
 	
 	@Test
 	public void checkAutentication() throws AuthenticationException, UnknownHostException{
-        final GrapesServerConfig config = GrapesTestUtils.getConfigMock();
-		final CredentialManager authentificator = new CredentialManager(config);
+        final RepositoryHandler repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
+		final GrapesAuthenticator authenticator = new GrapesAuthenticator(repositoryHandler);
 		
 		Exception exception = null;
-		Optional<List<AvailableRoles>> result = null;
+		Optional<DbCredential> result = null;
 		
 		try {
-			result = authentificator.authenticate(new BasicCredentials(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+			result = authenticator.authenticate(new BasicCredentials(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
 			
 		} catch (Exception e) {
 			exception = e;
@@ -68,7 +69,7 @@ public class CredentialManagerTest {
 		assertNotNull(result);
 		assertTrue(result.isPresent());
 
-        final List<AvailableRoles> roles = result.get();
+        final List<AvailableRoles> roles = result.get().getRoles();
         assertNotNull(roles);
         assertTrue(roles.contains(AvailableRoles.ARTIFACT_CHECKER));
         assertTrue(roles.contains(AvailableRoles.DATA_DELETER));
@@ -79,14 +80,14 @@ public class CredentialManagerTest {
 	
 	@Test
 	public void checkWrongAutentication() throws AuthenticationException, UnknownHostException{
-        final GrapesServerConfig config = GrapesTestUtils.getConfigMock();
-        final CredentialManager authentificator = new CredentialManager(config);
+        final RepositoryHandler repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
+        final GrapesAuthenticator authenticator = new GrapesAuthenticator(repositoryHandler);
 
         Exception exception = null;
-        Optional<List<AvailableRoles>> result = null;
+        Optional<DbCredential> result = null;
 		
 		try {
-			result = authentificator.authenticate(new BasicCredentials(GrapesTestUtils.USER_4TEST, "wrongPassword"));
+			result = authenticator.authenticate(new BasicCredentials(GrapesTestUtils.USER_4TEST, "wrongPassword"));
 			
 		} catch (Exception e) {
 			exception = e;
@@ -100,7 +101,7 @@ public class CredentialManagerTest {
 		result = null;
 		
 		try {
-			result = authentificator.authenticate(new BasicCredentials("userWrong", GrapesTestUtils.PASSWORD_4TEST));
+			result = authenticator.authenticate(new BasicCredentials("userWrong", GrapesTestUtils.PASSWORD_4TEST));
 			
 		} catch (Exception e) {
 			exception = e;
@@ -114,7 +115,7 @@ public class CredentialManagerTest {
 		result = null;
 		
 		try {
-			result = authentificator.authenticate(null);
+			result = authenticator.authenticate(null);
 			
 		} catch (Exception e) {
 			exception = e;

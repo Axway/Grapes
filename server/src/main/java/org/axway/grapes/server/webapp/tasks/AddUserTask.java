@@ -7,7 +7,7 @@ import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
-import org.axway.grapes.server.webapp.auth.CredentialManager;
+import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 
 import java.io.PrintWriter;
 
@@ -21,13 +21,11 @@ import java.io.PrintWriter;
  */
 public class AddUserTask extends Task{
 
-	private final GrapesServerConfig config;
 	private final RepositoryHandler repoHandler;
 
-	public AddUserTask(final RepositoryHandler repoHandler, final GrapesServerConfig config) {
+	public AddUserTask(final RepositoryHandler repoHandler) {
 		super("addUser");
 		this.repoHandler = repoHandler;
-		this.config = config;
 	}
 
 	@Override
@@ -35,7 +33,7 @@ public class AddUserTask extends Task{
 		printer.println("Adding/update credentials ...");
         final DbCredential credential = new DbCredential();
 		credential.setUser(args.get(ServerAPI.USER_PARAM).asList().get(0));
-		credential.setPassword(CredentialManager.encrypt(args.get(ServerAPI.PASSWORD_PARAM).asList().get(0)));
+		credential.setPassword(GrapesAuthenticator.encrypt(args.get(ServerAPI.PASSWORD_PARAM).asList().get(0)));
         
         if(!credential.isHealthy()){
             printer.println("ERROR: Bad request! The provided credential are unhealthy or incomplete.");
@@ -43,8 +41,6 @@ public class AddUserTask extends Task{
         }
         
 		repoHandler.store(credential);
-
-        config.loadCredentials(repoHandler);
 
 		printer.println("Task performed successfully.");
 	}

@@ -1,6 +1,7 @@
 package org.axway.grapes.server.webapp.resources;
 
 import com.sun.jersey.api.NotFoundException;
+import com.yammer.dropwizard.auth.Auth;
 import com.yammer.dropwizard.jersey.caching.CacheControl;
 import com.yammer.dropwizard.jersey.params.BooleanParam;
 import org.axway.grapes.commons.api.ServerAPI;
@@ -8,8 +9,8 @@ import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
-import org.axway.grapes.server.webapp.auth.Role;
 import org.axway.grapes.server.webapp.views.ArtifactView;
 import org.axway.grapes.server.webapp.views.DependencyListView;
 import org.axway.grapes.server.webapp.views.LicenseListView;
@@ -47,13 +48,13 @@ public class ArtifactResource extends AbstractResource {
     /**
      * Handle artifact posts when the server got a request POST <grapes_url>/artifact & MIME that contains the artifact.
      *
-     * @param roles
+     * @param credential DbCredential
      * @param artifact The artifact to add to Grapes database
      * @return Response An acknowledgment:<br/>- 400 if the artifact is MIME is malformed<br/>- 500 if internal error<br/>- 201 if ok
      */
     @POST
-    public Response postArtifact(@Role final List<AvailableRoles> roles, final Artifact artifact){
-        if(!roles.contains(AvailableRoles.DEPENDENCY_NOTIFIER)){
+    public Response postArtifact(@Auth final DbCredential credential, final Artifact artifact){
+        if(!credential.getRoles().contains(AvailableRoles.DEPENDENCY_NOTIFIER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
@@ -250,8 +251,8 @@ public class ArtifactResource extends AbstractResource {
      */
     @POST
     @Path("/{gavc}" + ServerAPI.GET_DOWNLOAD_URL)
-    public Response updateDownloadUrl(@Role final List<AvailableRoles> roles, @PathParam("gavc") final String gavc, @QueryParam(ServerAPI.URL_PARAM) final String downLoadUrl){
-        if(!roles.contains(AvailableRoles.DATA_UPDATER)){
+    public Response updateDownloadUrl(@Auth final DbCredential credential, @PathParam("gavc") final String gavc, @QueryParam(ServerAPI.URL_PARAM) final String downLoadUrl){
+        if(!credential.getRoles().contains(AvailableRoles.DATA_UPDATER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
@@ -282,8 +283,8 @@ public class ArtifactResource extends AbstractResource {
      */
     @POST
     @Path("/{gavc}" + ServerAPI.GET_PROVIDER)
-    public Response updateProvider(@Role final List<AvailableRoles> roles, @PathParam("gavc") final String gavc, @QueryParam(ServerAPI.PROVIDER_PARAM) final String provider){
-        if(!roles.contains(AvailableRoles.DATA_UPDATER)){
+    public Response updateProvider(@Auth final DbCredential credential, @PathParam("gavc") final String gavc, @QueryParam(ServerAPI.PROVIDER_PARAM) final String provider){
+        if(!credential.getRoles().contains(AvailableRoles.DATA_UPDATER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
@@ -311,14 +312,14 @@ public class ArtifactResource extends AbstractResource {
      * Delete an Artifact regarding its gavc.
      * This method is call via DELETE <grapes_url>/artifact/<gavc>
      *
-     * @param roles
+     * @param credential DbCredential
      * @param gavc
      * @return Response
      */
     @DELETE
     @Path("/{gavc}")
-    public Response delete(@Role final List<AvailableRoles> roles, @PathParam("gavc") final String gavc){
-        if(!roles.contains(AvailableRoles.DATA_DELETER)){
+    public Response delete(@Auth final DbCredential credential, @PathParam("gavc") final String gavc){
+        if(!credential.getRoles().contains(AvailableRoles.DATA_DELETER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
@@ -345,15 +346,15 @@ public class ArtifactResource extends AbstractResource {
     /**
      * Add "DO_NOT_USE" flag to an artifact
      *
-     * @param roles
-     * @param gavc
-     * @param doNotUse
+     * @param credential DbCredential
+     * @param gavc String
+     * @param doNotUse boolean
      * @return Response
      */
     @POST
     @Path("/{gavc}" + ServerAPI.SET_DO_NOT_USE)
-    public Response postDoNotUse(@Role final List<AvailableRoles> roles, @PathParam("gavc") final String gavc,@QueryParam(ServerAPI.DO_NOT_USE) final BooleanParam doNotUse){
-        if(!roles.contains(AvailableRoles.ARTIFACT_CHECKER)){
+    public Response postDoNotUse(@Auth final DbCredential credential, @PathParam("gavc") final String gavc,@QueryParam(ServerAPI.DO_NOT_USE) final BooleanParam doNotUse){
+        if(!credential.getRoles().contains(AvailableRoles.ARTIFACT_CHECKER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
@@ -489,8 +490,8 @@ public class ArtifactResource extends AbstractResource {
      */
     @POST
     @Path("/{gavc}" + ServerAPI.GET_LICENSES)
-    public Response addLicense(@Role final List<AvailableRoles> roles, @PathParam("gavc") final String gavc,@QueryParam(ServerAPI.LICENSE_ID_PARAM) final String licenseId){
-        if(!roles.contains(AvailableRoles.DATA_UPDATER)){
+    public Response addLicense(@Auth final DbCredential credential, @PathParam("gavc") final String gavc,@QueryParam(ServerAPI.LICENSE_ID_PARAM) final String licenseId){
+        if(!credential.getRoles().contains(AvailableRoles.DATA_UPDATER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
@@ -522,8 +523,8 @@ public class ArtifactResource extends AbstractResource {
      */
     @DELETE
     @Path("/{gavc}" + ServerAPI.GET_LICENSES)
-    public Response deleteLicense(@Role final List<AvailableRoles> roles, @PathParam("gavc") final String gavc,@QueryParam(ServerAPI.LICENSE_ID_PARAM) final String licenseId){
-        if(!roles.contains(AvailableRoles.DATA_UPDATER)){
+    public Response deleteLicense(@Auth final DbCredential credential, @PathParam("gavc") final String gavc,@QueryParam(ServerAPI.LICENSE_ID_PARAM) final String licenseId){
+        if(!credential.getRoles().contains(AvailableRoles.DATA_UPDATER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 

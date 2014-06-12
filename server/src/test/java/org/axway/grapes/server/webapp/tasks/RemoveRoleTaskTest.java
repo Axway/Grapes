@@ -18,8 +18,7 @@ public class RemoveRoleTaskTest {
     @Test
     public void testRemoveRole(){
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final GrapesServerConfig config = GrapesTestUtils.getConfigMock();
-        final RemoveRoleTask task = new RemoveRoleTask(repositoryHandler,config);
+        final RemoveRoleTask task = new RemoveRoleTask(repositoryHandler);
 
         final ImmutableMultimap.Builder<String, String> builder = new ImmutableMultimap.Builder<String, String>();
         builder.put(ServerAPI.USER_PARAM, "user");
@@ -34,7 +33,6 @@ public class RemoveRoleTaskTest {
 
         assertNull(exception);
         verify(repositoryHandler, times(1)).removeUserRole("user", AvailableRoles.DATA_UPDATER);
-        verify(config, times(1)).loadCredentials(repositoryHandler);
 
     }
 

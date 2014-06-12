@@ -2,13 +2,15 @@ package org.axway.grapes.server;
 
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.assets.AssetsBundle;
+import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.views.ViewBundle;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.db.DBException;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.webapp.auth.GrapesAuthProvider;
+import org.axway.grapes.server.db.datamodel.DbCredential;
+import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.axway.grapes.server.webapp.healthcheck.CorporateGroupIdsCheck;
 import org.axway.grapes.server.webapp.healthcheck.DataBaseCheck;
 import org.axway.grapes.server.webapp.resources.*;
@@ -72,18 +74,18 @@ public class GrapesServer extends Service<GrapesServerConfig> {
 
         // load the missing configuration from the database
         config.loadGroupIds(repoHandler);
-        config.loadCredentials(repoHandler);
 
         // Add credential management
-        final GrapesAuthProvider authProvider = new GrapesAuthProvider(config);
+        final GrapesAuthenticator grapesAuthenticator = new GrapesAuthenticator(repoHandler);
+        final BasicAuthProvider authProvider = new BasicAuthProvider<DbCredential>(grapesAuthenticator, "Grapes Authenticator Provider");
         env.addProvider(authProvider);
 
         // Tasks
         env.addTask(new AddCorporateGroupIdTask(repoHandler, config));
         env.addTask(new RemoveCorporateGroupIdTask(repoHandler, config));
-        env.addTask(new AddUserTask(repoHandler, config));
-        env.addTask(new AddRoleTask(repoHandler,config));
-        env.addTask(new RemoveRoleTask(repoHandler,config));
+        env.addTask(new AddUserTask(repoHandler));
+        env.addTask(new AddRoleTask(repoHandler));
+        env.addTask(new RemoveRoleTask(repoHandler));
         env.addTask(new MaintenanceModeTask(config));
         env.addTask(new KillTask());
 

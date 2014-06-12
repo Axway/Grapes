@@ -8,7 +8,7 @@ import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.materials.TestingRepositoryHandler;
-import org.axway.grapes.server.webapp.auth.CredentialManager;
+import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.junit.Test;
 
 import java.io.PrintWriter;
@@ -21,9 +21,8 @@ public class AddUserTaskTest {
     @Test
 	public void testAddUser() throws UnknownHostException, AuthenticationException {
 		final TestingRepositoryHandler repoHandler = new TestingRepositoryHandler();
-		final GrapesServerConfig config = GrapesTestUtils.getConfigMock();
 		
-		final AddUserTask addUser = new AddUserTask(repoHandler, config);
+		final AddUserTask addUser = new AddUserTask(repoHandler);
 		final ImmutableMultimap.Builder<String, String> builder = new Builder<String, String>();
 		builder.put(ServerAPI.USER_PARAM, "user");
 		builder.put(ServerAPI.PASSWORD_PARAM, "password");
@@ -36,11 +35,10 @@ public class AddUserTaskTest {
 		}
 		
 		assertNull(exception);
-		assertTrue(repoHandler.getCredentials().iterator().hasNext());
 		
-		final DbCredential credential = repoHandler.getCredentials().iterator().next();
+		final DbCredential credential = repoHandler.getCredential("user");
 		assertEquals("user", credential.getUser());
-		assertEquals(CredentialManager.encrypt("password"), credential.getPassword());
+		assertEquals(GrapesAuthenticator.encrypt("password"), credential.getPassword());
 		
 	}
 }

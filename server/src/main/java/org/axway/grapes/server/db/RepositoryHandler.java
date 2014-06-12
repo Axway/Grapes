@@ -26,11 +26,12 @@ public interface RepositoryHandler {
     public void store(final DbCredential credential);
 
     /**
-     * Return all the available credential from the db or an empty list if there is none
+     * Returns the credentials of a user
      *
-     * @return Iterable<DbCredential>
+     * @param userId String
+     * @return DbCredential
      */
-    public Iterable<DbCredential> getCredentials();
+    public DbCredential getCredential(final String userId);
 
     /**
      * Add a role to the targeted user
