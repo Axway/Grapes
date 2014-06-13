@@ -11,8 +11,8 @@ import org.jongo.marshall.jackson.oid.Id;
  */
 public class DbLicense {
 
-    public static final String DATA_MODEL_VERSION = "data_model_version";
-    private String datamodelVersion = "2.0.0";
+    public static final String DATA_MODEL_VERSION = "datamodelVersion";
+    private String datamodelVersion = "2.1.0";
 
     @Id
 	private String name = "";

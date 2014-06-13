@@ -22,10 +22,7 @@ import org.axway.grapes.server.core.version.NotHandledVersionException;
 import org.axway.grapes.server.core.version.Version;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.DbArtifact;
-import org.axway.grapes.server.db.datamodel.DbDependency;
-import org.axway.grapes.server.db.datamodel.DbLicense;
-import org.axway.grapes.server.db.datamodel.DbModule;
+import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.webapp.views.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -830,5 +827,116 @@ public class RequestHandler {
         }
 
         repoHandler.updateProvider(artifact, provider);
+    }
+
+
+    /**
+     * Stores an Organization in Grapes database
+     *
+     * @param organization Organization
+     */
+    public void store(final Organization organization) {
+        final DbOrganization dbOrganization = DataUtils.getDbOrganization(organization);
+        repoHandler.store(dbOrganization);
+    }
+
+    /**
+     * Returns a list view that contains all the organization names
+     *
+     * @return ListView
+     */
+    public ListView getOrganizationNames() {
+        final ListView listView = new ListView("Organization Ids list", "Organizations");
+        listView.addAll(repoHandler.getOrganizationNames());
+
+        return listView;
+    }
+
+    /**
+     * Returns an Organization View
+     *
+     * @param organizationId String
+     * @return OrganizationView
+     */
+    public OrganizationView getOrganization(final String organizationId) {
+        final DbOrganization dbOrganization = repoHandler.getOrganization(organizationId);
+
+        if(dbOrganization == null){
+            throw new NotFoundException();
+        }
+
+        final Organization organization = DataUtils.getOrganization(dbOrganization);
+        return new OrganizationView(organization);
+    }
+
+    /**
+     * Deletes an organization
+     *
+     * @param organizationId String
+     */
+    public void deleteOrganization(final String organizationId) {
+        final DbOrganization dbOrganization = repoHandler.getOrganization(organizationId);
+
+        if(dbOrganization == null){
+            throw new NotFoundException();
+        }
+
+        repoHandler.deleteOrganization(dbOrganization.getName());
+    }
+
+    /**
+     * Returns the list view of corporate groupIds of an organization
+     *
+     * @param organizationId String
+     * @return ListView
+     */
+    public ListView getCorporateGroupIds(final String organizationId) {
+        final DbOrganization dbOrganization = repoHandler.getOrganization(organizationId);
+
+        if(dbOrganization == null){
+            throw new NotFoundException();
+        }
+
+        final ListView listView = new ListView("Organization " + organizationId, "Corporate GroupId Prefix");
+        listView.addAll(dbOrganization.getCorporateGroupIdPrefixes());
+
+        return listView;
+    }
+
+    /**
+     * Adds a corporate groupId to an organization
+     *
+     * @param organizationId String
+     * @param corporateGroupId String
+     */
+    public void addCorporateGroupId(final String organizationId, final String corporateGroupId) {
+        final DbOrganization dbOrganization = repoHandler.getOrganization(organizationId);
+
+        if(dbOrganization == null){
+            throw new NotFoundException();
+        }
+
+        if(!dbOrganization.getCorporateGroupIdPrefixes().contains(corporateGroupId)){
+            dbOrganization.getCorporateGroupIdPrefixes().add(corporateGroupId);
+            repoHandler.store(dbOrganization);
+        }
+    }
+
+    /**
+     * Removes a corporate groupId from an Organisation
+     * @param organizationId
+     * @param corporateGroupId
+     */
+    public void removeCorporateGroupId(final String organizationId, final String corporateGroupId) {
+        final DbOrganization dbOrganization = repoHandler.getOrganization(organizationId);
+
+        if(dbOrganization == null){
+            throw new NotFoundException();
+        }
+
+        if(dbOrganization.getCorporateGroupIdPrefixes().contains(corporateGroupId)){
+            dbOrganization.getCorporateGroupIdPrefixes().remove(corporateGroupId);
+            repoHandler.store(dbOrganization);
+        }
     }
 }

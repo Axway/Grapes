@@ -15,25 +15,40 @@ public final class DataModelFactory {
 	
 	// Utility class, though no constructor
 	private DataModelFactory() {}
-	
-	
-	/**
-	 * Generates a module regarding the parameters.
+
+
+    /**
+     * Generates an organization regarding the parameters.
      *
-	 * @param name String
-	 * @param version String
-	 * @return Module
-	 */
-	public static Module createModule(final String name,final String version){
-		final Module module = new Module();
-		
-		module.setName(name);
-		module.setVersion(version);
-		module.setPromoted(false);
-		
-		return module;
-		
-	}
+     * @param name String
+     * @return Organization
+     */
+    public static Organization createOrganization(final String name){
+        final Organization organization = new Organization();
+        organization.setName(name);
+
+        return organization;
+
+    }
+
+
+    /**
+     * Generates a module regarding the parameters.
+     *
+     * @param name String
+     * @param version String
+     * @return Module
+     */
+    public static Module createModule(final String name,final String version){
+        final Module module = new Module();
+
+        module.setName(name);
+        module.setVersion(version);
+        module.setPromoted(false);
+
+        return module;
+
+    }
 	
 	/**
 	 * Generates an artifact regarding the parameters.

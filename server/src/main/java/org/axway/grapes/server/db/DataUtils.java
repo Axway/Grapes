@@ -1,10 +1,7 @@
 package org.axway.grapes.server.db;
 
 import org.axway.grapes.commons.datamodel.*;
-import org.axway.grapes.server.db.datamodel.DbArtifact;
-import org.axway.grapes.server.db.datamodel.DbDependency;
-import org.axway.grapes.server.db.datamodel.DbLicense;
-import org.axway.grapes.server.db.datamodel.DbModule;
+import org.axway.grapes.server.db.datamodel.*;
 
 import java.util.*;
 
@@ -318,5 +315,32 @@ public final class DataUtils {
 
             n = newn;
         }
+    }
+
+    /**
+     * Transform an organization from client/server model to database model
+     *
+     * @param organization Organization
+     * @return DbOrganization
+     */
+    public static DbOrganization getDbOrganization(final Organization organization) {
+        final DbOrganization dbOrganization = new DbOrganization();
+        dbOrganization.setName(organization.getName());
+        dbOrganization.getCorporateGroupIdPrefixes().addAll(organization.getCorporateGroupIdPrefixes());
+
+        return dbOrganization;
+    }
+
+    /**
+     * Transform an organization from database model to client/server model
+     *
+     * @param dbOrganization DbOrganization
+     * @return Organization
+     */
+    public static Organization getOrganization(final DbOrganization dbOrganization) {
+        final Organization organization = DataModelFactory.createOrganization(dbOrganization.getName());
+        organization.getCorporateGroupIdPrefixes().addAll(dbOrganization.getCorporateGroupIdPrefixes());
+
+        return organization;
     }
 }

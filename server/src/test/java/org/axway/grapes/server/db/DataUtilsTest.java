@@ -1,10 +1,7 @@
 package org.axway.grapes.server.db;
 
 import org.axway.grapes.commons.datamodel.*;
-import org.axway.grapes.server.db.datamodel.DbArtifact;
-import org.axway.grapes.server.db.datamodel.DbDependency;
-import org.axway.grapes.server.db.datamodel.DbLicense;
-import org.axway.grapes.server.db.datamodel.DbModule;
+import org.axway.grapes.server.db.datamodel.*;
 import org.junit.Test;
 
 import java.util.List;
@@ -266,5 +263,30 @@ public class DataUtilsTest {
 
         assertEquals("groupId", DataUtils.getGroupId(gavc1));
         assertEquals("test", DataUtils.getGroupId(gavc2));
+    }
+
+    @Test
+    public void getDbOrganizationFromOrganization(){
+        final Organization organization = DataModelFactory.createOrganization("test");
+        organization.getCorporateGroupIdPrefixes().add("com.test");
+
+        final DbOrganization dbOrganization = DataUtils.getDbOrganization(organization);
+
+        assertEquals(organization.getName(), dbOrganization.getName());
+        assertEquals(1, dbOrganization.getCorporateGroupIdPrefixes().size());
+        assertEquals(organization.getCorporateGroupIdPrefixes().get(0), dbOrganization.getCorporateGroupIdPrefixes().get(0));
+    }
+
+    @Test
+    public void getOrganizationFromDbOrganization(){
+        final DbOrganization dbOrganization = new DbOrganization();
+        dbOrganization.setName("test");
+        dbOrganization.getCorporateGroupIdPrefixes().add("com.test");
+
+        final Organization organization = DataUtils.getOrganization(dbOrganization);
+
+        assertEquals(dbOrganization.getName(), organization.getName());
+        assertEquals(1, organization.getCorporateGroupIdPrefixes().size());
+        assertEquals(dbOrganization.getCorporateGroupIdPrefixes().get(0), organization.getCorporateGroupIdPrefixes().get(0));
     }
 }

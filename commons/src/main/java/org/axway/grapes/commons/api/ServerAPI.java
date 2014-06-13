@@ -12,6 +12,9 @@ package org.axway.grapes.commons.api;
 public interface ServerAPI {
 
     //RESSOURCES
+    /** Value - {@value}, Organization is a Grapes server resource that handles the information about organization.*/
+    public static final String ORGANIZATION_RESOURCE = "organization";
+
     /** Value - {@value}, Module is a Grapes server resource that handles the information about modules.*/
     public static final String MODULE_RESOURCE = "module";
 
@@ -28,6 +31,9 @@ public interface ServerAPI {
     public static final String WEBAPP_RESOURCE = "webapp";
 
     //METHODS
+    /** Value - {@value}, GET methods that returns the list of corporate groupIds. Usually used as /organization/{name}/<GET_CORPORATE_GROUPIDS>.*/
+    public static final String GET_CORPORATE_GROUPIDS = "/corporateGroupIds";
+
     /** Value - {@value}, GET methods that returns the list of corporate filters. Usually used as /<GET_CORPORATE_FILTERS>.*/
     public static final String GET_CORPORATE_FILTERS = "/corporatefilters";
 

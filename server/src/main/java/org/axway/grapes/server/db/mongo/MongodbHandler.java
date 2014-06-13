@@ -517,4 +517,38 @@ public class MongodbHandler implements RepositoryHandler {
         }
     }
 
+    @Override
+    public List<String> getOrganizationNames() {
+        final Jongo datastore = getJongoDataStore();
+        return datastore.getCollection(DbCollections.DB_ORGANIZATION).distinct(DbCollections.DEFAULT_ID).as(String.class);
+    }
+
+    @Override
+    public DbOrganization getOrganization(String name) {
+        final Jongo datastore = getJongoDataStore();
+        return datastore.getCollection(DbCollections.DB_ORGANIZATION)
+                .findOne(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, name))
+                .as(DbOrganization.class);
+    }
+
+    @Override
+    public void deleteOrganization(String organizationId) {
+        final Jongo datastore = getJongoDataStore();
+        datastore.getCollection(DbCollections.DB_ORGANIZATION)
+                .remove(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, organizationId));
+    }
+
+    @Override
+    public void store(DbOrganization organization) {
+        final Jongo datastore = getJongoDataStore();
+        final MongoCollection dbOrganizations = datastore.getCollection(DbCollections.DB_CREDENTIALS);
+
+        if(getOrganization(organization.getName()) == null){
+            dbOrganizations.save(organization);
+        }
+        else{
+            dbOrganizations.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, organization.getName())).with(organization);
+        }
+    }
+
 }

@@ -2,7 +2,6 @@ package org.axway.grapes.server.webapp.tasks;
 
 import com.google.common.collect.ImmutableMultimap;
 import org.axway.grapes.commons.api.ServerAPI;
-import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.junit.Test;

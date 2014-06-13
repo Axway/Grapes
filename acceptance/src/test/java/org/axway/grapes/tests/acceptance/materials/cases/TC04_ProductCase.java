@@ -1,8 +1,6 @@
 package org.axway.grapes.tests.acceptance.materials.cases;
 
 
-import org.axway.grapes.commons.datamodel.*;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -6,7 +6,6 @@ import com.sun.jersey.api.client.WebResource;
 import com.yammer.dropwizard.testing.ResourceTest;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
 import org.axway.grapes.commons.api.ServerAPI;
-import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.graphs.AbstractGraph;
 import org.axway.grapes.server.core.graphs.ModuleGraph;

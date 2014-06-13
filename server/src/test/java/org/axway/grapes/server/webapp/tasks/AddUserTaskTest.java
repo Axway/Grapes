@@ -4,8 +4,6 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableMultimap.Builder;
 import com.yammer.dropwizard.auth.AuthenticationException;
 import org.axway.grapes.commons.api.ServerAPI;
-import org.axway.grapes.server.GrapesTestUtils;
-import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.materials.TestingRepositoryHandler;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
@@ -14,7 +12,8 @@ import org.junit.Test;
 import java.io.PrintWriter;
 import java.net.UnknownHostException;
 
-import static junit.framework.TestCase.*;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNull;
 import static org.mockito.Mockito.mock;
 
 public class AddUserTaskTest {

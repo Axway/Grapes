@@ -11,6 +11,7 @@ public interface DbCollections {
 
     static final String datamodelVersion = "2.0.0";
 
+    public static final String DB_ORGANIZATION = DbOrganization.class.getSimpleName();
     public static final String DB_MODULES = DbModule.class.getSimpleName();
     public static final String DB_ARTIFACTS = DbArtifact.class.getSimpleName();
     public static final String DB_LICENSES = DbLicense.class.getSimpleName();
