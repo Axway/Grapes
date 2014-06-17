@@ -1,6 +1,26 @@
 /**************************************************************************************************/
 /*          Fill web-app with actions and filters regarding the targeted object type               */
 /**************************************************************************************************/
+function displayOrganizationOptions(){
+    $("#targets").empty();
+    cleanAction();
+	var organizationIds = "<div class=\"control-group\">\n";
+	organizationIds += "   <label class=\"control-label\" for=\"organizationName\" style=\"width: auto;\">name: </label>\n";
+	organizationIds += "      <div class=\"controls\"  style=\"margin-left: 75px;\"><select id=\"organizationName\"></select></div>\n";
+	organizationIds += "</div>\n";
+	$("#ids").empty().append(organizationIds);
+	$("#filters").empty();
+	var organizationActions = "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
+	organizationActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='createOrganization();'>New</button>\n";
+	organizationActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='getOrganizationOverview();'>Overview</button>\n";
+	organizationActions += "</div>\n";
+	$("#action").empty().append(organizationActions);
+	$("#action-perform").empty();
+	loadOrganizationNames("organizationName");
+
+	$("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getOrganizationList(\"organizationName\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+}
+
 function displayModuleOptions(){
     $("#targets").empty();
     cleanAction();
@@ -40,7 +60,6 @@ function displayModuleOptions(){
 
 	$("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getModuleList(\"moduleName\", \"moduleVersion\", \"promoted\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
 }
-
 
 function displayArtifactOptions(){
     $("#targets").empty();
@@ -138,6 +157,36 @@ function displayModuleLicenseOptions(){
 /********************************************************************/
 /*          Fill web-app targets regarding the filters               */
 /********************************************************************/
+function getOrganizationList(organizationNameFieldId, targetedFieldId){
+    $("#" + targetedFieldId).empty();
+    $('.alert').hide();
+    cleanAction();
+
+    var organizationName = $("#" + organizationNameFieldId).val();
+
+    $.ajax({
+    		type: "GET",
+    		accept: {
+    			json: 'application/json'
+    		},
+    		url: "/organization/" + organizationName ,
+    		data: {},
+    		dataType: "json",
+    		success: function(data, textStatus) {
+    			var html = "<label class=\"radio\">"
+                html += "<input type=\"radio\" name=\"organizationId\" value=\""+ data.name+ "\" onclick=\"cleanAction()\">";
+                html += data.name;
+                html += "</label>"
+
+    			$("#" + targetedFieldId).append(html);
+    		}
+    }).done(function(){
+        setTimeout(function(){
+              $("input:radio[name=organizationId]:first").attr('checked', true);
+            }, 500);
+    });
+}
+
 function getModuleList(moduleNameFieldId, moduleVersionFieldId, promotedFieldId, targetedFieldId){
     $("#" + targetedFieldId).empty();
     $('.alert').hide();
@@ -290,6 +339,132 @@ function getLicenseList(licenseNameFieldId, toBeValidatedFieldId, validatedField
 /********************************************************/
 /*               Actions definitions                    */
 /********************************************************/
+function createOrganization(){
+    $('#organizationEdition').find('#inputOrganizationName').val("");
+	$("#organizationEdition").modal('show');
+}
+
+function organizationSave(){
+    $.ajax({
+        url: "/organization",
+        method: 'POST',
+        contentType: 'application/json',
+        data: '{ "name": "'+$('#inputOrganizationName').val()+'", "corporateGroupIdPrefixes": []}',
+        error: function(xhr, error){
+            alert("The action cannot be performed: status " + xhr.status);
+        }
+    }).done(function(){
+            cleanAction();
+            updateOrganizationOptions();
+    });
+}
+
+function getOrganizationOverview(){
+    if($('input[name=organizationId]:checked', '#targets').size() == 0){
+        $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
+        $("#anyAlert").show();
+        return;
+    }
+	var organizationId = $('input[name=organizationId]:checked', '#targets').val();
+
+	$.ajax({
+            type: "GET",
+            url: "/organization/"+ organizationId,
+            data: {},
+            dataType: "json",
+            success: function(data, textStatus) {
+                var html = "<h3>Organization</h3><br/>\n";
+                html += "<p><strong>Name:</strong>"+data.name+"</p>\n";
+                html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
+                html += "<thead><tr><td>Corporate GroupId Prefixes</td></tr></thead>\n";
+                html += "<tbody>\n";
+                $.each(data.corporateGroupIdPrefixes, function(i,corporateGid) {
+                    html += "<tr id=\""+corporateGid+"-row\"><td onclick=\"removeCorporateGidAction('"+corporateGid+"');\">" + corporateGid + "</td></tr>\n";
+                });
+                html += "</tbody>\n";
+
+                $("#results").empty().append(html);
+            }
+        })
+
+    var html ='<form><fieldset><input id="newCorporateGid" style=\"margin:2px;\" type="text" placeholder="Corporate groupId prefix">\n<button type=\"button\" class=\"btn\" style=\"margin:2px;\" onclick=\"addCorporateGid();\">add</button>\n</fieldset></form>';
+    $("#extra-action").empty().append(html);
+    $("#extra-action").append("<button type=\"button\" class=\"btn btn-inverse\" style=\"margin:2px;\" onclick=\"deleteOrganization('"+organizationId+"');\">Delete</button>\n");
+
+}
+
+function addCorporateGid(){
+     var corporateGid = $("#newCorporateGid").val();
+     var organization = $('input[name=organizationId]:checked', '#targets').val();
+
+     $.ajax({
+             type: "POST",
+             url: "/organization/" + organization + "/corporateGroupIds" ,
+             data: corporateGid,
+             dataType: "html",
+             error: function(xhr, error){
+                 alert("The action cannot be performed: status " + xhr.status);
+             },
+             success : updateOrganization()
+         }).done(updateOrganization());
+ }
+
+ function removeCorporateGidAction(corporateGid){
+     var organization = $('input[name=organizationId]:checked', '#targets').val();
+     var html ="<div class=\"row-fluid\">The corporate groupId prefix <strong>"+corporateGid+"</strong> is about to be remove from organization "+organization+".</div>\n";
+     html += "\n<div class=\"row-fluid\">Do you really want to remove this association?</div>\n";
+
+     $("#removeAssociationModal-text").empty().append(html);
+     $('#removeAssociationModal-button').attr('onclick', 'removeCorporateGid(\''+corporateGid+'\');');
+     $('#removeAssociationModal').modal('show');
+ }
+
+function removeCorporateGid(corporateGid){
+     var organization = $('input[name=organizationId]:checked', '#targets').val();
+
+     $.ajax({
+             type: "DELETE",
+             url: "/organization/" + organization + "/corporateGroupIds" ,
+             data: corporateGid,
+             dataType: "html",
+             error: function(xhr, error){
+                 alert("The action cannot be performed: status " + xhr.status);
+             },
+             success : updateOrganization()
+         }).done(function(){
+                 $('#removeAssociationModal').modal('hide');
+                 updateOrganizationOptions();
+             }
+     );
+ }
+
+function deleteOrganization(organizationId){
+     $("#toDelete").text(organizationId);
+     $("#impactedElements").empty();
+     $('#deleteModal-button').attr('onclick', 'postDeleteOrganization();');
+     $('#deleteModal').modal('show');
+ }
+
+
+ function postDeleteOrganization(){
+     var organization = $('input[name=organizationId]:checked', '#targets').val();
+
+ 	$.ajax({
+         type: "DELETE",
+         url: "/organization/"+ organization,
+         data: {},
+         dataType: "html",
+         error: function(xhr, error){
+             alert("The action cannot be performed: status " + xhr.status);
+         }
+     }).done(function(){
+             cleanAction();
+             updateLicenseOptions();
+         }
+     );
+ }
+
+
 function getModuleOverview(){
     $("#optional-action").empty();
 
@@ -643,7 +818,7 @@ function addLicenseAction(){
 }
 
 function removeLicenseAction(licenseId){
-    $('#removeLicenseModal-button').attr('onclick', 'removeLicense(\''+licenseId+'\');');
+    $('#removeAssociationModal-button').attr('onclick', 'removeLicense(\''+licenseId+'\');');
 
     var gavc = $('input[name=gavc]:checked', '#targets').val();
 
@@ -656,7 +831,7 @@ function removeLicenseAction(licenseId){
             var html ="<div class=\"row-fluid\">The following license has been associated with <strong>"+gavc+"</strong></div>\n";
             html += $(data).filter(".row-fluid").html();
             html += "\n<div class=\"row-fluid\">Would you like to remove this association?</div>\n";
-            $("#removeLicenseModal-text").empty().append(html);
+            $("#removeAssociationModal-text").empty().append(html);
         },
         error:function (xhr, ajaxOptions, thrownError){
             if(xhr.status==404) {
@@ -665,10 +840,10 @@ function removeLicenseAction(licenseId){
                     " - identify the license among the existing ones then remove this association<br/>"+
                     " - create a new license and then add it to this artifact, then remove this association<br/><br/></div>\n";
             html += "\n<div class=\"row-fluid\">Would you like to remove this association now?</div>\n";
-            $("#removeLicenseModal-text").empty().append(html);
+            $("#removeAssociationModal-text").empty().append(html);
             }
         }
-    }).done($('#removeLicenseModal').modal('show'));
+    }).done($('#removeAssociationModal').modal('show'));
 }
 
 function addLicense(){
@@ -700,7 +875,7 @@ function removeLicense(licenseId){
             error: function(xhr, error){
                 alert("The action cannot be performed: status " + xhr.status);
             }
-    }).done($('#removeLicenseModal').modal('hide'));
+    }).done($('#removeAssociationModal').modal('hide'));
 }
 
 function createLicense(){
@@ -751,7 +926,8 @@ function getLicenseOverview(){
 
 function deleteLicense(licenseId){
     $("#toDelete").text(licenseId);
-    $("#impactedArtifacts").empty();
+    $("#impactedElements").empty();
+    $('#deleteModal-button').attr('onclick', 'postDeleteLicense();');
 
 
     $.ajax({
@@ -759,29 +935,29 @@ function deleteLicense(licenseId){
         accept: {
             json: 'application/json'
         },
-        url: "/artifact/all?corporate=false&licenseId=" + licenseId,
+        url: "/artifact/all?licenseId=" + licenseId,
         success: function(data, textStatus) {
-           var impactedArtifacts = "";
+           var impactedElements = "";
             $.each(data, function(i, artifact) {
-                impactedArtifacts += "<li class=\"active\" style=\"cursor: pointer\">";
-                impactedArtifacts += artifact.groupId + ":" +artifact.artifactId + ":" +artifact.version + ":" +artifact.classifier + ":" + artifact.extension;
-                impactedArtifacts += "</li>";
+                impactedElements += "<li class=\"active\" style=\"cursor: pointer\">";
+                impactedElements += artifact.groupId + ":" +artifact.artifactId + ":" +artifact.version + ":" +artifact.classifier + ":" + artifact.extension;
+                impactedElements += "</li>";
 
             });
 
-            if(impactedArtifacts.length){
-                $("#impactedArtifacts").append("<strong>The license is used by the following artifact(s):<strong><br/>");
-                $("#impactedArtifacts").append("<ul>" + impactedArtifacts +"</ul>")
+            if(impactedElements.length){
+                $("#impactedElements").append("<strong>The license is used by the following artifact(s):<strong><br/>");
+                $("#impactedElements").append("<ul>" + impactedElements +"</ul>")
             }
             else{
-                 $("#impactedArtifacts").append("No artifact is using this license.");
+                 $("#impactedElements").append("No artifact is using this license.");
             }
 
         },
         error: function(xhr, error){
             alert("The action cannot be performed: status " + xhr.status);
         }
-    }).done($('#licenseDelete').modal('show'));
+    }).done($('#deleteModal').modal('show'));
 }
 
 
@@ -819,7 +995,6 @@ function editLicense(licenseId){
         }
     }).done($("#licenseEdition").modal('show'));
 }
-
 
 function approveLicense(){
     if($('input[name=licenseId]:checked', '#targets').size() == 0){
@@ -877,9 +1052,12 @@ function cleanAction(){
     $("#extra-action").empty();
 }
 
-$('#removeLicenseModal').on('hidden', function () {
-    getArtifactLicenses();
-});
+/*WorkAround*/
+function updateOrganization(){
+    setTimeout(function(){
+      getOrganizationOverview();
+    }, 500);
+}
 
 /*WorkAround*/
 function updateLicenses(){

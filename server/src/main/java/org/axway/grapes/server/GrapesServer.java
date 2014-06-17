@@ -94,9 +94,10 @@ public class GrapesServer extends Service<GrapesServerConfig> {
         env.addHealthCheck(new CorporateGroupIdsCheck(repoHandler));
 
         // Resources
-        env.addResource(new LicenseResource(repoHandler, config));
+        env.addResource(new OrganizationResource(repoHandler, config));
         env.addResource(new ModuleResource(repoHandler, config));
         env.addResource(new ArtifactResource(repoHandler, config));
+        env.addResource(new LicenseResource(repoHandler, config));
         env.addResource(new Sequoia(repoHandler, config));
         env.addResource(new WebAppResource(repoHandler, config));
         env.addResource(new RootResource(repoHandler, config));

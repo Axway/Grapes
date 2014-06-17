@@ -32,14 +32,15 @@ public class GrapesAuthenticator implements Authenticator<BasicCredentials, DbCr
     @Override
     public Optional<DbCredential> authenticate(BasicCredentials credentials) throws AuthenticationException {
         if(credentials == null || credentials.getUsername() == null || credentials.getPassword() == null){
-            LOG.error("There are missing information for the authentication");
+            LOG.error("Missing credentials for the authentication");
             return Optional.absent();
         }
 
+        final String encryptedPwd = encrypt(credentials.getPassword());
+
         final DbCredential dbCredential = repoHandler.getCredential(credentials.getUsername());
 
-        if(dbCredential != null &&
-                dbCredential.getPassword().equals(encrypt(credentials.getPassword()))){
+        if(dbCredential != null && encryptedPwd.equals(dbCredential.getPassword())){
             return Optional.of(dbCredential);
         }
 

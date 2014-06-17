@@ -65,6 +65,9 @@
                             <div class="span2">
                                 <div class="btn-group" data-toggle="buttons-radio">
                                     <div class="row-fluid" style="padding:4px">
+                                        <button type="button" class="btn btn-inverse" style="margin-left:8px;" onclick='displayOrganizationOptions();'>Organizations</button>
+                                    </div>
+                                    <div class="row-fluid" style="padding:4px">
                                         <button type="button" class="btn btn-inverse" style="margin-left:8px;" onclick='displayModuleOptions();'>Modules</button>
                                     </div>
                                     <div class="row-fluid" style="padding:4px">
@@ -114,6 +117,37 @@
 			</div>
 		</div>
 
+        <!-- Modal remove association -->
+        <div id="removeAssociationModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">×</button>
+                <h3>Remove Association</h3>
+            </div>
+            <div class="modal-body" id="removeAssociationModal-text"></div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">Cancel</button>
+                <button class="btn btn-primary" id="removeAssociationModal-button">Remove</button>
+            </div>
+        </div>
+
+        <!-- Modal block to delete a DB element -->
+        <div id="deleteModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style='margin: 0px 0px 0px -25%;'>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">×</button>
+                <h3 id="myModalLabel">Delete Element</h3>
+            </div>
+            <div class="modal-body">
+                <strong>Warning:</strong> This operation cannot be undone! Are you really sure you want te delete this element?
+                <div id="toDelete"></div>
+                <br/>
+                <div id="impactedElements"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">Cancel</button>
+                <button id="deleteModal-button" class="btn btn-primary" data-dismiss="modal">Delete</button>
+            </div>
+        </div>
+
         <!-- Modal Artifact Edition -->
         <div id="artifactEdition" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-header">
@@ -152,16 +186,23 @@
             </div>
         </div>
 
-        <!-- Modal remove license association -->
-        <div id="removeLicenseModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <!-- Modal Organization Edition -->
+        <div id="organizationEdition" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">×</button>
-                <h3>License Association</h3>
+                <h3 id="myModalLabel">Create Organization</h3>
             </div>
-            <div class="modal-body" id="removeLicenseModal-text"></div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <label class="control-label" for="inputName">Name</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputOrganizationName" placeholder="New organization name">
+                    </div>
+                </form>
+            </div>
             <div class="modal-footer">
                 <button class="btn" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">Cancel</button>
-                <button class="btn btn-primary" id="removeLicenseModal-button">Remove</button>
+                <button class="btn btn-primary" data-dismiss="modal" onclick='organizationSave();'>Save changes</button>
             </div>
         </div>
 
@@ -198,26 +239,6 @@
             <div class="modal-footer">
                 <button class="btn" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">Cancel</button>
                 <button class="btn btn-primary" data-dismiss="modal" onclick='licenseSave();'>Save changes</button>
-            </div>
-        </div>
-
-        <!-- Modal block in case of license delete -->
-        <div id="licenseDelete" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style='margin: 0px 0px 0px -25%;'>
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">×</button>
-                <h3 id="myModalLabel">Delete License</h3>
-            </div>
-            <div class="modal-body">
-                <div class="alert">
-                    <strong>Warning:</strong> This operation cannot be undone! Are you really sure you want te delete this license?
-                    <div id="toDelete"></div>
-                    <br/>
-                    <div id="impactedArtifacts"></div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">Cancel</button>
-                <button class="btn btn-primary" data-dismiss="modal" onclick='postDeleteLicense();'>Delete</button>
             </div>
         </div>
 

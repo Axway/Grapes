@@ -1,10 +1,10 @@
-function loadModuleNames(moduleNameSelect){
+function loadOrganizationNames(organizationNameSelect){
 	return $.ajax({
 		type: "GET",
 		accept: {
 			json: 'application/json'
 		},
-		url: "/module/names",
+		url: "/organization/names",
 		data: {},
 		dataType: "json",
 		success: function(data, textStatus) {
@@ -16,10 +16,31 @@ function loadModuleNames(moduleNameSelect){
 				html += name + "</option>";
 			});
 
-			$("#" + moduleNameSelect).empty().append(html);
+			$("#" + organizationNameSelect).empty().append(html);
 		}    
 	});  
-}
+}function loadModuleNames(moduleNameSelect){
+ 	return $.ajax({
+ 		type: "GET",
+ 		accept: {
+ 			json: 'application/json'
+ 		},
+ 		url: "/module/names",
+ 		data: {},
+ 		dataType: "json",
+ 		success: function(data, textStatus) {
+ 			var html = "<option value=\"-\"></option>";
+
+ 			$.each(data, function(i, name) {
+ 				html += "<option value=\"";
+ 				html += name + "\">";
+ 				html += name + "</option>";
+ 			});
+
+ 			$("#" + moduleNameSelect).empty().append(html);
+ 		}
+ 	});
+ }
 
 function loadModuleVersions(moduleName, moduleVersionSelect){
 	return $.ajax({

@@ -541,7 +541,7 @@ public class MongodbHandler implements RepositoryHandler {
     @Override
     public void store(DbOrganization organization) {
         final Jongo datastore = getJongoDataStore();
-        final MongoCollection dbOrganizations = datastore.getCollection(DbCollections.DB_CREDENTIALS);
+        final MongoCollection dbOrganizations = datastore.getCollection(DbCollections.DB_ORGANIZATION);
 
         if(getOrganization(organization.getName()) == null){
             dbOrganizations.save(organization);
