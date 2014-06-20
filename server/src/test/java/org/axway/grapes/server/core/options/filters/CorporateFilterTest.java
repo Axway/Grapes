@@ -4,128 +4,167 @@ import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbDependency;
 import org.axway.grapes.server.db.datamodel.DbModule;
+import org.axway.grapes.server.db.datamodel.DbOrganization;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 import static junit.framework.TestCase.*;
 
 public class CorporateFilterTest {
 
     @Test
-    public void checkModuleFilter(){
+    public void checkFilterModuleThatHasNoArtifactAndWhichIsNotCorporate(){
+        final DbOrganization organization = new DbOrganization();
+        organization.setName("testOrganization");
+        organization.getCorporateGroupIdPrefixes().add(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+        final CorporateFilter filter = new CorporateFilter(organization);
+
+
         final DbModule module = new DbModule();
-        final CorporateFilter filter = new CorporateFilter(new ArrayList<String>());
+        module.setName("module");
+        module.setVersion("1.0.0");
 
-        filter.setIsCorporate(true);
-        assertTrue(filter.filter(module));
-
-        filter.setIsCorporate(false);
         assertFalse(filter.filter(module));
 
     }
 
     @Test
-    public void checkCorporateArtifactFilter(){
-        final DbArtifact artifact = new DbArtifact();
-        artifact.setGroupId(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+    public void checkFilterModuleThatHasNoArtifactAndWhichIsCorporate(){
+        final DbOrganization organization = new DbOrganization();
+        organization.setName("testOrganization");
+        organization.getCorporateGroupIdPrefixes().add(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+        final CorporateFilter filter = new CorporateFilter(organization);
 
-        final DbArtifact thirdParty = new DbArtifact();
-        thirdParty.setGroupId("org.somewhere");
 
-        final CorporateFilter filter = new CorporateFilter(GrapesTestUtils.getTestCorporateGroupIds());
-        filter.setIsCorporate(true);
+        final DbModule module = new DbModule();
+        module.setName(GrapesTestUtils.CORPORATE_GROUPID_4TEST+":module");
+        module.setVersion("1.0.0");
 
-        assertTrue(filter.filter(artifact));
-        assertFalse(filter.filter(thirdParty));
+        assertTrue(filter.filter(module));
+
     }
 
     @Test
-    public void checkThirdPartyFilter(){
+    public void checkFilterModuleWithAnArtifactAndWhichIsNotCorporate(){
+        final DbOrganization organization = new DbOrganization();
+        organization.setName("testOrganization");
+        organization.getCorporateGroupIdPrefixes().add(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+        final CorporateFilter filter = new CorporateFilter(organization);
+
+
+        final DbModule module = new DbModule();
+        module.setName("module");
+        module.setVersion("1.0.0");
+        module.getArtifacts().add("org.apache.something.module:test:1.0.0::jar");
+
+        assertFalse(filter.filter(module));
+
+    }
+
+    @Test
+    public void checkFilterModuleWithAnArtifactAndWhichIsCorporate(){
+        final DbOrganization organization = new DbOrganization();
+        organization.setName("testOrganization");
+        organization.getCorporateGroupIdPrefixes().add(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+        final CorporateFilter filter = new CorporateFilter(organization);
+
+
+        final DbModule module = new DbModule();
+        module.setName("module");
+        module.setVersion("1.0.0");
+        module.getArtifacts().add(GrapesTestUtils.CORPORATE_GROUPID_4TEST + ".module:test:1.0.0::jar");
+
+        assertTrue(filter.filter(module));
+
+    }
+
+    @Test
+    public void checkFilterArtifactWhichIsNotCorporate(){
+        final DbOrganization organization = new DbOrganization();
+        organization.setName("testOrganization");
+        organization.getCorporateGroupIdPrefixes().add(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+        final CorporateFilter filter = new CorporateFilter(organization);
+
+
         final DbArtifact artifact = new DbArtifact();
-        artifact.setGroupId(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
-
-        final DbArtifact thirdParty = new DbArtifact();
-        thirdParty.setGroupId("org.somewhere");
-
-        final CorporateFilter filter = new CorporateFilter(GrapesTestUtils.getTestCorporateGroupIds());
-        filter.setIsCorporate(false);
+        artifact.setGroupId("org.apache.something");
 
         assertFalse(filter.filter(artifact));
-        assertTrue(filter.filter(thirdParty));
 
     }
 
     @Test
-    public void checkCorporateDependencyFilter(){
-        final DbDependency dependency = new DbDependency();
-        dependency.setTarget(GrapesTestUtils.CORPORATE_GROUPID_4TEST + ":test:1.0.0-SNAPSHOT::jar");
-
-        final DbDependency thirdParty = new DbDependency();
-        thirdParty.setTarget("org.somewhere:thirdparty:1.0.0-6::jar");
-
-        final CorporateFilter filter = new CorporateFilter(GrapesTestUtils.getTestCorporateGroupIds());
-        filter.setIsCorporate(true);
-
-        assertTrue(filter.filter(dependency));
-        assertFalse(filter.filter(thirdParty));
-
-    }
-
-    @Test
-    public void checkThirdPartyDependencyFilter(){
-        final DbDependency dependency = new DbDependency();
-        dependency.setTarget(GrapesTestUtils.CORPORATE_GROUPID_4TEST + ":test:1.0.0-SNAPSHOT::jar");
-
-        final DbDependency thirdParty = new DbDependency();
-        thirdParty.setTarget("org.somewhere:thirdparty:1.0.0-6::jar");
-
-        final CorporateFilter filter = new CorporateFilter(GrapesTestUtils.getTestCorporateGroupIds());
-        filter.setIsCorporate(false);
-
-        assertFalse(filter.filter(dependency));
-        assertTrue(filter.filter(thirdParty));
-    }
+    public void checkFilterArtifactWhichIsCorporate(){
+        final DbOrganization organization = new DbOrganization();
+        organization.setName("testOrganization");
+        organization.getCorporateGroupIdPrefixes().add(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+        final CorporateFilter filter = new CorporateFilter(organization);
 
 
-    @Test
-    public void checkCorporateArtifact(){
         final DbArtifact artifact = new DbArtifact();
-        artifact.setGroupId("com.company.all");
+        artifact.setGroupId(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
 
-        final List<String> corporateGroupIds = new ArrayList<String>();
-        CorporateFilter filter = new CorporateFilter(corporateGroupIds);
-        assertFalse(filter.matches(artifact));
+        assertTrue(filter.filter(artifact));
 
-        corporateGroupIds.add("com.company.all");
-        assertTrue(filter.matches(artifact));
     }
 
+
     @Test
-    public void checkCorporateDependency(){
+    public void checkFilterDependencyWhichIsNotCorporate(){
+        final DbOrganization organization = new DbOrganization();
+        organization.setName("testOrganization");
+        organization.getCorporateGroupIdPrefixes().add(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+        final CorporateFilter filter = new CorporateFilter(organization);
+
         final DbDependency dependency = new DbDependency();
         dependency.setTarget("com.company.all:test:1.0.0::");
 
-        final List<String> corporateGroupIds = new ArrayList<String>();
-        CorporateFilter filter = new CorporateFilter(corporateGroupIds);
-        assertFalse(filter.matches(dependency));
+        assertFalse(filter.filter(dependency));
+    }
 
-        corporateGroupIds.add("com.company.all");
-        assertTrue(filter.matches(dependency));
+
+    @Test
+    public void checkFilterDependencyWhichIsCorporate(){
+        final DbOrganization organization = new DbOrganization();
+        organization.setName("testOrganization");
+        organization.getCorporateGroupIdPrefixes().add(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+        final CorporateFilter filter = new CorporateFilter(organization);
+
+        final DbDependency dependency = new DbDependency();
+        dependency.setTarget(GrapesTestUtils.CORPORATE_GROUPID_4TEST + ":test:1.0.0::");
+
+        assertTrue(filter.filter(dependency));
     }
 
     @Test
-    public void checkRegExpGeneration(){
-        final List<String> corporateGroupIds = new ArrayList<String>();
-        final CorporateFilter filter = new CorporateFilter(corporateGroupIds);
-        assertNull(filter.getRegExp());
+    public void checkMongoRegExpGenerationForArtifacts(){
+        final DbOrganization organization = new DbOrganization();
+        organization.setName("testOrganization");
+        organization.getCorporateGroupIdPrefixes().add(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+        organization.getCorporateGroupIdPrefixes().add("my.corporate.gid");
+        final CorporateFilter filter = new CorporateFilter(organization);
 
-        corporateGroupIds.add("com.company.all");
-        assertEquals("com.company.all*", filter.getRegExp().toString());
+        Map<String, Object> params = filter.artifactFilterFields();
+        assertNotNull(params);
+        assertEquals(1, params.size());
+        assertEquals(DbArtifact.GROUPID_DB_FIELD, params.keySet().iterator().next());
+        assertEquals(GrapesTestUtils.CORPORATE_GROUPID_4TEST + "*|my.corporate.gid*", params.values().iterator().next().toString());
+    }
 
-        corporateGroupIds.add("net.company.all");
-        assertEquals("com.company.all*|net.company.all*", filter.getRegExp().toString());
 
+
+    @Test
+    public void checkMongoRegExpGenerationForModules(){
+        final DbOrganization organization = new DbOrganization();
+        organization.setName("testOrganization");
+        organization.getCorporateGroupIdPrefixes().add(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+        final CorporateFilter filter = new CorporateFilter(organization);
+
+        Map<String, Object> params = filter.moduleFilterFields();
+        assertNotNull(params);
+        assertEquals(1, params.size());
+        assertEquals(DbModule.ORGANIZATION_DB_FIELD, params.keySet().iterator().next());
+        assertEquals(organization.getName(), params.values().iterator().next());
     }
 }

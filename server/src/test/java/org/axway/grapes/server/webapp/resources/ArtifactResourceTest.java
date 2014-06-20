@@ -13,7 +13,7 @@ import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
-import org.axway.grapes.server.db.DataUtils;
+import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbCredential;
@@ -253,7 +253,7 @@ public class ArtifactResourceTest extends ResourceTest {
         artifact.setVersion("version");
         module.addDependency(artifact.getGavc(), Scope.TEST);
         dependencies.add(module);
-        when(repositoryHandler.getAncestors(anyString(), (FiltersHolder) anyObject())).thenReturn(dependencies);
+        when(repositoryHandler.getAncestors((DbArtifact) anyObject(), (FiltersHolder) anyObject())).thenReturn(dependencies);
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
 
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_ANCESTORS);
@@ -290,7 +290,9 @@ public class ArtifactResourceTest extends ResourceTest {
         final List<License> licenses = response.getEntity(new GenericType<List<License>>(){});
         assertNotNull(licenses);
         assertEquals(1, licenses.size());
-        assertEquals(DataUtils.getLicense(license), licenses.get(0));
+
+        final ModelMapper modelMapper = new ModelMapper(repositoryHandler);
+        assertEquals(modelMapper.getLicense(license), licenses.get(0));
     }
 
 

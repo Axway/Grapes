@@ -61,6 +61,7 @@ public class TC08_ModuleWithOneArtifactWithAncestorOfEach implements DependencyC
 		module.setName(MODULE_NAME);
 		module.setVersion(MODULE_VERSION);
 		module.addArtifact(artifact);
+        module.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
 		DbArtifact compAncestor = new DbArtifact();
 		compAncestor.setGroupId(COMPILE_ANCESTOR_GROUPID);
@@ -73,6 +74,7 @@ public class TC08_ModuleWithOneArtifactWithAncestorOfEach implements DependencyC
 		compAncestorModule.setVersion(COMPILE_ANCESTOR_VERSION);
 		compAncestorModule.addArtifact(compAncestor);
         compAncestorModule.addDependency(artifact.getGavc(), Scope.COMPILE);
+        compAncestorModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
 		DbArtifact proAncestor = new DbArtifact();
 		proAncestor.setGroupId(PROVIDED_ANCESTOR_GROUPID);
@@ -85,6 +87,7 @@ public class TC08_ModuleWithOneArtifactWithAncestorOfEach implements DependencyC
 		proAncestorModule.setVersion(PROVIDED_ANCESTOR_VERSION);
 		proAncestorModule.addArtifact(proAncestor);
         proAncestorModule.addDependency(artifact.getGavc(), Scope.PROVIDED);
+        proAncestorModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
 		DbArtifact runAncestor = new DbArtifact();
 		runAncestor.setGroupId(RUNTIME_ANCESTOR_GROUPID);
@@ -97,6 +100,7 @@ public class TC08_ModuleWithOneArtifactWithAncestorOfEach implements DependencyC
 		runAncestorModule.setVersion(RUNTIME_ANCESTOR_VERSION);
 		runAncestorModule.addArtifact(runAncestor);
         runAncestorModule.addDependency(artifact.getGavc(), Scope.RUNTIME);
+        runAncestorModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
 		DbArtifact testAncestor = new DbArtifact();
 		testAncestor.setGroupId(TEST_ANCESTOR_GROUPID);
@@ -109,6 +113,7 @@ public class TC08_ModuleWithOneArtifactWithAncestorOfEach implements DependencyC
 		testAncestorModule.setVersion(TEST_ANCESTOR_VERSION);
 		testAncestorModule.addArtifact(testAncestor);
         testAncestorModule.addDependency(artifact.getGavc(), Scope.TEST);
+        testAncestorModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 		
 		
 		artifacts.add(artifact);

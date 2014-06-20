@@ -1,12 +1,12 @@
 package org.axway.grapes.server.webapp.resources;
 
-import com.sun.jersey.api.NotFoundException;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.graphs.AbstractGraph;
 import org.axway.grapes.server.core.graphs.TreeNode;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbModule;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,24 +57,11 @@ public class Sequoia extends AbstractResource{
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        AbstractGraph moduleGraph;
-
-        final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+        final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        try{
-
-            moduleGraph = getRequestHandler().getModuleGraph(moduleName, moduleVersion, filters);
-
-        }
-        catch(NotFoundException e){
-            LOG.error(e.getMessage());
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        }
-        catch (Exception e) {
-            LOG.error("Failed to get targeted module graph.", e);
-            return Response.serverError().build();
-        }
+        final String moduleId = DbModule.generateID(moduleName, moduleVersion);
+        final AbstractGraph moduleGraph = getGraphsHandler(filters).getModuleGraph(moduleId);
 
         return Response.ok(moduleGraph).build();
     }
@@ -101,22 +88,11 @@ public class Sequoia extends AbstractResource{
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        TreeNode jsonTree;
-
-        final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+        final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        try{
-            jsonTree = getRequestHandler().getModuleTree(moduleName, moduleVersion, filters);
-        }
-        catch(NotFoundException e){
-            LOG.error(e.getMessage());
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        }
-        catch (Exception e) {
-            LOG.error("Failed to get targeted module tree.", e);
-            return Response.serverError().build();
-        }
+        final String moduleId = DbModule.generateID(moduleName, moduleVersion);
+        final TreeNode jsonTree = getGraphsHandler(filters).getModuleTree(moduleId);
 
         return Response.ok(jsonTree).build();
     }

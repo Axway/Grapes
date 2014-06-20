@@ -39,6 +39,7 @@ public class TC01_ModuleWithOneArtifactWithoutDependency implements DependencyCa
 		module.setName(MODULE_NAME);
 		module.setVersion(MODULE_VERSION);
 		module.addArtifact(artifact);
+        module.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 		
 		modules.add(module);
 		artifacts.add(artifact);

@@ -69,6 +69,7 @@ public class TC02_ModuleWithOneArtifactAndDependencyOfEachType implements Depend
 		module.setName(MODULE_NAME);
 		module.setVersion(MODULE_VERSION);
 		module.addArtifact(artifact);
+        module.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
         DbArtifact compDependency = new DbArtifact();
         compDependency.setGroupId(COMPILE_DEPENDENCY_GROUPID);
@@ -81,6 +82,7 @@ public class TC02_ModuleWithOneArtifactAndDependencyOfEachType implements Depend
         compModule.setName(COMPILE_DEPENDENCY_MODULE);
         compModule.setVersion(COMPILE_DEPENDENCY_VERSION);
         compModule.addArtifact(compDependency);
+        compModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
         module.addDependency(compDependency.getGavc(), Scope.COMPILE);
 
@@ -96,6 +98,7 @@ public class TC02_ModuleWithOneArtifactAndDependencyOfEachType implements Depend
         proModule.setName(PROVIDED_DEPENDENCY_MODULE);
         proModule.setVersion(PROVIDED_DEPENDENCY_VERSION);
         proModule.addArtifact(proDependency);
+        proModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
         module.addDependency(proDependency.getGavc(), Scope.PROVIDED);
 
@@ -111,6 +114,7 @@ public class TC02_ModuleWithOneArtifactAndDependencyOfEachType implements Depend
         runModule.setName(RUNTIME_DEPENDENCY_MODULE);
         runModule.setVersion(RUNTIME_DEPENDENCY_VERSION);
         runModule.addArtifact(runDependency);
+        runModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
         module.addDependency(runDependency.getGavc(), Scope.RUNTIME);
 
@@ -126,6 +130,7 @@ public class TC02_ModuleWithOneArtifactAndDependencyOfEachType implements Depend
         testModule.setName(TEST_DEPENDENCY_MODULE);
         testModule.setVersion(TEST_DEPENDENCY_VERSION);
         testModule.addArtifact(testDependency);
+        testModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
         module.addDependency(testDependency.getGavc(), Scope.TEST);
 

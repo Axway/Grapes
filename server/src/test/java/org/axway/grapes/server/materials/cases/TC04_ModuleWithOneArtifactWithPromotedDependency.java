@@ -30,6 +30,7 @@ public class TC04_ModuleWithOneArtifactWithPromotedDependency implements Depende
 		DbModule module = new DbModule();
 		module.setName(MODULE_NAME);
 		module.setVersion(MODULE_VERSION);
+        module.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
 		DbArtifact dependency = new DbArtifact();
 		dependency.setGroupId(DEPENDENCY_GROUPID);
@@ -44,6 +45,7 @@ public class TC04_ModuleWithOneArtifactWithPromotedDependency implements Depende
 		extModule.setVersion(DEPENDENCY_VERSION);
 		extModule.addArtifact(dependency);
 		extModule.setPromoted(true);
+        extModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
         module.addDependency(dependency.getGavc(), Scope.COMPILE);
 

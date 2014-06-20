@@ -283,16 +283,14 @@ public class GrapesClient {
     /**
      * Send a get artifacts request
      *
-     * @param isCorporate
      * @param hasLicense
      * @return list of artifact
      * @throws GrapesCommunicationException
      */
-    public List<Artifact> getArtifacts(final Boolean isCorporate, final Boolean hasLicense) throws GrapesCommunicationException {
+    public List<Artifact> getArtifacts(final Boolean hasLicense) throws GrapesCommunicationException {
         final Client client = getClient();
         final WebResource resource = client.resource(serverURL).path(RequestUtils.getArtifactsPath());
-        final ClientResponse response = resource.queryParam(ServerAPI.CORPORATE_FILTER, isCorporate.toString())
-                .queryParam(ServerAPI.HAS_LICENSE_PARAM, hasLicense.toString())
+        final ClientResponse response = resource.queryParam(ServerAPI.HAS_LICENSE_PARAM, hasLicense.toString())
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         client.destroy();
@@ -518,7 +516,7 @@ public class GrapesClient {
                 .queryParam(ServerAPI.SCOPE_RUNTIME_PARAM, "true")
                 .queryParam(ServerAPI.SCOPE_TEST_PARAM, "true")
                 .queryParam(ServerAPI.RECURSIVE_PARAM, fullRecursive.toString())
-                .queryParam(ServerAPI.CORPORATE_FILTER, corporate.toString())
+                .queryParam(ServerAPI.SHOW_CORPORATE_PARAM, corporate.toString())
                 .queryParam(ServerAPI.SHOW_THIRPARTY_PARAM, thirdParty.toString())
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 

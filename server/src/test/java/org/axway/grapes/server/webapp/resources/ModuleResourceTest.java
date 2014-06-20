@@ -14,10 +14,7 @@ import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.DbArtifact;
-import org.axway.grapes.server.db.datamodel.DbCredential;
-import org.axway.grapes.server.db.datamodel.DbLicense;
-import org.axway.grapes.server.db.datamodel.DbModule;
+import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.axway.grapes.server.webapp.views.PromotionReportView;
 import org.eclipse.jetty.http.HttpStatus;
@@ -36,6 +33,7 @@ import static org.mockito.Mockito.*;
 
 public class ModuleResourceTest extends ResourceTest {
 
+    private DbOrganization dbOrganization;
     private DbModule dbModule, dbSubmodule;
     private DbArtifact artifact, artifact2, artifact3, artifact4;
     private ArgumentCaptor<FiltersHolder> filters = ArgumentCaptor.forClass(FiltersHolder.class);
@@ -44,9 +42,15 @@ public class ModuleResourceTest extends ResourceTest {
 
     @Override
     protected void setUpResources() throws Exception {
+        dbOrganization = new DbOrganization();
+        dbOrganization.setName("corp");
+        dbOrganization.getCorporateGroupIdPrefixes().add(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+
         dbModule = new DbModule();
         dbModule.setName("root");
         dbModule.setVersion("1.0.0-SNAPSHOT");
+        dbModule.setOrganization(dbOrganization.getName());
+
         artifact = new DbArtifact();
         artifact.setGroupId("groupId");
         artifact.setArtifactId("artifactId");
@@ -63,7 +67,7 @@ public class ModuleResourceTest extends ResourceTest {
         dbSubmodule.setName("sub");
         dbSubmodule.setVersion("1.0.0-SNAPSHOT");
         artifact3 = new DbArtifact();
-        artifact3.setGroupId("groupId3");
+        artifact3.setGroupId(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
         artifact3.setArtifactId("artifactId3");
         artifact3.setVersion("1.0.0-SNAPSHOT");
         dbSubmodule.addArtifact(artifact3);
@@ -76,6 +80,7 @@ public class ModuleResourceTest extends ResourceTest {
         dbModule.addSubmodule(dbSubmodule);
 
         repositoryHandler = mock(RepositoryHandler.class);
+        when(repositoryHandler.getOrganization(dbOrganization.getName())).thenReturn(dbOrganization);
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
         when(repositoryHandler.getArtifact(artifact2.getGavc())).thenReturn(artifact2);
@@ -278,7 +283,7 @@ public class ModuleResourceTest extends ResourceTest {
         list1.add(dbModule);
         list1.add(module1);
 
-        when(repositoryHandler.getAncestors(eq(artifact3.getGavc()), (FiltersHolder) anyObject())).thenReturn(list1);
+        when(repositoryHandler.getAncestors(eq(artifact3), (FiltersHolder) anyObject())).thenReturn(list1);
         final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.GET_ANCESTORS);
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
@@ -303,7 +308,7 @@ public class ModuleResourceTest extends ResourceTest {
         list1.add(module1);
 
         ArgumentCaptor<FiltersHolder> filters = ArgumentCaptor.forClass(FiltersHolder.class);
-        when(repositoryHandler.getAncestors(eq(artifact3.getGavc()), filters.capture())).thenReturn(list1);
+        when(repositoryHandler.getAncestors(eq(artifact3), filters.capture())).thenReturn(list1);
         final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.GET_ANCESTORS);
         final ClientResponse response = resource.queryParam(ServerAPI.PROMOTED_PARAM , "true")
                 .queryParam(ServerAPI.SCOPE_COMPILE_PARAM, "false")

@@ -65,6 +65,10 @@ public class Decorator {
      * Default value: false. */
     private Boolean showTargetsSize = false;
 
+    /** Value - {@value}, boolean query parameter used to show the corporate dependencies in reports.
+     * Default value: true. */
+    private Boolean showCorporate = true;
+
 
     public Boolean getShowLicenses() {
         return showLicenses;
@@ -111,6 +115,22 @@ public class Decorator {
     private void setShowAncestors(final String showAncestors) {
         if(showAncestors != null){
             setShowAncestors(Boolean.valueOf(showAncestors));
+        }
+    }
+
+    public Boolean getShowCorporate() {
+        return showCorporate;
+    }
+
+    public void setShowCorporate(final Boolean showCorporate) {
+        if(showCorporate != null){
+            this.showCorporate = showCorporate;
+        }
+    }
+
+    private void setShowCorporate(final String showCorporate) {
+        if(showCorporate != null){
+            setShowThirdparty(Boolean.valueOf(showCorporate));
         }
     }
 
@@ -278,6 +298,7 @@ public class Decorator {
         setShowScopes(queryParameters.getFirst(ServerAPI.SHOW_SCOPE_PARAM));
         setShowLicenses(queryParameters.getFirst(ServerAPI.SHOW_LICENSE_PARAM));
         setShowThirdparty(queryParameters.getFirst(ServerAPI.SHOW_THIRPARTY_PARAM));
+        setShowCorporate(queryParameters.getFirst(ServerAPI.SHOW_CORPORATE_PARAM));
         setShowSources(queryParameters.getFirst(ServerAPI.SHOW_SOURCES_PARAM));
         setShowAncestors(queryParameters.getFirst(ServerAPI.SHOW_ANCESTOR_PARAM));
         setShowProviders(queryParameters.getFirst(ServerAPI.SHOW_PROVIDERS_PARAM));

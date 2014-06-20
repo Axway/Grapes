@@ -71,6 +71,7 @@ public class TC05_ModuleWithOneArtifactAndThirdParty implements DependencyCase{
 		module.setName(MODULE_NAME);
 		module.setVersion(MODULE_VERSION);
 		module.addArtifact(artifact);
+        module.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 		
 		DbArtifact compDependency = new DbArtifact();
 		compDependency.setGroupId(COMPILE_THIRDPARTY_GROUPID);

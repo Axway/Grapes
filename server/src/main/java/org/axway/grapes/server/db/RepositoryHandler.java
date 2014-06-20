@@ -188,11 +188,11 @@ public interface RepositoryHandler {
     /**
      * Retrieve the list of the modules the use the targeted artifact
      *
-     * @param gavc String
+     * @param artifact String
      * @param filters FiltersHolder
      * @return List<DbModule>
      */
-    public List<DbModule> getAncestors(final String gavc, final FiltersHolder filters);
+    public List<DbModule> getAncestors(final DbArtifact artifact, final FiltersHolder filters);
 
     /**
      * Create a new module or update an existing one into the database

@@ -1,21 +1,19 @@
 package org.axway.grapes.server.webapp.resources;
 
-import com.sun.jersey.api.NotFoundException;
 import com.yammer.dropwizard.auth.Auth;
 import com.yammer.dropwizard.jersey.caching.CacheControl;
-import com.yammer.dropwizard.jersey.params.BooleanParam;
 import org.axway.grapes.commons.api.ServerAPI;
-import org.axway.grapes.commons.datamodel.Artifact;
-import org.axway.grapes.commons.datamodel.Dependency;
-import org.axway.grapes.commons.datamodel.Module;
+import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.core.ArtifactHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
-import org.axway.grapes.server.core.options.filters.PromotedFilter;
+import org.axway.grapes.server.core.options.filters.CorporateFilter;
 import org.axway.grapes.server.core.reports.DependencyReport;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.DbCredential;
+import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
+import org.axway.grapes.server.webapp.DataValidator;
 import org.axway.grapes.server.webapp.views.*;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
@@ -26,7 +24,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -49,8 +50,9 @@ public class ModuleResource extends AbstractResource{
 
     /**
      * Handle the update/addition of a module in Grapes database
+     *
      * @param credential DbCredential
-     * @param module
+     * @param module Module
      * @return Response
      */
     @POST
@@ -62,64 +64,35 @@ public class ModuleResource extends AbstractResource{
 
         LOG.info("Got a post Module request.");
 
-        if(isNotValid(module)){
-            LOG.error("The module is not valid.");
-            return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
+        // Checks if the data is corrupted
+        DataValidator.validate(module);
+
+        // Save the module
+        final DbModule dbModule = getModelMapper().getDbModule(module);
+        getModuleHandler().store(dbModule);
+
+        final ArtifactHandler artifactHandler = getArtifactHandler();
+
+        // Add the artifacts
+        final Set<Artifact> artifacts = DataUtils.getAllArtifacts(module);
+        for(Artifact artifact: artifacts){
+            artifactHandler.store(getModelMapper().getDbArtifact(artifact));
         }
 
-        try {
-            getRequestHandler().store(module);
-        } catch (Exception e) {
-            LOG.error("Failed to store the following module: " + module.getName(), e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
+        // Add dependencies that does not already exist
+        for(Dependency dep: DataUtils.getAllDependencies(module)){
+            final DbArtifact dbDependency = getModelMapper().getDbArtifact(dep.getTarget());
+            artifactHandler.storeIfNew(dbDependency);
         }
 
         return Response.ok().status(HttpStatus.CREATED_201).build();
     }
 
     /**
-     * Check if the provided module is valid and could be stored into the database
-     *
-     * @param module the module to test
-     * @return Boolean true only if the artifact is NOT valid
-     */
-    public static boolean isNotValid(final Module module) {
-        if(module == null){
-            return true;
-        }
-        if(module.getName() == null ||
-                module.getName().isEmpty()){
-            return true;
-        }
-        if(module.getVersion()== null ||
-                module.getVersion().isEmpty()){
-            return true;
-        }
-
-        // Check artifacts
-        for(Artifact artifact: DataUtils.getAllArtifacts(module)){
-            if(ArtifactResource.isNotValid(artifact)){
-                return true;
-            }
-        }
-
-        // Check dependencies
-        for(Dependency dependency: DataUtils.getAllDependencies(module)){
-            if( ArtifactResource.isNotValid(dependency.getTarget())){
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Return a list of moduleNames, stored in Grapes, regarding the filters passed in the query parameters.
      * This method is call via GET <dm_url>/module/names
-		if(obj instanceof GraphElement){
-			return value.equals(((GraphElement) obj).value);
-		}
      *
+     * @param uriInfo UriInfo
      * @return Response A list (in HTML or JSON) of moduleNames
      */
     @GET
@@ -127,25 +100,24 @@ public class ModuleResource extends AbstractResource{
     @Path(ServerAPI.GET_NAMES)
     public Response getNames(@Context final UriInfo uriInfo){
         LOG.info("Got a get module names request.");
-        ListView names;
-        final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+
+        final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        try {
-            names = getRequestHandler().getModuleNames(filters);
+        final ListView view = new ListView("Module names view", "name");
+        final List<String> moduleNames = getModuleHandler().getModuleNames(filters);
+        Collections.sort(moduleNames);
+        view.addAll(moduleNames);
 
-        } catch (Exception e) {
-            LOG.error("Failed retrieve the module names.", e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
-
-        return Response.ok(names).build();
+        return Response.ok(view).build();
     }
 
     /**
      * Return a list of moduleNames, stored in Grapes, regarding the filters passed in the query parameters.
      * This method is call via GET <dm_url>/module/<name>/versions
      *
+     * @param name String
+     * @param uriInfo UriInfo
      * @return Response A list (in HTML or JSON) of moduleNames
      */
     @GET
@@ -158,28 +130,23 @@ public class ModuleResource extends AbstractResource{
             return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
         }
 
-        ListView versions;
-        final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+        final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        try {
-            versions = getRequestHandler().getModuleVersions(name, filters);
+        final ListView view = new ListView("Versions of " + name, "version");
+        final List<String> versions = getModuleHandler().getModuleVersions(name, filters);
+        Collections.sort(versions);
+        view.addAll(versions);
 
-        } catch (NotFoundException e){
-            LOG.error("Targeted module name does not exist: " + name);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed retrieve the following module: " + name, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
-
-        return Response.ok(versions).build();
+        return Response.ok(view).build();
     }
 
     /**
      * Return a module.
      * This method is call via GET <dm_url>/module/<name>/<version>
      *
+     * @param name String
+     * @param version String
      * @return Response A list (in HTML or JSON) of moduleNames
      */
     @GET
@@ -187,34 +154,27 @@ public class ModuleResource extends AbstractResource{
     @Path("/{name}/{version}")
     public Response get(@PathParam("name") final String name, @PathParam("version") final String version){
         LOG.info("Got a get module request.");
-        ModuleView module;
+        final ModuleView view = new ModuleView();
 
         if(name == null || version == null){
             return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
         }
 
-        try {
-            module = getRequestHandler().getModule(name, version);
+        final String moduleId = DbModule.generateID(name, version);
+        final DbModule dbModule = getModuleHandler().getModule(moduleId);
+        final Module module = getModelMapper().getModule(dbModule);
+        view.setModule(module);
 
-        } catch (NotFoundException e){
-            LOG.error("Targeted module does not exist: " + name + " " + version);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        }catch (Exception e) {
-            LOG.error("Failed retrieve the targeted module: " + name + " " + version, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
-
-        return Response.ok(module).build();
+        return Response.ok(view).build();
     }
 
     /**
-     *
      * Delete a module.
      * This method is call via DELETE <dm_url>/module/<name>/<version>
      *
      * @param credential DbCredential
-     * @param name
-     * @param version
+     * @param name String
+     * @param version String
      * @return Response
      */
     @DELETE
@@ -229,18 +189,8 @@ public class ModuleResource extends AbstractResource{
             return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
         }
 
-        try {
-
-            getRequestHandler().deleteModule(name, version);
-
-        }catch (NotFoundException e){
-            LOG.error("Targeted module does not exist: " + name + " " + version);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        }catch (Exception e) {
-            LOG.error("Failed retrieve the targeted module does not exist: " + name + " " + version, e);
-
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        final String moduleId = DbModule.generateID(name, version);
+        getModuleHandler().deleteModule(moduleId);
 
         return Response.ok("done").build();
     }
@@ -249,8 +199,9 @@ public class ModuleResource extends AbstractResource{
      * Return ancestor list of a module.
      * This method is call via GET <dm_url>/module/<name>/<version>/ancestors
      *
-     * @param name
-     * @param version
+     * @param name String
+     * @param version String
+     * @param uriInfo UriInfo
      * @return Response A list of module
      */
     @GET
@@ -258,38 +209,48 @@ public class ModuleResource extends AbstractResource{
     @Path("/{name}/{version}" + ServerAPI.GET_ANCESTORS)
     @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getAncestors(@PathParam("name") final String name,
-                                 @PathParam("version") final String version,
-                                 @Context final UriInfo uriInfo){
-
+                                   @PathParam("version") final String version,
+                                     @Context final UriInfo uriInfo){
         LOG.info("Got a get module ancestors request.");
 
         if(name == null || version == null){
             return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
         }
 
-        final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+        final String moduleId = DbModule.generateID(name, version);
+        final DbModule dbModule = getModuleHandler().getModule(moduleId);
+        final DbOrganization dbOrganization = getModuleHandler().getOrganization(dbModule);
+        final ArtifactHandler artifactHandler = getArtifactHandler();
+        final FiltersHolder filters = new FiltersHolder();
         filters.getDecorator().setShowLicenses(false);
         filters.init(uriInfo.getQueryParameters());
-        DependencyListView view;
+        filters.setCorporateFilter(new CorporateFilter(dbOrganization));
 
-        try {
-            view = getRequestHandler().getModuleAncestors(name, version, filters);
+        final AncestorsView view = new AncestorsView("Ancestor List Of " + name +" in version " + version , getLicenseHandler().getLicenses(), filters.getDecorator());
 
-        }catch (NotFoundException e){
-            LOG.error("Targeted module does not exist: " + name + " " + version);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        }catch (Exception e) {
-            LOG.error("Failed retrieve the targeted module does not exist: " + name + " " + version, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
+        for(String artifactId: DataUtils.getAllArtifacts(dbModule)){
+            final DbArtifact dbArtifact = artifactHandler.getArtifact(artifactId);
+            final Artifact artifact = getModelMapper().getArtifact(dbArtifact);
+
+            for(DbModule dbAncestor: artifactHandler.getAncestors(artifactId, filters)){
+                if(!dbAncestor.getId().equals(dbModule.getId())){
+                    final Module ancestor = getModelMapper().getModule(dbAncestor);
+                    view.addAncestor(ancestor, artifact);
+                }
+            }
         }
 
         return Response.ok(view).build();
     }
 
     /**
+     *
      * Return a module dependency list.
      * This method is call via GET <dm_url>/module/<name>/<version>/dependencies
      *
+     * @param name String
+     * @param version String
+     * @param uriInfo UriInfo
      * @return Response A list of dependencies in HTML or JSON
      */
     @GET
@@ -298,42 +259,31 @@ public class ModuleResource extends AbstractResource{
     @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getDependencies(@PathParam("name") final String name,
                                     @PathParam("version") final String version,
-                                    @QueryParam(ServerAPI.TO_UPDATE_PARAM) final BooleanParam toUpdateParam,
                                     @Context final UriInfo uriInfo){
 
         LOG.info("Got a get module dependencies request.");
-        DependencyListView dependencies;
-
         if(name == null || version == null){
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+        final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        Boolean toUpdate = null;
-        if(toUpdateParam != null){
-            toUpdate = toUpdateParam.get();
-        }
+        final DependencyListView view = new DependencyListView("Dependency List Of " + name + " in version " + version, getLicenseHandler().getLicenses(), filters.getDecorator());
+        final String moduleId = DbModule.generateID(name, version);
+        view.addAll(getDependencyHandler().getModuleDependencies(moduleId, filters));
 
-        try {
-            dependencies = getRequestHandler().getModuleDependencies(name, version, filters, toUpdate);
-
-        } catch (NotFoundException e) {
-            LOG.error("Targeted module does not exist: " + name + " " + version);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed retrieve the module dependency: " + name + version, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
-
-        return Response.ok(dependencies).build();
+        return Response.ok(view).build();
     }
 
     /**
+     *
      * Return a report about the targeted module dependencies.
      * This method is call via GET <dm_url>/module/<name>/<version>/dependencies/report
      *
+     * @param name String
+     * @param version String
+     * @param uriInfo UriInfo
      * @return Response A list of dependencies in HTML or JSON
      */
     @GET
@@ -350,21 +300,11 @@ public class ModuleResource extends AbstractResource{
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+        final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        DependencyReport report;
-
-        try {
-            report = getRequestHandler().getDependencyReport(name, version, filters);
-
-        } catch (NotFoundException e) {
-            LOG.error("Targeted module does not exist: " + name + " " + version);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed retrieve the module dependency: " + name + version, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        final String moduleId = DbModule.generateID(name, version);
+        final DependencyReport report = getDependencyHandler().getDependencyReport(moduleId, filters);
 
         return Response.ok(report).build();
     }
@@ -373,32 +313,28 @@ public class ModuleResource extends AbstractResource{
      * Return license list of a module.
      * This method is call via GET <dm_url>/module/<name>/<version>/licenses
      *
+     * @param name String
+     * @param version String
      * @return Response A list of license
      */
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}" + ServerAPI.GET_LICENSES)
     @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
-    public Response getLicenses(@PathParam("name") final String name,
-                                @PathParam("version") final String version){
-
+    public Response getLicenses(@PathParam("name") final String name, @PathParam("version") final String version){
         LOG.info("Got a get module licenses request.");
 
         if(name == null || version == null){
             return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
         }
 
-        LicenseListView view;
+        final LicenseListView view = new LicenseListView("Licenses of " + name + " in version " + version);
+        final String moduleId = DbModule.generateID(name,version);
+        final List<DbLicense> dbLicenses = getModuleHandler().getModuleLicenses(moduleId);
 
-        try {
-            view = getRequestHandler().getModuleLicenses(name, version);
-
-        }catch (NotFoundException e){
-            LOG.error("Targeted module does not exist: " + name + " " + version);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        }catch (Exception e) {
-            LOG.error("Failed retrieve the targeted module does not exist: " + name + " " + version, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
+        for(DbLicense dbLicense: dbLicenses){
+            final License license = getModelMapper().getLicense(dbLicense);
+            view.add(license);
         }
 
         return Response.ok(view).build();
@@ -408,6 +344,9 @@ public class ModuleResource extends AbstractResource{
      * Promote a module.
      * This method is call via POST <dm_url>/module/<name>/<version>/promote
      *
+     * @param credential DbCredential
+     * @param name String
+     * @param version String
      * @return Response
      */
     @POST
@@ -423,17 +362,8 @@ public class ModuleResource extends AbstractResource{
             return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
         }
 
-        try {
-
-            getRequestHandler().promoteModule(name, version);
-
-        }catch (NotFoundException e){
-            LOG.error("Targeted module does not exist: " + name + " " + version);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        }catch (Exception e) {
-            LOG.error("Failed retrieve the targeted module does not exist: " + name + " " + version, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        final String moduleId = DbModule.generateID(name,version);
+        getModuleHandler().promoteModule(moduleId);
 
         return Response.ok("done").build();
     }
@@ -442,6 +372,8 @@ public class ModuleResource extends AbstractResource{
      * Check if a module can be promoted or not
      * This method is call via GET <dm_url>/module/<name>/<version>/promotion/check
      *
+     * @param name String
+     * @param version String
      * @return Response true if the module can be promoted, false otherwise.
      */
     @GET
@@ -454,20 +386,10 @@ public class ModuleResource extends AbstractResource{
             return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
         }
 
-        Boolean promulgable;
+        final String moduleId = DbModule.generateID(name,version);
+        final PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
 
-        try {
-            promulgable = getRequestHandler().canModuleBePromoted(name, version);
-
-        }catch (NotFoundException e){
-            LOG.error("Targeted module does not exist: " + name + " " + version);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        }catch (Exception e) {
-            LOG.error("Failed retrieve the targeted module does not exist: " + name + " " + version, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
-
-        return Response.ok(promulgable).build();
+        return Response.ok(promotionReportView.canBePromoted()).build();
     }
 
     /**
@@ -479,34 +401,17 @@ public class ModuleResource extends AbstractResource{
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}" + ServerAPI.PROMOTION + ServerAPI.GET_REPORT)
     @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
-    public Response getPromotionStatusReport(@PathParam("name") final String name, @PathParam("version") final String version, @Context final UriInfo uriInfo){
+    public Response getPromotionStatusReport(@PathParam("name") final String name, @PathParam("version") final String version){
         LOG.info("Got a get promotion report request.");
 
         if(name == null || version == null){
             return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
         }
 
-        final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
-        filters.init(uriInfo.getQueryParameters());
+        final String moduleId = DbModule.generateID(name,version);
+        final PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
 
-        final PromotedFilter filter = new PromotedFilter(false);
-        filters.addFilter(filter);
-
-        PromotionReportView report;
-
-        try {
-            report = getRequestHandler().getPromotionReport(name, version, filters);
-        }
-        catch (NotFoundException e){
-            LOG.error("Targeted module does not exist: " + name + " " + version, e);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        }
-        catch (Exception e) {
-            LOG.error("Failed retrieve the targeted module: " + name + " " + version, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
-
-        return Response.ok(report).build();
+        return Response.ok(promotionReportView).build();
     }
 
     /**
@@ -525,19 +430,10 @@ public class ModuleResource extends AbstractResource{
             return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
         }
 
-        Boolean promoted;
 
-        try {
-            final ModuleView module = getRequestHandler().getModule(name, version);
-            promoted = module.getModule().isPromoted();
-
-        }catch (NotFoundException e){
-            LOG.error("Targeted module does not exist: " + name + " " + version);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        }catch (Exception e) {
-            LOG.error("Failed retrieve the targeted module does not exist: " + name + " " + version, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        final String moduleId = DbModule.generateID(name,version);
+        final DbModule module = getModuleHandler().getModule(moduleId);
+        final Boolean promoted = module.isPromoted();
 
         return Response.ok(promoted).build();
     }
@@ -555,17 +451,15 @@ public class ModuleResource extends AbstractResource{
     public Response getAllModules(@Context final UriInfo uriInfo){
         LOG.info("Got a get all modules request.");
 
-        final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+        final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        List<Module> modules = null;
+        final List<Module> modules = new ArrayList<Module>();
+        final List<DbModule> dbModules = getModuleHandler().getModules(filters);
 
-        try {
-            modules = getRequestHandler().getModules(filters);
-
-        } catch (Exception e) {
-            LOG.error("Failed.", e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
+        for(DbModule dbModule: dbModules){
+            final Module module = DataModelFactory.createModule(dbModule.getName(), dbModule.getVersion());
+            modules.add(module);
         }
 
         return Response.ok(modules).build();

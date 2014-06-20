@@ -77,6 +77,7 @@ public class TC03_ModuleWithOneSubmoduleAndDependencyOfEachType implements Depen
         module.setName(MODULE_NAME);
         module.setVersion(MODULE_VERSION);
         module.addSubmodule(submodule);
+        module.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
 
         DbArtifact compDependency = new DbArtifact();
@@ -90,6 +91,7 @@ public class TC03_ModuleWithOneSubmoduleAndDependencyOfEachType implements Depen
         compModule.setName(COMPILE_DEPENDENCY_MODULE);
         compModule.setVersion(COMPILE_DEPENDENCY_VERSION);
         compModule.addArtifact(compDependency);
+        compModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
         submodule.addDependency(compDependency.getGavc(), Scope.COMPILE);
 
@@ -105,6 +107,7 @@ public class TC03_ModuleWithOneSubmoduleAndDependencyOfEachType implements Depen
         proModule.setName(PROVIDED_DEPENDENCY_MODULE);
         proModule.setVersion(PROVIDED_DEPENDENCY_VERSION);
         proModule.addArtifact(proDependency);
+        proModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
         submodule.addDependency(proDependency.getGavc(), Scope.PROVIDED);
 
@@ -120,6 +123,7 @@ public class TC03_ModuleWithOneSubmoduleAndDependencyOfEachType implements Depen
         runModule.setName(RUNTIME_DEPENDENCY_MODULE);
         runModule.setVersion(RUNTIME_DEPENDENCY_VERSION);
         runModule.addArtifact(runDependency);
+        runModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
         submodule.addDependency(runDependency.getGavc(), Scope.RUNTIME);
 
@@ -135,6 +139,7 @@ public class TC03_ModuleWithOneSubmoduleAndDependencyOfEachType implements Depen
         testModule.setName(TEST_DEPENDENCY_MODULE);
         testModule.setVersion(TEST_DEPENDENCY_VERSION);
         testModule.addArtifact(testDependency);
+        testModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
         submodule.addDependency(testDependency.getGavc(), Scope.TEST);
 

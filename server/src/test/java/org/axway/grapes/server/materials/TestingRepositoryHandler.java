@@ -21,6 +21,7 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     
     private final List<DbCredential> credentials = new ArrayList<DbCredential>();
 
+    private final List<DbOrganization> organizations = new ArrayList<DbOrganization>();
     private final List<DbModule> modules = new ArrayList<DbModule>();
     private final List<DbArtifact> artifacts = new ArrayList<DbArtifact>();
     private final List<DbLicense> licenses = new ArrayList<DbLicense>();
@@ -160,7 +161,7 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
-    public List<DbModule> getAncestors(final String gavc, FiltersHolder filters) {
+    public List<DbModule> getAncestors(final DbArtifact artifact, FiltersHolder filters) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -208,7 +209,13 @@ public class TestingRepositoryHandler implements RepositoryHandler {
 
     @Override
     public DbModule getRootModuleOf(final String gavc) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        for(DbModule module: modules){
+            module.updateHasAndUse();
+            if(module.getHas().contains(gavc)){
+                return module;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -244,22 +251,34 @@ public class TestingRepositoryHandler implements RepositoryHandler {
 
     @Override
     public List<String> getOrganizationNames() {
-        return null;
+        List<String> names = new ArrayList<String>();
+
+        for(DbOrganization organization: organizations){
+            names.add(organization.getName());
+        }
+
+        return names;
     }
 
     @Override
     public DbOrganization getOrganization(String name) {
+        for(DbOrganization organization: organizations){
+            if(name.equals(organization.getName())){
+              return organization;
+            }
+        }
+
         return null;
     }
 
     @Override
     public void deleteOrganization(String organizationId) {
-
+        organizations.remove(getOrganization(organizationId));
     }
 
     @Override
     public void store(DbOrganization organization) {
-
+        organizations.add(organization);
     }
 
     @Override
@@ -293,6 +312,11 @@ public class TestingRepositoryHandler implements RepositoryHandler {
 
 
     public void loadTestCase(final DependencyCase testCase) {
+        final DbOrganization organization = new DbOrganization();
+        organization.setName(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
+        organization.getCorporateGroupIdPrefixes().add(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+        store(organization);
+
         for(DbModule module: testCase.dbModulesToLoad()){
             store(module);
         }

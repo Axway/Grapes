@@ -7,8 +7,10 @@ package org.axway.grapes.server.webapp.resources;
 import com.yammer.dropwizard.views.View;
 import org.axway.grapes.server.config.CommunityConfig;
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.core.*;
+import org.axway.grapes.server.core.options.FiltersHolder;
+import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.webapp.RequestHandler;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
@@ -24,13 +26,16 @@ import javax.ws.rs.core.Response;
  */
 public abstract class AbstractResource extends View{
 
-    private final RequestHandler requestHandler;
+    private final RepositoryHandler repositoryHandler;
     private final GrapesServerConfig grapesConfig;
+
+    private final ModelMapper modelMapper;
     
     protected AbstractResource(final RepositoryHandler repoHandler, final String templateName, final GrapesServerConfig dmConfig) {
 		super(templateName);
         this.grapesConfig = dmConfig;
-        this.requestHandler = new RequestHandler(repoHandler, dmConfig);
+        this.repositoryHandler = repoHandler;
+        this.modelMapper = new ModelMapper(repoHandler);
 	}
     
     /**
@@ -45,12 +50,57 @@ public abstract class AbstractResource extends View{
 	}
 
     /**
-     * Return the requestHandler dedicated to the resource
+     * Return a OrganizationHandler
      *
-     * @return RequestHandler
+     * @return ArtifactHandler
      */
-    protected RequestHandler getRequestHandler(){
-        return requestHandler;
+    protected OrganizationHandler getOrganizationHandler(){
+        return new OrganizationHandler(repositoryHandler);
+    }
+
+    /**
+     * Return a ModuleHandler
+     *
+     * @return ArtifactHandler
+     */
+    protected ModuleHandler getModuleHandler(){
+        return new ModuleHandler(repositoryHandler);
+    }
+
+    /**
+     * Return an ArtifactHandler
+     *
+     * @return ArtifactHandler
+     */
+    protected ArtifactHandler getArtifactHandler(){
+        return new ArtifactHandler(repositoryHandler);
+    }
+
+    /**
+     * Return a DependencyHandler
+     *
+     * @return DependencyHandler
+     */
+    protected DependencyHandler getDependencyHandler(){
+        return new DependencyHandler(repositoryHandler);
+    }
+
+    /**
+     * Return a LicenseHandler
+     *
+     * @return LicenseHandler
+     */
+    protected LicenseHandler getLicenseHandler(){
+        return new LicenseHandler(repositoryHandler);
+    }
+
+    /**
+     * Return a GraphsHandler
+     *
+     * @return LicenseHandler
+     */
+    protected GraphsHandler getGraphsHandler(final FiltersHolder filtersHolder){
+        return new GraphsHandler(repositoryHandler,filtersHolder);
     }
 
     /**
@@ -61,7 +111,16 @@ public abstract class AbstractResource extends View{
     protected GrapesServerConfig getConfig(){
         return grapesConfig;
     }
-    
+
+    /**
+     * Returns model mapper for data-model conversion
+     *
+     * @return ModelMapper
+     */
+    protected ModelMapper getModelMapper(){
+        return modelMapper;
+    }
+
     /**
      * Return the version of the application
      * 

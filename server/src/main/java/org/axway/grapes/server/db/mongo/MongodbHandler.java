@@ -341,16 +341,10 @@ public class MongodbHandler implements RepositoryHandler {
     }
 
     @Override
-    public List<DbModule> getAncestors(final String gavc, final FiltersHolder filters) {
-        final DbArtifact artifact = getArtifact(gavc);
-
-        if(artifact == null){
-            throw new NotFoundException();
-        }
-
+    public List<DbModule> getAncestors(final DbArtifact artifact, final FiltersHolder filters) {
         final Jongo datastore = getJongoDataStore();
         final Map<String, Object> queryParams = filters.getModuleFieldsFilters();
-        queryParams.put(DbModule.USE_DB_FIELD, gavc);
+        queryParams.put(DbModule.USE_DB_FIELD, artifact.getGavc());
 
         final Iterable<DbModule> results = datastore.getCollection(DbCollections.DB_MODULES)
                 .find(JongoUtils.generateQuery(queryParams))

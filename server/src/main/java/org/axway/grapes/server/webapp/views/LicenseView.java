@@ -2,7 +2,7 @@ package org.axway.grapes.server.webapp.views;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.yammer.dropwizard.views.View;
-import org.axway.grapes.server.db.datamodel.DbLicense;
+import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.server.webapp.views.serialization.LicenseSerializer;
 
 @JsonSerialize(using=LicenseSerializer.class)
@@ -12,14 +12,14 @@ public class LicenseView  extends View{
         super("LicenseView.ftl");
     }
 
-    private DbLicense license;
+    private License license;
 
-    public void setLicense(final DbLicense license) {
+    public void setLicense(final License license) {
         this.license = license;
 
     }
 
-    public DbLicense getLicense() {
+    public License getLicense() {
         return license;
     }
 

@@ -3,6 +3,7 @@ package org.axway.grapes.server.webapp.views;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.yammer.dropwizard.views.View;
 import org.axway.grapes.commons.datamodel.Artifact;
+import org.axway.grapes.commons.datamodel.Organization;
 import org.axway.grapes.server.webapp.views.serialization.ArtifactSerializer;
 
 @JsonSerialize(using=ArtifactSerializer.class)
@@ -10,8 +11,9 @@ public class ArtifactView  extends View{
 
     private Boolean shouldNotBeUsed = false;
     private Boolean isCorporate = false;
+    private Organization organization;
 
-	public ArtifactView() {
+    public ArtifactView() {
 		super("ArtifactView.ftl");
 	}
 
@@ -42,4 +44,7 @@ public class ArtifactView  extends View{
         return isCorporate;
     }
 
+    public void setOrganization(final Organization organization) {
+        this.organization = organization;
+    }
 }

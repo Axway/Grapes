@@ -101,6 +101,9 @@ public interface ServerAPI {
     /** Value - {@value}, boolean query parameter used to filter modules or artifacts.*/
     public static final String PROMOTED_PARAM = "promoted";
 
+    /** Value - {@value}, boolean query parameter used to filter modules.*/
+    public static final String ORGANIZATION_PARAM = "organization";
+
     /** Value - {@value}, boolean query parameter used to filter dependencies.*/
     public static final String SCOPE_COMPILE_PARAM = "scopeComp";
 
@@ -113,9 +116,6 @@ public interface ServerAPI {
     /** Value - {@value}, boolean query parameter used to filter dependencies.*/
     public static final String SCOPE_TEST_PARAM = "scopeTest";
 
-    /** Value - {@value}, boolean query parameter used to filter artifacts.*/
-    public static final String CORPORATE_FILTER = "corporate";
-
     /** Value - {@value}, boolean query parameter used to filter dependencies.*/
     public static final String TO_UPDATE_PARAM = "toUpdate";
 
@@ -124,6 +124,9 @@ public interface ServerAPI {
 
     /** Value - {@value}, boolean query parameter used to filter licenses that has to be validated.*/
     public static final String TO_BE_VALIDATED_PARAM = "toBeValidated";
+
+    /** Value - {@value}, boolean query parameter used to showCorporate Dependencies.*/
+    public static final String SHOW_CORPORATE_PARAM = "showCorporate";
 
     /** Value - {@value}, boolean query parameter used to show the licenses in reports.*/
     public static final String SHOW_LICENSE_PARAM = "showLicenses";

@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 public class GrapesTestUtils {
 
+    public final static String ORGANIZATION_NAME_4TEST = "corp";
     public final static String CORPORATE_GROUPID_4TEST = "com.corporate.test";
 
     public final static String USER_4TEST = "user";

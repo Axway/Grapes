@@ -1,6 +1,5 @@
 package org.axway.grapes.server.webapp.resources;
 
-import com.sun.jersey.api.NotFoundException;
 import com.yammer.dropwizard.auth.Auth;
 import com.yammer.dropwizard.jersey.params.BooleanParam;
 import org.axway.grapes.commons.api.ServerAPI;
@@ -10,6 +9,8 @@ import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
+import org.axway.grapes.server.db.datamodel.DbLicense;
+import org.axway.grapes.server.webapp.DataValidator;
 import org.axway.grapes.server.webapp.views.LicenseView;
 import org.axway.grapes.server.webapp.views.ListView;
 import org.eclipse.jetty.http.HttpStatus;
@@ -21,8 +22,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import java.util.List;
 
 /**
  * License Resource
@@ -55,62 +55,22 @@ public class LicenseResource extends AbstractResource{
         }
 
 		LOG.info("Got a post license request.");
-		
-		if(isNotValid(license)){
-			LOG.info("The following license is not valid: " + license.toString());
-			return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
-		}
-		
-		try {
-			getRequestHandler().store(license);
-		} catch (Exception e) {
-			LOG.error("Failed to store the following license: " + license.toString(), e);
-			return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-		}
+
+        // Checks if the data is corrupted
+        DataValidator.validate(license);
+
+        // Save the license
+        final DbLicense dbLicense = getModelMapper().getDbLicense(license);
+        getLicenseHandler().store(dbLicense);
 
 		return Response.ok().status(HttpStatus.CREATED_201).build();
 	}
-
-	/**
-	 * Check if the provided license is valid and could be stored into the database
-	 * 
-	 * @param license the license to test
-	 * @return Boolean true only if the license is NOT valid
-	 */
-	private boolean isNotValid(final License license) {
-        // A license should have a name
-		if(license.getName() == null ||
-			license.getName().isEmpty()){
-            LOG.error("License name should not be empty!");
-			return true;
-		}
-
-        // A license should have a long name
-        if(license.getLongName() == null ||
-                license.getLongName().isEmpty()){
-            LOG.error("License long name should not be empty!");
-            return true;
-        }
-
-        // If there is a regexp, it should compile
-        if(license.getRegexp() != null &&
-                !license.getRegexp().isEmpty()){
-            try{
-                Pattern.compile(license.getRegexp());
-            }
-            catch (PatternSyntaxException e){
-                LOG.error("License regexp does not compile!");
-                return true;
-            }
-        }
-
-		return false;
-	}
 	
 	/**
-	 *  Return the list of available license name.
+	 * Return the list of available license name.
 	 * This method is call via GET <dm_url>/license/names
      *
+     * @param uriInfo UriInfo
 	 * @return Response A list of license name in HTML or JSON
 	 */
 	@GET
@@ -118,27 +78,22 @@ public class LicenseResource extends AbstractResource{
 	@Path(ServerAPI.GET_NAMES)
 	public Response getNames(@Context final UriInfo uriInfo){
 		LOG.info("Got a get license names request.");
-		ListView names;
+        final ListView view = new ListView("License names view", "license");
 
-		final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+		final FiltersHolder filters = new FiltersHolder();
 		filters.init(uriInfo.getQueryParameters());
-		
-		try {
-			names = getRequestHandler().getLicensesNames(filters);
-			
-		} catch (Exception e) {
-			LOG.error("Failed retrieve the license names lists.", e);
-			return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-		}
 
-		return Response.ok(names).build();
+        final List<String> names = getLicenseHandler().getLicensesNames(filters);
+        view.addAll(names);
+
+		return Response.ok(view).build();
 	}
 
     /**
      * Return a license
      * This method is call via GET <dm_url>/license/<name>
      *
-     * @param name
+     * @param name String
      * @return Response A license in HTML or JSON
      */
     @GET
@@ -146,27 +101,21 @@ public class LicenseResource extends AbstractResource{
     @Path("/{name}")
     public Response get(@PathParam("name") final String name){
         LOG.info("Got a get license request.");
-        LicenseView license;
+        final LicenseView view = new LicenseView();
 
-        try {
-            license = getRequestHandler().getLicense(name);
+        final DbLicense dbLicense = getLicenseHandler().getLicense(name);
+        final License license = getModelMapper().getLicense(dbLicense);
+        view.setLicense(license);
 
-        } catch (NotFoundException e) {
-            LOG.error("License not found: " + name);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed retrieve the license: "+ name, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
-
-        return Response.ok(license).build();
+        return Response.ok(view).build();
     }
 
     /**
      * Delete a license
      * This method is call via DELETE <dm_url>/license/<name>
      *
-     * @param name
+     * @param credential DbCredential
+     * @param name String
      * @return Response
      */
     @DELETE
@@ -178,17 +127,7 @@ public class LicenseResource extends AbstractResource{
         }
 
         LOG.info("Got a delete license request.");
-
-        try {
-            getRequestHandler().deleteLicenses(name);
-
-        } catch (NotFoundException e) {
-            LOG.error("License not found: " + name);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed retrieve the license: "+ name, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        getLicenseHandler().deleteLicense(name);
 
         return Response.ok("done").build();
     }
@@ -197,7 +136,9 @@ public class LicenseResource extends AbstractResource{
      * Validate a license
      * This method is call via POST <dm_url>/license/<name>?approved=<boolean>
      *
-     * @param name
+     * @param credential DbCredential
+     * @param name String
+     * @param approved BooleanParam
      * @return Response
      */
     @POST
@@ -214,16 +155,7 @@ public class LicenseResource extends AbstractResource{
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        try {
-            getRequestHandler().approveLicenses(name, approved.get());
-
-        } catch (NotFoundException e) {
-            LOG.error("License not found: " + name);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed retrieve the license: "+ name, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        getLicenseHandler().approveLicense(name, approved.get());
 
         return Response.ok("done").build();
     }

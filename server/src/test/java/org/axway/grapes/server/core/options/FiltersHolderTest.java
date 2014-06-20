@@ -3,9 +3,11 @@ package org.axway.grapes.server.core.options;
 import org.axway.grapes.commons.datamodel.Scope;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.core.options.filters.ApprovedFilter;
+import org.axway.grapes.server.core.options.filters.CorporateFilter;
 import org.axway.grapes.server.core.options.filters.ToBeValidatedFilter;
 import org.axway.grapes.server.db.datamodel.DbDependency;
 import org.axway.grapes.server.db.datamodel.DbLicense;
+import org.axway.grapes.server.db.datamodel.DbOrganization;
 import org.junit.Test;
 
 import java.net.UnknownHostException;
@@ -28,7 +30,7 @@ public class FiltersHolderTest {
         licenseUnvalidated.setName("unvalidated");
         licenseUnvalidated.setApproved(false);
 
-        FiltersHolder filters = new FiltersHolder(GrapesTestUtils.getTestCorporateGroupIds());
+        FiltersHolder filters = new FiltersHolder();
         assertTrue(filters.shouldBeInReport(licenseToValidate));
         assertTrue(filters.shouldBeInReport(licenseValidated));
         assertTrue(filters.shouldBeInReport(licenseUnvalidated));
@@ -45,7 +47,7 @@ public class FiltersHolderTest {
         assertTrue(filters.shouldBeInReport(licenseValidated));
         assertTrue(filters.shouldBeInReport(licenseUnvalidated));
 
-        filters = new FiltersHolder(GrapesTestUtils.getTestCorporateGroupIds());
+        filters = new FiltersHolder();
         ApprovedFilter approvedFilter = new ApprovedFilter(true);
         filters.addFilter(approvedFilter);
         assertFalse(filters.shouldBeInReport(licenseToValidate));
@@ -61,9 +63,14 @@ public class FiltersHolderTest {
 
     @Test
     public void checkIfADependencyShouldBeInTheReport() throws UnknownHostException {
-        final FiltersHolder filters = new FiltersHolder(GrapesTestUtils.getTestCorporateGroupIds());
-        assertFalse(filters.shouldBeInReport((DbDependency) null));
+        final FiltersHolder filters = new FiltersHolder();
 
+        final DbOrganization organization = new DbOrganization();
+        organization.setName("corp");
+        organization.getCorporateGroupIdPrefixes().add(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+        filters.setCorporateFilter(new CorporateFilter(organization));
+
+        assertFalse(filters.shouldBeInReport((DbDependency) null));
         assertFalse(filters.shouldBeInReport(new DbDependency("", "", Scope.COMPILE)));
         assertFalse(filters.shouldBeInReport(new DbDependency("", "org.apache:lambda:1:", Scope.COMPILE)));
         assertFalse(filters.shouldBeInReport(new DbDependency("test:1", "org.apache:lambda:1:", Scope.COMPILE)));
@@ -88,7 +95,7 @@ public class FiltersHolderTest {
 
     @Test
     public void checkIfShouldGoDeeper(){
-        final FiltersHolder filters = new FiltersHolder(GrapesTestUtils.getTestCorporateGroupIds());
+        final FiltersHolder filters = new FiltersHolder();
         assertTrue(filters.getDepthHandler().shouldGoDeeper(0));
         assertFalse(filters.getDepthHandler().shouldGoDeeper(1));
 

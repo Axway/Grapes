@@ -1,16 +1,18 @@
 package org.axway.grapes.server.core;
 
-import com.sun.jersey.api.NotFoundException;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.server.core.graphs.AbstractGraph;
 import org.axway.grapes.server.core.graphs.ModuleGraph;
 import org.axway.grapes.server.core.graphs.TreeNode;
 import org.axway.grapes.server.core.options.FiltersHolder;
+import org.axway.grapes.server.core.options.filters.CorporateFilter;
 import org.axway.grapes.server.db.DataUtils;
+import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbDependency;
 import org.axway.grapes.server.db.datamodel.DbModule;
+import org.axway.grapes.server.db.datamodel.DbOrganization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,17 +39,17 @@ public class GraphsHandler {
     /**
      * Generate a module graph regarding the filters
      *
-     * @param moduleId
+     * @param moduleId String
      * @return AbstractGraph
      */
     public AbstractGraph getModuleGraph(final String moduleId) {
+        final ModuleHandler moduleHandler = new ModuleHandler(repoHandler);
+        final DbModule module = moduleHandler.getModule(moduleId);
+        final DbOrganization organization = moduleHandler.getOrganization(module);
+
+        filters.setCorporateFilter(new CorporateFilter(organization));
+
         final AbstractGraph graph = new ModuleGraph();
-        final DbModule module = repoHandler.getModule(moduleId);
-
-        if (module == null) {
-            throw new NotFoundException();
-        }
-
         addModuleToGraph(module, graph, 0);
 
         return graph;
@@ -92,7 +94,7 @@ public class GraphsHandler {
             // if there is no module, add the artifact to the graph
             if(dbTarget == null){
                 LOG.error("Got missing reference: " + dependency.getTarget());
-                final DbArtifact dbArtifact = DataUtils.createArtifact(dependency.getTarget());
+                final DbArtifact dbArtifact = DataUtils.createDbArtifact(dependency.getTarget());
                 final String targetElementId = graph.getId(dbArtifact);
                 graph.addElement(targetElementId, dbArtifact.getVersion(), false);
                 graph.addDependency(parentId, targetElementId, dependency.getScope());
@@ -115,7 +117,8 @@ public class GraphsHandler {
             }
 
             if(!graph.isTreated(graph.getId(dbTarget))){
-                final Artifact target = DataUtils.getArtifact(dbTarget);
+                final ModelMapper modelMapper = new ModelMapper(repoHandler);
+                final Artifact target = modelMapper.getArtifact(dbTarget);
                 final String targetElementId = graph.getId(target);
                 graph.addElement(targetElementId, target.getVersion(), false);
                 graph.addDependency(parentId, targetElementId, dependency.getScope());
@@ -130,13 +133,10 @@ public class GraphsHandler {
      * @return TreeNode
      */
     public TreeNode getModuleTree(final String moduleId) {
+        final ModuleHandler moduleHandler = new ModuleHandler(repoHandler);
+        final DbModule module = moduleHandler.getModule(moduleId);
+
         final TreeNode tree = new TreeNode();
-        final DbModule module = repoHandler.getModule(moduleId);
-
-        if (module == null) {
-            throw new NotFoundException();
-        }
-
         tree.setName(module.getName());
 
         // Add submodules

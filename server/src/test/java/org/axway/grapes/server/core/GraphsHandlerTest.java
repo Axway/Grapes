@@ -2,7 +2,6 @@ package org.axway.grapes.server.core;
 
 
 import org.axway.grapes.commons.datamodel.Scope;
-import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.core.graphs.AbstractGraph;
 import org.axway.grapes.server.core.graphs.GraphDependency;
 import org.axway.grapes.server.core.graphs.GraphElement;
@@ -25,7 +24,7 @@ public class GraphsHandlerTest {
     @Before
     public void init(){
 
-        filters = new FiltersHolder(GrapesTestUtils.getTestCorporateGroupIds());
+        filters = new FiltersHolder();
         filters.getScopeHandler().setScopeComp(true);
         filters.getScopeHandler().setScopePro(true);
         filters.getScopeHandler().setScopeRun(true);

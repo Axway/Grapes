@@ -1,18 +1,22 @@
 package org.axway.grapes.server.webapp.resources;
 
-import com.sun.jersey.api.NotFoundException;
 import com.yammer.dropwizard.auth.Auth;
 import com.yammer.dropwizard.jersey.caching.CacheControl;
 import com.yammer.dropwizard.jersey.params.BooleanParam;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.Artifact;
+import org.axway.grapes.commons.datamodel.Module;
+import org.axway.grapes.commons.datamodel.Organization;
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.core.ArtifactHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
+import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.DbCredential;
+import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
+import org.axway.grapes.server.webapp.DataValidator;
+import org.axway.grapes.server.webapp.views.AncestorsView;
 import org.axway.grapes.server.webapp.views.ArtifactView;
-import org.axway.grapes.server.webapp.views.DependencyListView;
 import org.axway.grapes.server.webapp.views.LicenseListView;
 import org.axway.grapes.server.webapp.views.ListView;
 import org.eclipse.jetty.http.HttpStatus;
@@ -24,6 +28,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -60,41 +65,20 @@ public class ArtifactResource extends AbstractResource {
 
         LOG.info("Got a post Artifact request.");
 
-        if(isNotValid(artifact)){
-            LOG.info("The following artifact is not valid: " + artifact.toString());
-            return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
-        }
+        // Checks if the data is corrupted
+        DataValidator.validate(artifact);
 
-        try {
-            getRequestHandler().store(artifact);
-        } catch (Exception e) {
-            LOG.error("Failed to store the following artifact: " + artifact.toString(), e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
+        // Store the Artifact
+        final ArtifactHandler artifactHandler = getArtifactHandler();
+        final DbArtifact dbArtifact = getModelMapper().getDbArtifact(artifact);
+        artifactHandler.store(dbArtifact);
+
+        // Add the licenses
+        for(String license: artifact.getLicenses()){
+            artifactHandler.addLicense(dbArtifact.getGavc(), license);
         }
 
         return Response.ok().status(HttpStatus.CREATED_201).build();
-    }
-
-    /**
-     * Check if the provided artifact is valid and could be stored into the database
-     *
-     * @param artifact the artifact to test
-     * @return Boolean true only if the artifact is NOT valid
-     */
-    public static boolean isNotValid(final Artifact artifact) {
-        if(artifact.getGroupId() == null ||
-                artifact.getGroupId().isEmpty()){
-            return true;
-        }
-        if(artifact.getArtifactId() == null ||
-                artifact.getArtifactId().isEmpty()){
-            return true;
-        }
-        if(artifact.getVersion() == null ||
-                artifact.getVersion().isEmpty()){
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -108,19 +92,15 @@ public class ArtifactResource extends AbstractResource {
     @Path(ServerAPI.GET_GAVCS)
     public Response getGavcs(@Context final UriInfo uriInfo){
         LOG.info("Got a get gavc request.");
-        ListView gavcs;
-        final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+        final ListView view = new ListView("GAVCS view", "gavc");
+        final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        try {
-            gavcs = getRequestHandler().getArtifactGavcs(filters);
+        final List<String> gavcs = getArtifactHandler().getArtifactGavcs(filters);
+        Collections.sort(gavcs);
+        view.addAll(gavcs);
 
-        } catch (Exception e) {
-            LOG.error("Failed retrieve the gavc.", e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
-
-        return Response.ok(gavcs).build();
+        return Response.ok(view).build();
     }
 
     /**
@@ -134,56 +114,47 @@ public class ArtifactResource extends AbstractResource {
     @Path(ServerAPI.GET_GROUPIDS)
     public Response getGroupIds(@Context final UriInfo uriInfo){
         LOG.info("Got a get groupIds request.");
-        ListView groupIds;
-        final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+        ListView view = new ListView("GroupIds view", "groupId");
+        final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        try {
-            groupIds = getRequestHandler().getArtifactGroupIds(filters);
+        final List<String> groupIds = getArtifactHandler().getArtifactGroupIds(filters);
+        Collections.sort(groupIds);
+        view.addAll(groupIds);
 
-        } catch (Exception e) {
-            LOG.error("Failed retrieve the gavc.", e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
-
-        return Response.ok(groupIds).build();
+        return Response.ok(view).build();
     }
 
     /**
      * Returns the list of available versions of an artifact
      * This method is call via GET <grapes_url>/artifact/<gavc>/versions
      *
-     * @return Response a list of versions in JSON
+     * @param gavc String
+     * @return Response a list of versions in JSON or in HTML
      */
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{gavc}" + ServerAPI.GET_VERSIONS)
     public Response getVersions(@PathParam("gavc") final String gavc){
-        LOG.info("Got a get artifact verisons request.");
+        LOG.info("Got a get artifact versions request.");
+        final ListView view = new ListView("Versions View", "version");
 
         if(gavc == null){
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        List<String> versions = Collections.emptyList();
-        try {
-            versions = getRequestHandler().getArtifactVersions(gavc);
+        final List<String> versions = getArtifactHandler().getArtifactVersions(gavc);
+        Collections.sort(versions);
+        view.addAll(versions);
 
-        } catch (NotFoundException e) {
-            LOG.error("Gavc not found: " + gavc);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed retrieve the artifact versions: " + gavc, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
-
-        return Response.ok(versions).build();
+        return Response.ok(view).build();
     }
 
     /**
      * Returns the list of available versions of an artifact
      * This method is call via GET <grapes_url>/artifact/<gavc>/versions
      *
+     * @param gavc String
      * @return Response String version in JSON
      */
     @GET
@@ -191,24 +162,13 @@ public class ArtifactResource extends AbstractResource {
     @Path("/{gavc}" + ServerAPI.GET_LAST_VERSION)
     @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getLastVersion(@PathParam("gavc") final String gavc){
-        LOG.info("Got a get artifact verisons request.");
+        LOG.info("Got a get artifact last version request.");
 
         if(gavc == null){
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        String lastVersion = "";
-        try {
-            lastVersion = getRequestHandler().getArtifactLastVersion(gavc);
-
-
-        } catch (NotFoundException e) {
-            LOG.error("Gavc not found: " + gavc);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed retrieve the artifact versions: " + gavc, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        final String lastVersion = getArtifactHandler().getArtifactLastVersion(gavc);
 
         return Response.ok(lastVersion).build();
     }
@@ -217,6 +177,8 @@ public class ArtifactResource extends AbstractResource {
      * Return an Artifact regarding its gavc.
      * This method is call via GET <grapes_url>/artifact/<gavc>
      *
+     *
+     * @param gavc String
      * @return Response An artifact in HTML or JSON
      */
     @GET
@@ -224,30 +186,35 @@ public class ArtifactResource extends AbstractResource {
     @Path("/{gavc}")
     public Response get(@PathParam("gavc") final String gavc){
         LOG.info("Got a get artifact request.");
-        ArtifactView artifact;
+        final ArtifactView view = new ArtifactView();
 
         if(gavc == null){
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        try {
-            artifact = getRequestHandler().getArtifact(gavc);
+        final DbArtifact dbArtifact = getArtifactHandler().getArtifact(gavc);
+        view.setShouldNotBeUse(dbArtifact.getDoNotUse());
 
-        } catch (NotFoundException e) {
-            LOG.error("Gavc not found: " + gavc);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed retrieve the artifact: " + gavc, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
+        final Artifact artifact = getModelMapper().getArtifact(dbArtifact);
+        view.setArtifact(artifact);
+
+        final DbOrganization dbOrganization = getArtifactHandler().getOrganization(dbArtifact);
+        if(dbOrganization != null){
+            final Organization organization = getModelMapper().getOrganization(dbOrganization);
+            view.setOrganization(organization);
         }
 
-        return Response.ok(artifact).build();
+        return Response.ok(view).build();
     }
 
     /**
-     * Update an artifact download url.
+     *  Update an artifact download url.
      * This method is call via GET <grapes_url>/artifact/<gavc>/downloadurl?url=<targetUrl>
      *
+     * @param credential DbCredential
+     * @param gavc String
+     * @param downLoadUrl String
+     * @return Response
      */
     @POST
     @Path("/{gavc}" + ServerAPI.GET_DOWNLOAD_URL)
@@ -262,16 +229,7 @@ public class ArtifactResource extends AbstractResource {
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        try {
-            getRequestHandler().updateDownLoadUrl(gavc, downLoadUrl);
-
-        } catch (NotFoundException e) {
-            LOG.error("Gavc not found: " + gavc);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed to perform the artifact update: " + gavc, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        getArtifactHandler().updateDownLoadUrl(gavc, downLoadUrl);
 
         return Response.ok("done").build();
     }
@@ -294,16 +252,7 @@ public class ArtifactResource extends AbstractResource {
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        try {
-            getRequestHandler().updateProvider(gavc, provider);
-
-        } catch (NotFoundException e) {
-            LOG.error("Gavc not found: " + gavc);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed to perform the artifact update: " + gavc, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        getArtifactHandler().updateProvider(gavc, provider);
 
         return Response.ok("done").build();
     }
@@ -313,7 +262,7 @@ public class ArtifactResource extends AbstractResource {
      * This method is call via DELETE <grapes_url>/artifact/<gavc>
      *
      * @param credential DbCredential
-     * @param gavc
+     * @param gavc String
      * @return Response
      */
     @DELETE
@@ -328,17 +277,7 @@ public class ArtifactResource extends AbstractResource {
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        try {
-            getRequestHandler().deleteArtifact(gavc);
-
-        } catch (NotFoundException e) {
-            LOG.error("Gavc not found: " + gavc);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed remove the artifact: " + gavc, e);
-
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        getArtifactHandler().deleteArtifact(gavc);
 
         return Response.ok().build();
     }
@@ -364,16 +303,7 @@ public class ArtifactResource extends AbstractResource {
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        try {
-            getRequestHandler().setDoNotUse(gavc, doNotUse.get());
-
-        } catch (NotFoundException e) {
-            LOG.error("Gavc not found: " + gavc);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed add the license to the artifact: " + gavc, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        getArtifactHandler().updateDoNotUse(gavc, doNotUse.get());
 
         return Response.ok("done").build();
     }
@@ -382,6 +312,7 @@ public class ArtifactResource extends AbstractResource {
      * Return true if the targeted artifact is flagged with "DO_NOT_USE".
      * This method is call via GET <grapes_url>/artifact/<gavc>/donotuse
      *
+     * @param gavc String
      * @return Response
      */
     @GET
@@ -389,30 +320,22 @@ public class ArtifactResource extends AbstractResource {
     @Path("/{gavc}" + ServerAPI.SET_DO_NOT_USE)
     public Response getDoNotUse(@PathParam("gavc") final String gavc){
         LOG.info("Got a get doNotUse artifact request.");
-        ArtifactView artifact;
 
         if(gavc == null){
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        try {
-            artifact = getRequestHandler().getArtifact(gavc);
+        final DbArtifact artifact = getArtifactHandler().getArtifact(gavc);
 
-        } catch (NotFoundException e) {
-            LOG.error("Gavc not found: " + gavc);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed retrieve the artifact: " + gavc, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
-
-        return Response.ok(artifact.shouldNotBeUsed()).build();
+        return Response.ok(artifact.getDoNotUse()).build();
     }
 
     /**
      * Return the list of ancestor of an artifact.
      * This method is call via GET <grapes_url>/artifact/<gavc>/ancestors
      *
+     * @param gavc String
+     * @param uriInfo UriInfo
      * @return Response A list of ancestor in HTML or JSON
      */
     @GET
@@ -421,33 +344,30 @@ public class ArtifactResource extends AbstractResource {
     @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getAncestors(@PathParam("gavc") final String gavc, @Context final UriInfo uriInfo){
         LOG.info("Got a get artifact request.");
-        DependencyListView ancestors;
 
         if(gavc == null){
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+        final FiltersHolder filters = new FiltersHolder();
         filters.getDecorator().setShowLicenses(false);
         filters.init(uriInfo.getQueryParameters());
 
-        try {
-            ancestors = getRequestHandler().getAncestors(gavc,filters);
+        final AncestorsView view = new AncestorsView("Ancestor List Of " + gavc, getLicenseHandler().getLicenses(), filters.getDecorator());
 
-        } catch (NotFoundException e) {
-            LOG.error("Gavc not found: " + gavc);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed to get the artifact ancestors: " + gavc, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
+        final List<DbModule> dbAncestors = getArtifactHandler().getAncestors(gavc, filters);
+        final Artifact artifact = DataUtils.createArtifact(gavc);
+
+        for(DbModule dbAncestor : dbAncestors){
+            final Module ancestor = getModelMapper().getModule(dbAncestor);
+            view.addAncestor(ancestor, artifact);
         }
 
-        return Response.ok(ancestors).build();
+        return Response.ok(view).build();
     }
 
     /**
-     *
-     * Return the list of licenses used by an artifact.
+     * Returns the list of licenses used by an artifact.
      * This method is call via GET <grapes_url>/artifact/{gavc}/licenses
      *
      * @param gavc
@@ -458,34 +378,30 @@ public class ArtifactResource extends AbstractResource {
     @Path("/{gavc}" + ServerAPI.GET_LICENSES)
     public Response getLicenses(@PathParam("gavc") final String gavc, @Context final UriInfo uriInfo){
         LOG.info("Got a get artifact licenses request.");
-        LicenseListView licenses;
+        final LicenseListView view = new LicenseListView("Licenses of " + gavc);
 
         if(gavc == null){
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+        final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        try {
-            licenses = getRequestHandler().getArtifactLicenses(gavc,filters);
-
-        } catch (NotFoundException e) {
-            LOG.error("Gavc not found: " + gavc);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed retrieve the artifact: " + gavc, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
+        final List<DbLicense> dbLicenses = getArtifactHandler().getArtifactLicenses(gavc,filters);
+        for(DbLicense license: dbLicenses){
+            view.add(getModelMapper().getLicense(license));
         }
 
-        return Response.ok(licenses).build();
+        return Response.ok(view).build();
     }
 
 
     /**
      * Add a license to an artifact
-     * @param gavc
-     * @param licenseId
+     *
+     * @param credential DbCredential
+     * @param gavc String
+     * @param licenseId String
      * @return Response
      */
     @POST
@@ -501,24 +417,17 @@ public class ArtifactResource extends AbstractResource {
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        try {
-            getRequestHandler().addLicenseToArtifact(gavc, licenseId);
-
-        } catch (NotFoundException e) {
-            LOG.error("Gavc not found: " + gavc);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed add the license to the artifact: " + gavc, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        getArtifactHandler().addLicenseToArtifact(gavc, licenseId);
 
         return Response.ok("done").build();
     }
 
     /**
-     * Remove a license from an artifact
-     * @param gavc
-     * @param licenseId
+     * Removes a license from an artifact
+     *
+     * @param credential DbCredential
+     * @param gavc String
+     * @param licenseId String
      * @return Response
      */
     @DELETE
@@ -534,16 +443,7 @@ public class ArtifactResource extends AbstractResource {
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        try {
-            getRequestHandler().removeLicenseFromArtifact(gavc, licenseId);
-
-        } catch (NotFoundException e) {
-            LOG.error("Gavc not found: " + gavc);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed remove the license to the artifact: " + gavc, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        getArtifactHandler().removeLicenseFromArtifact(gavc, licenseId);
 
         return Response.ok("done").build();
     }
@@ -553,6 +453,7 @@ public class ArtifactResource extends AbstractResource {
      * This method is call via GET <grapes_url>/artifact/<gavc>
      * Following filters can be used: artifactId, classifier, groupId, hasLicense, licenseId, type, uriInfo, version
      *
+     * @param uriInfo UriInfo
      * @return Response An artifact in HTML or JSON
      */
     @GET
@@ -562,20 +463,16 @@ public class ArtifactResource extends AbstractResource {
     public Response getAll(@Context final UriInfo uriInfo){
         LOG.info("Got a get all artifact request.");
 
-        final FiltersHolder filters = new FiltersHolder(getConfig().getCorporateGroupIds());
+        final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        List<Artifact> artifacts = null;
+        final List<Artifact> artifacts = new ArrayList<Artifact>();
 
-        try {
-            artifacts = getRequestHandler().getArtifacts(filters);
-
-        } catch (Exception e) {
-            LOG.error("Failed.", e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
+        final List<DbArtifact> dbArtifacts = getArtifactHandler().getArtifacts(filters);
+        for(DbArtifact dbArtifact: dbArtifacts){
+            artifacts.add(getModelMapper().getArtifact(dbArtifact));
         }
 
         return Response.ok(artifacts).build();
     }
-
 }

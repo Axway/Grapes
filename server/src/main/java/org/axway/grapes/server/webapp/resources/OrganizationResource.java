@@ -1,12 +1,13 @@
 package org.axway.grapes.server.webapp.resources;
 
-import com.sun.jersey.api.NotFoundException;
 import com.yammer.dropwizard.auth.Auth;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.Organization;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
+import org.axway.grapes.server.db.datamodel.DbOrganization;
+import org.axway.grapes.server.webapp.DataValidator;
 import org.axway.grapes.server.webapp.views.ListView;
 import org.axway.grapes.server.webapp.views.OrganizationView;
 import org.eclipse.jetty.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * Organization Resource
@@ -49,26 +51,13 @@ public class OrganizationResource extends AbstractResource {
 
         LOG.info("Got a post organization request.");
 
-        if(isNotValid(organization)){
-            LOG.info("The following organization is not valid: " + organization.toString());
-            return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
-        }
+        // Checks if the data is corrupted
+        DataValidator.validate(organization);
 
-        try {
-            getRequestHandler().store(organization);
-        } catch (Exception e) {
-            LOG.error("Failed to store the following organization: " + organization.toString(), e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        final DbOrganization dbOrganization = getModelMapper().getDbOrganization(organization);
+        getOrganizationHandler().store(dbOrganization);
 
         return Response.ok().status(HttpStatus.CREATED_201).build();
-    }
-
-    private boolean isNotValid(final Organization organization) {
-        if(organization.getName() == null){
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -82,21 +71,16 @@ public class OrganizationResource extends AbstractResource {
     @Path(ServerAPI.GET_NAMES)
     public Response getNames(){
         LOG.info("Got a get organization names request.");
-        ListView names;
 
-        try {
-            names = getRequestHandler().getOrganizationNames();
+        final ListView view = new ListView("Organization Ids list", "Organizations");
+        final List<String> names = getOrganizationHandler().getOrganizationNames();
+        view.addAll(names);
 
-        } catch (Exception e) {
-            LOG.error("Failed organization the license names lists.", e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
-
-        return Response.ok(names).build();
+        return Response.ok(view).build();
     }
 
     /**
-     * Return an organization
+     * Returns an organization
      * This method is call via GET <dm_url>/organization/<name>
      *
      * @param name String
@@ -107,20 +91,12 @@ public class OrganizationResource extends AbstractResource {
     @Path("/{name}")
     public Response get(@PathParam("name") final String name){
         LOG.info("Got a get organization request.");
-        OrganizationView organization;
 
-        try {
-            organization = getRequestHandler().getOrganization(name);
+        final DbOrganization dbOrganization = getOrganizationHandler().getOrganization(name);
+        final Organization organization = getModelMapper().getOrganization(dbOrganization);
+        final OrganizationView view = new OrganizationView(organization);
 
-        } catch (NotFoundException e) {
-            LOG.error("Organization not found: " + name);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed retrieve the organization: "+ name, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
-
-        return Response.ok(organization).build();
+        return Response.ok(view).build();
     }
 
     /**
@@ -138,17 +114,7 @@ public class OrganizationResource extends AbstractResource {
         }
 
         LOG.info("Got a delete organization request.");
-
-        try {
-            getRequestHandler().deleteOrganization(name);
-
-        } catch (NotFoundException e) {
-            LOG.error("Organization not found: " + name);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed delete the organization: "+ name, e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        getOrganizationHandler().deleteOrganization(name);
 
         return Response.ok("done").build();
     }
@@ -156,6 +122,7 @@ public class OrganizationResource extends AbstractResource {
     /**
      * Return the list of corporate GroupId prefix configured for an organization.
      *
+     * @param organizationId String Organization name
      * @return Response A list of corporate groupId prefix in HTML or JSON
      */
     @GET
@@ -163,25 +130,20 @@ public class OrganizationResource extends AbstractResource {
     @Path("/{name}" + ServerAPI.GET_CORPORATE_GROUPIDS)
     public Response getCorporateGroupIdPrefix(@PathParam("name") final String organizationId){
         LOG.info("Got a get corporate groupId prefix request for organization " + organizationId +".");
-        ListView corporateGroupIds;
 
-        try {
-            corporateGroupIds = getRequestHandler().getCorporateGroupIds(organizationId);
+        final ListView view = new ListView("Organization " + organizationId, "Corporate GroupId Prefix");
+        final List<String> corporateGroupIds = getOrganizationHandler().getCorporateGroupIds(organizationId);
+        view.addAll(corporateGroupIds);
 
-        } catch (NotFoundException e) {
-            LOG.error("Organization not found: " + organizationId);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed to get corporate groupId prefix list.", e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
-
-        return Response.ok(corporateGroupIds).build();
+        return Response.ok(view).build();
     }
 
     /**
      * Add a new Corporate GroupId to an organization.
      *
+     * @param credential DbCredential
+     * @param organizationId String Organization name
+     * @param corporateGroupId String
      * @return Response
      */
     @POST
@@ -194,19 +156,11 @@ public class OrganizationResource extends AbstractResource {
 
         if(corporateGroupId == null || corporateGroupId.isEmpty()){
             LOG.error("No corporate GroupId to add!");
-            return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
+            throw new WebApplicationException(Response.serverError().status(HttpStatus.BAD_REQUEST_400)
+                    .entity("CorporateGroupId to add should be in the query content.").build());
         }
 
-        try {
-            getRequestHandler().addCorporateGroupId(organizationId, corporateGroupId);
-
-        } catch (NotFoundException e) {
-            LOG.error("Organization not found: " + organizationId);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed to add corporate groupId prefix to the list.", e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        getOrganizationHandler().addCorporateGroupId(organizationId, corporateGroupId);
 
         return Response.ok().status(HttpStatus.CREATED_201).build();
     }
@@ -229,16 +183,7 @@ public class OrganizationResource extends AbstractResource {
             return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
         }
 
-        try {
-            getRequestHandler().removeCorporateGroupId(organizationId, corporateGroupId);
-
-        } catch (NotFoundException e) {
-            LOG.error("Organization not found: " + organizationId);
-            return Response.serverError().status(HttpStatus.NOT_FOUND_404).build();
-        } catch (Exception e) {
-            LOG.error("Failed to remove corporate groupId prefix to the list.", e);
-            return Response.serverError().status(HttpStatus.INTERNAL_SERVER_ERROR_500).build();
-        }
+        getOrganizationHandler().removeCorporateGroupId(organizationId, corporateGroupId);
 
         return Response.ok("done").build();
     }

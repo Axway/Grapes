@@ -25,11 +25,7 @@ public class FiltersHolder {
     private final ScopeHandler scopeHandler = new ScopeHandler();
     private final Decorator decorator = new Decorator();
     private final DepthHandler depthHandler = new DepthHandler();
-    private final CorporateFilter corporateFilter;
-
-    public FiltersHolder(final List<String> corporateGroupIds){
-        this.corporateFilter = new CorporateFilter(corporateGroupIds);
-    }
+    private CorporateFilter corporateFilter;
 
     public ScopeHandler getScopeHandler(){
         return scopeHandler;
@@ -45,6 +41,10 @@ public class FiltersHolder {
 
     public CorporateFilter getCorporateFilter() {
         return corporateFilter;
+    }
+
+    public void setCorporateFilter(final CorporateFilter filter) {
+        corporateFilter = filter;
     }
 
     public void addFilter(final Filter newFilter) {
@@ -138,10 +138,9 @@ public class FiltersHolder {
             filters.add(new ModuleNameFilter(name));
         }
 
-        final String isCorporate = queryParameters.getFirst(ServerAPI.CORPORATE_FILTER);
-        if(isCorporate != null){
-            corporateFilter.setIsCorporate(Boolean.valueOf(isCorporate));
-            filters.add(corporateFilter);
+        final String organization = queryParameters.getFirst(ServerAPI.ORGANIZATION_PARAM);
+        if(organization != null){
+            filters.add(new OrganizationFilter(organization));
         }
 	}
 
@@ -169,11 +168,13 @@ public class FiltersHolder {
         if(dependency.getTarget() == null){
             return false;
         }
-        if(!decorator.getShowThirdparty() && !corporateFilter.matches(dependency)){
-            return false;
-        }
-        if(!corporateFilter.filter(dependency)){
-            return false;
+        if(corporateFilter != null){
+            if(!decorator.getShowThirdparty() && !corporateFilter.filter(dependency)){
+                return false;
+            }
+            if(!decorator.getShowCorporate() && corporateFilter.filter(dependency)){
+                return false;
+            }
         }
 
         if(!scopeHandler.filter(dependency)){
@@ -184,7 +185,8 @@ public class FiltersHolder {
     }
 
 	/**
-	 * Generates a Map of query parameters regarding the filters
+	 * Generates a Map of query parameters for Artifact regarding the filters
+     *
 	 * @return Map<String, Object>
 	 */
 	public Map<String, Object> getArtifactFieldsFilters() {
@@ -197,6 +199,11 @@ public class FiltersHolder {
 		return params;
 	}
 
+    /**
+     * Generates a Map of query parameters for Module regarding the filters
+     *
+     * @return Map<String, Object>
+     */
     public Map<String, Object> getModuleFieldsFilters() {
         final Map<String, Object> params = new HashMap<String, Object>();
 

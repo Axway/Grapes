@@ -40,6 +40,7 @@ public class TC07_ModuleWithOneArtifactWithLoopDependencies implements Dependenc
 		module.setName(MODULE_NAME);
 		module.setVersion(MODULE_VERSION);
 		module.addArtifact(artifact);
+        module.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
 		DbArtifact dependency = new DbArtifact();
 		dependency.setGroupId(DEPENDENCY_GROUPID);
@@ -51,6 +52,7 @@ public class TC07_ModuleWithOneArtifactWithLoopDependencies implements Dependenc
 		depModule.setName(DEPENDENCY_MODULE);
 		depModule.setVersion(DEPENDENCY_VERSION);
 		depModule.addArtifact(dependency);
+        depModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
 
         depModule.addDependency(artifact.getGavc(), Scope.COMPILE);
 		module.addDependency(dependency.getGavc(), Scope.COMPILE);

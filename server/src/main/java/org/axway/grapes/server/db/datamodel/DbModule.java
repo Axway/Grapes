@@ -43,6 +43,9 @@ public class DbModule {
 	public static final String DEPENDENCIES_DB_FIELD = "dependencies"; 
 	private List<DbDependency> dependencies = new ArrayList<DbDependency>();
 
+    public static final String ORGANIZATION_DB_FIELD = "organization";
+    private String organization = "";
+
     public void setDataModelVersion(final String newVersion){
         this.datamodelVersion = newVersion;
     }
@@ -155,8 +158,16 @@ public class DbModule {
 	public void flushDependencies() {
 		dependencies.clear();
 	}
-	
-	@Override
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
+
+    @Override
 	public String toString(){
 		final StringBuilder sb = new StringBuilder();
 

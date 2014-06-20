@@ -432,7 +432,7 @@ public class GrapesClientTest {
         List<Artifact> thirdpartyList = new ArrayList<Artifact>();
         thirdpartyList.add(artifact1);
 
-        stubFor(get(urlEqualTo("/" + ServerAPI.ARTIFACT_RESOURCE + ServerAPI.GET_ALL + "?corporate=false&hasLicense=false"))
+        stubFor(get(urlEqualTo("/" + ServerAPI.ARTIFACT_RESOURCE + ServerAPI.GET_ALL + "?hasLicense=false"))
                 .willReturn(aResponse()
                         .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                         .withBody(JsonUtils.serialize(thirdpartyList))
@@ -442,7 +442,7 @@ public class GrapesClientTest {
         List<Artifact> artifacts = null;
 
         try{
-            artifacts = client.getArtifacts(false, false);
+            artifacts = client.getArtifacts(false);
 
         }catch (Exception e) {
             exception = e;
@@ -454,13 +454,13 @@ public class GrapesClientTest {
 
     @Test
     public void getArtifactsNotFound() throws IOException{
-        stubFor(get(urlEqualTo("/" + ServerAPI.ARTIFACT_RESOURCE + ServerAPI.GET_ALL + "?corporate=false&hasLicense=false"))
+        stubFor(get(urlEqualTo("/" + ServerAPI.ARTIFACT_RESOURCE + ServerAPI.GET_ALL + "?hasLicense=false"))
                 .willReturn(aResponse().withStatus(Status.NOT_FOUND.getStatusCode())));
 
         Exception exception = null;
 
         try{
-            client.getArtifacts(false, false);
+            client.getArtifacts(false);
 
         }catch (Exception e) {
             exception = e;

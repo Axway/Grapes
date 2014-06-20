@@ -1,7 +1,9 @@
 package org.axway.grapes.server.db;
 
 import org.axway.grapes.commons.datamodel.*;
-import org.axway.grapes.server.db.datamodel.*;
+import org.axway.grapes.server.db.datamodel.DbArtifact;
+import org.axway.grapes.server.db.datamodel.DbDependency;
+import org.axway.grapes.server.db.datamodel.DbModule;
 import org.junit.Test;
 
 import java.util.List;
@@ -10,133 +12,6 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 
 public class DataUtilsTest {
-
-    @Test
-    public void testGetDbLicense() throws Exception {
-        final License license = DataModelFactory.createLicense("name", "longName", "comments", "regexp", "url");
-        final DbLicense dbLicense = DataUtils.getDbLicense(license);
-
-        assertEquals(license.getName(), dbLicense.getName());
-        assertEquals(license.getLongName(), dbLicense.getLongName());
-        assertEquals(license.getComments(), dbLicense.getComments());
-        assertEquals(license.getRegexp(), dbLicense.getRegexp());
-        assertEquals(license.getUrl(), dbLicense.getUrl());
-
-    }
-
-    @Test
-    public void testGetLicense() throws Exception {
-        final DbLicense dbLicense = new DbLicense() ;
-        dbLicense.setName("name");
-        dbLicense.setLongName("long name");
-        dbLicense.setComments("comment");
-        dbLicense.setRegexp("regexp");
-        dbLicense.setUrl("url");
-
-        final License license = DataUtils.getLicense(dbLicense);
-
-        assertEquals(dbLicense.getName(), license.getName());
-        assertEquals(dbLicense.getLongName(), license.getLongName());
-        assertEquals(dbLicense.getComments(), license.getComments());
-        assertEquals(dbLicense.getRegexp(), license.getRegexp());
-        assertEquals(dbLicense.getUrl(), license.getUrl());
-
-    }
-
-    @Test
-    public void testGetDbArtifact(){
-        final Artifact artifact = DataModelFactory.createArtifact("groupId", "artifactId", "version", "classifier", "type", "extension");
-        artifact.setSize("10Mo");
-        artifact.setDownloadUrl("http://www.nowhere.com");
-        artifact.setProvider("http://www.nowhere.com/provider");
-
-        final DbArtifact dbArtifact = DataUtils.getDbArtifact(artifact);
-
-        assertEquals(artifact.getGroupId(), dbArtifact.getGroupId());
-        assertEquals(artifact.getArtifactId(), dbArtifact.getArtifactId());
-        assertEquals(artifact.getVersion(), dbArtifact.getVersion());
-        assertEquals(artifact.getClassifier(), dbArtifact.getClassifier());
-        assertEquals(artifact.getType(), dbArtifact.getType());
-        assertEquals(artifact.getExtension(), dbArtifact.getExtension());
-        assertEquals(artifact.getSize(), dbArtifact.getSize());
-        assertEquals(artifact.getDownloadUrl(), dbArtifact.getDownloadUrl());
-        assertEquals(artifact.getProvider(), dbArtifact.getProvider());
-
-    }
-
-    @Test
-    public void testGetArtifact(){
-        final DbArtifact dbArtifact = new DbArtifact();
-        dbArtifact.setGroupId("groupId");
-        dbArtifact.setArtifactId("artifactId");
-        dbArtifact.setVersion("1.0.0-SNAPSHOT");
-        dbArtifact.setClassifier("win");
-        dbArtifact.setType("component");
-        dbArtifact.setExtension("jar");
-        dbArtifact.setDownloadUrl("nowhere");
-        dbArtifact.setSize("10Mo");
-        dbArtifact.setProvider("provider");
-
-        final DbLicense license = new DbLicense();
-        license.setName("licenseId");
-        dbArtifact.addLicense(license);
-
-        final Artifact artifact = DataUtils.getArtifact(dbArtifact);
-
-        assertEquals(dbArtifact.getGroupId(), artifact.getGroupId());
-        assertEquals(dbArtifact.getArtifactId(), artifact.getArtifactId());
-        assertEquals(dbArtifact.getVersion(), artifact.getVersion());
-        assertEquals(dbArtifact.getClassifier(), artifact.getClassifier());
-        assertEquals(dbArtifact.getType(), artifact.getType());
-        assertEquals(dbArtifact.getExtension(), artifact.getExtension());
-        assertEquals(dbArtifact.getSize(), artifact.getSize());
-        assertEquals(dbArtifact.getDownloadUrl(), artifact.getDownloadUrl());
-        assertEquals(dbArtifact.getProvider(), artifact.getProvider());
-        assertEquals(1, artifact.getLicenses().size());
-        assertEquals("licenseId", artifact.getLicenses().get(0));
-
-    }
-
-    @Test
-    public void getDbModule(){
-        final Module module = DataModelFactory.createModule("root", "1.0.0-SNAPSHOT");
-        final Artifact artifact = DataModelFactory.createArtifact("com.axway.root", "artifact1", "1.0.0-SNAPSHOT", "win", "component", "jar");
-        module.addArtifact(artifact);
-
-        final Artifact thirdparty = DataModelFactory.createArtifact("org.apache", "all", "6.8.0-5426", "", "", "jar");
-        final Dependency dependency = DataModelFactory.createDependency(thirdparty, Scope.COMPILE);
-        module.addDependency(dependency);
-
-        final Module submodule = DataModelFactory.createModule("sub1", "1.0.0-SNAPSHOT");
-        final Artifact artifact2 = DataModelFactory.createArtifact("com.axway.root.sub1", "artifactSub1", "1.0.0-SNAPSHOT", "", "", "jar");
-        submodule.addArtifact(artifact2);
-        final Artifact thirdparty2 = DataModelFactory.createArtifact("org.lol", "all", "1.2.3-4", "", "", "jar");
-        final Dependency dependency2 = DataModelFactory.createDependency(thirdparty2, Scope.PROVIDED);
-        submodule.addDependency(dependency2);
-        module.addSubmodule(submodule);
-
-        final DbModule dbModule = DataUtils.getDbModule(module);
-        assertEquals(module.getName(), dbModule.getName());
-        assertEquals(module.getVersion(), dbModule.getVersion());
-        assertEquals(1, dbModule.getArtifacts().size());
-        assertEquals(artifact.getGavc(), dbModule.getArtifacts().get(0));
-        assertEquals(1, dbModule.getDependencies().size());
-        assertEquals(thirdparty.getGavc(), dbModule.getDependencies().get(0).getTarget());
-        assertEquals(DbModule.generateID(module.getName(), module.getVersion()), dbModule.getDependencies().get(0).getSource());
-        assertEquals(dependency.getScope(), dbModule.getDependencies().get(0).getScope());
-        assertEquals(1, dbModule.getSubmodules().size());
-
-        final DbModule dbSubmodule = dbModule.getSubmodules().get(0);
-        assertEquals(submodule.getName() , dbSubmodule.getName());
-        assertEquals(submodule.getVersion(), dbSubmodule.getVersion());
-        assertEquals(1, dbSubmodule.getArtifacts().size());
-        assertEquals(artifact2.getGavc(), dbSubmodule.getArtifacts().get(0));
-        assertEquals(1, dbSubmodule.getDependencies().size());
-        assertEquals(thirdparty2.getGavc(), dbSubmodule.getDependencies().get(0).getTarget());
-        assertEquals(DbModule.generateID(submodule.getName(), submodule.getVersion()), dbSubmodule.getDependencies().get(0).getSource());
-        assertEquals(dependency2.getScope(), dbSubmodule.getDependencies().get(0).getScope());
-
-    }
 
     @Test
     public void getAllDbArtifacts(){
@@ -222,7 +97,7 @@ public class DataUtilsTest {
 
     @Test
     public void getArtifactFromGavc(){
-        DbArtifact artifact = DataUtils.createArtifact("groupId:artifactId:1.0.0:classifier:extension");
+        DbArtifact artifact = DataUtils.createDbArtifact("groupId:artifactId:1.0.0:classifier:extension");
         assertEquals("groupId", artifact.getGroupId());
         assertEquals("artifactId", artifact.getArtifactId());
         assertEquals("1.0.0", artifact.getVersion());
@@ -230,7 +105,7 @@ public class DataUtilsTest {
         assertEquals("extension", artifact.getExtension());
 
 
-        artifact = DataUtils.createArtifact("groupId:artifactId:1.0.0::");
+        artifact = DataUtils.createDbArtifact("groupId:artifactId:1.0.0::");
         assertEquals("groupId", artifact.getGroupId());
         assertEquals("artifactId", artifact.getArtifactId());
         assertEquals("1.0.0", artifact.getVersion());
@@ -265,28 +140,4 @@ public class DataUtilsTest {
         assertEquals("test", DataUtils.getGroupId(gavc2));
     }
 
-    @Test
-    public void getDbOrganizationFromOrganization(){
-        final Organization organization = DataModelFactory.createOrganization("test");
-        organization.getCorporateGroupIdPrefixes().add("com.test");
-
-        final DbOrganization dbOrganization = DataUtils.getDbOrganization(organization);
-
-        assertEquals(organization.getName(), dbOrganization.getName());
-        assertEquals(1, dbOrganization.getCorporateGroupIdPrefixes().size());
-        assertEquals(organization.getCorporateGroupIdPrefixes().get(0), dbOrganization.getCorporateGroupIdPrefixes().get(0));
-    }
-
-    @Test
-    public void getOrganizationFromDbOrganization(){
-        final DbOrganization dbOrganization = new DbOrganization();
-        dbOrganization.setName("test");
-        dbOrganization.getCorporateGroupIdPrefixes().add("com.test");
-
-        final Organization organization = DataUtils.getOrganization(dbOrganization);
-
-        assertEquals(dbOrganization.getName(), organization.getName());
-        assertEquals(1, organization.getCorporateGroupIdPrefixes().size());
-        assertEquals(dbOrganization.getCorporateGroupIdPrefixes().get(0), organization.getCorporateGroupIdPrefixes().get(0));
-    }
 }
