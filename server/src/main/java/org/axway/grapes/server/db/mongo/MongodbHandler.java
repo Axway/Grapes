@@ -503,7 +503,8 @@ public class MongodbHandler implements RepositoryHandler {
         final Jongo datastore = getJongoDataStore();
 
         datastore.getCollection(DbCollections.DB_MODULES)
-                .update(JongoUtils.generateQuery(DbModule.HAS_DB_FIELD, "#"), Pattern.compile(corporateGidPrefix + "*"))
+                .update("{ "+DbModule.HAS_DB_FIELD+" :#}", Pattern.compile(corporateGidPrefix + "*"))
+                .multi()
                 .with("{$set: " + JongoUtils.generateQuery(DbModule.ORGANIZATION_DB_FIELD, organization.getName()) + "}");
     }
 
@@ -513,9 +514,10 @@ public class MongodbHandler implements RepositoryHandler {
 
         datastore.getCollection(DbCollections.DB_MODULES)
                 .update("{ $and: [" +
-                        JongoUtils.generateQuery(DbModule.HAS_DB_FIELD, "#") + " ," +
+                        "{ " + DbModule.HAS_DB_FIELD + " :#} ," +
                         JongoUtils.generateQuery(DbModule.ORGANIZATION_DB_FIELD, organization.getName()) + "]}"
                         , Pattern.compile(corporateGidPrefix + "*"))
+                .multi()
                 .with("{$set: { " + DbModule.ORGANIZATION_DB_FIELD + " : \"\"}}");
     }
 
