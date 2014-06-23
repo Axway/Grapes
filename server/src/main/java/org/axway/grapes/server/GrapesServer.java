@@ -14,6 +14,7 @@ import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.axway.grapes.server.webapp.healthcheck.DataBaseCheck;
 import org.axway.grapes.server.webapp.resources.*;
 import org.axway.grapes.server.webapp.tasks.*;
+import org.axway.grapes.server.webapp.tasks.migrate.MigrationTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,6 +83,7 @@ public class GrapesServer extends Service<GrapesServerConfig> {
         env.addTask(new RemoveRoleTask(repoHandler));
         env.addTask(new MaintenanceModeTask(config));
         env.addTask(new KillTask());
+        env.addTask(new MigrationTask(config.getDataBaseConfig()));
 
         // Health checks
         env.addHealthCheck(new DataBaseCheck(config.getDataBaseConfig()));

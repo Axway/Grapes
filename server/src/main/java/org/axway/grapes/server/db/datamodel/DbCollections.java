@@ -16,7 +16,7 @@ public interface DbCollections {
     public static final String DB_ARTIFACTS = DbArtifact.class.getSimpleName();
     public static final String DB_LICENSES = DbLicense.class.getSimpleName();
     public static final String DB_CREDENTIALS = DbCredential.class.getSimpleName();
-    public static final String DB_CORPORATE_GROUPIDS = DbCorporateGroupIds.class.getSimpleName();
+    public static final String DB_GRAPES_INFO = DbGrapesInfo.class.getSimpleName();
 
     public static final String DEFAULT_ID = "_id";
 
