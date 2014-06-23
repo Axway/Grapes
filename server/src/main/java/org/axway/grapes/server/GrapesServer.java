@@ -12,6 +12,7 @@ import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.axway.grapes.server.webapp.healthcheck.DataBaseCheck;
+import org.axway.grapes.server.webapp.healthcheck.DataModelVersionCheck;
 import org.axway.grapes.server.webapp.resources.*;
 import org.axway.grapes.server.webapp.tasks.*;
 import org.axway.grapes.server.webapp.tasks.migrate.MigrationTask;
@@ -87,6 +88,7 @@ public class GrapesServer extends Service<GrapesServerConfig> {
 
         // Health checks
         env.addHealthCheck(new DataBaseCheck(config.getDataBaseConfig()));
+        env.addHealthCheck(new DataModelVersionCheck(config.getDataBaseConfig()));
 
         // Resources
         env.addResource(new OrganizationResource(repoHandler, config));
