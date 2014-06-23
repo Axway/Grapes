@@ -26,7 +26,7 @@
 			    <#else>
 					<strong>Not promoted</strong><br/>
 				</#if>
-
+				<strong>Organization: </strong>${getOrganization()}<br/>
 			</p>
 			<br/>
 		</div>

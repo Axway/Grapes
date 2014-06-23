@@ -468,6 +468,18 @@ public class ModuleResourceTest extends ResourceTest {
     }
 
     @Test
+    public void getModuleOrganization(){
+        WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + "/" + ServerAPI.ORGANIZATION_RESOURCE);
+        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+
+        Organization gotOrganization = response.getEntity(Organization.class);
+        assertNotNull(gotOrganization);
+        assertEquals(dbOrganization.getName(), gotOrganization.getName());
+    }
+
+    @Test
     public void checkAuthenticationOnPostAndDeleteMethods(){
         WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE);
         ClientResponse response = resource.post(ClientResponse.class);

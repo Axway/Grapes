@@ -164,6 +164,7 @@ public class ModuleResource extends AbstractResource{
         final DbModule dbModule = getModuleHandler().getModule(moduleId);
         final Module module = getModelMapper().getModule(dbModule);
         view.setModule(module);
+        view.setOrganization(dbModule.getOrganization());
 
         return Response.ok(view).build();
     }
@@ -193,6 +194,33 @@ public class ModuleResource extends AbstractResource{
         getModuleHandler().deleteModule(moduleId);
 
         return Response.ok("done").build();
+    }
+
+    /**
+     * Return an Organization.
+     * This method is call via GET <dm_url>/module/<name>/<version>
+     *
+     * @param name String
+     * @param version String
+     * @return Response A list (in HTML or JSON) of moduleNames
+     */
+    @GET
+    @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
+    @Path("/{name}/{version}/"+ ServerAPI.ORGANIZATION_RESOURCE)
+    public Response getOrganization(@PathParam("name") final String name, @PathParam("version") final String version){
+        LOG.info("Got a get module's organization request.");
+
+        if(name == null || version == null){
+            return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
+        }
+
+        final String moduleId = DbModule.generateID(name, version);
+        final DbModule dbModule = getModuleHandler().getModule(moduleId);
+        final DbOrganization organization = getModuleHandler().getOrganization(dbModule);
+
+        final OrganizationView view = new OrganizationView(getModelMapper().getOrganization(organization));
+
+        return Response.ok(view).build();
     }
 
     /**
@@ -362,7 +390,7 @@ public class ModuleResource extends AbstractResource{
             return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
         }
 
-        final String moduleId = DbModule.generateID(name,version);
+        final String moduleId = DbModule.generateID(name, version);
         getModuleHandler().promoteModule(moduleId);
 
         return Response.ok("done").build();
@@ -408,7 +436,7 @@ public class ModuleResource extends AbstractResource{
             return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
         }
 
-        final String moduleId = DbModule.generateID(name,version);
+        final String moduleId = DbModule.generateID(name, version);
         final PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
 
         return Response.ok(promotionReportView).build();
