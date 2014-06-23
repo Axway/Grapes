@@ -282,6 +282,21 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
+    public void addModulesOrganization(String corporateGroupId, DbOrganization dbOrganization) {
+
+    }
+
+    @Override
+    public void removeModulesOrganization(String corporateGroupId, DbOrganization dbOrganization) {
+
+    }
+
+    @Override
+    public void removeModulesOrganization(DbOrganization dbOrganization) {
+
+    }
+
+    @Override
     public List<String> getLicenseNames(final FiltersHolder filters) {
         final List<String> names = new ArrayList<String>();
 

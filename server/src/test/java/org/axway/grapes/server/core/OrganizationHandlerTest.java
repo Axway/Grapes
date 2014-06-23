@@ -116,6 +116,8 @@ public class OrganizationHandlerTest {
 
         verify(repositoryHandler, times(1)).store(captor.capture());
         assertTrue(captor.getValue().getCorporateGroupIdPrefixes().contains("com.test"));
+
+        verify(repositoryHandler, times(1)).addModulesOrganization("com.test", dbOrganization);
     }
 
     @Test
@@ -149,6 +151,8 @@ public class OrganizationHandlerTest {
 
         verify(repositoryHandler, times(1)).store((DbOrganization)captor.capture());
         assertFalse(captor.getValue().getCorporateGroupIdPrefixes().contains("org.test"));
+
+        verify(repositoryHandler, times(1)).removeModulesOrganization("org.test", dbOrganization);
     }
 
     @Test

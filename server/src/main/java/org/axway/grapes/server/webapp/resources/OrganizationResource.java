@@ -161,7 +161,6 @@ public class OrganizationResource extends AbstractResource {
         }
 
         getOrganizationHandler().addCorporateGroupId(organizationId, corporateGroupId);
-
         return Response.ok().status(HttpStatus.CREATED_201).build();
     }
 

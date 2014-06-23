@@ -316,4 +316,27 @@ public interface RepositoryHandler {
      * @param organization DbOrganization
      */
     public void store(final DbOrganization organization);
+
+    /**
+     * Updates all module that matches the corporate GID prefix setting the Organization name
+     *
+     * @param corporateGroupId String
+     * @param dbOrganization DbOrganization
+     */
+    public void addModulesOrganization(final String corporateGroupId, final DbOrganization dbOrganization);
+
+    /**
+     * Updates all module that matches the corporate GID prefix AND that reference to the organization removing the Organization field
+     *
+     * @param corporateGroupId String
+     * @param dbOrganization DbOrganization
+     */
+    public void removeModulesOrganization(final String corporateGroupId, final DbOrganization dbOrganization);
+
+    /**
+     * Updates all module reference to the organization removing the Organization field
+     *
+     * @param dbOrganization DbOrganization
+     */
+    public void removeModulesOrganization(final DbOrganization dbOrganization);
 }
