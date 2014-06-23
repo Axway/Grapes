@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 public class MigrationTask extends Task{
 
     private final DataBaseConfig config;
+    private MongoClient mongo;
 
     public MigrationTask(final DataBaseConfig configuration) {
         super("migrate");
@@ -33,6 +34,7 @@ public class MigrationTask extends Task{
             return;
         }
 
+        mongo.close();
         printWriter.println("Your database is up-to-date.");
         printWriter.flush();
 
@@ -41,14 +43,14 @@ public class MigrationTask extends Task{
 
     private Jongo initDBConnection() throws Exception {
         final ServerAddress address = new ServerAddress(config.getHost() , config.getPort());
-        final MongoClient mongo = new MongoClient(address);
-        final DB legacyMongo = mongo.getDB(config.getDatastore());
+        mongo = new MongoClient(address);
+        final DB db = mongo.getDB(config.getDatastore());
 
         if(config.getUser() != null && config.getPwd() != null){
-            legacyMongo.authenticate(config.getUser(), config.getPwd());
+            db.authenticate(config.getUser(), config.getPwd());
         }
 
-        return new Jongo(legacyMongo);
+        return new Jongo(db);
 
     }
 }
