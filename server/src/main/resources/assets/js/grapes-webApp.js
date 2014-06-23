@@ -533,7 +533,7 @@ function getModuleThirdParty(){
 
 	$.ajax({
             type: "GET",
-            url: "/module/"+ moduleName + "/" + moduleVersion + "/dependencies?scopeTest=true&scopeRuntime=true&showThirdparty=true&corporate=false&showSources=false&showLicenses=true" ,
+            url: "/module/"+ moduleName + "/" + moduleVersion + "/dependencies?scopeTest=true&scopeRuntime=true&showThirdparty=true&showCorporate=false&showSources=false&showLicenses=true" ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -581,7 +581,7 @@ function getModuleLicenses(){
     var splitter = moduleId.lastIndexOf(':');
 	var moduleVersion = moduleId.substring(splitter + 1);
 	var moduleName = moduleId.replace(':'+moduleVersion, '');
-	var queryParams = "showScopes=false&showLicenseUrls=true&showLicenseFullNames=true&showThirdparty=true&corporate=false";
+	var queryParams = "showScopes=false&showLicenseUrls=true&showLicenseFullNames=true&showThirdparty=true&showCorporate=false";
 
 	if($('#fullRecursive').hasClass('active')){
 	    queryParams += "&showSources=true&showLicenses=false&fullRecursive=true";

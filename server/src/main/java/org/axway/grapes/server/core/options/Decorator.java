@@ -130,7 +130,7 @@ public class Decorator {
 
     private void setShowCorporate(final String showCorporate) {
         if(showCorporate != null){
-            setShowThirdparty(Boolean.valueOf(showCorporate));
+            setShowCorporate(Boolean.valueOf(showCorporate));
         }
     }
 
