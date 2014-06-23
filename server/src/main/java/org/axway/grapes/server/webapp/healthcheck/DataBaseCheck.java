@@ -29,7 +29,19 @@ public class DataBaseCheck extends HealthCheck{
 		try{
 			final ServerAddress adress = new ServerAddress(config.getHost() , config.getPort());
             mongo = new MongoClient(adress);
-            mongo.getDatabaseNames();
+
+            final StringBuilder sb = new StringBuilder();
+            sb.append("MogoDb version " + mongo.getVersion() + '\n');
+
+            sb.append("  Available databases: ");
+            for(String dbName: mongo.getDatabaseNames()){
+                sb.append(dbName);
+                sb.append(' ');
+            }
+            sb.append('\n');
+
+            return Result.healthy(sb.toString());
+
 		}
 		catch (Exception e) {
 			return Result.unhealthy(e);
@@ -39,8 +51,6 @@ public class DataBaseCheck extends HealthCheck{
                 mongo.close();
             }
         }
-		
-		return Result.healthy();
 	}
     
 }

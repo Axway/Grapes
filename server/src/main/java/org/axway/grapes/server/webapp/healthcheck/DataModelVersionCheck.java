@@ -43,10 +43,10 @@ public class DataModelVersionCheck extends HealthCheck{
             final DbGrapesInfo info = jongo.getCollection(DbCollections.DB_GRAPES_INFO).findOne().as(DbGrapesInfo.class);
 
             if(info == null){
-                return Result.healthy("not found");
+                return Result.healthy("not found\n");
             }
 
-            return Result.healthy(info.getDatamodelVersion());
+            return Result.healthy(info.getDatamodelVersion()+'\n');
 		}
 		catch (Exception e) {
 			return Result.unhealthy(e);
