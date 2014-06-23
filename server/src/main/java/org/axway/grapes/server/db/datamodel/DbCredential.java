@@ -16,7 +16,7 @@ import java.util.List;
 public class DbCredential {
 
     public static final String DATA_MODEL_VERSION = "datamodelVersion";
-    private String datamodelVersion = "2.1.0";
+    private String datamodelVersion = DbCollections.datamodelVersion;
 
     /**
      * All the available role for Grapes

@@ -16,7 +16,7 @@ import java.util.List;
 public class DbCorporateGroupIds {
 
     public static final String DATA_MODEL_VERSION = "datamodelVersion";
-    private String datamodelVersion = "2.1.0";
+    private String datamodelVersion = DbCollections.datamodelVersion;
 
     private ObjectId _id;
 	

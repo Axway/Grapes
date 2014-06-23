@@ -9,7 +9,7 @@ package org.axway.grapes.server.db.datamodel;
  */
 public interface DbCollections {
 
-    static final String datamodelVersion = "2.0.0";
+    static final String datamodelVersion = "2.2.0";
 
     public static final String DB_ORGANIZATION = DbOrganization.class.getSimpleName();
     public static final String DB_MODULES = DbModule.class.getSimpleName();

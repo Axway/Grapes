@@ -268,27 +268,6 @@ public interface RepositoryHandler {
     public DbModule getModuleOf(final String gavc);
 
     /**
-     * Return a list of groupId considered as corporate production
-     *
-     * @return List<String>
-     */
-    public List<String> getCorporateGroupIds();
-
-    /**
-     * Add a new groupId in the corporate groupIds
-     *
-     * @param corporateGroupId String
-     */
-    public void addNewCorporateGroupId(final String corporateGroupId);
-
-    /**
-     * Remove a groupId from the corporate groupIds
-     *
-     * @param corporateGroupId String
-     */
-    public void removeCorporateGroupId(final String corporateGroupId);
-
-    /**
      * Returns all the organization names
      *
      * @return List<String>

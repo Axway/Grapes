@@ -24,7 +24,6 @@ import org.mockito.ArgumentCaptor;
 import javax.ws.rs.core.MediaType;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -95,7 +94,6 @@ public class ModuleResourceTest extends ResourceTest {
         final RepositoryHandler repoHandler = GrapesTestUtils.getRepoHandlerMock();
 
         final GrapesServerConfig config =mock(GrapesServerConfig.class);
-        when(config.getCorporateGroupIds()).thenReturn(Collections.singletonList(GrapesTestUtils.CORPORATE_GROUPID_4TEST));
         ModuleResource resource = new ModuleResource(repositoryHandler, config);
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repoHandler), "test auth"));
         addProvider(ViewMessageBodyWriter.class);

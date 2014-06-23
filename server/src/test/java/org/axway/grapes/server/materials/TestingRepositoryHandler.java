@@ -235,21 +235,6 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
-    public List<String> getCorporateGroupIds() {
-        return GrapesTestUtils.getTestCorporateGroupIds();
-    }
-
-    @Override
-    public void addNewCorporateGroupId(final String corporateGroupId) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void removeCorporateGroupId(String corporateGroupId) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public List<String> getOrganizationNames() {
         List<String> names = new ArrayList<String>();
 
