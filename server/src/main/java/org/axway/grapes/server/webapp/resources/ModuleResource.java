@@ -1,9 +1,28 @@
 package org.axway.grapes.server.webapp.resources;
 
-import com.yammer.dropwizard.auth.Auth;
-import com.yammer.dropwizard.jersey.caching.CacheControl;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
 import org.axway.grapes.commons.api.ServerAPI;
-import org.axway.grapes.commons.datamodel.*;
+import org.axway.grapes.commons.datamodel.Artifact;
+import org.axway.grapes.commons.datamodel.Dependency;
+import org.axway.grapes.commons.datamodel.License;
+import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.ArtifactHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
@@ -11,24 +30,26 @@ import org.axway.grapes.server.core.options.filters.CorporateFilter;
 import org.axway.grapes.server.core.reports.DependencyReport;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.*;
+import org.axway.grapes.server.db.datamodel.DbArtifact;
+import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
+import org.axway.grapes.server.db.datamodel.DbLicense;
+import org.axway.grapes.server.db.datamodel.DbModule;
+import org.axway.grapes.server.db.datamodel.DbOrganization;
 import org.axway.grapes.server.webapp.DataValidator;
-import org.axway.grapes.server.webapp.views.*;
+import org.axway.grapes.server.webapp.views.AncestorsView;
+import org.axway.grapes.server.webapp.views.DependencyListView;
+import org.axway.grapes.server.webapp.views.LicenseListView;
+import org.axway.grapes.server.webapp.views.ListView;
+import org.axway.grapes.server.webapp.views.ModuleView;
+import org.axway.grapes.server.webapp.views.OrganizationView;
+import org.axway.grapes.server.webapp.views.PromotionReportView;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
+import com.yammer.dropwizard.auth.Auth;
+import com.yammer.dropwizard.jersey.caching.CacheControl;
 
 /**
  * Module Resource
@@ -75,12 +96,12 @@ public class ModuleResource extends AbstractResource{
 
         // Add the artifacts
         final Set<Artifact> artifacts = DataUtils.getAllArtifacts(module);
-        for(Artifact artifact: artifacts){
+        for(final Artifact artifact: artifacts){
             artifactHandler.store(getModelMapper().getDbArtifact(artifact));
         }
 
         // Add dependencies that does not already exist
-        for(Dependency dep: DataUtils.getAllDependencies(module)){
+        for(final Dependency dep: DataUtils.getAllDependencies(module)){
             final DbArtifact dbDependency = getModelMapper().getDbArtifact(dep.getTarget());
             artifactHandler.storeIfNew(dbDependency);
         }
@@ -256,11 +277,11 @@ public class ModuleResource extends AbstractResource{
 
         final AncestorsView view = new AncestorsView("Ancestor List Of " + name +" in version " + version , getLicenseHandler().getLicenses(), filters.getDecorator());
 
-        for(String artifactId: DataUtils.getAllArtifacts(dbModule)){
+        for(final String artifactId: DataUtils.getAllArtifacts(dbModule)){
             final DbArtifact dbArtifact = artifactHandler.getArtifact(artifactId);
             final Artifact artifact = getModelMapper().getArtifact(dbArtifact);
 
-            for(DbModule dbAncestor: artifactHandler.getAncestors(artifactId, filters)){
+            for(final DbModule dbAncestor: artifactHandler.getAncestors(artifactId, filters)){
                 if(!dbAncestor.getId().equals(dbModule.getId())){
                     final Module ancestor = getModelMapper().getModule(dbAncestor);
                     view.addAncestor(ancestor, artifact);
@@ -360,7 +381,7 @@ public class ModuleResource extends AbstractResource{
         final String moduleId = DbModule.generateID(name,version);
         final List<DbLicense> dbLicenses = getModuleHandler().getModuleLicenses(moduleId);
 
-        for(DbLicense dbLicense: dbLicenses){
+        for(final DbLicense dbLicense: dbLicenses){
             final License license = getModelMapper().getLicense(dbLicense);
             view.add(license);
         }
@@ -485,8 +506,8 @@ public class ModuleResource extends AbstractResource{
         final List<Module> modules = new ArrayList<Module>();
         final List<DbModule> dbModules = getModuleHandler().getModules(filters);
 
-        for(DbModule dbModule: dbModules){
-            final Module module = DataModelFactory.createModule(dbModule.getName(), dbModule.getVersion());
+        for(final DbModule dbModule: dbModules){
+            final Module module = getModelMapper().getModule(dbModule);
             modules.add(module);
         }
 
