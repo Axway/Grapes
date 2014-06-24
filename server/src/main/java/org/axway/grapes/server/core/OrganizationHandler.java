@@ -65,6 +65,7 @@ public class OrganizationHandler {
     public void deleteOrganization(final String organizationId) {
         final DbOrganization dbOrganization = getOrganization(organizationId);
         repositoryHandler.deleteOrganization(dbOrganization.getName());
+        repositoryHandler.removeModulesOrganization(dbOrganization);
     }
 
     /**
@@ -91,6 +92,8 @@ public class OrganizationHandler {
             dbOrganization.getCorporateGroupIdPrefixes().add(corporateGroupId);
             repositoryHandler.store(dbOrganization);
         }
+
+        repositoryHandler.addModulesOrganization(corporateGroupId, dbOrganization);
     }
 
     /**
@@ -106,6 +109,8 @@ public class OrganizationHandler {
             dbOrganization.getCorporateGroupIdPrefixes().remove(corporateGroupId);
             repositoryHandler.store(dbOrganization);
         }
+
+        repositoryHandler.removeModulesOrganization(corporateGroupId, dbOrganization);
     }
 
 

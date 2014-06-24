@@ -12,12 +12,14 @@ import java.util.Set;
 @JsonSerialize(using=ModuleSerializer.class)
 public class ModuleView  extends View{
 
+    private Module module;
+    private  Map<Module, Integer> submodules;
+
+    private String organization;
+
     public ModuleView() {
         super("ModuleView.ftl");
     }
-
-    private Module module;
-    private  Map<Module, Integer> submodules;
 
     public void setModule(final Module module) {
         this.module = module;
@@ -48,4 +50,11 @@ public class ModuleView  extends View{
         return submodules.get(submodule);
     }
 
+    public void setOrganization(final String organization) {
+        this.organization = organization;
+    }
+
+    public String getOrganization() {
+        return organization;
+    }
 }

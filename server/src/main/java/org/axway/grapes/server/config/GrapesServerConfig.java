@@ -2,14 +2,11 @@ package org.axway.grapes.server.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yammer.dropwizard.config.Configuration;
-import org.axway.grapes.server.db.RepositoryHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author jdcoffre
@@ -46,12 +43,6 @@ public class GrapesServerConfig extends Configuration{
     public DataBaseConfig getDataBaseConfig() {
 		return database;
 	}
-
-    /**
-     * List of the groupIds that identify the internal production.
-     * This information is stored in the database and modified using tasks
-     */
-    private final List<String> corporateGroupIds = new ArrayList<String>();
 	
 	/**
 	 * Returns the complete Grapes root URL
@@ -71,32 +62,6 @@ public class GrapesServerConfig extends Configuration{
 	public String getAuthenticationCachePolicy() {
 		return authenticationCachePolicy;
 	}
-
-    /**
-     * Loads the available corporate groupIds
-     */
-    public void loadGroupIds(final RepositoryHandler repoHandler)  {
-        try{
-            final List<String> dbCorporateGroupIds = repoHandler.getCorporateGroupIds();
-
-            if(dbCorporateGroupIds != null){
-                corporateGroupIds.clear();
-                for(String groupId: dbCorporateGroupIds){
-                    corporateGroupIds.add(groupId);
-                }
-            }
-
-        }catch (Exception e){
-            LOG.error("Failed to update the corporate groupid list.", e);
-        }
-    }
-
-    public List<String> getCorporateGroupIds() {
-        final List<String> groupIds = new ArrayList<String>();
-        groupIds.addAll(corporateGroupIds);
-
-        return groupIds;
-    }
 
     public boolean isInMaintenance() {
         return maintenanceModeActif;

@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
@@ -26,6 +25,7 @@ import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.commons.datamodel.Module;
+import org.axway.grapes.commons.datamodel.Organization;
 import org.axway.grapes.commons.datamodel.Scope;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
@@ -115,7 +115,7 @@ public class ModuleResourceTest extends ResourceTest {
         final RepositoryHandler repoHandler = GrapesTestUtils.getRepoHandlerMock();
 
         final GrapesServerConfig config =mock(GrapesServerConfig.class);
-        when(config.getCorporateGroupIds()).thenReturn(Collections.singletonList(GrapesTestUtils.CORPORATE_GROUPID_4TEST));
+        
         final ModuleResource resource = new ModuleResource(repositoryHandler, config);
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repoHandler), "test auth"));
         addProvider(ViewMessageBodyWriter.class);
@@ -506,6 +506,18 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(results);
         assertEquals(0, results.getUnPromotedDependencies().size());
         assertTrue(results.canBePromoted());
+    }
+
+    @Test
+    public void getModuleOrganization(){
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + "/" + ServerAPI.ORGANIZATION_RESOURCE);
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+
+        final Organization gotOrganization = response.getEntity(Organization.class);
+        assertNotNull(gotOrganization);
+        assertEquals(dbOrganization.getName(), gotOrganization.getName());
     }
 
     @Test

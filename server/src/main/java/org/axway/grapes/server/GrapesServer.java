@@ -11,10 +11,11 @@ import org.axway.grapes.server.db.DBException;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
-import org.axway.grapes.server.webapp.healthcheck.CorporateGroupIdsCheck;
 import org.axway.grapes.server.webapp.healthcheck.DataBaseCheck;
+import org.axway.grapes.server.webapp.healthcheck.DataModelVersionCheck;
 import org.axway.grapes.server.webapp.resources.*;
 import org.axway.grapes.server.webapp.tasks.*;
+import org.axway.grapes.server.webapp.tasks.migrate.MigrationTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,26 +73,22 @@ public class GrapesServer extends Service<GrapesServerConfig> {
         // init the repoHandler
         final RepositoryHandler repoHandler = getRepositoryHandler(config);
 
-        // load the missing configuration from the database
-        config.loadGroupIds(repoHandler);
-
         // Add credential management
         final GrapesAuthenticator grapesAuthenticator = new GrapesAuthenticator(repoHandler);
         final BasicAuthProvider authProvider = new BasicAuthProvider<DbCredential>(grapesAuthenticator, "Grapes Authenticator Provider");
         env.addProvider(authProvider);
 
         // Tasks
-        env.addTask(new AddCorporateGroupIdTask(repoHandler, config));
-        env.addTask(new RemoveCorporateGroupIdTask(repoHandler, config));
         env.addTask(new AddUserTask(repoHandler));
         env.addTask(new AddRoleTask(repoHandler));
         env.addTask(new RemoveRoleTask(repoHandler));
         env.addTask(new MaintenanceModeTask(config));
         env.addTask(new KillTask());
+        env.addTask(new MigrationTask(config.getDataBaseConfig()));
 
         // Health checks
         env.addHealthCheck(new DataBaseCheck(config.getDataBaseConfig()));
-        env.addHealthCheck(new CorporateGroupIdsCheck(repoHandler));
+        env.addHealthCheck(new DataModelVersionCheck(config.getDataBaseConfig()));
 
         // Resources
         env.addResource(new OrganizationResource(repoHandler, config));

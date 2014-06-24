@@ -1,10 +1,14 @@
 package org.axway.grapes.server.webapp.healthcheck;
 
+import com.mongodb.DB;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 import com.yammer.metrics.core.HealthCheck;
 import org.axway.grapes.server.config.DataBaseConfig;
+import org.axway.grapes.server.db.datamodel.DbCollections;
+import org.axway.grapes.server.db.datamodel.DbGrapesInfo;
+import org.jongo.Jongo;
 
 /**
  * Database Check
@@ -13,35 +17,36 @@ import org.axway.grapes.server.config.DataBaseConfig;
  * 
  * @author jdcoffre
  */
-public class DataBaseCheck extends HealthCheck{
+public class DataModelVersionCheck extends HealthCheck{
 
 	private final DataBaseConfig config;
 
-	public DataBaseCheck(final DataBaseConfig dataBaseConfig) {
-		super("database");
+	public DataModelVersionCheck(final DataBaseConfig dataBaseConfig) {
+		super("data-model-version");
 		this.config = dataBaseConfig;
 	}
 
 	@Override
-	protected Result check() {	
+	protected Result check() {
         Mongo mongo = null;
         
 		try{
 			final ServerAddress adress = new ServerAddress(config.getHost() , config.getPort());
             mongo = new MongoClient(adress);
+            final DB db = mongo.getDB(config.getDatastore());
 
-            final StringBuilder sb = new StringBuilder();
-            sb.append("MogoDb version " + mongo.getVersion() + '\n');
-
-            sb.append("  Available databases: ");
-            for(String dbName: mongo.getDatabaseNames()){
-                sb.append(dbName);
-                sb.append(' ');
+            if(config.getUser() != null && config.getPwd() != null){
+                db.authenticate(config.getUser(), config.getPwd());
             }
-            sb.append('\n');
 
-            return Result.healthy(sb.toString());
+            final Jongo jongo = new Jongo(db);
+            final DbGrapesInfo info = jongo.getCollection(DbCollections.DB_GRAPES_INFO).findOne().as(DbGrapesInfo.class);
 
+            if(info == null){
+                return Result.healthy("not found\n");
+            }
+
+            return Result.healthy(info.getDatamodelVersion()+'\n');
 		}
 		catch (Exception e) {
 			return Result.unhealthy(e);

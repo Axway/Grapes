@@ -268,27 +268,6 @@ public interface RepositoryHandler {
     public DbModule getModuleOf(final String gavc);
 
     /**
-     * Return a list of groupId considered as corporate production
-     *
-     * @return List<String>
-     */
-    public List<String> getCorporateGroupIds();
-
-    /**
-     * Add a new groupId in the corporate groupIds
-     *
-     * @param corporateGroupId String
-     */
-    public void addNewCorporateGroupId(final String corporateGroupId);
-
-    /**
-     * Remove a groupId from the corporate groupIds
-     *
-     * @param corporateGroupId String
-     */
-    public void removeCorporateGroupId(final String corporateGroupId);
-
-    /**
      * Returns all the organization names
      *
      * @return List<String>
@@ -316,4 +295,27 @@ public interface RepositoryHandler {
      * @param organization DbOrganization
      */
     public void store(final DbOrganization organization);
+
+    /**
+     * Updates all module that matches the corporate GID prefix setting the Organization name
+     *
+     * @param corporateGroupId String
+     * @param dbOrganization DbOrganization
+     */
+    public void addModulesOrganization(final String corporateGroupId, final DbOrganization dbOrganization);
+
+    /**
+     * Updates all module that matches the corporate GID prefix AND that reference to the organization removing the Organization field
+     *
+     * @param corporateGroupId String
+     * @param dbOrganization DbOrganization
+     */
+    public void removeModulesOrganization(final String corporateGroupId, final DbOrganization dbOrganization);
+
+    /**
+     * Updates all module reference to the organization removing the Organization field
+     *
+     * @param dbOrganization DbOrganization
+     */
+    public void removeModulesOrganization(final DbOrganization dbOrganization);
 }

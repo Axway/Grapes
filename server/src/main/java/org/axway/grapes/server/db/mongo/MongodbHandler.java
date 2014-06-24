@@ -20,6 +20,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Mongodb Handler
@@ -464,54 +465,6 @@ public class MongodbHandler implements RepositoryHandler {
     }
 
     @Override
-    public List<String> getCorporateGroupIds() {
-        final Jongo datastore = getJongoDataStore();
-
-        final DbCorporateGroupIds dbCorporateGroupIds = datastore.getCollection(DbCollections.DB_CORPORATE_GROUPIDS)
-                .findOne()
-                .as(DbCorporateGroupIds.class);
-
-        if(dbCorporateGroupIds == null){
-            return new ArrayList<String>();
-        }
-
-        return dbCorporateGroupIds.getCorporateGroupIds();
-    }
-
-    @Override
-    public void addNewCorporateGroupId(final String corporateGroupId) {
-        final Jongo datastore = getJongoDataStore();
-
-        DbCorporateGroupIds dbCorporateGroupIds = datastore.getCollection(DbCollections.DB_CORPORATE_GROUPIDS)
-                .findOne()
-                .as(DbCorporateGroupIds.class);
-
-        if(dbCorporateGroupIds == null){
-            dbCorporateGroupIds = new DbCorporateGroupIds();
-            dbCorporateGroupIds.addCorporateGroupId(corporateGroupId);
-            datastore.getCollection(DbCollections.DB_CORPORATE_GROUPIDS).save(dbCorporateGroupIds);
-        }
-        else {
-            dbCorporateGroupIds.addCorporateGroupId(corporateGroupId);
-            datastore.getCollection(DbCollections.DB_CORPORATE_GROUPIDS).update(dbCorporateGroupIds.getId()).with(dbCorporateGroupIds);
-        }
-    }
-
-    @Override
-    public void removeCorporateGroupId(final String corporateGroupId) {
-        final Jongo datastore = getJongoDataStore();
-
-        final DbCorporateGroupIds dbCorporateGroupIds = datastore.getCollection(DbCollections.DB_CORPORATE_GROUPIDS)
-                .findOne()
-                .as(DbCorporateGroupIds.class);
-
-        if(dbCorporateGroupIds != null){
-            dbCorporateGroupIds.removeCorporateGroupId(corporateGroupId);
-            datastore.getCollection(DbCollections.DB_CORPORATE_GROUPIDS).update(dbCorporateGroupIds.getId()).with(dbCorporateGroupIds);
-        }
-    }
-
-    @Override
     public List<String> getOrganizationNames() {
         final Jongo datastore = getJongoDataStore();
         return datastore.getCollection(DbCollections.DB_ORGANIZATION).distinct(DbCollections.DEFAULT_ID).as(String.class);
@@ -545,4 +498,34 @@ public class MongodbHandler implements RepositoryHandler {
         }
     }
 
+    @Override
+    public void addModulesOrganization(final String corporateGidPrefix, final DbOrganization organization){
+        final Jongo datastore = getJongoDataStore();
+
+        datastore.getCollection(DbCollections.DB_MODULES)
+                .update("{ "+DbModule.HAS_DB_FIELD+" :#}", Pattern.compile(corporateGidPrefix + "*"))
+                .multi()
+                .with("{$set: " + JongoUtils.generateQuery(DbModule.ORGANIZATION_DB_FIELD, organization.getName()) + "}");
+    }
+
+    @Override
+    public void removeModulesOrganization(final String corporateGidPrefix, final DbOrganization organization){
+        final Jongo datastore = getJongoDataStore();
+
+        datastore.getCollection(DbCollections.DB_MODULES)
+                .update("{ $and: [" +
+                        "{ " + DbModule.HAS_DB_FIELD + " :#} ," +
+                        JongoUtils.generateQuery(DbModule.ORGANIZATION_DB_FIELD, organization.getName()) + "]}"
+                        , Pattern.compile(corporateGidPrefix + "*"))
+                .multi()
+                .with("{$set: { " + DbModule.ORGANIZATION_DB_FIELD + " : \"\"}}");
+    }
+
+    @Override
+    public void removeModulesOrganization(final DbOrganization organization){
+        final Jongo datastore = getJongoDataStore();
+        datastore.getCollection(DbCollections.DB_MODULES)
+                .update(JongoUtils.generateQuery(DbModule.ORGANIZATION_DB_FIELD, organization.getName()))
+                .with("{$set: { "+DbModule.ORGANIZATION_DB_FIELD+" : \"\"}}");
+    }
 }
