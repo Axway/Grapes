@@ -1,5 +1,47 @@
 package org.axway.grapes.server.webapp.resources;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.ws.rs.core.MediaType;
+
+import org.axway.grapes.commons.api.ServerAPI;
+import org.axway.grapes.commons.datamodel.Artifact;
+import org.axway.grapes.commons.datamodel.DataModelFactory;
+import org.axway.grapes.commons.datamodel.Dependency;
+import org.axway.grapes.commons.datamodel.License;
+import org.axway.grapes.commons.datamodel.Module;
+import org.axway.grapes.commons.datamodel.Scope;
+import org.axway.grapes.server.GrapesTestUtils;
+import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.core.options.FiltersHolder;
+import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbArtifact;
+import org.axway.grapes.server.db.datamodel.DbCredential;
+import org.axway.grapes.server.db.datamodel.DbLicense;
+import org.axway.grapes.server.db.datamodel.DbModule;
+import org.axway.grapes.server.db.datamodel.DbOrganization;
+import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
+import org.axway.grapes.server.webapp.views.PromotionReportView;
+import org.eclipse.jetty.http.HttpStatus;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
@@ -8,35 +50,13 @@ import com.yammer.dropwizard.auth.AuthenticationException;
 import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.testing.ResourceTest;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
-import org.axway.grapes.commons.api.ServerAPI;
-import org.axway.grapes.commons.datamodel.*;
-import org.axway.grapes.server.GrapesTestUtils;
-import org.axway.grapes.server.config.GrapesServerConfig;
-import org.axway.grapes.server.core.options.FiltersHolder;
-import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.*;
-import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
-import org.axway.grapes.server.webapp.views.PromotionReportView;
-import org.eclipse.jetty.http.HttpStatus;
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-
-import javax.ws.rs.core.MediaType;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.*;
 
 public class ModuleResourceTest extends ResourceTest {
 
     private DbOrganization dbOrganization;
     private DbModule dbModule, dbSubmodule;
     private DbArtifact artifact, artifact2, artifact3, artifact4;
-    private ArgumentCaptor<FiltersHolder> filters = ArgumentCaptor.forClass(FiltersHolder.class);
+    private final ArgumentCaptor<FiltersHolder> filters = ArgumentCaptor.forClass(FiltersHolder.class);
 
     private RepositoryHandler repositoryHandler;
 
@@ -50,7 +70,7 @@ public class ModuleResourceTest extends ResourceTest {
         dbModule.setName("root");
         dbModule.setVersion("1.0.0-SNAPSHOT");
         dbModule.setOrganization(dbOrganization.getName());
-
+        
         artifact = new DbArtifact();
         artifact.setGroupId("groupId");
         artifact.setArtifactId("artifactId");
@@ -88,7 +108,7 @@ public class ModuleResourceTest extends ResourceTest {
         when(repositoryHandler.getArtifact(artifact4.getGavc())).thenReturn(artifact4);
         when(repositoryHandler.getModule(dbSubmodule.getId())).thenReturn(dbSubmodule);
 
-        List<DbModule> modules = new ArrayList<DbModule>();
+        final List<DbModule> modules = new ArrayList<DbModule>();
         modules.add(dbModule);
         when(repositoryHandler.getModules(filters.capture())).thenReturn(modules);
 
@@ -96,7 +116,7 @@ public class ModuleResourceTest extends ResourceTest {
 
         final GrapesServerConfig config =mock(GrapesServerConfig.class);
         when(config.getCorporateGroupIds()).thenReturn(Collections.singletonList(GrapesTestUtils.CORPORATE_GROUPID_4TEST));
-        ModuleResource resource = new ModuleResource(repositoryHandler, config);
+        final ModuleResource resource = new ModuleResource(repositoryHandler, config);
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repoHandler), "test auth"));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);
@@ -104,8 +124,8 @@ public class ModuleResourceTest extends ResourceTest {
 
     @Test
     public void getDocumentation(){
-        WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE);
-        ClientResponse response = resource.type(MediaType.TEXT_HTML).get(ClientResponse.class);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE);
+        final ClientResponse response = resource.type(MediaType.TEXT_HTML).get(ClientResponse.class);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
@@ -126,8 +146,8 @@ public class ModuleResourceTest extends ResourceTest {
         module.addSubmodule(submodule);
 
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
-        WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE);
-        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, module);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE);
+        final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, module);
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED_201, response.getStatus());
         verify(repositoryHandler, times(1)).store((DbModule) anyObject());
@@ -137,7 +157,7 @@ public class ModuleResourceTest extends ResourceTest {
     @Test
     public void postMalFormedModule() throws UnknownHostException, AuthenticationException {
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
-        WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE);
         ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, DataModelFactory.createModule(null, null));
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
@@ -178,8 +198,8 @@ public class ModuleResourceTest extends ResourceTest {
         names.add("module1");
         when(repositoryHandler.getModuleNames((FiltersHolder) anyObject())).thenReturn(names);
 
-        WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + ServerAPI.GET_NAMES);
-        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + ServerAPI.GET_NAMES);
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
@@ -195,8 +215,8 @@ public class ModuleResourceTest extends ResourceTest {
         versions.add("1.0.0-6");
         when(repositoryHandler.getModuleVersions(anyString(), (FiltersHolder) anyObject())).thenReturn(versions);
 
-        WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/module1" + ServerAPI.GET_VERSIONS);
-        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/module1" + ServerAPI.GET_VERSIONS);
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
@@ -208,12 +228,12 @@ public class ModuleResourceTest extends ResourceTest {
 
     @Test
     public void getModule(){
-        WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion());
-        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion());
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        Module results = response.getEntity(Module.class);
+        final Module results = response.getEntity(Module.class);
         assertNotNull(results);
         assertEquals(dbModule.getName(), results.getName());
         assertEquals(dbModule.getVersion(), results.getVersion());
@@ -238,22 +258,41 @@ public class ModuleResourceTest extends ResourceTest {
 
     @Test
     public void getAllModule(){
-        WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + ServerAPI.GET_ALL);
-        ClientResponse response = resource.queryParam(ServerAPI.PROMOTED_PARAM, "true")
-                    .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + ServerAPI.GET_ALL);
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        List<Module> results = response.getEntity(new GenericType<List<Module>>(){});
+        final List<Module> results = response.getEntity(new GenericType<List<Module>>(){});
         assertNotNull(results);
         assertEquals(1, results.size());
     }
 
     @Test
+    public void getAllPromotedModules(){
+        dbModule.setPromoted(true);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + ServerAPI.GET_ALL);
+        final ClientResponse response = resource.queryParam(ServerAPI.PROMOTED_PARAM, "true")
+                    .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+
+        final List<Module> results = response.getEntity(new GenericType<List<Module>>(){});
+        assertNotNull(results);
+        assertEquals(1, results.size());
+        
+        // check that modules are promoted
+        for (final Module module : results)
+        {
+            assertEquals(true, module.isPromoted());
+        }
+    }
+    
+    @Test
     public void deleteModule() throws AuthenticationException, UnknownHostException {
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
-        WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion());
-        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion());
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
         verify(repositoryHandler, times(1)).deleteModule(dbModule.getId());
@@ -263,8 +302,8 @@ public class ModuleResourceTest extends ResourceTest {
     @Test
     public void promoteModule() throws AuthenticationException, UnknownHostException {
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
-        WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.PROMOTION);
-        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.PROMOTION);
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
         verify(repositoryHandler, times(1)).promoteModule((DbModule)any());
@@ -279,7 +318,7 @@ public class ModuleResourceTest extends ResourceTest {
 
         module1.addDependency(artifact3.getGavc(), Scope.IMPORT);
 
-        List<DbModule> list1 = new ArrayList<DbModule>();
+        final List<DbModule> list1 = new ArrayList<DbModule>();
         list1.add(dbModule);
         list1.add(module1);
 
@@ -304,10 +343,10 @@ public class ModuleResourceTest extends ResourceTest {
         module1.setVersion("1");
         module1.addDependency(artifact3.getGavc(), Scope.IMPORT);
 
-        List<DbModule> list1 = new ArrayList<DbModule>();
+        final List<DbModule> list1 = new ArrayList<DbModule>();
         list1.add(module1);
 
-        ArgumentCaptor<FiltersHolder> filters = ArgumentCaptor.forClass(FiltersHolder.class);
+        final ArgumentCaptor<FiltersHolder> filters = ArgumentCaptor.forClass(FiltersHolder.class);
         when(repositoryHandler.getAncestors(eq(artifact3), filters.capture())).thenReturn(list1);
         final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.GET_ANCESTORS);
         final ClientResponse response = resource.queryParam(ServerAPI.PROMOTED_PARAM , "true")
