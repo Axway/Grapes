@@ -42,6 +42,7 @@ import org.axway.grapes.server.webapp.views.DependencyListView;
 import org.axway.grapes.server.webapp.views.LicenseListView;
 import org.axway.grapes.server.webapp.views.ListView;
 import org.axway.grapes.server.webapp.views.ModuleView;
+import org.axway.grapes.server.webapp.views.OrganizationView;
 import org.axway.grapes.server.webapp.views.PromotionReportView;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
