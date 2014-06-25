@@ -1,12 +1,11 @@
 package org.axway.grapes.server;
 
+import com.google.common.collect.Lists;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
+import org.axway.grapes.server.db.datamodel.DbOrganization;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,17 +18,12 @@ public class GrapesTestUtils {
     public final static String USER_4TEST = "user";
     public final static String PASSWORD_4TEST = "password";
 
-    public static List<String> getTestCorporateGroupIds(){
-        final List<String> corporateGroupIds = new ArrayList<String>();
-        corporateGroupIds.add(CORPORATE_GROUPID_4TEST);
-
-        return corporateGroupIds;
-    }
+    public final static String WRONG_USER_4TEST = "wrongUser";
+    public final static String WRONG_PASSWORD_4TEST = "wrongPassword";
 
     public static RepositoryHandler getRepoHandlerMock() {
-        final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-
         try{
+            final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
 
             final DbCredential user = new DbCredential();
             user.setUser(USER_4TEST);
@@ -39,13 +33,25 @@ public class GrapesTestUtils {
             user.addRole(AvailableRoles.DATA_UPDATER);
             user.addRole(AvailableRoles.DEPENDENCY_NOTIFIER);
             user.addRole(AvailableRoles.LICENSE_CHECKER);
-
             when(repositoryHandler.getCredential(USER_4TEST)).thenReturn(user);
+
+            final DbCredential wrongUser = new DbCredential();
+            wrongUser.setUser(WRONG_USER_4TEST);
+            wrongUser.setPassword(GrapesAuthenticator.encrypt(WRONG_PASSWORD_4TEST));
+            when(repositoryHandler.getCredential(WRONG_USER_4TEST)).thenReturn(wrongUser);
+
+            final DbOrganization organization = new DbOrganization();
+            organization.setName(ORGANIZATION_NAME_4TEST);
+            organization.getCorporateGroupIdPrefixes().add(CORPORATE_GROUPID_4TEST);
+            when(repositoryHandler.getOrganization(ORGANIZATION_NAME_4TEST)).thenReturn(organization);
+            when(repositoryHandler.getAllOrganizations()).thenReturn(Lists.newArrayList(organization));
+
+            return repositoryHandler;
 
         }catch (Exception e){
             System.err.println("Failed to mock Grapes configuration due to password encryption error.");
         }
 
-        return repositoryHandler;
+        return mock(RepositoryHandler.class);
     }
 }

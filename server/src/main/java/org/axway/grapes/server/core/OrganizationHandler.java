@@ -1,6 +1,8 @@
 package org.axway.grapes.server.core;
 
+import org.axway.grapes.server.core.options.filters.CorporateFilter;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbModule;
 import org.axway.grapes.server.db.datamodel.DbOrganization;
 
 import javax.ws.rs.WebApplicationException;
@@ -114,4 +116,25 @@ public class OrganizationHandler {
     }
 
 
+    /**
+     * Returns an Organization that suits the Module or null if there is none
+     *
+     * @param dbModule DbModule
+     * @return DbOrganization
+     */
+    public DbOrganization getMatchingOrganization(final DbModule dbModule) {
+        if(dbModule.getOrganization() != null
+                && !dbModule.getOrganization().isEmpty()){
+            return getOrganization(dbModule.getOrganization());
+        }
+
+        for(DbOrganization organization: repositoryHandler.getAllOrganizations()){
+            final CorporateFilter corporateFilter = new CorporateFilter(organization);
+            if(corporateFilter.matches(dbModule)){
+                return organization;
+            }
+        }
+
+        return null;
+    }
 }

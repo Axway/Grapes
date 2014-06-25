@@ -1,7 +1,10 @@
 package org.axway.grapes.server.core;
 
 
+import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbArtifact;
+import org.axway.grapes.server.db.datamodel.DbModule;
 import org.axway.grapes.server.db.datamodel.DbOrganization;
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,6 +13,7 @@ import org.mockito.ArgumentCaptor;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import static junit.framework.Assert.assertNull;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -169,6 +173,56 @@ public class OrganizationHandlerTest {
         handler.removeCorporateGroupId(dbOrganization.getName(), "com.test");
 
         verify(repositoryHandler, never()).store(captor.capture());
+    }
+
+    @Test
+    public void getMatchingOrganizationOfAModuleWhenIsAlreadyOne(){
+        final DbOrganization organization = new DbOrganization();
+        organization.setName("test");
+
+        final DbModule module = new DbModule();
+        module.setOrganization(organization.getName());
+
+        final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
+        when(repositoryHandler.getOrganization(organization.getName())).thenReturn(organization);
+        final OrganizationHandler handler = new OrganizationHandler(repositoryHandler);
+
+        final DbOrganization gotOrganization = handler.getMatchingOrganization(module);
+
+        verify(repositoryHandler, times(1)).getOrganization(organization.getName());
+        verify(repositoryHandler, never()).getAllOrganizations();
+        assertEquals(organization, gotOrganization);
+    }
+
+    @Test
+    public void getMatchingOrganizationOfAModule(){
+        final DbModule module = new DbModule();
+        final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+        module.addArtifact(artifact);
+
+        final RepositoryHandler repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
+        final OrganizationHandler handler = new OrganizationHandler(repositoryHandler);
+
+        final DbOrganization gotOrganization = handler.getMatchingOrganization(module);
+
+        verify(repositoryHandler, times(1)).getAllOrganizations();
+        assertEquals(GrapesTestUtils.ORGANIZATION_NAME_4TEST, gotOrganization.getName());
+    }
+
+    @Test
+    public void getMatchingOrganizationOfAModuleWhenThereIsNone(){
+        final DbModule module = new DbModule();
+        final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId("unknown.production");
+        module.addArtifact(artifact);
+
+        final RepositoryHandler repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
+        final OrganizationHandler handler = new OrganizationHandler(repositoryHandler);
+
+        final DbOrganization organization = handler.getMatchingOrganization(new DbModule());
+
+        assertNull(organization);
     }
 
 }

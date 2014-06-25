@@ -1,23 +1,7 @@
 package org.axway.grapes.server.webapp.resources;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
+import com.yammer.dropwizard.auth.Auth;
+import com.yammer.dropwizard.jersey.caching.CacheControl;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Dependency;
@@ -30,26 +14,24 @@ import org.axway.grapes.server.core.options.filters.CorporateFilter;
 import org.axway.grapes.server.core.reports.DependencyReport;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.DbArtifact;
-import org.axway.grapes.server.db.datamodel.DbCredential;
+import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
-import org.axway.grapes.server.db.datamodel.DbLicense;
-import org.axway.grapes.server.db.datamodel.DbModule;
-import org.axway.grapes.server.db.datamodel.DbOrganization;
 import org.axway.grapes.server.webapp.DataValidator;
-import org.axway.grapes.server.webapp.views.AncestorsView;
-import org.axway.grapes.server.webapp.views.DependencyListView;
-import org.axway.grapes.server.webapp.views.LicenseListView;
-import org.axway.grapes.server.webapp.views.ListView;
-import org.axway.grapes.server.webapp.views.ModuleView;
-import org.axway.grapes.server.webapp.views.OrganizationView;
-import org.axway.grapes.server.webapp.views.PromotionReportView;
+import org.axway.grapes.server.webapp.views.*;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yammer.dropwizard.auth.Auth;
-import com.yammer.dropwizard.jersey.caching.CacheControl;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Module Resource
@@ -88,8 +70,14 @@ public class ModuleResource extends AbstractResource{
         // Checks if the data is corrupted
         DataValidator.validate(module);
 
-        // Save the module
+        // turn it into DbModel
         final DbModule dbModule = getModelMapper().getDbModule(module);
+        final DbOrganization organization = getOrganizationHandler().getMatchingOrganization(dbModule);
+        if(organization != null){
+            dbModule.setOrganization(organization.getName());
+        }
+
+        // Save the module
         getModuleHandler().store(dbModule);
 
         final ArtifactHandler artifactHandler = getArtifactHandler();
@@ -147,10 +135,6 @@ public class ModuleResource extends AbstractResource{
     public Response getVersions(@PathParam("name") final String name, @Context final UriInfo uriInfo){
         LOG.info("Got a get versions request.");
 
-        if(name == null){
-            return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
-        }
-
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
@@ -177,10 +161,6 @@ public class ModuleResource extends AbstractResource{
         LOG.info("Got a get module request.");
         final ModuleView view = new ModuleView();
 
-        if(name == null || version == null){
-            return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
-        }
-
         final String moduleId = DbModule.generateID(name, version);
         final DbModule dbModule = getModuleHandler().getModule(moduleId);
         final Module module = getModelMapper().getModule(dbModule);
@@ -205,12 +185,8 @@ public class ModuleResource extends AbstractResource{
         if(!credential.getRoles().contains(AvailableRoles.DATA_DELETER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
+
         LOG.info("Got a delete module request.");
-
-        if(name == null || version == null){
-            return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
-        }
-
         final String moduleId = DbModule.generateID(name, version);
         getModuleHandler().deleteModule(moduleId);
 
@@ -230,11 +206,6 @@ public class ModuleResource extends AbstractResource{
     @Path("/{name}/{version}/"+ ServerAPI.ORGANIZATION_RESOURCE)
     public Response getOrganization(@PathParam("name") final String name, @PathParam("version") final String version){
         LOG.info("Got a get module's organization request.");
-
-        if(name == null || version == null){
-            return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
-        }
-
         final String moduleId = DbModule.generateID(name, version);
         final DbModule dbModule = getModuleHandler().getModule(moduleId);
         final DbOrganization organization = getModuleHandler().getOrganization(dbModule);
@@ -261,11 +232,6 @@ public class ModuleResource extends AbstractResource{
                                    @PathParam("version") final String version,
                                      @Context final UriInfo uriInfo){
         LOG.info("Got a get module ancestors request.");
-
-        if(name == null || version == null){
-            return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
-        }
-
         final String moduleId = DbModule.generateID(name, version);
         final DbModule dbModule = getModuleHandler().getModule(moduleId);
         final DbOrganization dbOrganization = getModuleHandler().getOrganization(dbModule);
@@ -311,10 +277,6 @@ public class ModuleResource extends AbstractResource{
                                     @Context final UriInfo uriInfo){
 
         LOG.info("Got a get module dependencies request.");
-        if(name == null || version == null){
-            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
-        }
-
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
@@ -344,11 +306,6 @@ public class ModuleResource extends AbstractResource{
                                     @Context final UriInfo uriInfo){
 
         LOG.info("Got a get dependency report request.");
-
-        if(name == null || version == null){
-            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
-        }
-
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
@@ -406,11 +363,6 @@ public class ModuleResource extends AbstractResource{
         }
 
         LOG.info("Got a get promote module request.");
-
-        if(name == null || version == null){
-            return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
-        }
-
         final String moduleId = DbModule.generateID(name, version);
         getModuleHandler().promoteModule(moduleId);
 
@@ -430,11 +382,6 @@ public class ModuleResource extends AbstractResource{
     @Path("/{name}/{version}" + ServerAPI.PROMOTION + ServerAPI.GET_FEASIBLE)
     public Response canBePromoted(@PathParam("name") final String name, @PathParam("version") final String version){
         LOG.info("Got a is the module promotable request.");
-
-        if(name == null || version == null){
-            return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
-        }
-
         final String moduleId = DbModule.generateID(name,version);
         final PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
 
@@ -452,11 +399,6 @@ public class ModuleResource extends AbstractResource{
     @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getPromotionStatusReport(@PathParam("name") final String name, @PathParam("version") final String version){
         LOG.info("Got a get promotion report request.");
-
-        if(name == null || version == null){
-            return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
-        }
-
         final String moduleId = DbModule.generateID(name, version);
         final PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
 
@@ -474,12 +416,6 @@ public class ModuleResource extends AbstractResource{
     @Path("/{name}/{version}" + ServerAPI.PROMOTION)
     public Response isPromoted(@PathParam("name") final String name, @PathParam("version") final String version){
         LOG.info("Got a get promotion status request.");
-
-        if(name == null || version == null){
-            return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
-        }
-
-
         final String moduleId = DbModule.generateID(name,version);
         final DbModule module = getModuleHandler().getModule(moduleId);
         final Boolean promoted = module.isPromoted();

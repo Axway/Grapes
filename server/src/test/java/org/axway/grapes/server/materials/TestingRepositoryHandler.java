@@ -282,6 +282,11 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
+    public List<DbOrganization> getAllOrganizations() {
+        return organizations;
+    }
+
+    @Override
     public List<String> getLicenseNames(final FiltersHolder filters) {
         final List<String> names = new ArrayList<String>();
 

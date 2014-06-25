@@ -318,4 +318,11 @@ public interface RepositoryHandler {
      * @param dbOrganization DbOrganization
      */
     public void removeModulesOrganization(final DbOrganization dbOrganization);
+
+    /**
+     * Returns all the Organizations form the database
+     *
+     * @return List<DbOrganization>
+     */
+    public List<DbOrganization> getAllOrganizations();
 }

@@ -3,6 +3,7 @@ package org.axway.grapes.server.db.mongo;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
@@ -164,16 +165,11 @@ public class MongodbHandler implements RepositoryHandler {
 
     @Override
     public List<DbLicense> getAllLicenses() {
-        final List<DbLicense> licenses = new ArrayList<DbLicense>();
         final Jongo datastore = getJongoDataStore();
-        final Iterator<DbLicense> licenseIterator = datastore.getCollection(DbCollections.DB_LICENSES)
+        final Iterator<DbLicense> licenses = datastore.getCollection(DbCollections.DB_LICENSES)
                 .find().as(DbLicense.class).iterator();
 
-        while(licenseIterator.hasNext()){
-            licenses.add(licenseIterator.next());
-        }
-
-        return licenses;
+        return Lists.newArrayList(licenses);
     }
 
     @Override
@@ -527,5 +523,14 @@ public class MongodbHandler implements RepositoryHandler {
         datastore.getCollection(DbCollections.DB_MODULES)
                 .update(JongoUtils.generateQuery(DbModule.ORGANIZATION_DB_FIELD, organization.getName()))
                 .with("{$set: { "+DbModule.ORGANIZATION_DB_FIELD+" : \"\"}}");
+    }
+
+    @Override
+    public List<DbOrganization> getAllOrganizations() {
+        final Jongo datastore = getJongoDataStore();
+        final Iterable<DbOrganization> organizations = datastore
+                .getCollection(DbCollections.DB_ORGANIZATION).find().as(DbOrganization.class);
+
+        return Lists.newArrayList(organizations);
     }
 }
