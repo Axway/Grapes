@@ -32,10 +32,6 @@
             <item ref="source-repository"/>
             <item ref="license"/>
             <item ref="dependencies"/>
-        </menu>
-        <menu name="Documentation">
-            <item name="User Documentation" href="/index.html"/>
-            <item name="Javadoc" href="apidocs/index.html"/>
             <item name="Change log" href="change-log.html"/>
         </menu>
 

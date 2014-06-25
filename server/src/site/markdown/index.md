@@ -1,52 +1,16 @@
 
 <img src="./grapes_docs.svg" width="75%" style="padding:30px"/>
 
-Grapes tracks the dependencies of your software production.
+Keep an eye on the dependencies of your software production with Grapes!
 
-- Use HTTP REST API or simply use a Grapes client in your CI to send the information to Grapes
-- Get feedback on the dependencies of a project: versions, origin, known issues...
-- List all the licenses of your third party libraries
+* Uses a Grapes client to track the dependencies of your projects. Integrate them to your continuous integration get information at real time.
+* Generates reports thanks to Grapes server to track the corporate projects dependencies, the third parties libraries, the embedded licenses ...
 
-<blockquote class="pull-right">
-<p>Philosophy</p>
-<small>To control your production,<br/>
-Identify your dependencies.</small>
-</blockquote>
+Grapes gives you the opportunity to centralized the dependency information of your production. Tracking the dependencies and the life cycle of your binaries production becomes simpler even for distributed teams and production sites.
 
-<p class="clearfix"/>
+For more information visit our [wiki](https://github.com/Axway/Grapes/wiki).
+If you have any question about Grapes, you can check our [FAQ](wiki/FAQ). You can also contact the Grapes team, and reach the community by subscribing to the [Google Groups](https://groups.google.com/forum/#!forum/grapes-dm).
 
-History
------------
-Grapes used to be an internal CI tool of [Axway] to govern the flow of dependencies. The project started in 2011 and has been made open source in 2013.
+Give a try to Grapes, more information about the demo instance on [this wiki page](https://github.com/Axway/Grapes/wiki/Cali).
 
-Tech
------------
-
-Written in Java, Grapes uses a number of other open source projects :
-
-* [Dropwizard] - awesome out-of-the-box tool to build web applications
-* [Jongo] - a super fast way to make requests on MongoDb using the MongoShell language
-* [Twitter Bootstrap] - great UI boilerplate for modern web apps
-* [jQuery] - JavaScript library
-
-Documentation
------------
-
-|-----------------------------------------------------------|---------|
-| [Quick start](user_doc/quick-start.html)					| Minimal information to install and start Grapes |
-| [Authentication management](user_doc/authentication.html)	| Authentication and roles policy |
-| [Grapes clients](tech_doc/clients.html)			        | Grapes clients |
-| [Grapes client specification](tech_doc/clients-specs.html)| Specifications to create a new Grapes client |
-<br/>
-<br/>
-
-License
------------
-
-Under the Apache 2 license
-
-  [Axway]: http://www.axway.com/
-  [Dropwizard]: http://dropwizard.codahale.com/
-  [Jongo]: http://jongo.org/
-  [Twitter Bootstrap]: http://twitter.github.com/bootstrap/
-  [jQuery]: http://jquery.com
+This project is under [Apache 2 license](https://github.com/Axway/Grapes/blob/master/LICENSE).
