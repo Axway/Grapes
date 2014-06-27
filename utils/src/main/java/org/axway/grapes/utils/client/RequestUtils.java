@@ -79,6 +79,14 @@ public final class RequestUtils {
         return path.toString();
     }
 
+    public static String getModuleOrganizationPath(final String name, final String moduleVersion) {
+        final StringBuilder path = new StringBuilder();
+        path.append(getModulePath(name, moduleVersion));
+        path.append(ServerAPI.GET_ORGANIZATION);
+
+        return path.toString();
+    }
+
     public static String getArtifactLicensesPath(final String gavc) {
         final StringBuilder path = new StringBuilder();
         path.append(getArtifactPath(gavc));
@@ -139,9 +147,5 @@ public final class RequestUtils {
         path.append(ServerAPI.GET_LAST_VERSION);
 
         return path.toString();
-    }
-
-    public static String getCorporateFilters() {
-        return ServerAPI.GET_CORPORATE_FILTERS;
     }
 }

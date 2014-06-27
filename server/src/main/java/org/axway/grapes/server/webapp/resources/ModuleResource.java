@@ -203,7 +203,7 @@ public class ModuleResource extends AbstractResource{
      */
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
-    @Path("/{name}/{version}/"+ ServerAPI.ORGANIZATION_RESOURCE)
+    @Path("/{name}/{version}"+ ServerAPI.GET_ORGANIZATION)
     public Response getOrganization(@PathParam("name") final String name, @PathParam("version") final String version){
         LOG.info("Got a get module's organization request.");
         final String moduleId = DbModule.generateID(name, version);

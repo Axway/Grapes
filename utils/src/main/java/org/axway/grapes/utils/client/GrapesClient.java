@@ -8,10 +8,7 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import org.axway.grapes.commons.api.ServerAPI;
-import org.axway.grapes.commons.datamodel.Artifact;
-import org.axway.grapes.commons.datamodel.Dependency;
-import org.axway.grapes.commons.datamodel.License;
-import org.axway.grapes.commons.datamodel.Module;
+import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.utils.data.model.ArtifactList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -531,23 +528,23 @@ public class GrapesClient {
 
 
     /**
-     * Returns the list of corporate filters
+     * Returns the organization of a given module
      *
-     * @return List<String>
+     * @return Organization
      */
-    public List<String> getCorporateFilters() throws GrapesCommunicationException, IOException {
+    public Organization getModuleOrganization(final String moduleName, final String moduleVersion) throws GrapesCommunicationException, IOException {
         final Client client = getClient();
-        final WebResource resource = client.resource(serverURL).path(RequestUtils.getCorporateFilters());
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getModuleOrganizationPath(moduleName,moduleVersion));
         final ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
-            LOG.error("Failed to get Corporate filters. Http status: " + response.getStatus());
+            LOG.error("Failed to get module's organization. Http status: " + response.getStatus());
             throw new GrapesCommunicationException(response.getStatus());
         }
 
-        return response.getEntity(new GenericType<List<String>>(){});
+        return response.getEntity(Organization.class);
 
     }
 }

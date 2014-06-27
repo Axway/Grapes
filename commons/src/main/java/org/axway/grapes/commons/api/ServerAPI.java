@@ -34,9 +34,6 @@ public interface ServerAPI {
     /** Value - {@value}, GET methods that returns the list of corporate groupIds. Usually used as /organization/{name}/<GET_CORPORATE_GROUPIDS>.*/
     public static final String GET_CORPORATE_GROUPIDS = "/corporateGroupIds";
 
-    /** Value - {@value}, GET methods that returns the list of corporate filters. Usually used as /<GET_CORPORATE_FILTERS>.*/
-    public static final String GET_CORPORATE_FILTERS = "/corporatefilters";
-
     /** Value - {@value}, GET methods that returns the names of the targeted resources. Usually used as /resourceName<GET_NAMES>.*/
     public static final String GET_NAMES = "/names";
 
@@ -78,6 +75,9 @@ public interface ServerAPI {
 
     /** Value - {@value}, GET methods that returns the licenses of the targeted resource. Usually used as /resourceName/{resourceUID}<GET_LICENSES>.*/
     public static final String GET_LICENSES = "/licenses";
+
+    /** Value - {@value}, GET methods that returns the organization of an Artifact or a Module.*/
+    public static final String GET_ORGANIZATION = "/organization";
 
     /** Value - {@value}, POST/GET flag "DO_NOT_USE" for the targeted artifact. Usually used as /<ARTIFACT_RESOURCE>/{gavc}/<SET_DO_NOT_USE>?<DO_NOT_USE>=<Boolean></></>.*/
     public static final String SET_DO_NOT_USE = "/donotuse";

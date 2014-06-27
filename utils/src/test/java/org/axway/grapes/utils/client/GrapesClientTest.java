@@ -34,6 +34,7 @@ public class GrapesClientTest {
     public static void startMock() throws IOException, InterruptedException{
         serverPort = System.getProperty(PROPERTY_PORT, DEFAULT_PORT);
         client = new GrapesClient("127.0.0.1", serverPort);
+        client.setTimeout(1000);
     }
 
     @Test
@@ -92,6 +93,20 @@ public class GrapesClientTest {
             exception = e;
         }
         assertNull(exception);
+    }
+
+    @Test
+    public void postModuleAuthFailes() throws IOException, AuthenticationException{
+        Module module1 = DataModelFactory.createModule("module", "1.0.0-SNAPSHOT");
+        Exception exception = null;
+
+        try{
+            client.postModule(module1, null, null);
+
+        }catch (Exception e) {
+            exception = e;
+        }
+        assertNotNull(exception);
     }
 
     @Test
@@ -884,28 +899,48 @@ public class GrapesClientTest {
     }
 
     @Test
-    public void getCorporateFilters() throws IOException {
-        final List<String> filters = new ArrayList<String>();
-        filters.add("com.my.company");
+    public void getModuleOrganization() throws IOException {
+        final String moduleName = "module";
+        final String moduleVersion = "1.0.0-SNAPSHOT";
+        final Organization organization = DataModelFactory.createOrganization("organizationTest");
 
-        stubFor(get(urlMatching(ServerAPI.GET_CORPORATE_FILTERS + "?.*"))
+        stubFor(get(urlMatching("/" + ServerAPI.MODULE_RESOURCE + "/" + moduleName + "/" + moduleVersion + ServerAPI.GET_ORGANIZATION))
                 .willReturn(aResponse()
                         .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                        .withBody(JsonUtils.serialize(filters))
+                        .withBody(JsonUtils.serialize(organization))
                         .withStatus(Status.OK.getStatusCode())));
 
         Exception exception = null;
-        List<String> receivedFilters = null;
+        Organization receivedOrganization = null;
 
         try{
-            receivedFilters = client.getCorporateFilters();
+            receivedOrganization = client.getModuleOrganization(moduleName,moduleVersion);
         }catch (Exception e) {
             exception = e;
         }
 
         assertNull(exception);
-        assertNotNull(receivedFilters);
-        assertEquals(1, receivedFilters.size());
-        assertEquals("com.my.company", receivedFilters.get(0));
+        assertNotNull(receivedOrganization);
+        assertEquals(organization, receivedOrganization);
+    }
+
+    @Test
+    public void getModuleOrganizationNotFound() throws IOException {
+        final String moduleName = "module";
+        final String moduleVersion = "1.0.0-SNAPSHOT";
+
+        stubFor(get(urlMatching("/" + ServerAPI.MODULE_RESOURCE + "/" + moduleName + "/" + moduleVersion + ServerAPI.GET_ORGANIZATION))
+                .willReturn(aResponse()
+                        .withStatus(Status.NOT_FOUND.getStatusCode())));
+
+        Exception exception = null;
+
+        try{
+            client.getModuleOrganization(moduleName,moduleVersion);
+        }catch (Exception e) {
+            exception = e;
+        }
+
+        assertNotNull(exception);
     }
 }
