@@ -1,3 +1,10 @@
+1.3.1
+-------------
+* Add Organizations [see](https://github.com/Axway/Grapes/wiki/Main-concepts#organization)
+* [Github issue #17](https://github.com/Axway/Grapes/issues/17) Manage cache for costly requests
+* [Github issue #18](https://github.com/Axway/Grapes/issues/18) Fix getting all promoted modules
+* Update REST API documentation
+
 1.3.0
 -------------
 * Manage Maven project configuration for Maven central deployment

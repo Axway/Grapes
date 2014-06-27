@@ -6,25 +6,44 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class JsonUtilsTest {
-	
-	@Test
-	public void testLicenseSerializationUnserialization() throws Exception {
-		License license = DataModelFactory.createLicense("name", "longName", "comments", "regexp", "url");
-		License license2 = null;
-		Exception exception = null;
-		
-		try{
-			String serializedLicense = JsonUtils.serialize(license);
-			license2 = JsonUtils.unserializeLicense(serializedLicense);		
-		}catch (Exception e) {
-			exception = e;
-			System.out.println(e);
-		} 
 
-		assertNull(exception);
-		assertNotNull(license2);
-		assertTrue(license.equals(license2));
-	}
+    @Test
+    public void testOrganizationSerializationUnserialization() throws Exception {
+        Organization organization = DataModelFactory.createOrganization("name");
+        Organization organization2 = null;
+        Exception exception = null;
+
+        try{
+            String serializedLicense = JsonUtils.serialize(organization);
+            organization2 = JsonUtils.unserializeOrganization(serializedLicense);
+        }catch (Exception e) {
+            exception = e;
+            System.out.println(e);
+        }
+
+        assertNull(exception);
+        assertNotNull(organization2);
+        assertTrue(organization.equals(organization2));
+    }
+
+    @Test
+    public void testLicenseSerializationUnserialization() throws Exception {
+        License license = DataModelFactory.createLicense("name", "longName", "comments", "regexp", "url");
+        License license2 = null;
+        Exception exception = null;
+
+        try{
+            String serializedLicense = JsonUtils.serialize(license);
+            license2 = JsonUtils.unserializeLicense(serializedLicense);
+        }catch (Exception e) {
+            exception = e;
+            System.out.println(e);
+        }
+
+        assertNull(exception);
+        assertNotNull(license2);
+        assertTrue(license.equals(license2));
+    }
 	
 	@Test
 	public void testArtifactSerializationUnserialization() throws Exception {

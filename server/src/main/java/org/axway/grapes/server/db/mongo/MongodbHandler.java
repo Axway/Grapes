@@ -376,7 +376,10 @@ public class MongodbHandler implements RepositoryHandler {
     @Override
     public List<String> getModuleNames(final FiltersHolder filters) {
         final Jongo datastore = getJongoDataStore();
-        return datastore.getCollection(DbCollections.DB_MODULES).distinct(DbModule.NAME_DB_FIELD).as(String.class);
+        return datastore.getCollection(DbCollections.DB_MODULES)
+                .distinct(DbModule.NAME_DB_FIELD)
+                .query(JongoUtils.generateQuery(filters.getModuleFieldsFilters()))
+                .as(String.class);
     }
 
     @Override

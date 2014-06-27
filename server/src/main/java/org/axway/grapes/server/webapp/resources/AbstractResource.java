@@ -5,6 +5,10 @@
 package org.axway.grapes.server.webapp.resources;
 
 import com.yammer.dropwizard.views.View;
+import org.axway.grapes.commons.datamodel.Artifact;
+import org.axway.grapes.commons.datamodel.DataModelFactory;
+import org.axway.grapes.commons.datamodel.Scope;
+import org.axway.grapes.commons.utils.JsonUtils;
 import org.axway.grapes.server.config.CommunityConfig;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.*;
@@ -16,6 +20,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 
 /**
  * Abstract resource
@@ -155,5 +160,77 @@ public abstract class AbstractResource extends View{
             return null;
         }
         return communityConfig.getOnlineHelp();
+    }
+
+    /**
+     * Returns an empty model of a Organization in Json
+     *
+     * @return String
+     * @throws IOException
+     */
+    public String getOrganizationJsonModel() throws IOException {
+        return JsonUtils.serialize(DataModelFactory.createOrganization(""));
+    }
+
+    /**
+     * Returns an empty model of a Module in Json
+     *
+     * @return String
+     * @throws IOException
+     */
+    public String getModuleJsonModel() throws IOException {
+        return JsonUtils.serialize(DataModelFactory.createModule("", ""));
+    }
+
+    /**
+     * Returns an empty model of an Artifact in Json
+     *
+     * @return String
+     * @throws IOException
+     */
+    public String getArtifactJsonModel() throws IOException {
+        return JsonUtils.serialize(DataModelFactory.createArtifact("", "", "", "", "", ""));
+    }
+
+    /**
+     * Returns an empty model of a Dependency in Json
+     *
+     * @return String
+     * @throws IOException
+     */
+    public String getDependencyJsonModel() throws IOException {
+        final Artifact artifact = DataModelFactory.createArtifact("","","","","","");
+        return JsonUtils.serialize(DataModelFactory.createDependency(artifact, Scope.COMPILE));
+    }
+
+    /**
+     * Returns an empty model of a License in Json
+     *
+     * @return String
+     * @throws IOException
+     */
+    public String getLicenseJsonModel() throws IOException {
+        return JsonUtils.serialize(DataModelFactory.createLicense("","","","",""));
+    }
+
+    /**
+     * Returns the list of available scopes
+     *
+     * @return String
+     */
+    public String getScopes(){
+        final StringBuilder sb = new StringBuilder();
+        sb.append(Scope.COMPILE);
+        sb.append(", ");
+        sb.append(Scope.PROVIDED);
+        sb.append(", ");
+        sb.append(Scope.RUNTIME);
+        sb.append(", ");
+        sb.append(Scope.TEST);
+        sb.append(", ");
+        sb.append(Scope.IMPORT);
+        sb.append(", ");
+        sb.append(Scope.SYSTEM);
+        return sb.toString();
     }
 }

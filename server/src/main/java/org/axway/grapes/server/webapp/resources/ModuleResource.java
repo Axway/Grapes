@@ -195,7 +195,7 @@ public class ModuleResource extends AbstractResource{
 
     /**
      * Return an Organization.
-     * This method is call via GET <dm_url>/module/<name>/<version>
+     * This method is call via GET <dm_url>/module/<name>/<version>/organization
      *
      * @param name String
      * @param version String

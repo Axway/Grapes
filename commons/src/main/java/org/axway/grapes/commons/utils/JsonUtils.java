@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.commons.datamodel.Module;
+import org.axway.grapes.commons.datamodel.Organization;
 
 import java.io.IOException;
 
@@ -37,18 +38,30 @@ public final class JsonUtils {
 		return mapper.writeValueAsString(obj);
 		
 	}
-	
-	/**
-	 * Un-serialize a Json into Module
-	 * @param module String
-	 * @return Module
-	 * @throws IOException 
-	 */
-	public static Module unserializeModule(final String module) throws IOException {
-		final ObjectMapper mapper = new ObjectMapper();
+
+    /**
+     * Un-serialize a Json into Organization
+     * @param organization String
+     * @return Organization
+     * @throws IOException
+     */
+    public static Organization unserializeOrganization(final String organization) throws IOException {
+        final ObjectMapper mapper = new ObjectMapper();
         mapper.disable(MapperFeature.USE_GETTERS_AS_SETTERS);
-		return mapper.readValue(module, Module.class);
-	}
+        return mapper.readValue(organization, Organization.class);
+    }
+
+    /**
+     * Un-serialize a Json into Module
+     * @param module String
+     * @return Module
+     * @throws IOException
+     */
+    public static Module unserializeModule(final String module) throws IOException {
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(MapperFeature.USE_GETTERS_AS_SETTERS);
+        return mapper.readValue(module, Module.class);
+    }
 
 	/**
 	 * Un-serialize a report with Json
