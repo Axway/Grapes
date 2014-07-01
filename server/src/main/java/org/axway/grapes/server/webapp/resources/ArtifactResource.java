@@ -422,7 +422,7 @@ public class ArtifactResource extends AbstractResource {
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{gavc}" + ServerAPI.GET_MODULE)
     public Response getModule(@PathParam("gavc") final String gavc, @Context final UriInfo uriInfo){
-        LOG.info("Got a get artifact licenses request.");
+        LOG.info("Got a get artifact's module request.");
         final ArtifactHandler artifactHandler = getArtifactHandler();
         final DbArtifact artifact = artifactHandler.getArtifact(gavc);
         final DbModule module = artifactHandler.getModule(artifact);
@@ -434,6 +434,34 @@ public class ArtifactResource extends AbstractResource {
         final ModuleView view = new ModuleView();
         view.setModule(getModelMapper().getModule(module));
 
+        return Response.ok(view).build();
+    }
+
+    /**
+     * Returns the Organization of an artifact.
+     * This method is call via GET <grapes_url>/artifact/{gavc}/module
+     *
+     * @param gavc String
+     * @return Response a module in HTML or JSON
+     */
+    @GET
+    @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
+    @Path("/{gavc}" + ServerAPI.GET_ORGANIZATION)
+    public Response getOrganization(@PathParam("gavc") final String gavc, @Context final UriInfo uriInfo){
+        LOG.info("Got a get artifact's organization request.");
+        final ArtifactHandler artifactHandler = getArtifactHandler();
+        final DbArtifact artifact = artifactHandler.getArtifact(gavc);
+        final DbModule module = artifactHandler.getModule(artifact);
+        if(module == null || module.getOrganization().isEmpty()){
+            return Response.noContent().build();
+        }
+
+        final DbOrganization organization = getOrganizationHandler().getOrganization(module.getOrganization());
+        if(organization == null){
+            return Response.noContent().build();
+        }
+
+        final OrganizationView view = new OrganizationView(getModelMapper().getOrganization(organization));
         return Response.ok(view).build();
     }
 

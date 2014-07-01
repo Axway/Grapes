@@ -15,10 +15,7 @@ import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.DbArtifact;
-import org.axway.grapes.server.db.datamodel.DbCredential;
-import org.axway.grapes.server.db.datamodel.DbLicense;
-import org.axway.grapes.server.db.datamodel.DbModule;
+import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
@@ -459,6 +456,70 @@ public class ArtifactResourceTest extends ResourceTest {
         when(repositoryHandler.getRootModuleOf(artifact.getGavc())).thenReturn(null);
 
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_MODULE);
+        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.NO_CONTENT_204, response.getStatus());
+    }
+
+
+    @Test
+    public void getOrganization() throws UnknownHostException {
+        final DbOrganization dbOrganization = new DbOrganization();
+        dbOrganization.setName("organization1");
+        final DbModule dbModule = new DbModule();
+        dbModule.setName("module1");
+        dbModule.setVersion("1.0.0");
+        dbModule.setOrganization(dbOrganization.getName());
+        final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId("groupId");
+        artifact.setArtifactId("artifactId");
+        artifact.setVersion("1.0.0");
+
+        when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
+        when(repositoryHandler.getRootModuleOf(artifact.getGavc())).thenReturn(dbModule);
+        when(repositoryHandler.getOrganization(dbOrganization.getName())).thenReturn(dbOrganization);
+
+        WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_ORGANIZATION);
+        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+
+        final Organization gotOrganization = response.getEntity(Organization.class);
+        assertNotNull(gotOrganization);
+        assertEquals(dbOrganization.getName(), gotOrganization.getName());
+    }
+
+
+    @Test
+    public void getOrganizationButTheModuleDoesNotHoldAny() throws UnknownHostException {
+        final DbModule dbModule = new DbModule();
+        dbModule.setName("module1");
+        dbModule.setVersion("1.0.0");
+        final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId("groupId");
+        artifact.setArtifactId("artifactId");
+        artifact.setVersion("1.0.0");
+
+        when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
+        when(repositoryHandler.getRootModuleOf(artifact.getGavc())).thenReturn(dbModule);
+
+        WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_ORGANIZATION);
+        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.NO_CONTENT_204, response.getStatus());
+    }
+
+
+    @Test
+    public void getOrganizationButThereIsNoModule() throws UnknownHostException {
+        final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId("groupId");
+        artifact.setArtifactId("artifactId");
+        artifact.setVersion("1.0.0");
+
+        when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
+
+        WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_ORGANIZATION);
         ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT_204, response.getStatus());
