@@ -136,10 +136,6 @@ public class ArtifactResource extends AbstractResource {
         LOG.info("Got a get artifact versions request.");
         final ListView view = new ListView("Versions View", "version");
 
-        if(gavc == null){
-            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
-        }
-
         final List<String> versions = getArtifactHandler().getArtifactVersions(gavc);
         Collections.sort(versions);
         view.addAll(versions);
@@ -161,10 +157,6 @@ public class ArtifactResource extends AbstractResource {
     public Response getLastVersion(@PathParam("gavc") final String gavc){
         LOG.info("Got a get artifact last version request.");
 
-        if(gavc == null){
-            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
-        }
-
         final String lastVersion = getArtifactHandler().getArtifactLastVersion(gavc);
 
         return Response.ok(lastVersion).build();
@@ -184,10 +176,6 @@ public class ArtifactResource extends AbstractResource {
     public Response get(@PathParam("gavc") final String gavc){
         LOG.info("Got a get artifact request.");
         final ArtifactView view = new ArtifactView();
-
-        if(gavc == null){
-            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
-        }
 
         final DbArtifact dbArtifact = getArtifactHandler().getArtifact(gavc);
         view.setShouldNotBeUse(dbArtifact.getDoNotUse());
@@ -270,10 +258,6 @@ public class ArtifactResource extends AbstractResource {
         }
 
         LOG.info("Got a delete artifact request.");
-        if(gavc == null){
-            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
-        }
-
         getArtifactHandler().deleteArtifact(gavc);
 
         return Response.ok().build();
@@ -295,11 +279,6 @@ public class ArtifactResource extends AbstractResource {
         }
 
         LOG.info("Got a add \"DO_NOT_USE\" request.");
-
-        if(gavc == null || doNotUse == null){
-            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
-        }
-
         getArtifactHandler().updateDoNotUse(gavc, doNotUse.get());
 
         return Response.ok("done").build();
@@ -317,11 +296,6 @@ public class ArtifactResource extends AbstractResource {
     @Path("/{gavc}" + ServerAPI.SET_DO_NOT_USE)
     public Response getDoNotUse(@PathParam("gavc") final String gavc){
         LOG.info("Got a get doNotUse artifact request.");
-
-        if(gavc == null){
-            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
-        }
-
         final DbArtifact artifact = getArtifactHandler().getArtifact(gavc);
 
         return Response.ok(artifact.getDoNotUse()).build();
@@ -341,10 +315,6 @@ public class ArtifactResource extends AbstractResource {
     @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getAncestors(@PathParam("gavc") final String gavc, @Context final UriInfo uriInfo){
         LOG.info("Got a get artifact request.");
-
-        if(gavc == null){
-            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
-        }
 
         final FiltersHolder filters = new FiltersHolder();
         filters.getDecorator().setShowLicenses(false);
@@ -377,10 +347,6 @@ public class ArtifactResource extends AbstractResource {
         LOG.info("Got a get artifact licenses request.");
         final LicenseListView view = new LicenseListView("Licenses of " + gavc);
 
-        if(gavc == null){
-            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
-        }
-
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
@@ -410,7 +376,7 @@ public class ArtifactResource extends AbstractResource {
 
         LOG.info("Got a add license request.");
 
-        if(gavc == null || licenseId == null){
+        if(licenseId == null){
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
@@ -436,7 +402,7 @@ public class ArtifactResource extends AbstractResource {
 
         LOG.info("Got a delete license request.");
 
-        if(gavc == null || licenseId == null){
+        if(licenseId == null){
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
@@ -457,11 +423,6 @@ public class ArtifactResource extends AbstractResource {
     @Path("/{gavc}" + ServerAPI.GET_MODULE)
     public Response getModule(@PathParam("gavc") final String gavc, @Context final UriInfo uriInfo){
         LOG.info("Got a get artifact licenses request.");
-
-        if(gavc == null){
-            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
-        }
-
         final ArtifactHandler artifactHandler = getArtifactHandler();
         final DbArtifact artifact = artifactHandler.getArtifact(gavc);
         final DbModule module = artifactHandler.getModule(artifact);

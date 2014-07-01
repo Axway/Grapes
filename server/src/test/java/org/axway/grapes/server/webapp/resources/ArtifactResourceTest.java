@@ -28,8 +28,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
@@ -405,6 +404,26 @@ public class ArtifactResourceTest extends ResourceTest {
 
 
     @Test
+    public void getDoNotUse() throws UnknownHostException {
+        final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId("groupId");
+        artifact.setArtifactId("artifactId");
+        artifact.setVersion("1.0.0");
+
+        when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
+
+        WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.SET_DO_NOT_USE);
+        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+
+        final Boolean test = response.getEntity(Boolean.class);
+        assertNotNull(test);
+        assertFalse(test);
+    }
+
+
+    @Test
     public void getModule() throws UnknownHostException {
         final DbModule dbModule = new DbModule();
         dbModule.setName("module1");
@@ -447,42 +466,44 @@ public class ArtifactResourceTest extends ResourceTest {
 
     @Test
     public void checkAuthenticationOnPostAndDeleteMethods(){
+        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.WRONG_USER_4TEST, GrapesTestUtils.WRONG_PASSWORD_4TEST));
+
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
-        ClientResponse response = resource.post(ClientResponse.class);
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
 
         resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
-        response = resource.post(ClientResponse.class);
+        response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
 
         resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/gavc");
-        response = resource.delete(ClientResponse.class);
+        response = resource.type(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
 
         resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/gavc" + ServerAPI.GET_LICENSES);
-        response = resource.post(ClientResponse.class);
+        response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
 
         resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/gavc" + ServerAPI.GET_LICENSES);
-        response = resource.delete(ClientResponse.class);
+        response = resource.type(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
 
         resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/gavc" + ServerAPI.SET_DO_NOT_USE);
         response = resource.post(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
-        response = resource.delete(ClientResponse.class);
+        response = resource.type(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
 
         resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/gavc" + ServerAPI.GET_DOWNLOAD_URL);
-        response = resource.post(ClientResponse.class);
+        response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
 
         resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/gavc" + ServerAPI.GET_PROVIDER);
-        response = resource.post(ClientResponse.class);
+        response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
     }
