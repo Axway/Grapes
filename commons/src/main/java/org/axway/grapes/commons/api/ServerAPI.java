@@ -31,6 +31,9 @@ public interface ServerAPI {
     public static final String WEBAPP_RESOURCE = "webapp";
 
     //METHODS
+    /** Value - {@value}, GET methods that returns the module of an artifact. Usually used as /artifact/{gavc}/<GET_MODULE>.*/
+    public static final String GET_MODULE = "/module";
+
     /** Value - {@value}, GET methods that returns the list of corporate groupIds. Usually used as /organization/{name}/<GET_CORPORATE_GROUPIDS>.*/
     public static final String GET_CORPORATE_GROUPIDS = "/corporateGroupIds";
 

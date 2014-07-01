@@ -149,13 +149,23 @@ public class ArtifactHandler {
     }
 
     /**
+     * Returns the Module of artifact or null if there is none
+     *
+     * @param dbArtifact DbArtifact
+     * @return DbModule
+     */
+    public DbModule getModule(final DbArtifact dbArtifact) {
+        return repositoryHandler.getRootModuleOf(dbArtifact.getGavc());
+    }
+
+    /**
      * Returns the Organization that produce this artifact or null if there is none
      *
      * @param dbArtifact DbArtifact
      * @return DbOrganization
      */
     public DbOrganization getOrganization(final DbArtifact dbArtifact) {
-        final DbModule module = repositoryHandler.getRootModuleOf(dbArtifact.getGavc());
+        final DbModule module = getModule(dbArtifact);
 
         if(module == null || module.getOrganization() == null){
             return null;

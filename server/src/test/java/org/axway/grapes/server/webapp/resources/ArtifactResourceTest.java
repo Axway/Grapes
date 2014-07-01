@@ -403,6 +403,48 @@ public class ArtifactResourceTest extends ResourceTest {
 
     }
 
+
+    @Test
+    public void getModule() throws UnknownHostException {
+        final DbModule dbModule = new DbModule();
+        dbModule.setName("module1");
+        dbModule.setVersion("1.0.0");
+        final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId("groupId");
+        artifact.setArtifactId("artifactId");
+        artifact.setVersion("1.0.0");
+
+        when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
+        when(repositoryHandler.getRootModuleOf(artifact.getGavc())).thenReturn(dbModule);
+
+        WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_MODULE);
+        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+
+        final Module gotModule = response.getEntity(Module.class);
+        assertNotNull(gotModule);
+        assertEquals(dbModule.getName(), gotModule.getName());
+        assertEquals(dbModule.getVersion(), gotModule.getVersion());
+    }
+
+
+    @Test
+    public void getModuleThatDoesNotExist() throws UnknownHostException {
+        final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId("groupId");
+        artifact.setArtifactId("artifactId");
+        artifact.setVersion("2.3.0");
+
+        when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
+        when(repositoryHandler.getRootModuleOf(artifact.getGavc())).thenReturn(null);
+
+        WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_MODULE);
+        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.NO_CONTENT_204, response.getStatus());
+    }
+
     @Test
     public void checkAuthenticationOnPostAndDeleteMethods(){
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);

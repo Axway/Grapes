@@ -15,10 +15,7 @@ import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.axway.grapes.server.webapp.DataValidator;
-import org.axway.grapes.server.webapp.views.AncestorsView;
-import org.axway.grapes.server.webapp.views.ArtifactView;
-import org.axway.grapes.server.webapp.views.LicenseListView;
-import org.axway.grapes.server.webapp.views.ListView;
+import org.axway.grapes.server.webapp.views.*;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -446,6 +443,37 @@ public class ArtifactResource extends AbstractResource {
         getArtifactHandler().removeLicenseFromArtifact(gavc, licenseId);
 
         return Response.ok("done").build();
+    }
+
+    /**
+     * Returns the Module of an artifact.
+     * This method is call via GET <grapes_url>/artifact/{gavc}/module
+     *
+     * @param gavc String
+     * @return Response a module in HTML or JSON
+     */
+    @GET
+    @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
+    @Path("/{gavc}" + ServerAPI.GET_MODULE)
+    public Response getModule(@PathParam("gavc") final String gavc, @Context final UriInfo uriInfo){
+        LOG.info("Got a get artifact licenses request.");
+
+        if(gavc == null){
+            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
+        }
+
+        final ArtifactHandler artifactHandler = getArtifactHandler();
+        final DbArtifact artifact = artifactHandler.getArtifact(gavc);
+        final DbModule module = artifactHandler.getModule(artifact);
+
+        if(module == null){
+            return Response.noContent().build();
+        }
+
+        final ModuleView view = new ModuleView();
+        view.setModule(getModelMapper().getModule(module));
+
+        return Response.ok(view).build();
     }
 
     /**
