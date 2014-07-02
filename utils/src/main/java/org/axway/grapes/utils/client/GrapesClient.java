@@ -367,6 +367,33 @@ public class GrapesClient {
 
     }
 
+
+    /**
+     * Returns the module of an artifact or null if there is none
+     *
+     * @param gavc String
+     * @return Module
+     */
+    public Module getArtifactModule(final String gavc) throws GrapesCommunicationException {
+        final Client client = getClient();
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getArtifactModule(gavc));
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.NO_CONTENT.getStatusCode() == response.getStatus()){
+            return null;
+        }
+
+        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
+            LOG.error("Failed to get Corporate filters. Http status: " + response.getStatus());
+            throw new GrapesCommunicationException(response.getStatus());
+        }
+
+        return response.getEntity(Module.class);
+
+    }
+
     /**
      * Add a license to an artifact
      *

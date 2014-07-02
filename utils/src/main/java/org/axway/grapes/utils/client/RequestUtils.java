@@ -148,4 +148,14 @@ public final class RequestUtils {
 
         return path.toString();
     }
+
+    public static String getArtifactModule(final String gavc) {
+        final StringBuilder path = new StringBuilder();
+        path.append(artifactResourcePath());
+        path.append("/");
+        path.append(gavc);
+        path.append(ServerAPI.GET_MODULE);
+
+        return path.toString();
+    }
 }

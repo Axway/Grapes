@@ -644,6 +644,64 @@ public class GrapesClientTest {
         assertNotNull(exception);
     }
 
+    @Test
+    public void getArtifactModuleNotFound() throws IOException{
+        final String gavc = "com.my.company:test:1233:jar";
+        stubFor(get(urlEqualTo("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + gavc + ServerAPI.GET_MODULE))
+                .willReturn(aResponse().withStatus(Status.NOT_FOUND.getStatusCode())));
+
+        Exception exception = null;
+
+        try{
+            client.getArtifactModule(gavc);
+
+        }catch (Exception e) {
+            exception = e;
+        }
+        assertNotNull(exception);
+    }
+
+    @Test
+    public void getArtifactModuleButWithNoModule() throws IOException{
+        final String gavc = "com.my.company:test:1233:jar";
+        stubFor(get(urlEqualTo("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + gavc + ServerAPI.GET_MODULE))
+                .willReturn(aResponse().withStatus(Status.NO_CONTENT.getStatusCode())));
+
+        Exception exception = null;
+
+        try{
+            final Module module = client.getArtifactModule(gavc);
+            assertNull(module);
+
+        }catch (Exception e) {
+            exception = e;
+        }
+        assertNull(exception);
+    }
+
+    @Test
+    public void getArtifactModule() throws IOException{
+        final Module module = DataModelFactory.createModule("name","1.2.3");
+        final String gavc = "com.my.company:test:1233:jar";
+        stubFor(get(urlEqualTo("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + gavc + ServerAPI.GET_MODULE))
+                .willReturn(aResponse()
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .withBody(JsonUtils.serialize(module))
+                        .withStatus(Status.OK.getStatusCode())));
+
+        Exception exception = null;
+
+        try{
+            final Module gotModule = client.getArtifactModule(gavc);
+            assertNotNull(gotModule);
+            assertEquals(module, gotModule);
+
+        }catch (Exception e) {
+            exception = e;
+        }
+        assertNull(exception);
+    }
+
 
     @Test
     public void postLicense() throws IOException{
