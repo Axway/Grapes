@@ -18,7 +18,7 @@
     	<div class="row-fluid">  
 			<h3>Product</h3>
 			<p>
-                <strong>Name: </strong>${product.organization}<br/>
+                <strong>Name: </strong>${product.name}<br/>
                 <strong>Organization: </strong>${product.organization}<br/>
 			</p>
 
