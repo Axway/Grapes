@@ -15,6 +15,9 @@ public interface ServerAPI {
     /** Value - {@value}, Organization is a Grapes server resource that handles the information about organization.*/
     public static final String ORGANIZATION_RESOURCE = "organization";
 
+    /** Value - {@value}, Product is a Grapes server resource that handles the information about products & deliveries.*/
+    public static final String PRODUCT_RESOURCE = "product";
+
     /** Value - {@value}, Module is a Grapes server resource that handles the information about modules.*/
     public static final String MODULE_RESOURCE = "module";
 
@@ -31,8 +34,14 @@ public interface ServerAPI {
     public static final String WEBAPP_RESOURCE = "webapp";
 
     //METHODS
+    /** Value - {@value}, GET methods that returns the deliveries of a product. Usually used as /product/{name}/<GET_DELIVERIES>.*/
+    public static final String GET_DELIVERIES = "/deliveries";
+
     /** Value - {@value}, GET methods that returns the module of an artifact. Usually used as /artifact/{gavc}/<GET_MODULE>.*/
     public static final String GET_MODULE = "/module";
+
+    /** Value - {@value}, GET methods that returns the modules of a product. Usually used as /product/{name}/<GET_MODULES>.*/
+    public static final String GET_MODULES = "/modules";
 
     /** Value - {@value}, GET methods that returns the list of corporate groupIds. Usually used as /organization/{name}/<GET_CORPORATE_GROUPIDS>.*/
     public static final String GET_CORPORATE_GROUPIDS = "/corporateGroupIds";

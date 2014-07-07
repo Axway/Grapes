@@ -1,7 +1,6 @@
 package org.axway.grapes.server.db.datamodel;
 
 import org.junit.Test;
-import org.axway.grapes.server.db.datamodel.DbProduct.DbProductVersion;
 
 import static junit.framework.TestCase.assertEquals;
 

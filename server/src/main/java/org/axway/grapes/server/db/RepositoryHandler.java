@@ -325,4 +325,33 @@ public interface RepositoryHandler {
      * @return List<DbOrganization>
      */
     public List<DbOrganization> getAllOrganizations();
+
+    /**
+     * Stores a product in Grapes db
+     *
+     * @param dbProduct DbProduct
+     */
+    public void store(final DbProduct dbProduct);
+
+    /**
+     * Returns a product regarding its name
+     *
+     * @param name String
+     * @return DbProduct
+     */
+    public DbProduct getProduct(final String name);
+
+    /**
+     * Returns the list of product names
+     *
+     * @return List<String>
+     */
+    public List<String> getProductNames();
+
+    /**
+     * Deletes a product from the database
+     *
+     * @param name String
+     */
+    public void deleteProduct(final String name);
 }

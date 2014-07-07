@@ -1,5 +1,7 @@
 package org.axway.grapes.server.db.datamodel;
 
+import org.jongo.marshall.jackson.oid.Id;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,11 +16,37 @@ import java.util.Map;
  */
 public class DbProduct {
 
+    public static final String DATA_MODEL_VERSION = "datamodelVersion";
+    private String datamodelVersion = DbCollections.datamodelVersion;
+
+    @Id
     private String name;
 
+    public static final String ORGANIZATION_DB_FIELD = "organization";
+    private String organization = "";
+
+    public static final String MODULE_NAMES_DB_FIELD = "modules";
     private List<String> modules = new ArrayList<String>();
 
-    private Map<String, DbProductVersion> deliveries = new HashMap<String, DbProductVersion>();
+
+    public static final String DELIVERIES_DB_FIELD = "deliveries";
+    private Map<String, List<String>> deliveries = new HashMap<String, List<String>>();
+
+    public String getDatamodelVersion() {
+        return datamodelVersion;
+    }
+
+    public void setDatamodelVersion(String datamodelVersion) {
+        this.datamodelVersion = datamodelVersion;
+    }
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
 
     public DbProduct(final String name){
         this.name = name;
@@ -50,46 +78,12 @@ public class DbProduct {
         this.modules = modules;
     }
 
-    public Map<String, DbProductVersion> getDeliveries() {
+    public Map<String, List<String>> getDeliveries() {
         return deliveries;
     }
 
-    public void addDelivery(final DbProductVersion delivery) {
-        this.deliveries.put(delivery.getVersion(), delivery);
-    }
-
-    public void removeDelivery(final DbProductVersion delivery) {
-        this.deliveries.remove(delivery.getVersion());
-    }
-
-    public void setDeliveries(final Map<String, DbProductVersion> deliveries) {
+    public void setDeliveries(Map<String, List<String>> deliveries) {
         this.deliveries = deliveries;
     }
 
-    public class DbProductVersion {
-
-        private String version;
-
-        private Map<String, String> modules = new HashMap<String, String>();
-
-        public DbProductVersion(final String productVersion){
-            this.version = productVersion;
-        }
-
-        public String getVersion() {
-            return version;
-        }
-
-        public void setVersion(String version) {
-            this.version = version;
-        }
-
-        public Map<String, String> getModules() {
-            return modules;
-        }
-
-        public void setModules(Map<String, String> modules) {
-            this.modules = modules;
-        }
-    }
 }
