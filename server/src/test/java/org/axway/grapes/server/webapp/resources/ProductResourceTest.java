@@ -97,7 +97,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void getAProduct(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
         WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName());
         ClientResponse response = resource.accept(MediaType.TEXT_HTML).get(ClientResponse.class);
@@ -107,7 +108,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void deleteAProduct(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
@@ -132,7 +134,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void deleteAProductWithoutDeletionRights(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.WRONG_USER_4TEST, GrapesTestUtils.WRONG_PASSWORD_4TEST));
@@ -144,7 +147,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void getProductModules(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         product.setModules(Lists.newArrayList("module1", "module2", "module3"));
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
@@ -169,7 +173,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void setProductModuleNames(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
         final List<String> moduleNames = Lists.newArrayList("module1", "module2", "module3");
@@ -187,7 +192,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void setProductModuleNamesWithoutEditionRights(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.WRONG_USER_4TEST, GrapesTestUtils.WRONG_PASSWORD_4TEST));
@@ -199,7 +205,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void setProductModuleNamesWithNoModuleNamesInfo(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
@@ -220,7 +227,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void getDeliveries(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         product.getDeliveries().put("delivery1", Collections.<String>emptyList());
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
@@ -245,7 +253,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void createANewDelivery(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
@@ -262,7 +271,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void createADeliveryButForgottingTheName(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
@@ -278,7 +288,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void createADeliveryThatAlreadyExist(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         product.getDeliveries().put("delivery1", Collections.<String>emptyList());
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
@@ -291,7 +302,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void createANewDeliveryButWithoutEditionRights(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.WRONG_USER_4TEST, GrapesTestUtils.WRONG_PASSWORD_4TEST));
@@ -303,7 +315,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void getDelivery(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         product.getDeliveries().put("delivery1", Lists.newArrayList("module1:1.0.0", "module2:1.0.0"));
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
@@ -329,7 +342,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void getDeliveryThatDoesNotExistOnAProductThatExist(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
         WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES+ "/doesNotExist");
@@ -341,7 +355,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void setModulesDelivery(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         product.getDeliveries().put("delivery1", Collections.<String>emptyList());
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
@@ -370,7 +385,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void setModulesDeliveryWithModulesThatDoesNotExist(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         product.getDeliveries().put("delivery1", Collections.<String>emptyList());
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
@@ -389,7 +405,8 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void setModulesDeliveryWithDeliveryThatDoesNotExist(){
-        final DbProduct product = new DbProduct("product1");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
         final DbModule module = new DbModule();

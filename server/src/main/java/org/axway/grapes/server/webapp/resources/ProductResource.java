@@ -55,7 +55,8 @@ public class ProductResource extends AbstractResource {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity("Product name should neither be null nor empty.").build());
         }
 
-        final DbProduct dbProduct = new DbProduct(productName);
+        final DbProduct dbProduct = new DbProduct();
+        dbProduct.setName(productName);
         getProductHandler().create(dbProduct);
 
         return Response.ok().status(HttpStatus.CREATED_201).build();

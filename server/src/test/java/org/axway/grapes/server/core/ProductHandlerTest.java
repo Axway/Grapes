@@ -16,7 +16,8 @@ public class ProductHandlerTest {
 
     @Test
     public void storeANewProduct(){
-        final DbProduct product = new DbProduct("productTest");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         final RepositoryHandler repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
         final ProductHandler productHandler = new ProductHandler(repositoryHandler);
 
@@ -35,7 +36,8 @@ public class ProductHandlerTest {
 
     @Test
     public void storeAProductThatAlreadyExist(){
-        final DbProduct product = new DbProduct("productTest");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         final RepositoryHandler repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
         final ProductHandler productHandler = new ProductHandler(repositoryHandler);
@@ -65,7 +67,8 @@ public class ProductHandlerTest {
 
     @Test
     public void getAnExistingProduct(){
-        final DbProduct product = new DbProduct("productTest");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         final RepositoryHandler repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
         final ProductHandler productHandler = new ProductHandler(repositoryHandler);
@@ -95,7 +98,8 @@ public class ProductHandlerTest {
 
     @Test
     public void deleteAProduct(){
-        final DbProduct product = new DbProduct("productTest");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         final RepositoryHandler repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
         final ProductHandler productHandler = new ProductHandler(repositoryHandler);
@@ -124,7 +128,8 @@ public class ProductHandlerTest {
 
     @Test
     public void setProductModules(){
-        final DbProduct product = new DbProduct("productTest");
+        final DbProduct product = new DbProduct();
+        product.setName("product1");
         final RepositoryHandler repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
         final ProductHandler productHandler = new ProductHandler(repositoryHandler);

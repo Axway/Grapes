@@ -28,7 +28,6 @@ public class DbProduct {
     public static final String MODULE_NAMES_DB_FIELD = "modules";
     private List<String> modules = new ArrayList<String>();
 
-
     public static final String DELIVERIES_DB_FIELD = "deliveries";
     private Map<String, List<String>> deliveries = new HashMap<String, List<String>>();
 
@@ -40,6 +39,14 @@ public class DbProduct {
         this.datamodelVersion = datamodelVersion;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getOrganization() {
         return organization;
     }
@@ -48,30 +55,8 @@ public class DbProduct {
         this.organization = organization;
     }
 
-    public DbProduct(final String name){
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
     public List<String> getModules() {
         return modules;
-    }
-
-    public void addModule(final String moduleName) {
-        if(!modules.contains(moduleName)){
-            modules.add(moduleName);
-        }
-    }
-
-    public void removeModule(final String moduleName) {
-        modules.remove(moduleName);
     }
 
     public void setModules(List<String> modules) {
@@ -85,5 +70,4 @@ public class DbProduct {
     public void setDeliveries(Map<String, List<String>> deliveries) {
         this.deliveries = deliveries;
     }
-
 }
