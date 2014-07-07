@@ -67,10 +67,13 @@
                     <ul class="nav nav-list bs-docs-sidenav" data-spy="affix" data-offset-top="80">
                         <li class=""><a data-toggle="collapse" data-target="#accordion1" href="#product"><i class="icon-chevron-right"></i> Resource documentation</a></li>
                         <li class=""><a data-toggle="collapse" data-target="#accordion1" href="#product"><i class="icon-chevron-right"></i> Create a product</a></li>
-                        <li class=""><a data-toggle="collapse" data-target="#accordion2" href="#product-names"><i class="icon-chevron-right"></i> Get all organization names</a></li>
-                        <li class=""><a data-toggle="collapse" data-target="#accordion3" href="#product-target"><i class="icon-chevron-right"></i> Get an organization</a></li>
-                        <li class=""><a data-toggle="collapse" data-target="#accordion3" href="#product-target"><i class="icon-chevron-right"></i> Remove an organization</a></li>
-                        <li class=""><a data-toggle="collapse" data-target="#accordion4" href="#product-gid"><i class="icon-chevron-right"></i> Add/remove a corporate groupId</a></li>
+                        <li class=""><a data-toggle="collapse" data-target="#accordion2" href="#product-names"><i class="icon-chevron-right"></i> Get all product names</a></li>
+                        <li class=""><a data-toggle="collapse" data-target="#accordion3" href="#product-target"><i class="icon-chevron-right"></i> Get a product</a></li>
+                        <li class=""><a data-toggle="collapse" data-target="#accordion3" href="#product-target"><i class="icon-chevron-right"></i> Remove a product</a></li>
+                        <li class=""><a data-toggle="collapse" data-target="#accordion32" href="#product-modules"><i class="icon-chevron-right"></i> Get/update the product's modules</a></li>
+                        <li class=""><a data-toggle="collapse" data-target="#accordion4" href="#product-deliveries"><i class="icon-chevron-right"></i> Get the existing deliveries</a></li>
+                        <li class=""><a data-toggle="collapse" data-target="#accordion4" href="#product-deliveries"><i class="icon-chevron-right"></i> Create a new delivery</a></li>
+                        <li class=""><a data-toggle="collapse" data-target="#accordion5" href="#product-delivery"><i class="icon-chevron-right"></i> Get/update the modules of a delivery</a></li>
                     </ul>
                 </div>
                 <div class="span8">
@@ -91,24 +94,8 @@
                                     <h3>POST</h3>
                                     <ul>
                                         <li>Create a new product</li>
-                                        <li>Return status 201 if ok 409 if the product already exist</li><li>
-                                        Mandatory parameter:
-                                        <br/>
-                                        <table class="table table-bordered table-hover" style="font-size:90%;margin-top:8px;">
-                                            <thead>
-                                            <tr>
-                                                <td><strong>Parameter</strong></td>
-                                                <td><strong>Description</strong></td>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr>
-                                                <td>name</td>
-                                                <td>String that contains the name of the product to create</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </li>
+                                        <li>Expects that the request content contains the name of the product to create</li>
+                                        <li>Return status 201 if ok 409 if the product already exist</li>
                                     </ul>
                                 </li>
                             </ul>
@@ -153,54 +140,73 @@
                             </ul>
                         </div>
                     </section>
-                    <section id="product-versions">
+                    <section id="product-modules">
+                        <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion32">
+                            <h2>@ /product/{name}/modules</h2>
+                        </a>
+                        <div id="accordion32" class="collapse">
+                            <ul>
+                                <li>
+                                    <h3>GET</h3>
+                                    <ul>
+                                        <li>Get the list of module names of the product</li>
+                                        <li>Returns a JSON list of String that contains the module names</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <h3>POST</h3>
+                                    <ul>
+                                        <li>Set the list of module names of a product</li>
+                                        <li>Expects that the request content contains a JSON list of module names</li>
+                                        <li>Return status 201 if ok, 400 if request is malformed or 404 if the product does not exist</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </section>
+                    <section id="product-deliveries">
                         <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion4">
-                            <h2>@ /product/{name}/versions</h2>
+                            <h2>@ /product/{name}/deliveries</h2>
                         </a>
                         <div id="accordion4" class="collapse">
                             <ul>
                                 <li>
                                     <h3>GET</h3>
                                     <ul>
-                                        <li>Get all the versions of a product</li>
-                                        <li>Returns HTML view or a Json list of string</li>
+                                        <li>Get all the delivery names of a product</li>
+                                        <li>Returns a Json list of string which contains the deliveries</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <h3>POST</h3>
+                                    <ul>
+                                        <li>Create a new delivery for a product</li>
+                                        <li>Expects that the request content contains the name of the new delivery</li>
+                                        <li>Return status 201 if ok, 400 if request is malformed, 409 if the delivery already exist or 404 if the product does not exist</li>
                                     </ul>
                                 </li>
                             </ul>
                         </div>
                     </section>
-                    <section id="product-version">
+                    <section id="product-delivery">
                         <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion5">
-                            <h2>@ /product/{name}/{version}</h2>
+                            <h2>@ /product/{name}/deliveries/{deliveryId}</h2>
                         </a>
                         <div id="accordion5" class="collapse">
                             <ul>
                                 <li>
                                     <h3>GET</h3>
                                     <ul>
-                                        <li>Get a product version</li>
-                                        <li>Returns HTML view or a list of modules</li>
-                                        <li>Json module example:
-                                            <pre>${getModuleJsonModel()}</pre>
-                                        </li>
+                                        <li>Get the list of module Ids of a delivery</li>
+                                        <li>Returns a Json list of module Ids</li>
                                     </ul>
                                 </li>
                                 <li>
                                     <h3>POST</h3>
                                     <ul>
-                                        <li>Add/Update a product version</li>
-                                        <li>Expects a list of module in JSON in the request content</li>
-                                        <li>Return status 201 if ok 400 if the Json does not suits the model</li>
-                                        <li>Json module example:
-                                            <pre>${getModuleJsonModel()}</pre>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <h3>DELTE</h3>
-                                    <ul>
-                                        <li>Remove a product version</li>
-                                        <li>Return status 200 if ok</li>
+                                        <li>Set a module list to a delivery</li>
+                                        <li>Expects that the request content contains a list of existing moduleIds</li>
+                                        <li>Return status 201 if ok, 400 if request is malformed or 404 if the product/delivery/modules don't exist</li>
                                     </ul>
                                 </li>
                             </ul>
