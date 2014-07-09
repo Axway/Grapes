@@ -136,7 +136,6 @@ public class DependencyHandler {
                 LOG.info("Failed to find the latest artifact release version: " + artifact.getVersion());
             }
 
-            final ModelMapper modelMapper = new ModelMapper(repositoryHandler);
             final Dependency dependency = DataModelFactory.createDependency(modelMapper.getArtifact(artifact), dbDependency.getScope());
             dependency.setSourceName(DataUtils.getModuleName(dbDependency.getSource()));
             dependency.setSourceVersion(DataUtils.getModuleVersion(dbDependency.getSource()));
