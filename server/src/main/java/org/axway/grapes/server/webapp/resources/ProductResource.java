@@ -18,6 +18,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -76,6 +77,7 @@ public class ProductResource extends AbstractResource {
 
         final ListView view = new ListView("Product Ids list", "Products");
         final List<String> names = getProductHandler().getProductNames();
+        Collections.sort(names);
         view.addAll(names);
 
         return Response.ok(view).build();
@@ -155,6 +157,7 @@ public class ProductResource extends AbstractResource {
                     .entity("Query content should contains a list of module names.").build());
         }
 
+        Collections.sort(moduleNames);
         getProductHandler().setProductModules(name, moduleNames);
         return Response.ok().build();
     }
@@ -174,6 +177,7 @@ public class ProductResource extends AbstractResource {
         final DbProduct dbProduct = getProductHandler().getProduct(name);
         final List<String> deliveryNames = Lists.newArrayList(dbProduct.getDeliveries().keySet());
 
+        Collections.sort(deliveryNames);
         return Response.ok(deliveryNames).build();
     }
 
@@ -232,12 +236,44 @@ public class ProductResource extends AbstractResource {
                     .entity("Delivery " + delivery + " does not exist for product "+ name + ".").build());
         }
 
+        Collections.sort(modules);
         return Response.ok(modules).build();
+    }
+
+    /**
+     * Delete a delivery
+     *
+     * @param credential DbCredential
+     * @param name String product name
+     * @param delivery String delivery name
+     * @return Response
+     */
+    @DELETE
+    @Path("/{name}" + ServerAPI.GET_DELIVERIES+"/{delivery}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteDelivery(@Auth final DbCredential credential, @PathParam("name") final String name, @PathParam("delivery") final String delivery){
+        if(!credential.getRoles().contains(DbCredential.AvailableRoles.DATA_DELETER)){
+            throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
+        }
+        LOG.info("Got a delete delivery request for product " + name +".");
+
+        final DbProduct dbProduct = getProductHandler().getProduct(name);
+
+        if(! dbProduct.getDeliveries().containsKey(delivery)){
+            throw new WebApplicationException(Response.serverError().status(HttpStatus.NOT_FOUND_404)
+                    .entity("Delivery " + delivery + " does not exist for product "+ name + ".").build());
+        }
+
+        dbProduct.getDeliveries().remove(delivery);
+        getProductHandler().update(dbProduct);
+
+        return Response.ok().build();
     }
 
     /**
      * Sets the exhaustive list of modules that are embedded in a delivery
      *
+     * @param credential DbCredential
      * @param name String product name
      * @param delivery String delivery name
      * @param modules List<String> list of modules Ids
@@ -246,7 +282,10 @@ public class ProductResource extends AbstractResource {
     @POST
     @Path("/{name}" + ServerAPI.GET_DELIVERIES+"/{delivery}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response setDelivery(@PathParam("name") final String name, @PathParam("delivery") final String delivery, final List<String> modules){
+    public Response setDelivery(@Auth final DbCredential credential, @PathParam("name") final String name, @PathParam("delivery") final String delivery, final List<String> modules){
+        if(!credential.getRoles().contains(DbCredential.AvailableRoles.DATA_UPDATER)){
+            throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
+        }
         LOG.info("Got a set delivery modules request for product " + name +".");
 
         final DbProduct dbProduct = getProductHandler().getProduct(name);
@@ -262,6 +301,7 @@ public class ProductResource extends AbstractResource {
             moduleHandler.getModule(moduleId);
         }
 
+        Collections.sort(modules);
         dbProduct.getDeliveries().put(delivery, modules);
         getProductHandler().update(dbProduct);
 

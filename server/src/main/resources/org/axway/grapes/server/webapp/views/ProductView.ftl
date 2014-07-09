@@ -40,7 +40,7 @@
             <table class="table table-bordered table-hover">
                 <thead>
                 <tr>
-                    <th>Delivery Versions</th>
+                    <th>Deliveries</th>
                 </tr>
                 </thead>
                 <tbody>

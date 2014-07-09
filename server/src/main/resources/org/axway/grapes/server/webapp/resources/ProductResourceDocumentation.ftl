@@ -203,6 +203,13 @@
                                     </ul>
                                 </li>
                                 <li>
+                                    <h3>DELETE</h3>
+                                    <ul>
+                                        <li>Remove a delivery</li>
+                                        <li>Return status 200 if ok or 404 if the product/delivery does not exist</li>
+                                    </ul>
+                                </li>
+                                <li>
                                     <h3>POST</h3>
                                     <ul>
                                         <li>Set a module list to a delivery</li>

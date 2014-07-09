@@ -70,6 +70,9 @@
                                         <button type="button" class="btn btn-inverse" style="margin-left:8px;" onclick='displayOrganizationOptions();'>Organizations</button>
                                     </div>
                                     <div class="row-fluid" style="padding:4px">
+                                        <button type="button" class="btn btn-inverse" style="margin-left:8px;" onclick='displayProductOptions();'>Products</button>
+                                    </div>
+                                    <div class="row-fluid" style="padding:4px">
                                         <button type="button" class="btn btn-inverse" style="margin-left:8px;" onclick='displayModuleOptions();'>Modules</button>
                                     </div>
                                     <div class="row-fluid" style="padding:4px">
@@ -204,7 +207,47 @@
             </div>
             <div class="modal-footer">
                 <button class="btn" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">Cancel</button>
-                <button class="btn btn-primary" data-dismiss="modal" onclick='organizationSave();'>Save changes</button>
+                <button class="btn btn-primary" data-dismiss="modal" onclick='organizationSave();'>Save</button>
+            </div>
+        </div>
+
+        <!-- Modal Product Edition -->
+        <div id="productEdition" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">×</button>
+                <h3 id="myModalLabel">Create Product</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <label class="control-label" for="inputName">Name</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputProductName" placeholder="New Product name">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">Cancel</button>
+                <button class="btn btn-primary" data-dismiss="modal" onclick='productSave();'>Save</button>
+            </div>
+        </div>
+
+        <!-- Modal Delivery Edition -->
+        <div id="deliveryEdition" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">×</button>
+                <h3 id="myModalLabel">Create Product Delivery</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <label class="control-label" for="inputName">Name</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputDeliveryName" placeholder="New Product name">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">Cancel</button>
+                <button class="btn btn-primary" data-dismiss="modal" onclick='deliverySave();'>Save</button>
             </div>
         </div>
 

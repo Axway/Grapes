@@ -19,7 +19,57 @@ function loadOrganizationNames(organizationNameSelect){
 			$("#" + organizationNameSelect).empty().append(html);
 		}    
 	});  
-}function loadModuleNames(moduleNameSelect){
+}
+
+function loadProductNames(productNameSelect){
+    return $.ajax({
+        type: "GET",
+        accept: {
+            json: 'application/json'
+        },
+        url: "/product/names",
+        data: {},
+        dataType: "json",
+        success: function(data, textStatus) {
+            var html = "<option value=\"-\"></option>";
+
+            $.each(data, function(i, name) {
+                html += "<option value=\"";
+                html += name + "\">";
+                html += name + "</option>";
+            });
+
+            $("#" + productNameSelect).empty().append(html);
+        }
+    });
+}
+
+function loadProductDelivery(productName, productDeliverySelect){
+    return $.ajax({
+        type: "GET",
+        accept: {
+            json: 'application/json'
+        },
+        url: "/product/" + productName + "/deliveries",
+        data: {},
+        dataType: "json",
+        success: function(data, textStatus) {
+            var html = "<option value=\"-\"></option>";
+            $.each(data, function(i, version) {
+                html += "<option value=\"";
+                html += version + "\">";
+                html += version + "</option>";
+            });
+
+            $("#" + productDeliverySelect).empty().append(html);
+        },
+        error: function (xhr, ajaxOptions, thrownError){
+            $("#" + productDeliverySelect).empty();
+        }
+    });
+}
+
+function loadModuleNames(moduleNameSelect){
  	return $.ajax({
  		type: "GET",
  		accept: {
