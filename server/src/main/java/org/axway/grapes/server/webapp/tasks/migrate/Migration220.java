@@ -58,7 +58,8 @@ public final class Migration220 {
                 printer.println("Migration completed and successful");
             }
             else{
-                printer.println("There are " + String.valueOf(nbModules-migrated) + " remaining elements to migrate.");
+                final int remaining = nbModules-migrated;
+                printer.println("There are " + remaining + " remaining elements to migrate.");
             }
 
             printer.println("");
@@ -115,7 +116,7 @@ public final class Migration220 {
 
         // Fix artifact issue
         final List<String> submoduleArtifacts = getSubmoduleArtifacts(newModule);
-        boolean changes = newModule.getArtifacts().removeAll(submoduleArtifacts);
+        final boolean changes = newModule.getArtifacts().removeAll(submoduleArtifacts);
 
         if(changes){
             printer.println("\nFixing artifact duplication on " + module.getId());

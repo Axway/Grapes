@@ -111,7 +111,7 @@ public class ArtifactResource extends AbstractResource {
     @Path(ServerAPI.GET_GROUPIDS)
     public Response getGroupIds(@Context final UriInfo uriInfo){
         LOG.info("Got a get groupIds request.");
-        ListView view = new ListView("GroupIds view", "groupId");
+        final ListView view = new ListView("GroupIds view", "groupId");
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
