@@ -7,7 +7,7 @@ import java.io.*;
  *
  * <p>Provides generic methods </p>
  */
-public class FileUtils {
+public final class FileUtils {
 
     private FileUtils(){
         // hide utility class constructor

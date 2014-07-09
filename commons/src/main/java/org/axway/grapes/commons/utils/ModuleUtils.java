@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  *
  * @author jdcoffre
  */
-public class ModuleUtils {
+public final class ModuleUtils {
 
 
     private ModuleUtils(){

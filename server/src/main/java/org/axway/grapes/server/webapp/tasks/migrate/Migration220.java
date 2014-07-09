@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class Migration220 {
+public final class Migration220 {
 
     private static final String DB_CORPORATE_GID_COLLECTION_NAME = "DbCorporateGroupIds";
 
