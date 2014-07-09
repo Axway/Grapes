@@ -62,7 +62,7 @@ public class LicenseListView extends View {
         for(License license: licenses){
             table.addRow(license.getName(), license.getLongName(), license.getUrl(), license.getComments());
         }
-        System.out.println("-------------------------------------------> " + table.size());
+
         return table;
     }
 }
