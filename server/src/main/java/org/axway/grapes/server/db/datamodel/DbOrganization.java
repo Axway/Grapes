@@ -42,4 +42,11 @@ public class DbOrganization {
         this.corporateGroupIdPrefixes = corporateGroupIdPrefixes;
     }
 
+    public String getDatamodelVersion() {
+        return datamodelVersion;
+    }
+
+    public void setDatamodelVersion(String datamodelVersion) {
+        this.datamodelVersion = datamodelVersion;
+    }
 }
