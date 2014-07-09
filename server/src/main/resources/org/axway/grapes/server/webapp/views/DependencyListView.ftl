@@ -21,30 +21,66 @@
 	</head>
     <body>
 
-    	<h1>${title}</h1>
+        <div class="row-fluid">
+            <div class="navbar navbar-inverse navbar-fixed-top">
+                <div class="navbar-inner">
+                    <div class="container">
+                        <a class="brand active" href="/">Grapes</a>
+                        <div class="nav-collapse collapse">
+                            <ul class="nav">
+                                <li class="">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentations</a>
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop">
+                                        <li><a tabindex="-1" href="/organization">Organization API</a></li>
+                                        <li><a tabindex="-1" href="/product">Product API</a></li>
+                                        <li><a tabindex="-1" href="/module">Module API</a></li>
+                                        <li><a tabindex="-1" href="/artifact">Artifact API</a></li>
+                                        <li><a tabindex="-1" href="/license">License API</a></li>
+                                    </ul>
+                                </li>
+                                <li class="">
+                                    <a href="/sequoia">Sequoïa</a>
+                                </li>
+                                <li class="">
+                                    <a href="/webapp">Data Browser</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container" style="">
+            <div class="row-fluid">
+                <h1>${title}</h1>
+            </div>
+        </div>
 
         <#assign table = getTable()>
         <#assign headers = table.getHeaders()>
         <#assign rows = table.getRows()>
-        <div class="row-fluid" id='table_div'>
-            <table class="table table-bordered table-hover sortable">
-                <thead>
-                    <tr>
-                    <#list headers as header>
-                        <th><span>${header}</span></th>
-                    </#list>
-                    </tr>
-                </thead>
-                <tbody>
-                    <#list rows as row>
+        <div class="container" style="">
+            <div class="row-fluid" id='table_div'>
+                <table class="table table-bordered table-hover sortable">
+                    <thead>
                         <tr>
-                            <#list row as cell>
-                                <td>${cell}</td>
-                            </#list>
+                        <#list headers as header>
+                            <th><span>${header}</span></th>
+                        </#list>
                         </tr>
-                    </#list>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <#list rows as row>
+                            <tr>
+                                <#list row as cell>
+                                    <td>${cell}</td>
+                                </#list>
+                            </tr>
+                        </#list>
+                    </tbody>
+                </table>
+            </div>
         </div>
 	    
 	 </body>

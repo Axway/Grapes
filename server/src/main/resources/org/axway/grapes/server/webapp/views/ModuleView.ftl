@@ -52,7 +52,7 @@
             <div class="row-fluid">
                 <h1>Module</h1>
             </div>
-            <div class="row-fluid">
+            <!--<div class="row-fluid">
                 <div class="navbar grapes-ariane-navbar">
                     <div class="navbar-inner">
                         <div class="container">
@@ -76,7 +76,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>-->
         </div>
 
         <div class="container module-all">
@@ -99,13 +99,13 @@
                 <table class="table table-bordered table-hover sortable">
                     <thead>
                     <tr>
-                        <th>Submodule</th>
-                        <th>GroupId</th>
-                        <th>ArtifactId</th>
-                        <th>Version</th>
-                        <th>Classifier</th>
-                        <th>Type</th>
-                        <th>Extension</th>
+                        <th><span>Submodule</span></th>
+                        <th><span>GroupId</span></th>
+                        <th><span>ArtifactId</span></th>
+                        <th><span>Version</span></th>
+                        <th><span>Classifier</span></th>
+                        <th><span>Type</span></th>
+                        <th><span>Extension</span></th>
                     </tr>
                     </thead>
                     <tbody>
