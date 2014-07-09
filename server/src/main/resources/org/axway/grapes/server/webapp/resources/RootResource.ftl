@@ -30,10 +30,11 @@
                                         <#if getOnlineDocumentation()??>
                                         <li><a tabindex="-1" href="${getOnlineDocumentation()}">Online Documentation</a></li>
                                         </#if>
+                                        <li><a tabindex="-1" href="/organization">Organization API</a></li>
+                                        <li><a tabindex="-1" href="/product">Product API</a></li>
                                         <li><a tabindex="-1" href="module">Module API</a></li>
                                         <li><a tabindex="-1" href="artifact">Artifact API</a></li>
                                         <li><a tabindex="-1" href="license">License API</a></li>
-                                        <li><a tabindex="-1" href="/organization">Organization API</a></li>
                                     </ul>
                                 </li>
                                 <li class="">

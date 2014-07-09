@@ -10,7 +10,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
- * Artifact Handler
+ * Organization Handler
  *
  * <p>Manages all operation regarding Organizations. It can, get/update Organizations of the database.</p>
  *

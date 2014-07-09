@@ -5,7 +5,7 @@
 		<meta name="author" content="jdcoffre">
 		<meta name="description" content="Organization Resource Documentation">
 		
-		<title>License API Documentation</title>
+		<title>Organization API Documentation</title>
 		
 		<!-- Bootstrap -->
 		<link href="/public/twitter-bootstrap-2.3.2/css/bootstrap.css" rel="stylesheet">
@@ -29,10 +29,11 @@
                                         <#if getOnlineDocumentation()??>
                                         <li><a tabindex="-1" href="${getOnlineDocumentation()}">Online Documentation</a></li>
                                         </#if>
+                                        <li><a tabindex="-1" href="/organization">Organization API</a></li>
+                                        <li><a tabindex="-1" href="/product">Product API</a></li>
                                         <li><a tabindex="-1" href="/module">Module API</a></li>
                                         <li><a tabindex="-1" href="/artifact">Artifact API</a></li>
                                         <li><a tabindex="-1" href="/license">License API</a></li>
-                                        <li><a tabindex="-1" href="/organization">Organization API</a></li>
                                     </ul>
                                 </li>
                                 <li class="">

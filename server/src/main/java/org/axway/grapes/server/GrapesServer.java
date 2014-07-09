@@ -92,6 +92,7 @@ public class GrapesServer extends Service<GrapesServerConfig> {
 
         // Resources
         env.addResource(new OrganizationResource(repoHandler, config));
+        env.addResource(new ProductResource(repoHandler, config));
         env.addResource(new ModuleResource(repoHandler, config));
         env.addResource(new ArtifactResource(repoHandler, config));
         env.addResource(new LicenseResource(repoHandler, config));

@@ -4,21 +4,50 @@
 function displayOrganizationOptions(){
     $("#targets").empty();
     cleanAction();
-	var organizationIds = "<div class=\"control-group\">\n";
-	organizationIds += "   <label class=\"control-label\" for=\"organizationName\" style=\"width: auto;\">name: </label>\n";
-	organizationIds += "      <div class=\"controls\"  style=\"margin-left: 75px;\"><select id=\"organizationName\"></select></div>\n";
-	organizationIds += "</div>\n";
-	$("#ids").empty().append(organizationIds);
-	$("#filters").empty();
-	var organizationActions = "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
-	organizationActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='createOrganization();'>New</button>\n";
-	organizationActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='getOrganizationOverview();'>Overview</button>\n";
-	organizationActions += "</div>\n";
-	$("#action").empty().append(organizationActions);
-	$("#action-perform").empty();
-	loadOrganizationNames("organizationName");
+    var organizationIds = "<div class=\"control-group\">\n";
+    organizationIds += "   <label class=\"control-label\" for=\"organizationName\" style=\"width: auto;\">name: </label>\n";
+    organizationIds += "      <div class=\"controls\"  style=\"margin-left: 75px;\"><select id=\"organizationName\"></select></div>\n";
+    organizationIds += "</div>\n";
+    $("#ids").empty().append(organizationIds);
+    $("#filters").empty();
+    var organizationActions = "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
+    organizationActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='createOrganization();'>New</button>\n";
+    organizationActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='getOrganizationOverview();'>Overview</button>\n";
+    organizationActions += "</div>\n";
+    $("#action").empty().append(organizationActions);
+    $("#action-perform").empty();
+    loadOrganizationNames("organizationName");
 
-	$("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getOrganizationList(\"organizationName\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+    $("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getOrganizationList(\"organizationName\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+}
+
+function displayProductOptions(){
+    $("#targets").empty();
+    cleanAction();
+    var productIds = "<div class=\"control-group\">\n";
+    productIds += "   <label class=\"control-label\" for=\"productName\" style=\"width: auto;\">name: </label>\n";
+    productIds += "      <div class=\"controls\"  style=\"margin-left: 75px;\"><select id=\"productName\"></select></div>\n";
+    productIds += "</div>\n";
+    productIds += "<div class=\"control-group\">\n";
+    productIds += "   <label class=\"control-label\" for=\"productDelivery\" style=\"width: auto;\">delivery: </label>\n";
+    productIds += "      <div class=\"controls\"  style=\"margin-left: 75px;\"><select id=\"productDelivery\"></select></div>\n";
+    productIds += "</div>\n";
+    $("#ids").empty().append(productIds);
+    $("#filters").empty();
+    var productActions = "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
+    productActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='createProduct();'>New Product</button>\n";
+    productActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='getProductOverview();'>Overview</button>\n";
+    productActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='deleteProduct();'>Delete</button>\n";
+    productActions += "</div>\n";
+    $("#action").empty().append(productActions);
+    $("#action-perform").empty();
+    loadProductNames("productName");
+
+    $("#productName").change(function () {
+        loadProductDelivery($("#productName").val(), "productDelivery");
+    });
+
+    $("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getProductList(\"productName\", \"productDelivery\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
 }
 
 function displayModuleOptions(){
@@ -187,6 +216,59 @@ function getOrganizationList(organizationNameFieldId, targetedFieldId){
     });
 }
 
+function getProductList(productNameFieldId, productDeliveryFieldId, targetedFieldId){
+    $("#" + targetedFieldId).empty();
+    $('.alert').hide();
+    cleanAction();
+    var productName = $("#" + productNameFieldId).val();
+    var productDelivery = $("#" + productDeliveryFieldId).val();
+
+    if(productName == '-' || productName == null){
+        return;
+    }
+
+    var html = "";
+    if(productDelivery != '-' && productDelivery != null){
+        html += "<label class=\"radio\">"
+        html += "<input type=\"radio\" name=\"productRadio\" value=\""+ productDelivery+ "\" onclick=\"cleanAction()\">";
+        html += productDelivery;
+        html += "</label>";
+        $("#" + targetedFieldId).append(html);
+        $("input:radio:first").attr('checked', true);
+        return;
+    }
+
+
+    html += "<label class=\"radio\">"
+    html += "<input type=\"radio\" name=\"productRadio\" value=\""+ productName+ "\" onclick=\"cleanAction()\">";
+    html += productName;
+    html += "</label>";
+
+    $.ajax({
+        type: "GET",
+        accept: {
+            json: 'application/json'
+        },
+        url: "/product/" + productName + "/deliveries",
+        data: {},
+        dataType: "json",
+        success: function(data, textStatus) {
+            $.each(data, function(i, delivery) {
+                html += "<label class=\"radio\">"
+                html += "<input type=\"radio\" name=\"productRadio\" value=\""+ delivery+ "\" onclick=\"cleanAction()\">";
+                html += delivery;
+                html += "</label>";
+            });
+
+            $("#" + targetedFieldId).append(html);
+        }
+    }).done(function(){
+        setTimeout(function(){
+            $("input:radio:first").attr('checked', true);
+        }, 500);
+    });
+}
+
 function getModuleList(moduleNameFieldId, moduleVersionFieldId, promotedFieldId, targetedFieldId){
     $("#" + targetedFieldId).empty();
     $('.alert').hide();
@@ -206,30 +288,30 @@ function getModuleList(moduleNameFieldId, moduleVersionFieldId, promotedFieldId,
     }
 
     $.ajax({
-    		type: "GET",
-    		accept: {
-    			json: 'application/json'
-    		},
-    		url: "/module/all?" + queryParams ,
-    		data: {},
-    		dataType: "json",
-    		success: function(data, textStatus) {
-    			var html = "";
-    			$.each(data, function(i, module) {
-    			    var moduleId = module.name + ":" + module.version;
-    			    html += "<label class=\"radio\">"
-    				html += "<input type=\"radio\" name=\"moduleId\" value=\""+ moduleId+ "\" onclick=\"cleanAction()\">";
-    				html += moduleId;
-    				html += "</label>"
-    			});
-
-    			$("#" + targetedFieldId).append(html);
-    		}
-    }).done(function(){
-                setTimeout(function(){
-                      $("input:radio[name=moduleId]:first").attr('checked', true);
-                    }, 500);
+        type: "GET",
+        accept: {
+            json: 'application/json'
+        },
+        url: "/module/all?" + queryParams ,
+        data: {},
+        dataType: "json",
+        success: function(data, textStatus) {
+            var html = "";
+            $.each(data, function(i, module) {
+                var moduleId = module.name + ":" + module.version;
+                html += "<label class=\"radio\">"
+                html += "<input type=\"radio\" name=\"moduleId\" value=\""+ moduleId+ "\" onclick=\"cleanAction()\">";
+                html += moduleId;
+                html += "</label>"
             });
+
+            $("#" + targetedFieldId).append(html);
+        }
+    }).done(function(){
+        setTimeout(function(){
+            $("input:radio[name=moduleId]:first").attr('checked', true);
+        }, 500);
+    });
 }
 
 function getArtifactList(groupIdFieldId, artifactIdFieldId, versionFieldId, doNotUseFieldId, targetedFieldId){
@@ -445,7 +527,6 @@ function deleteOrganization(organizationId){
      $('#deleteModal').modal('show');
  }
 
-
  function postDeleteOrganization(){
      var organization = $('input[name=organizationId]:checked', '#targets').val();
 
@@ -458,11 +539,387 @@ function deleteOrganization(organizationId){
              alert("The action cannot be performed: status " + xhr.status);
          }
      }).done(function(){
-             cleanAction();
-             updateLicenseOptions();
-         }
-     );
+            cleanAction();
+            updateOrganizationOptions();
+        }
+    );
  }
+
+function createProduct(){
+    $('#productEdition').find('#inputProductName').val("");
+    $("#productEdition").modal('show');
+}
+
+function getProductOverview(){
+    var target = $('input:checked', '#targets').val();
+    if(target == null){
+        $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
+        $("#anyAlert").show();
+        updateProductOptions();
+        return;
+    }
+
+    var productName = $("#productName").val();
+    if(target != productName){
+        getProductDeliveryOverview(target,productName);
+        return;
+    }
+
+    var html = "<h3>Project Overview</h3><br/>\n";
+    html += "<p><strong>Name:</strong> "+productName+"</p>\n";
+
+
+    html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
+    html += "<thead><tr><th>Module Names</th></tr></thead>\n";
+    html += "<tbody>\n";
+
+    $.ajax({
+        type: "GET",
+        url: "/product/"+ productName + "/modules",
+        data: {},
+        dataType: "json",
+        success: function(data, textStatus) {
+            $.each(data, function(i, moduleName) {
+                html += "<tr id=\""+moduleName+"-row\"><td name=\"moduleRow\" id=\""+moduleName+"\" onclick=\"removeProductModuleAction('"+moduleName+"');\">" + moduleName + "</td></tr>\n";
+            });
+            html += "</tbody>\n";
+            html += "</table>\n";
+            html += "<div id=\"moduleAddDiv\"/>\n";
+
+            html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
+            html += "<thead><tr><th>Deliveries</th></tr></thead>\n";
+            html += "<tbody>\n";
+            $.ajax({
+                type: "GET",
+                url: "/product/"+ productName + "/deliveries",
+                data: {},
+                dataType: "json",
+                success: function(data, textStatus) {
+                    $.each(data, function(i, delivery) {
+                        html += "<tr id=\""+delivery+"-row\"><td>" + delivery + "</td></tr>\n";
+                    });
+
+                    html += "</tbody>\n<br/>\n";
+                    html += "</table>\n";
+                    html +="<button type=\"button\" class=\"btn\" style=\"margin:2px;\" onclick=\"createDelivery();\">New Delivery</button>\n";
+                    $("#results").empty().append(html);
+                    addProjectModuleAction(productName);
+                }
+            })
+        }
+    })
+}
+
+function createDelivery(){
+    $('#deliveryEdition').find('#inputDeliveryName').val("");
+    $("#deliveryEdition").modal('show');
+}
+
+function deliverySave(){
+    var productName = $("#productName").val();
+    $.ajax({
+        url: "/product/" + productName + "/deliveries",
+        method: 'POST',
+        contentType: 'application/json',
+        data: $('#inputDeliveryName').val(),
+        error: function(xhr, error){
+            alert("The action cannot be performed: status " + xhr.status);
+        }
+    }).done(function(){
+        cleanAction();
+        updateProduct();
+    });
+}
+
+function addProjectModuleAction(productName){
+    var html ="<div class=\"row-fluid\">\n";
+    html +="<select id=\"modules\"/>\n";
+    html +="<button type=\"button\" class=\"btn\" style=\"margin:2px;\" onclick=\"addProductModule('"+productName+"');\">Add Module</button>\n";
+    html +="</div>\n";
+    $("#moduleAddDiv").empty().append(html);
+    return $.ajax({
+        type: "GET",
+        url: "/module/names",
+        data: {},
+        dataType: "json",
+        success: function(data, textStatus) {
+            $.each(data, function(i, moduleNames) {
+                if($('#table-of-result tr > td:contains("'+moduleNames+'")').length == 0){
+                    html += "<option value=\"";
+                    html += moduleNames + "\">";
+                    html += moduleNames + "</option>\n";
+                    $("#modules").append(html);
+                }
+            });
+        }
+    })
+}
+
+function addProductModule(productName){
+    var toSend = "[\"";
+    toSend += $("#modules").val();
+    toSend += "\"";
+    $('td[name=moduleRow]').each(function(i, moduleRow) {
+        toSend += ",\"";
+        toSend += moduleRow.id;
+        toSend += "\"";
+    });
+    toSend += "]";
+    $.ajax({
+        type: "POST",
+        url: "/product/" + productName + "/modules" ,
+        data: toSend,
+        contentType: 'application/json',
+        error: function(xhr, error){
+            alert("The action cannot be performed: status " + xhr.status);
+        }
+    }).done(updateProduct());
+}
+
+function removeProductModuleAction(moduleName){
+    var productName = $("#productName").val();
+    var html ="<div class=\"row-fluid\">The module name "+moduleName+" has been associated to the product <strong>"+productName+"</strong></div>\n";
+    html += "\n<div class=\"row-fluid\">Would you like to remove this association?</div>\n";
+    $("#removeAssociationModal-text").empty().append(html);
+
+    $('#removeAssociationModal-button').attr('onclick', 'removeProductModule(\''+moduleName+'\');');
+
+    $("#removeAssociationModal").modal('show');
+}
+
+function removeProductModule(moduleName){
+    var toSend = "[";
+    $('td[name=moduleRow]').each(function(i, moduleRow) {
+        if(moduleName != moduleRow.id){
+            if(toSend.length > 1){
+                toSend += ",";
+            }
+            toSend += "\"";
+            toSend += moduleRow.id;
+            toSend += "\"";
+        }
+    });
+    toSend += "]";
+
+    var productName = $("#productName").val();
+    $.ajax({
+        type: "POST",
+        url: "/product/" + productName + "/modules" ,
+        data: toSend,
+        contentType: 'application/json',
+        error: function(xhr, error){
+            $("#removeAssociationModal").modal('hide');
+            alert("The action cannot be performed: status " + xhr.status);
+        }
+    }).done(function(){
+        $("#removeAssociationModal").modal('hide');
+        updateProduct();
+    });
+}
+
+function getProductDeliveryOverview(delivery, product){
+    var target = $('input:checked', '#targets').val();
+    if(target == null){
+        $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
+        $("#anyAlert").show();
+        updateProductOptions();
+        return;
+    }
+
+    var html = "<h3>Delivery Overview</h3><br/>\n";
+    html += "<p><strong>Product Name:</strong> "+product+"</p>\n";
+    html += "<p><strong>Delivery Name:</strong> "+delivery+"</p>\n";
+
+    html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
+    html += "<thead><tr><th>Module Names</th></tr></thead>\n";
+    html += "<tbody>\n";
+
+    $.ajax({
+        type: "GET",
+        url: "/product/"+ product + "/deliveries/" + delivery,
+        data: {},
+        dataType: "json",
+        success: function(data, textStatus) {
+            $.each(data, function(i, moduleId) {
+                html += "<tr id=\""+moduleId+"-row\"><td name=\"moduleRow\" id=\""+moduleId+"\" onclick=\"removeDeliveryModuleAction('"+moduleId+"');\">" + moduleId + "</td></tr>\n";
+            });
+
+            html += "</tbody>\n";
+            html += "</table>\n";
+            html += "<div id=\"moduleAddDiv\"/>\n";
+            $("#results").empty().append(html);
+            addDeliveryModuleAction(delivery, product);
+        }
+    })
+}
+
+function addDeliveryModuleAction(delivery, product){
+    var html ="<div class=\"row-fluid\">\n";
+    html +="<select id=\"modules\"/>\n";
+    html +="<button type=\"button\" class=\"btn\" style=\"margin:2px;\" onclick=\"addDeliveryModule('"+delivery+"','"+product+"');\">Add Module</button>\n";
+    html +="</div>\n";
+    $("#moduleAddDiv").empty().append(html);
+
+    return $.ajax({
+        type: "GET",
+        url: "/product/" + product +"/modules",
+        data: {},
+        dataType: "json",
+        success: function(data, textStatus) {
+            $.each(data, function(i, moduleNames) {
+                $.ajax({
+                    type: "GET",
+                    url: "/module/all?name=" + moduleNames,
+                    data: {},
+                    dataType: "json",
+                    success: function(data, textStatus) {
+                        $.each(data, function(i, module) {
+                            var moduleId = module.name + ":" + module.version;
+                            if($('#table-of-result tr > td:contains("'+moduleId+'")').length == 0){
+                                var opt = "<option value=\"";
+                                opt += moduleId + "\">";
+                                opt += moduleId + "</option>\n";
+                                $("#modules").append(opt);
+                            }
+                        });
+                    }
+                })
+            });
+        }
+    })
+}
+
+function addDeliveryModule(delivery, product){
+    var toSend = "[\"";
+    toSend += $("#modules").val();
+    toSend += "\"";
+    $('td[name=moduleRow]').each(function(i, moduleRow) {
+        toSend += ",\"";
+        toSend += moduleRow.id;
+        toSend += "\"";
+    });
+    toSend += "]";
+    $.ajax({
+        type: "POST",
+        url: "/product/" + product + "/deliveries/" + delivery ,
+        data: toSend,
+        contentType: 'application/json',
+        error: function(xhr, error){
+            alert("The action cannot be performed: status " + xhr.status);
+        }
+    }).done(updateProduct());
+}
+
+function removeDeliveryModuleAction(moduleName){
+    var target = $('input:checked', '#targets').val();
+    var html ="<div class=\"row-fluid\">The module "+moduleName+" has been associated to the delivery <strong>"+target+"</strong></div>\n";
+    html += "\n<div class=\"row-fluid\">Would you like to remove this association?</div>\n";
+    $("#removeAssociationModal-text").empty().append(html);
+
+    $('#removeAssociationModal-button').attr('onclick', 'removeDeliveryModule(\''+moduleName+'\');');
+
+    $("#removeAssociationModal").modal('show');
+}
+
+function removeDeliveryModule(moduleName){
+    var toSend = "[";
+    $('td[name=moduleRow]').each(function(i, moduleRow) {
+        if(moduleName != moduleRow.id){
+            if(toSend.length > 1){
+                toSend += ",";
+            }
+            toSend += "\"";
+            toSend += moduleRow.id;
+            toSend += "\"";
+        }
+    });
+    toSend += "]";
+
+    var productName = $("#productName").val();
+    var delivery = $('input:checked', '#targets').val();
+    $.ajax({
+        type: "POST",
+        url: "/product/" + productName + "/deliveries/" + delivery ,
+        data: toSend,
+        contentType: 'application/json',
+        error: function(xhr, error){
+            $("#removeAssociationModal").modal('hide');
+            alert("The action cannot be performed: status " + xhr.status);
+        }
+    }).done(function(){
+        $("#removeAssociationModal").modal('hide');
+        updateProduct();
+    });
+}
+
+function deleteProduct(){
+    var toDelete = $('input:checked', '#targets').val();
+    if(toDelete == null){
+        $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
+        $("#anyAlert").show();
+        updateProductOptions();
+        return;
+    }
+
+    $("#toDelete").text(toDelete);
+    $("#impactedElements").empty();
+    $('#deleteModal-button').attr('onclick', 'postDeleteProduct();');
+    $('#deleteModal').modal('show');
+}
+
+function postDeleteProduct(){
+    var productName = $("#productName").val();
+    var toDelete = $("#toDelete").text();
+
+    if(productName == toDelete){
+        $.ajax({
+            type: "DELETE",
+            url: "/product/" + productName,
+            data: {},
+            dataType: "html",
+            error: function(xhr, error){
+                alert("The action cannot be performed: status " + xhr.status);
+            }
+        }).done(function(){
+                cleanAction();
+                updateProductOptions();
+            }
+        );
+        return;
+    }
+
+    if(productName != toDelete){
+        $.ajax({
+            type: "DELETE",
+            url: "/product/" + productName + "/deliveries/" + toDelete,
+            data: {},
+            dataType: "html",
+            error: function(xhr, error){
+                alert("The action cannot be performed: status " + xhr.status);
+            }
+        }).done(function(){
+                cleanAction();
+                updateProductOptions();
+            }
+        );
+        return;
+    }
+}
+
+function productSave(){
+    $.ajax({
+        url: "/product",
+        method: 'POST',
+        contentType: 'application/json',
+        data: $('#inputProductName').val(),
+        error: function(xhr, error){
+            alert("The action cannot be performed: status " + xhr.status);
+        }
+    }).done(function(){
+        cleanAction();
+        updateProductOptions();
+    });
+}
 
 
 function getModuleOverview(){
@@ -1091,5 +1548,26 @@ function updateLicenseOptions(){
 function updateLicenseReport(){
     setTimeout(function(){
       getModuleLicenses();
+    }, 500);
+}
+
+/*WorkAround*/
+function updateOrganizationOptions(){
+    setTimeout(function(){
+        displayOrganizationOptions();
+    }, 500);
+}
+
+/*WorkAround*/
+function updateProductOptions(){
+    setTimeout(function(){
+        displayProductOptions();
+    }, 500);
+}
+
+/*WorkAround*/
+function updateProduct(){
+    setTimeout(function(){
+        getProductOverview();
     }, 500);
 }

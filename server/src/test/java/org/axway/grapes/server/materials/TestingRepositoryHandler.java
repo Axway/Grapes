@@ -287,6 +287,26 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
+    public void store(DbProduct dbProduct) {
+
+    }
+
+    @Override
+    public DbProduct getProduct(String name) {
+        return null;
+    }
+
+    @Override
+    public List<String> getProductNames() {
+        return null;
+    }
+
+    @Override
+    public void deleteProduct(String name) {
+
+    }
+
+    @Override
     public List<String> getLicenseNames(final FiltersHolder filters) {
         final List<String> names = new ArrayList<String>();
 

@@ -29,7 +29,7 @@ import java.io.IOException;
  * 
  * @author jdcoffre
  */
-public abstract class AbstractResource extends View{
+public abstract class AbstractResource extends View {
 
     private final RepositoryHandler repositoryHandler;
     private final GrapesServerConfig grapesConfig;
@@ -57,10 +57,19 @@ public abstract class AbstractResource extends View{
     /**
      * Return a OrganizationHandler
      *
-     * @return ArtifactHandler
+     * @return OrganizationHandler
      */
     protected OrganizationHandler getOrganizationHandler(){
         return new OrganizationHandler(repositoryHandler);
+    }
+
+    /**
+     * Return a ProductHandler
+     *
+     * @return ProductHandler
+     */
+    protected ProductHandler getProductHandler(){
+        return new ProductHandler(repositoryHandler);
     }
 
     /**
