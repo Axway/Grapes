@@ -146,7 +146,7 @@
                     </section>
                     <section id="organization-gid">
                         <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion4">
-                            <h2>@ /organization/{name}/corporateGroupId</h2>
+                            <h2>@ /organization/{name}/corporateGroupIds</h2>
                         </a>
                         <div id="accordion4" class="collapse">
                             <ul>
