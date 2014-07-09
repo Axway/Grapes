@@ -67,7 +67,7 @@ public class DependencyListViewTest {
         assertEquals(DependencyListView.SIZE_FIELD, results.getHeaders().get(4));
         assertEquals(DependencyListView.SCOPE_FIELD, results.getHeaders().get(5));
         assertEquals(DependencyListView.LICENSE_FIELD, results.getHeaders().get(6));
-        assertEquals(DependencyListView.LICENSE_LONG_NAME__FIELD, results.getHeaders().get(7));
+        assertEquals(DependencyListView.LICENSE_LONG_NAME_FIELD, results.getHeaders().get(7));
         assertEquals(DependencyListView.LICENSE_URL_FIELD, results.getHeaders().get(8));
         assertEquals(DependencyListView.LICENSE_COMMENT_FIELD, results.getHeaders().get(9));
     }

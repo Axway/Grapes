@@ -53,7 +53,7 @@ public class DependencyListView extends View {
     public static final String LICENSE_FIELD = "License";
 
     // Value of the header of the column "License Long Name" in the dependency table
-    public static final String LICENSE_LONG_NAME__FIELD = "License Full Name";
+    public static final String LICENSE_LONG_NAME_FIELD = "License Full Name";
 
     // Value of the header of the column "license url" in the dependency table
     public static final String LICENSE_URL_FIELD = "License Url";
@@ -195,7 +195,7 @@ public class DependencyListView extends View {
         }
 
         if(decorator.getShowLicensesLongName()){
-            headers.add(LICENSE_LONG_NAME__FIELD);
+            headers.add(LICENSE_LONG_NAME_FIELD);
         }
 
         if(decorator.getShowLicensesUrl()){
