@@ -86,7 +86,7 @@ public class LicenseHandler {
 
         if(license == null){
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-                    .entity("License " + license + " does not exist.").build());
+                    .entity("License " + name + " does not exist.").build());
         }
 
         return license;
