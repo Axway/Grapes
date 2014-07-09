@@ -1,5 +1,6 @@
 1.3.1
 -------------
+* Add Product [see](https://github.com/Axway/Grapes/wiki/Main-concepts#product)
 * Add Organizations [see](https://github.com/Axway/Grapes/wiki/Main-concepts#organization)
 * [Github issue #17](https://github.com/Axway/Grapes/issues/17) Manage cache for costly requests
 * [Github issue #18](https://github.com/Axway/Grapes/issues/18) Fix getting all promoted modules
