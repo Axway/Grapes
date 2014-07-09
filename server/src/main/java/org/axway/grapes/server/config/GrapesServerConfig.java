@@ -2,8 +2,6 @@ package org.axway.grapes.server.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yammer.dropwizard.config.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -22,8 +20,6 @@ import javax.validation.constraints.NotNull;
  * java -Ddw.tmpDirectory=/new/tmp/directory server my-config.json
  */
 public class GrapesServerConfig extends Configuration{
-
-    private static final Logger LOG = LoggerFactory.getLogger(GrapesServerConfig.class);
 
     @Valid
     @JsonProperty
