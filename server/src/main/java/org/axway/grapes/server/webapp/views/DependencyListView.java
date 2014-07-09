@@ -10,7 +10,7 @@ import org.axway.grapes.server.webapp.views.serialization.DependencyListSerializ
 import org.axway.grapes.server.webapp.views.utils.Table;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -65,7 +65,7 @@ public class DependencyListView extends View {
     private final List<Dependency> dependencies = new ArrayList<Dependency>();
 
     // The available licenses to complete dependencies' information
-    private Map<String, License> licenseDictionary = new Hashtable<String, License>();
+    private Map<String, License> licenseDictionary = new HashMap<String, License>();
 
     public DependencyListView(final String title, final List<License> licenses, final Decorator decorator) {
         super("DependencyListView.ftl");
