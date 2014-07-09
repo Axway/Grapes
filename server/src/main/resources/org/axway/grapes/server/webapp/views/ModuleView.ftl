@@ -64,6 +64,14 @@
                                 <li><a href="/module/${module.getName()}/versions">/${module.getName()}</a></li>
                                 <li class="divider-vertical"></li>
                                 <li><a class="active">/${module.getVersion()}</a></li>
+                                <li class="divider-vertical"></li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <b class="caret"></b> </a>
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop">
+                                        <li><a tabindex="-1" href="/module/${module.getName()}/${module.getVersion()}/dependencies">/dependencies</a></li>
+                                        <li><a tabindex="-1" href="/module/${module.getName()}/${module.getVersion()}/dependencies?showCorporate=false&showThirdparty=true">/thirdparty</a></li>
+                                    </ul>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -133,6 +141,7 @@
 
     <!-- Make the table sortable -->
     <script src="/public/jquery-1.9.1/jquery.js"></script>
+    <script src="/public/twitter-bootstrap-2.3.2/js/bootstrap.min.js"></script>
     <script src="/public/jquery-tablesorter-1.10.2/jquery.tablesorter.min.js"></script>
     <script type="text/javascript">
         $(function(){
