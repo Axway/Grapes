@@ -457,10 +457,6 @@ public class ArtifactResource extends AbstractResource {
         }
 
         final DbOrganization organization = getOrganizationHandler().getOrganization(module.getOrganization());
-        if(organization == null){
-            return Response.noContent().build();
-        }
-
         final OrganizationView view = new OrganizationView(getModelMapper().getOrganization(organization));
         return Response.ok(view).build();
     }
