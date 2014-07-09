@@ -281,7 +281,7 @@
         </section>
         <section id="artifact-ancestors">
             <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion8">
-                <h2>@ /artifact/{gavc}/{version}/ancestors</h2>
+                <h2>@ /artifact/{gavc}/ancestors</h2>
             </a>
             <div id="accordion8" class="collapse">
                 <ul>
