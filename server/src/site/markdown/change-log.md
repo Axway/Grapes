@@ -1,4 +1,4 @@
-1.3.1
+1.4.0
 -------------
 * Add Product [see](https://github.com/Axway/Grapes/wiki/Main-concepts#product)
 * Add Organizations [see](https://github.com/Axway/Grapes/wiki/Main-concepts#organization)
