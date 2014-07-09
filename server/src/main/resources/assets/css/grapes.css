@@ -1,4 +1,9 @@
-h1 {
-    padding: 10px 30px;
-    margin-bottom: 30px;
+.grapes-ariane-navbar {
+    display: inline-block;
+    margin-top:15;
+ }
+
+.grapes-ariane-navbar .navbar-inner ul li a {
+    padding-right:0;
+    padding-left:0;
 }

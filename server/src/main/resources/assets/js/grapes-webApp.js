@@ -941,7 +941,8 @@ function getModuleOverview(){
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).filter(".row-fluid"));
+                $("#results").empty().append($(data).filter(".module-all"));
+                $('.sortable').tablesorter();
             }
         })
 }

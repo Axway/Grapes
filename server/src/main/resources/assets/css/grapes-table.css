@@ -1,19 +1,21 @@
-#table thead tr th.headerSortUp span {
+table thead tr th.headerSortUp span {
   background-image: url('/assets/img/up-arrow.png');
 }
 
-#table thead tr th.headerSortDown span {
+table thead tr th.headerSortDown span {
   background-image: url('/assets/img/down-arrow.png');
 }
 
-#table thead {
+table thead {
   cursor: pointer;
 }
-#table thead tr th {
+
+table thead tr th {
   padding: 12px 30px;
   padding-left: 10px;
 }
-#table thead tr th span {
+
+table thead tr th span {
   padding-right: 20px;
   background-repeat: no-repeat;
   background-position: 100% 100%;

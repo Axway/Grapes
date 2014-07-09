@@ -27,7 +27,7 @@
         <#assign headers = table.getHeaders()>
         <#assign rows = table.getRows()>
         <div class="row-fluid" id='table_div'>
-            <table class="table table-bordered table-hover sortable" id="table">
+            <table class="table table-bordered table-hover sortable">
                 <thead>
                     <tr>
                     <#list headers as header>
