@@ -433,6 +433,7 @@ public class ArtifactResource extends AbstractResource {
 
         final ModuleView view = new ModuleView();
         view.setModule(getModelMapper().getModule(module));
+        view.setOrganization(module.getOrganization());
 
         return Response.ok(view).build();
     }
