@@ -13,8 +13,14 @@ public class GrapesCommunicationException extends Exception {
 
 	private int status;
 
+	@Deprecated
 	public GrapesCommunicationException(final int status) {
         super();
+		this.status = status;
+	}
+	
+	public GrapesCommunicationException(final String message, final int status) {
+        super(message);
 		this.status = status;
 	}
 	
