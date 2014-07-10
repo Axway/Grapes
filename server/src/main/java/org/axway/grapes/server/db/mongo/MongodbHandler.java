@@ -266,7 +266,8 @@ public class MongodbHandler implements RepositoryHandler {
     @Override
     public List<String> getGavcs(final FiltersHolder filters) {
         final Jongo datastore = getJongoDataStore();
-        return datastore.getCollection(DbCollections.DB_ARTIFACTS).distinct(DbCollections.DEFAULT_ID).as(String.class);
+        return datastore.getCollection(DbCollections.DB_ARTIFACTS).distinct(DbCollections.DEFAULT_ID)
+                .query(JongoUtils.generateQuery(filters.getArtifactFieldsFilters())).as(String.class);
     }
 
     @Override
