@@ -90,7 +90,7 @@
                 <#else>
                     <strong>Not promoted</strong><br/>
                 </#if>
-                    <strong>Organization: </strong>${getOrganization()}<br/>
+                <strong>Organization: </strong><a href="/organization/${getOrganization()}">${getOrganization()}</a><br/>
                 </p>
                 <br/>
             </div>
