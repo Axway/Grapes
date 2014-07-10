@@ -66,7 +66,7 @@
                         <#assign results = 0>
                         <#list items as item>
                             <tr>
-                                <td>${item}</td>
+                                <td><a class="tableLink" href="${item}">${item}</a></td>
                             </tr>
                         <#assign results = results + 1>
                         </#list>
@@ -82,4 +82,14 @@
     <!-- JavaScript -->
     <script src="/public/jquery-1.9.1/jquery.js"></script>
     <script src="/public/twitter-bootstrap-2.3.2/js/bootstrap.min.js"></script>
+    <!-- Makes sure that tables hrefs works -->
+    <script type="text/javascript">
+        $(function(){
+            $('.tableLink').each(function(i, link) {
+                var pathname = window.location.pathname;
+                pathname += "/../" + link.text;
+                link.href = pathname;
+            })
+        });
+    </script>
 </html>

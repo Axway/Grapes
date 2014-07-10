@@ -27,6 +27,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -119,6 +120,23 @@ public class ModuleResource extends AbstractResource{
         view.addAll(moduleNames);
 
         return Response.ok(view).build();
+    }
+
+    @GET
+    @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
+    @Path("/{name}")
+    public Response getVersionsRedirection(@PathParam("name") final String name, @Context final UriInfo uriInfo){
+
+        LOG.info("Got a get module without version redirecting on get module versions request.");
+
+        try {
+            final String redirectPath = uriInfo.getPath() + ServerAPI.GET_VERSIONS;
+            final URL redirectUrl = new URL(uriInfo.getBaseUri().toURL(), redirectPath);
+            return Response.seeOther(redirectUrl.toURI()).build();
+        } catch (Exception e) {
+            LOG.error("Failed to redirect Get module/{name} to Get module/{name}/versions",e);
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
+        }
     }
 
     /**

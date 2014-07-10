@@ -382,4 +382,12 @@ public class ModuleResourceTest extends ResourceTest {
         assertEquals(GrapesTestUtils.ORGANIZATION_NAME_4TEST, gotOrganization.getName());
     }
 
+    @Test
+    public void checkRedirectionOnGetModuleWithoutVersion(){
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/moduleName");
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.SEE_OTHER_303, response.getStatus());
+    }
+
 }
