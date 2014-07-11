@@ -28,10 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -439,6 +436,39 @@ public class ModuleResource extends AbstractResource{
         final Boolean promoted = module.isPromoted();
 
         return Response.ok(promoted).build();
+    }
+
+    /**
+     * Return a build info
+     *
+     * @return Response that contains a Json Map<String,String>
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{name}/{version}" + ServerAPI.GET_BUILD_INFO)
+    public Response getBuildInfo(@PathParam("name") final String name, @PathParam("version") final String version){
+        LOG.info("Got a get promotion report request.");
+        final String moduleId = DbModule.generateID(name, version);
+        final DbModule dbModule = getModuleHandler().getModule(moduleId);
+
+        return Response.ok(dbModule.getBuildInfo()).build();
+    }
+
+    /**
+     * Update a build info
+     *
+     * @return Response that contains a Json Map<String,String>
+     */
+    @POST
+    @Path("/{name}/{version}" + ServerAPI.GET_BUILD_INFO)
+    public Response updateBuildInfo(@PathParam("name") final String name, @PathParam("version") final String version, final Map<String,String> buildInfo){
+        LOG.info("Got a get promotion report request.");
+        final String moduleId = DbModule.generateID(name,version);
+        final DbModule dbModule = getModuleHandler().getModule(moduleId);
+        dbModule.getBuildInfo().putAll(buildInfo);
+        getModuleHandler().store(dbModule);
+
+        return Response.ok().status(Response.Status.CREATED).build();
     }
 
     /**

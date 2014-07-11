@@ -4,7 +4,9 @@ import org.axway.grapes.commons.datamodel.Scope;
 import org.jongo.marshall.jackson.oid.Id;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Database Module
@@ -45,6 +47,9 @@ public class DbModule {
 
     public static final String ORGANIZATION_DB_FIELD = "organization";
     private String organization = "";
+
+    public static final String BUILD_INFO_DB_FIELD = "buildInfo";
+    private Map<String, String> buildInfo = new HashMap<String, String>();
 
     public void setDataModelVersion(final String newVersion){
         this.datamodelVersion = newVersion;
@@ -165,6 +170,14 @@ public class DbModule {
 
     public void setOrganization(String organization) {
         this.organization = organization;
+    }
+
+    public Map<String, String> getBuildInfo() {
+        return buildInfo;
+    }
+
+    public void setBuildInfo(final Map<String, String> buildInfo) {
+        this.buildInfo = buildInfo;
     }
 
     @Override

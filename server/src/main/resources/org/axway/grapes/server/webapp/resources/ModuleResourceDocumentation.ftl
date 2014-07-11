@@ -79,6 +79,7 @@
                         <li class=""><a data-toggle="collapse" data-target="#accordion9" href="#module-promotion"><i class="icon-chevron-right"></i> Get promotion status</a></li>
                         <li class=""><a data-toggle="collapse" data-target="#accordion9" href="#module-promotion"><i class="icon-chevron-right"></i> Promote a module</a></li>
                         <li class=""><a data-toggle="collapse" data-target="#accordion10" href="#module-promotion-doable"><i class="icon-chevron-right"></i> Can it be promoted?</a></li>
+                        <li class=""><a data-toggle="collapse" data-target="#accordion11" href="#module-buildinfo"><i class="icon-chevron-right"></i> Get/Update build info</a></li>
                     </ul>
                 </div>
                 <div class="span8">
@@ -450,6 +451,30 @@
                                     <ul>
                                         <li>Checks if a module can be promoted</li>
                                         <li>Returns a boolean</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </section>
+                    <section id="module-buildinfo">
+                        <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion11">
+                            <h2>@ /module/{name}/{version}/buildinfo</h2>
+                        </a>
+                        <div id="accordion11" class="collapse">
+                            <ul>
+                                <li>
+                                    <h3>GET</h3>
+                                    <ul>
+                                        <li>Get module's build info</li>
+                                        <li>Returns a Json Map&lt;String,String&gt;</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <h3>POST</h3>
+                                    <ul>
+                                        <li>Update a build info</li>
+                                        <li>If existing information are posted, they will be overrided</li>
+                                        <li>Return status 200 if ok</li>
                                     </ul>
                                 </li>
                             </ul>

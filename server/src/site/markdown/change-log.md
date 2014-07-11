@@ -2,6 +2,7 @@
 -------------
 * Add Product [see](https://github.com/Axway/Grapes/wiki/Main-concepts#product)
 * Add Organizations [see](https://github.com/Axway/Grapes/wiki/Main-concepts#organization)
+* [Github issue #29](https://github.com/Axway/Grapes/issues/29) Add build info to modules
 * [Github issue #17](https://github.com/Axway/Grapes/issues/17) Manage cache for costly requests
 * [Github issue #18](https://github.com/Axway/Grapes/issues/18) Fix getting all promoted modules
 * Update REST API documentation

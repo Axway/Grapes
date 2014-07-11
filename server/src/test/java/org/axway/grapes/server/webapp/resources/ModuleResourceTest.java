@@ -27,7 +27,9 @@ import org.mockito.ArgumentCaptor;
 import javax.ws.rs.core.MediaType;
 import java.net.UnknownHostException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -200,7 +202,7 @@ public class ModuleResourceTest extends ResourceTest {
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
 
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.PROMOTION);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION);
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
@@ -313,7 +315,7 @@ public class ModuleResourceTest extends ResourceTest {
         when(repositoryHandler.getArtifact(dbArtifact.getGavc())).thenReturn(dbArtifact);
         when(repositoryHandler.getLicense(dbLicense.getName())).thenReturn(dbLicense);
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.GET_LICENSES);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.GET_LICENSES);
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
@@ -388,6 +390,64 @@ public class ModuleResourceTest extends ResourceTest {
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.SEE_OTHER_303, response.getStatus());
+    }
+
+    @Test
+    public void getBuildInfo(){
+        final DbModule dbModule  = new DbModule();
+        dbModule.setName("moduleTest");
+        dbModule.setVersion("1.0.0");
+        dbModule.getBuildInfo().put("test", "what a test!");
+        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
+
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.GET_BUILD_INFO);
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+
+        final Map<String, String> getBuildInfo = response.getEntity(new GenericType<Map<String, String>>(){});
+        assertNotNull(getBuildInfo);
+        assertEquals(1, getBuildInfo.size());
+        assertEquals("what a test!", getBuildInfo.get("test"));
+    }
+
+    @Test
+    public void getBuildInfoOnModuleThatDoesNotExist(){
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/doesNotExist/doesNotExist"  + ServerAPI.GET_BUILD_INFO);
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
+    }
+
+    @Test
+    public void postBuildInfo(){
+        final DbModule dbModule  = new DbModule();
+        dbModule.setName("moduleTest");
+        dbModule.setVersion("1.0.0");
+        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
+
+        final Map<String, String> buildInfo = new HashMap<String, String>();
+        buildInfo.put("test", "what a test!");
+
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.GET_BUILD_INFO);
+        final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, buildInfo);
+        assertNotNull(response);
+        assertEquals(HttpStatus.CREATED_201, response.getStatus());
+
+        final ArgumentCaptor<DbModule> captor = ArgumentCaptor.forClass(DbModule.class);
+        verify(repositoryHandler).store(captor.capture());
+        final DbModule gotModule = captor.getValue();
+
+        assertEquals(1, gotModule.getBuildInfo().size());
+        assertEquals("what a test!", gotModule.getBuildInfo().get("test"));
+    }
+
+    @Test
+    public void postBuildInfoOnModuleThatDoesNotExist(){
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/doesNotExist/doesNotExist" + ServerAPI.GET_BUILD_INFO);
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
     }
 
 }
