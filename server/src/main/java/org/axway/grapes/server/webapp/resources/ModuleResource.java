@@ -447,7 +447,7 @@ public class ModuleResource extends AbstractResource{
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{name}/{version}" + ServerAPI.GET_BUILD_INFO)
     public Response getBuildInfo(@PathParam("name") final String name, @PathParam("version") final String version){
-        LOG.info("Got a get promotion report request.");
+        LOG.info("Got a get buildInfo request.");
         final String moduleId = DbModule.generateID(name, version);
         final DbModule dbModule = getModuleHandler().getModule(moduleId);
 
@@ -462,10 +462,11 @@ public class ModuleResource extends AbstractResource{
     @POST
     @Path("/{name}/{version}" + ServerAPI.GET_BUILD_INFO)
     public Response updateBuildInfo(@PathParam("name") final String name, @PathParam("version") final String version, final Map<String,String> buildInfo){
-        LOG.info("Got a get promotion report request.");
+        LOG.info("Got a post buildInfo report request.");
         final String moduleId = DbModule.generateID(name,version);
         final DbModule dbModule = getModuleHandler().getModule(moduleId);
         dbModule.getBuildInfo().putAll(buildInfo);
+
         getModuleHandler().store(dbModule);
 
         return Response.ok().status(Response.Status.CREATED).build();
