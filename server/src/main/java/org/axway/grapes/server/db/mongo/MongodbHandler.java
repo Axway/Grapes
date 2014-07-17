@@ -369,6 +369,11 @@ public class MongodbHandler implements RepositoryHandler {
             dbModules.save(module);
         }
         else{
+            // let's keep the old build info and override with new values if any
+            final Map<String,String> consolidatedBuildInfo = dbModule.getBuildInfo();
+            consolidatedBuildInfo.putAll(module.getBuildInfo());
+            module.setBuildInfo(consolidatedBuildInfo);
+
             dbModules.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, dbModule.getId())).with(module);
         }
 
