@@ -14,7 +14,9 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.*;
@@ -994,8 +996,50 @@ public class GrapesClientTest {
         Exception exception = null;
 
         try{
-            client.getModuleOrganization(moduleName,moduleVersion);
+            client.getModuleOrganization(moduleName, moduleVersion);
         }catch (Exception e) {
+            exception = e;
+        }
+
+        assertNotNull(exception);
+    }
+
+    @Test
+    public void postBuildInfo() throws IOException {
+        final String moduleName = "module";
+        final String moduleVersion = "1.0.0-SNAPSHOT";
+        final Map<String, String> buildInfo = new HashMap<String, String>();
+        buildInfo.put("test", "test.test");
+
+        stubFor(post(urlMatching("/" + ServerAPI.MODULE_RESOURCE + "/" + moduleName + "/" + moduleVersion + ServerAPI.GET_BUILD_INFO))
+                .willReturn(aResponse().withStatus(Status.CREATED.getStatusCode())));
+
+        Exception exception = null;
+
+        try {
+            client.postBuildInfo(moduleName, moduleVersion, buildInfo, "user", "pwd");
+        } catch (Exception e) {
+            exception = e;
+        }
+
+        assertNull(exception);
+    }
+
+    @Test
+    public void postBuildInfoNotFound() throws IOException {
+        final String moduleName = "module";
+        final String moduleVersion = "1.0.0-SNAPSHOT";
+        final Map<String, String> buildInfo = new HashMap<String, String>();
+        buildInfo.put("test", "test.test");
+
+        stubFor(post(urlMatching("/" + ServerAPI.MODULE_RESOURCE + "/" + moduleName + "/" + moduleVersion + ServerAPI.GET_BUILD_INFO))
+                .willReturn(aResponse().withStatus(Status.NOT_FOUND.getStatusCode())));
+
+        Exception exception = null;
+
+        try {
+            client.postBuildInfo(moduleName, moduleVersion, buildInfo, null, null);
+        } catch (Exception e) {
             exception = e;
         }
 

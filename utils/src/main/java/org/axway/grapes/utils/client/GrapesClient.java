@@ -17,6 +17,7 @@ import javax.naming.AuthenticationException;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Abstract Client
@@ -109,6 +110,30 @@ public class GrapesClient {
         client.destroy();
 
         return false;
+    }
+
+    /**
+     * Post a build info to the server
+     *
+     * @param moduleName String
+     * @param moduleVersion String
+     * @param buildInfo Map<String,String>
+     * @param user String
+     * @param password String
+     * @throws GrapesCommunicationException
+     * @throws javax.naming.AuthenticationException
+     */
+    public void postBuildInfo(final String moduleName, final String moduleVersion, final Map<String, String> buildInfo, final String user, final String password) throws GrapesCommunicationException, AuthenticationException {
+        final Client client = getClient(user, password);
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getBuildInfoPath(moduleName, moduleVersion));
+        final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, buildInfo);
+
+        client.destroy();
+        if(ClientResponse.Status.CREATED.getStatusCode() != response.getStatus()){
+            final String message = "Failed to POST buildInfo";
+            LOG.error("%s . Http status: %s", message, response.getStatus());
+            throw new GrapesCommunicationException(message, response.getStatus());
+        }
     }
 
     /**

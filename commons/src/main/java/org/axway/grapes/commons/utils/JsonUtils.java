@@ -1,5 +1,6 @@
 package org.axway.grapes.commons.utils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.axway.grapes.commons.datamodel.Artifact;
@@ -8,6 +9,7 @@ import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.commons.datamodel.Organization;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Json Utils
@@ -61,6 +63,18 @@ public final class JsonUtils {
         final ObjectMapper mapper = new ObjectMapper();
         mapper.disable(MapperFeature.USE_GETTERS_AS_SETTERS);
         return mapper.readValue(module, Module.class);
+    }
+
+    /**
+     * Un-serialize a Json into BuildInfo
+     * @param buildInfo String
+     * @return Map<String,String>
+     * @throws IOException
+     */
+    public static Map<String,String> unserializeBuildInfo(final String buildInfo) throws IOException {
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(MapperFeature.USE_GETTERS_AS_SETTERS);
+        return mapper.readValue(buildInfo,   new TypeReference<Map<String, Object>>(){});
     }
 
 	/**

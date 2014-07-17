@@ -44,6 +44,14 @@ public final class RequestUtils {
         return path.toString();
     }
 
+    public static String getBuildInfoPath(final String name, final String version) {
+        final StringBuilder path = new StringBuilder();
+        path.append(getModulePath(name,version));
+        path.append(ServerAPI.GET_BUILD_INFO);
+
+        return path.toString();
+    }
+
     public static String getArtifactPath(final String gavc) {
         final StringBuilder path = new StringBuilder();
         path.append(artifactResourcePath());
