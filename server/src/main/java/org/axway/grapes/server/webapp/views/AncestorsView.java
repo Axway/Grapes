@@ -28,6 +28,8 @@ public class AncestorsView extends DependencyListView {
     public void addAncestor(final Module ancestor, final Artifact artifactId) {
         for(Dependency dependency: DataUtils.getAllDependencies(ancestor)){
             if(dependency.getTarget().equals(artifactId)){
+                dependency.setSourceName(ancestor.getName());
+                dependency.setSourceVersion(ancestor.getVersion());
                 addDependency(dependency);
             }
         }
