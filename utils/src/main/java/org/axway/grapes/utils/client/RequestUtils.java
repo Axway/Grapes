@@ -44,6 +44,32 @@ public final class RequestUtils {
         return path.toString();
     }
 
+    public static String getAllModulesPath() {
+        final StringBuilder path = new StringBuilder();
+        path.append(moduleResourcePath());
+        path.append(ServerAPI.GET_ALL);
+
+        return path.toString();
+    }
+
+    public static String getModuleVersionsPath(final String name) {
+        final StringBuilder path = new StringBuilder();
+        path.append(moduleResourcePath());
+        path.append('/');
+        path.append(name);
+        path.append(ServerAPI.GET_VERSIONS);
+
+        return path.toString();
+    }
+
+    public static String getModulePromotionPath(final String name, final String version) {
+        final StringBuilder path = new StringBuilder();
+        path.append(getModulePath(name, version));
+        path.append(ServerAPI.PROMOTION);
+
+        return path.toString();
+    }
+
     public static String getBuildInfoPath(final String name, final String version) {
         final StringBuilder path = new StringBuilder();
         path.append(getModulePath(name,version));
@@ -166,4 +192,15 @@ public final class RequestUtils {
 
         return path.toString();
     }
+
+    public static String getProjectModuleNames(final String name) {
+        final StringBuilder path = new StringBuilder();
+        path.append(ServerAPI.PRODUCT_RESOURCE);
+        path.append("/");
+        path.append(name);
+        path.append(ServerAPI.GET_MODULES);
+
+        return path.toString();
+    }
+
 }

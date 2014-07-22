@@ -203,6 +203,77 @@ public class GrapesClient {
     }
 
     /**
+     * Get a list of modules regarding filters
+     *
+     * @param filters Map<String,String>
+     * @return List<Module>
+     * @throws GrapesCommunicationException
+     */
+    public List<Module> getModules(final Map<String, String> filters) throws GrapesCommunicationException {
+        final Client client = getClient();
+        WebResource resource = client.resource(serverURL).path(RequestUtils.getAllModulesPath());
+        for(Map.Entry<String,String> queryParam: filters.entrySet()){
+            resource = resource.queryParam(queryParam.getKey(), queryParam.getValue());
+        }
+
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
+            final String message = "Failed to get filtered modules.";
+            LOG.error("%s. Http status: %s", message, response.getStatus());
+            throw new GrapesCommunicationException(message, response.getStatus());
+        }
+
+        return response.getEntity(new GenericType<List<Module>>(){});
+    }
+
+    /**
+     * Send a get module versions request
+     *
+     * @param name String
+     * @return a list of versions
+     * @throws GrapesCommunicationException
+     */
+    public List<String> getModuleVersions(final String name) throws GrapesCommunicationException {
+        final Client client = getClient();
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getModuleVersionsPath(name));
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
+            final String message = "Failed to get module versions of " + name;
+            LOG.error("%s. Http status: %s", message, response.getStatus());
+            throw new GrapesCommunicationException(message, response.getStatus());
+        }
+
+        return response.getEntity(new GenericType<List<String>>(){});
+    }
+
+    /**
+     * Send a get module promotion status request
+     *
+     * @param name String
+     * @param version String
+     * @return a boolean
+     * @throws GrapesCommunicationException
+     */
+    public Boolean getModulePromotionStatus(final String name, final String version) throws GrapesCommunicationException {
+        final Client client = getClient();
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getModulePromotionPath(name, version));
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
+            final String message = "Failed to get module promotion status of " + name + " in version " + version;
+            LOG.error("%s. Http status: %s", message, response.getStatus());
+            throw new GrapesCommunicationException(message, response.getStatus());
+        }
+
+        return response.getEntity(Boolean.class);
+    }
+
+    /**
      * Promote a module in the Grapes server
      *
      * @param name
@@ -606,7 +677,7 @@ public class GrapesClient {
      */
     public Organization getModuleOrganization(final String moduleName, final String moduleVersion) throws GrapesCommunicationException, IOException {
         final Client client = getClient();
-        final WebResource resource = client.resource(serverURL).path(RequestUtils.getModuleOrganizationPath(moduleName,moduleVersion));
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getModuleOrganizationPath(moduleName, moduleVersion));
         final ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
@@ -618,6 +689,29 @@ public class GrapesClient {
         }
 
         return response.getEntity(Organization.class);
+
+    }
+
+
+    /**
+     * Returns the list of module names of a product
+     *
+     * @return List<String>
+     */
+    public List<String> getProductModuleNames(final String projectId) throws GrapesCommunicationException, IOException {
+        final Client client = getClient();
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getProjectModuleNames(projectId));
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
+            final String message = "Failed to get project module names";
+            LOG.error("%s. Http status: %s", message, response.getStatus());
+            throw new GrapesCommunicationException(message, response.getStatus());
+        }
+
+        return response.getEntity(new GenericType<List<String>>(){});
 
     }
 }

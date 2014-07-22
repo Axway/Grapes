@@ -1,6 +1,7 @@
 package org.axway.grapes.utils.client;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.ClientResponse.Status;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.*;
@@ -13,13 +14,11 @@ import javax.naming.AuthenticationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.*;
+
 
 public class GrapesClientTest {
 
@@ -234,6 +233,139 @@ public class GrapesClientTest {
         }
         assertNotNull(exception);
     }
+
+    @Test
+    public void getModules() throws IOException{
+        String moduleName = "module";
+        String moduleVersion = "1.0.0-SNAPSHOT";
+        Module module1 = DataModelFactory.createModule(moduleName, moduleVersion);
+
+        stubFor(get(urlEqualTo("/" + ServerAPI.MODULE_RESOURCE + ServerAPI.GET_ALL + "?test=test.test"))
+                .willReturn(aResponse()
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .withBody(JsonUtils.serialize(Collections.singletonList(module1)))
+                        .withStatus(Status.OK.getStatusCode())));
+
+        Exception exception = null;
+        List<Module> modules = null;
+
+        try{
+            modules = client.getModules(Collections.singletonMap("test", "test.test"));
+
+        }catch (Exception e) {
+            exception = e;
+        }
+        assertNull(exception);
+        assertNotNull(modules);
+        assertEquals(1, modules.size());
+        assertEquals(module1, modules.get(0));
+    }
+
+    @Test
+    public void getModulesNotFound() throws IOException{
+        stubFor(get(urlEqualTo("/" + ServerAPI.MODULE_RESOURCE + ServerAPI.GET_ALL + "?test=test.test"))
+                .willReturn(aResponse()
+                        .withStatus(Status.NOT_FOUND.getStatusCode())));
+
+        Exception exception = null;
+
+        try{
+            client.getModules(Collections.singletonMap("test", "test.test"));
+
+        }catch (Exception e) {
+            exception = e;
+        }
+        assertNotNull(exception);
+    }
+
+    @Test
+    public void getModuleVersions() throws IOException{
+        final String moduleName = "testModule";
+        final List<String> versions = Lists.newArrayList("1", "2", "3");
+
+        stubFor(get(urlEqualTo("/" + ServerAPI.MODULE_RESOURCE + "/" + moduleName + ServerAPI.GET_VERSIONS))
+                .willReturn(aResponse()
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .withBody(JsonUtils.serialize(versions))
+                        .withStatus(Status.OK.getStatusCode())));
+
+        Exception exception = null;
+        List<String> gotVersions = null;
+
+        try{
+            gotVersions = client.getModuleVersions(moduleName);
+
+        }catch (Exception e) {
+            exception = e;
+        }
+        assertNull(exception);
+        assertNotNull(gotVersions);
+        assertEquals(versions.size(), gotVersions.size());
+    }
+
+    @Test
+    public void getModuleVersionsNotFound() throws IOException{
+
+        stubFor(get(urlEqualTo("/" + ServerAPI.MODULE_RESOURCE + "/doesNotExit" + ServerAPI.GET_VERSIONS))
+                .willReturn(aResponse()
+                        .withStatus(Status.NOT_FOUND.getStatusCode())));
+
+        Exception exception = null;
+
+        try{
+            client.getModuleVersions("doesNotExit");
+
+        }catch (Exception e) {
+            exception = e;
+        }
+        assertNotNull(exception);
+    }
+
+    @Test
+    public void getModulePromotionStatus() throws IOException{
+        final String moduleName = "testModule";
+        final String moduleVersion = "1.2.0-3";
+
+        stubFor(get(urlEqualTo("/" + ServerAPI.MODULE_RESOURCE + "/" + moduleName + "/" + moduleVersion + ServerAPI.PROMOTION))
+                .willReturn(aResponse()
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .withBody(JsonUtils.serialize(Boolean.TRUE))
+                        .withStatus(Status.OK.getStatusCode())));
+
+        Exception exception = null;
+        Boolean promotionStatus = null;
+
+        try{
+            promotionStatus = client.getModulePromotionStatus(moduleName, moduleVersion);
+
+        }catch (Exception e) {
+            exception = e;
+        }
+        assertNull(exception);
+        assertNotNull(promotionStatus);
+        assertTrue(promotionStatus);
+    }
+
+    @Test
+    public void getModulePromotionStatusNotFound() throws IOException{
+
+        stubFor(get(urlEqualTo("/" + ServerAPI.MODULE_RESOURCE + "/doesNotExit/1.0.0" + ServerAPI.PROMOTION))
+                .willReturn(aResponse()
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .withBody(JsonUtils.serialize(Boolean.TRUE))
+                        .withStatus(Status.OK.getStatusCode())));
+
+        Exception exception = null;
+
+        try{
+            client.getModulePromotionStatus("doesNotExist", "1.0.0");
+
+        }catch (Exception e) {
+            exception = e;
+        }
+        assertNotNull(exception);
+    }
+
 
     @Test
     public void promoteModule(){
@@ -1039,6 +1171,48 @@ public class GrapesClientTest {
 
         try {
             client.postBuildInfo(moduleName, moduleVersion, buildInfo, null, null);
+        } catch (Exception e) {
+            exception = e;
+        }
+
+        assertNotNull(exception);
+    }
+
+    @Test
+    public void getProductModuleNames() throws IOException {
+        final String product = "product";
+        final List<String> names = Lists.newArrayList("module1", "module2", "module3", "module4");
+
+        stubFor(get(urlMatching("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product + ServerAPI.GET_MODULES))
+                .willReturn(aResponse().withStatus(Status.OK.getStatusCode())
+                        .withBody(JsonUtils.serialize(names))
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
+
+        List<String> gotNames = null;
+        Exception exception = null;
+
+        try {
+            gotNames = client.getProductModuleNames(product);
+        } catch (Exception e) {
+            exception = e;
+        }
+
+        assertNull(exception);
+        assertNotNull(gotNames);
+        assertEquals(names.size(), gotNames.size());
+    }
+
+    @Test
+    public void getProductModuleNamesNotFound() throws IOException {
+
+        stubFor(get(urlMatching("/" + ServerAPI.PRODUCT_RESOURCE + "/doesNotExist" + ServerAPI.GET_MODULES))
+                .willReturn(aResponse().withStatus(Status.NOT_FOUND.getStatusCode())));
+
+        List<String> gotNames = null;
+        Exception exception = null;
+
+        try {
+            gotNames = client.getProductModuleNames("doesNotExist");
         } catch (Exception e) {
             exception = e;
         }
