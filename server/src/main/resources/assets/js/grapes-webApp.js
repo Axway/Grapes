@@ -645,7 +645,7 @@ function addProjectModuleAction(productName){
         success: function(data, textStatus) {
             $.each(data, function(i, moduleNames) {
                 if($('#table-of-result tr > td:contains("'+moduleNames+'")').length == 0){
-                    html += "<option value=\"";
+                    html = "<option value=\"";
                     html += moduleNames + "\">";
                     html += moduleNames + "</option>\n";
                     $("#modules").append(html);
