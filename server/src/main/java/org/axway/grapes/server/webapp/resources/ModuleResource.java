@@ -105,6 +105,7 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path(ServerAPI.GET_NAMES)
+    @CacheControl(maxAge = 30, maxAgeUnit = TimeUnit.SECONDS)
     public Response getNames(@Context final UriInfo uriInfo){
         LOG.info("Got a get module names request.");
 
@@ -147,6 +148,7 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}" + ServerAPI.GET_VERSIONS)
+    @CacheControl(maxAge = 30, maxAgeUnit = TimeUnit.SECONDS)
     public Response getVersions(@PathParam("name") final String name, @Context final UriInfo uriInfo){
         LOG.info("Got a get versions request.");
 
