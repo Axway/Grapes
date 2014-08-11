@@ -155,24 +155,7 @@
                                     <ul>
                                         <li>Add a corporate groupId to the organization</li>
                                         <li>Return status 200 if ok</li>
-                                        <li>
-                                            Mandatory parameter:
-                                            <br/>
-                                            <table class="table table-bordered table-hover" style="font-size:90%;margin-top:8px;">
-                                                <thead>
-                                                <tr>
-                                                    <td><strong>Parameter</strong></td>
-                                                    <td><strong>Description</strong></td>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr>
-                                                    <td>groupId</td>
-                                                    <td>String corporate groupId preffix to add to the organization</td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </li>
+                                        <li>Expects in the request body is the corporate groupId to add (simple string)</li>
                                     </ul>
                                 </li>
                                 <li>
@@ -180,24 +163,7 @@
                                     <ul>
                                         <li>Remove a corporate groupId to the organization</li>
                                         <li>Return status 200 if ok</li>
-                                        <li>
-                                            Mandatory parameter:
-                                            <br/>
-                                            <table class="table table-bordered table-hover" style="font-size:90%;margin-top:8px;">
-                                                <thead>
-                                                <tr>
-                                                    <td><strong>Parameter</strong></td>
-                                                    <td><strong>Description</strong></td>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr>
-                                                    <td>groupId</td>
-                                                    <td>String corporate groupId preffix to remove to the organization</td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </li>
+                                        <li>Expects in the request body is the corporate groupId to remove (simple string)</li>
                                     </ul>
                                 </li>
                             </ul>
