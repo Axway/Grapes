@@ -13,7 +13,7 @@ import org.mockito.ArgumentCaptor;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import static junit.framework.Assert.assertNull;
+import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
