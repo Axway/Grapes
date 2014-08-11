@@ -131,7 +131,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.CREATED.getStatusCode() != response.getStatus()){
             final String message = "Failed to POST buildInfo";
-            LOG.error("%s . Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
     }
@@ -153,7 +153,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.CREATED.getStatusCode() != response.getStatus()){
             final String message = "Failed to POST module";
-            LOG.error("%s . Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
     }
@@ -174,7 +174,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to DELETE module " + name + " in version " + version;
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
     }
@@ -195,7 +195,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to get module " + name + " in version " + version;
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
@@ -221,7 +221,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to get filtered modules.";
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
@@ -243,7 +243,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to get module versions of " + name;
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
@@ -266,7 +266,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to get module promotion status of " + name + " in version " + version;
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
@@ -289,7 +289,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to promote module " + name + " in version " + version;
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
     }
@@ -310,7 +310,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to get the promotion status of module " + name + " in version " + version;
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
@@ -334,7 +334,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.CREATED.getStatusCode() != response.getStatus()){
             final String message = "Failed to POST artifact";
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
     }
@@ -354,7 +354,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to DELETE artifact " + gavc;
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
     }
@@ -374,7 +374,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to get artifact " + gavc;
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
@@ -397,7 +397,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to get artifacts";
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
@@ -422,7 +422,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to post do not use artifact";
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
     }
@@ -443,7 +443,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to get Corporate filters";
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
@@ -467,7 +467,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to get Corporate filters";
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
@@ -495,7 +495,7 @@ public class GrapesClient {
 
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to get Corporate filters";
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
@@ -519,7 +519,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to add license " + licenseId + " to artifact " + gavc;
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
     }
@@ -541,7 +541,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.CREATED.getStatusCode() != response.getStatus()){
             final String message = "Failed to POST license";
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
     }
@@ -561,7 +561,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to DELETE license " + licenseId;
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
     }
@@ -581,7 +581,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to get license " + licenseId;
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
@@ -604,7 +604,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to approve license " + licenseId;
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
     }
@@ -629,7 +629,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to get module ancestors " + moduleName + " in version " + moduleVersion;
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
@@ -662,7 +662,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to get module ancestors " + moduleName + " in version " + moduleVersion;
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
@@ -684,7 +684,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to get module's organization";
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
@@ -707,7 +707,7 @@ public class GrapesClient {
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
             final String message = "Failed to get project module names";
-            LOG.error("%s. Http status: %s", message, response.getStatus());
+            LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
