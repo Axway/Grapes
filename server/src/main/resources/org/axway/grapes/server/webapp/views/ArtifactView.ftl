@@ -51,14 +51,14 @@
             </div>
         </div>
 
-        <div class="container" style="">
+        <div class="container">
             <div class="row-fluid">
                 <h1>Artifact</h1>
             </div>
         </div>
 
-        <div class="container" style="">
-            <div class="row-fluid"  id="artifact.info">
+        <div class="container" id="artifact_info">
+            <div class="row-fluid"  id="artifact_overview">
                 <h3>Overview</h3>
                 <p>
                     <strong>GroupId: </strong>${artifact.getGroupId()}<br/>

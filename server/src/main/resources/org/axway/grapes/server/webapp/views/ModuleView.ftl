@@ -48,39 +48,14 @@
             </div>
         </div>
 
-        <div class="container" style="">
+        <div class="container">
             <div class="row-fluid">
                 <h1>Module</h1>
             </div>
-            <!--<div class="row-fluid">
-                <div class="navbar grapes-ariane-navbar">
-                    <div class="navbar-inner">
-                        <div class="container">
-                            <div class="brand">Grapes path:</div>
-                            <ul class="nav">
-                                <li class="divider-vertical"></li>
-                                <li><a href="/module">/module</a></li>
-                                <li class="divider-vertical"></li>
-                                <li><a href="/module/${module.getName()}/versions">/${module.getName()}</a></li>
-                                <li class="divider-vertical"></li>
-                                <li><a class="active">/${module.getVersion()}</a></li>
-                                <li class="divider-vertical"></li>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <b class="caret"></b> </a>
-                                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop">
-                                        <li><a tabindex="-1" href="/module/${module.getName()}/${module.getVersion()}/dependencies">/dependencies</a></li>
-                                        <li><a tabindex="-1" href="/module/${module.getName()}/${module.getVersion()}/dependencies?showCorporate=false&showThirdparty=true">/thirdparty</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>-->
         </div>
 
-        <div class="container module-all">
-            <div class="row-fluid" id="module.info">
+        <div class="container" id="module_info">
+            <div class="row-fluid" id="module_overview">
                 <h3>Overview</h3>
                 <p>
                     <strong>Name: </strong>${module.getName()}<br/>
@@ -94,7 +69,7 @@
                 </p>
                 <br/>
             </div>
-            <div class="row-fluid" id="module.artifacts">
+            <div class="row-fluid" id="module_artifacts">
                 <h3>Artifacts</h3>
                 <table class="table table-bordered table-hover sortable">
                     <thead>

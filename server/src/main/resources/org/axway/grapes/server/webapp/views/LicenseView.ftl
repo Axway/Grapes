@@ -48,13 +48,14 @@
             </div>
         </div>
 
-        <div class="container" style="">
+        <div class="container">
             <div class="row-fluid">
                 <h1>License</h1>
             </div>
         </div>
-        <div class="container" style="">
-            <div class="row-fluid">
+        <div class="container" id="license_info">
+            <div class="row-fluid" id="license_overview">
+                <h3>Overview</h3>
                 <p>
                     <strong>Name: </strong>${license.getName()}<br/>
                     <strong>Long Name: </strong>${license.getLongName()}<br/>

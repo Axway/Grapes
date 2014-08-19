@@ -941,7 +941,7 @@ function getModuleOverview(){
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).filter(".module-all"));
+                $("#results").empty().append($(data).filter("#module_info"));
                 $('.sortable').tablesorter();
             }
         })
@@ -968,7 +968,7 @@ function getModuleDependencies(){
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).filter(".row-fluid"));
+                $("#results").empty().append($(data).find("#table_div"));
                 $('.sortable').tablesorter();
             }
         })
@@ -995,7 +995,7 @@ function getModuleThirdParty(){
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).filter(".row-fluid"));
+                $("#results").empty().append($(data).find("#table_div"));
                 $('.sortable').tablesorter();
             }
         })
@@ -1022,7 +1022,7 @@ function getModuleAncestors(){
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).filter(".row-fluid"));
+                $("#results").empty().append($(data).find("#table_div"));
                 $('.sortable').tablesorter();
             }
         })
@@ -1054,7 +1054,7 @@ function getModuleLicenses(){
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).filter(".row-fluid"));
+                $("#results").empty().append($(data).find("#table_div"));
                 $('.sortable').tablesorter();
             }
         })
@@ -1081,7 +1081,7 @@ function getModulePromotionReport(){
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).filter(".row-fluid"));
+                $("#results").empty().append($(data).find("#list"));
             }
         })
 }
@@ -1100,7 +1100,8 @@ function getArtifactOverview(){
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).filter(".row-fluid"));
+                console.log($(data).filter("#artifact_info"))
+                $("#results").empty().append($(data).filter("#artifact_info"));
             }
         }).done(updateArtifactAction());
 }
@@ -1168,7 +1169,7 @@ function getArtifactAncestors(){
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).filter(".row-fluid"));
+                $("#results").empty().append($(data).find("#table_div"));
                 $('.sortable').tablesorter();
             }
         })
@@ -1374,7 +1375,7 @@ function getLicenseOverview(){
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).filter(".row-fluid"));
+                $("#results").empty().append($(data).filter("#license_info"));
             }
         })
 
