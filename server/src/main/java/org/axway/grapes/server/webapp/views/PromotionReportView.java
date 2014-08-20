@@ -30,7 +30,9 @@ public class PromotionReportView extends View {
 
     @JsonIgnore
     public void addUnPromotedDependency(final Module dependency) {
-        unPromotedDependencies.add(dependency);
+        if(!unPromotedDependencies.contains(dependency)){
+            unPromotedDependencies.add(dependency);
+        }
     }
 
     public List<Module> getUnPromotedDependencies() {
