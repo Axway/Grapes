@@ -411,7 +411,7 @@ public class ModuleResource extends AbstractResource{
      * @return Response A promotion report
      */
     @GET
-    @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
+    @Produces(MediaType.TEXT_HTML)
     @Path("/{name}/{version}" + ServerAPI.PROMOTION + ServerAPI.GET_REPORT)
     @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getPromotionStatusReport(@PathParam("name") final String name, @PathParam("version") final String version){

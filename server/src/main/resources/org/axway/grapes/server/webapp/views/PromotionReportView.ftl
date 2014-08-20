@@ -48,26 +48,6 @@
             </div>
         </div>
 
-        <#macro recurse_macro report depth>
-            <#list report.unPromotedDependencies as module>
-                <tr>
-                   <td align='left'>
-                        <#if (depth>0) >|
-                            <#list 1..depth as i>--</#list>
-                        </#if>
-                         ${module.getName()} (${module.getVersion()})
-                   </td>
-                </tr>
-                <#assign moduleId=getModuleUid(module)>
-                <#if getTargetedDependencyReport(moduleId)??>
-                    <#assign child=getTargetedDependencyReport(moduleId)>
-                    <#if !child.canBePromoted()>
-                        <@recurse_macro report=child depth=depth+1/>
-                    </#if>
-                </#if>
-            </#list>
-        </#macro>
-
         <div class="container" style="">
             <div class="row-fluid">
                 <h1>Promotion Report</h1>
@@ -82,18 +62,6 @@
                         <div id="promotion_ok">The module can be promoted.<br/></div>
                     <#else>
                         <div id="promotion_ko"><strong>The module cannot be promoted!!!</strong><br/></div>
-
-                        <h3>Promotion Plan</h3>
-                        <table class="table table-bordered table-hover" id="has_to_be_promoted">
-                            <thead>
-                            <tr>
-                                <td><span><strong>Dependencies to promote</strong></td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                                <@recurse_macro report=getThis() depth=0/>
-                            </tbody>
-                        </table>
 
                         <#if getReportsWithDoNotUseArtifacts()?has_content >
                             <h3>ThirdParty that should not be used</h3>
@@ -114,7 +82,48 @@
                                 </#list>
                             </div>
                         </#if>
+
+                        <#if getPromotionPlan()?has_content >
+                            <h3>Promotion Plan</h3>
+                            <table class="table table-bordered table-hover" id="has_to_be_promoted">
+                                <thead>
+                                <tr>
+                                    <td><span><strong>Ordered dependencies to promote</strong></td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <#list getPromotionPlan() as module>
+                                    <tr>
+                                        <td>${module}</td>
+                                    </tr>
+                                    </#list>
+                                </tbody>
+                            </table>
+                        </#if>
                     </#if>
+
+                    <#if getMisMatchModules()?has_content >
+                        <h3>Warning: some dependencies occurs in different versions</h3>
+                        <div id="mismatchVersions">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <td><strong>Module Name</strong></td>
+                                    <td><strong>Versions</strong></td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <#list getMisMatchModules() as module>
+                                    <tr>
+                                        <td>${module}</td>
+                                        <td><#list getMisMatchVersions(module) as version> ${version} </#list></td>
+                                        </#list>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </#if>
+
                 </div>
             </div>
 		</div>

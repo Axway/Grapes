@@ -1,15 +1,11 @@
 package org.axway.grapes.server.webapp.views;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.collect.Lists;
 import com.yammer.dropwizard.views.View;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Module;
-import org.axway.grapes.server.db.datamodel.DbModule;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Promotion Report View
@@ -20,31 +16,34 @@ import java.util.Map;
 public class PromotionReportView extends View {
 
     private Module rootModule;
-    private List<Module> unPromotedDependencies = new ArrayList<Module>();
+    private List<String> unPromotedDependencies = new ArrayList<String>();
     private Map<String, PromotionReportView> dependencyReports = new HashMap<String, PromotionReportView>();
     private List<Artifact> doNotUseArtifacts = new ArrayList<Artifact>();
+    private Map<String , List<String>> mismatchVersions = new HashMap<String, List<String>>();
 
     public PromotionReportView() {
         super("PromotionReportView.ftl");
     }
 
-    @JsonIgnore
-    public void addUnPromotedDependency(final Module dependency) {
-        if(!unPromotedDependencies.contains(dependency)){
-            unPromotedDependencies.add(dependency);
+    public Module getRootModule() {
+        return rootModule;
+    }
+
+    public void setRootModule(final Module rootModule) {
+        this.rootModule = rootModule;
+    }
+
+    public void addUnPromotedDependency(final String dependencyId) {
+        if(!unPromotedDependencies.contains(dependencyId)){
+            unPromotedDependencies.add(dependencyId);
         }
     }
 
-    public List<Module> getUnPromotedDependencies() {
+    public List<String> getUnPromotedDependencies() {
         return unPromotedDependencies;
     }
 
-    public void setUnPromotedDependencies(final List<Module> unPromotedDependencies) {
-        this.unPromotedDependencies = unPromotedDependencies;
-    }
-
-    @JsonIgnore
-    public void addDependencyReport(final String moduleId, final PromotionReportView report) {
+    public void addDependencyPromotionReport(final String moduleId, final PromotionReportView report) {
         if(moduleId != null && report != null){
             dependencyReports.put(moduleId, report);
 
@@ -53,18 +52,18 @@ public class PromotionReportView extends View {
         }
     }
 
-    @JsonIgnore
     public PromotionReportView getTargetedDependencyReport(final String moduleId) {
         return dependencyReports.get(moduleId);
     }
 
-
-    public Map<String, PromotionReportView> getDependencyReports() {
-        return dependencyReports;
+    private List<Artifact> getDoNotUseArtifacts() {
+        return doNotUseArtifacts;
     }
 
+    public void addDoNotUseArtifact(final Artifact doNotUseArtifact) {
+        doNotUseArtifacts.add(doNotUseArtifact);
+    }
 
-    @JsonIgnore
     public List<PromotionReportView> getReportsWithDoNotUseArtifacts() {
         final List<PromotionReportView> reports = new ArrayList<PromotionReportView>();
 
@@ -81,44 +80,87 @@ public class PromotionReportView extends View {
         return reports;
     }
 
-    public void setDependencyReports(final Map<String, PromotionReportView> dependencyReport) {
-        this.dependencyReports = dependencyReport;
-    }
-
-    @JsonIgnore
-    public String getModuleUid(final Module module) {
-        return DbModule.generateID(module.getName(), module.getVersion());
-    }
-
-    public Module getRootModule() {
-        return rootModule;
-    }
-
-    public void setRootModule(final Module rootModule) {
-        this.rootModule = rootModule;
-    }
-
-    public List<Artifact> getDoNotUseArtifacts() {
-        return doNotUseArtifacts;
-    }
-
-    public void setDoNotUseArtifacts(final List<Artifact> doNotUseArtifacts) {
-        this.doNotUseArtifacts = doNotUseArtifacts;
-    }
-
-    public void addDoNotUseArtifact(final Artifact doNotUseArtifact) {
-        doNotUseArtifacts.add(doNotUseArtifact);
-    }
-
-    @JsonIgnore
     public Boolean canBePromoted() {
-        return unPromotedDependencies.isEmpty() && doNotUseArtifacts.isEmpty();
+        return unPromotedDependencies.isEmpty() &&
+                doNotUseArtifacts.isEmpty();
+    }
+
+    public Set<String> getMisMatchModules(){
+        return mismatchVersions.keySet();
+    }
+
+    public List<String> getMisMatchVersions(final String moduleName){
+        return mismatchVersions.get(moduleName);
+    }
+
+    public void compute() {
+        /* Order the module to promote */
+         final Comparator<String> promotionPlanComparator = new PromotionPlanComparator(dependencyReports);
+        Collections.sort(unPromotedDependencies, promotionPlanComparator);
+
+        /* Identify the mismatch versions */
+        // Collect all the modules names and versions
+        for(PromotionReportView promotionReport: getAllDependencyReport()){
+            final Module module = promotionReport.getRootModule();
+            List<String> versions = mismatchVersions.get(module.getName());
+
+            if(versions == null){
+                mismatchVersions.put(module.getName(), Lists.newArrayList(module.getVersion()));
+            }
+            else if(!versions.contains(module.getVersion())){
+                versions.add(module.getVersion());
+            }
+        }
+
+        // Remove the modules that appears in only one version
+        final Iterator<String> moduleNames = mismatchVersions.keySet().iterator();
+        while (moduleNames.hasNext()){
+            final String moduleName = moduleNames.next();
+            final List<String> versions = mismatchVersions.get(moduleName);
+            if(versions.size() == 1 ){
+                moduleNames.remove();
+            }
+        }
+    }
+
+    private List<PromotionReportView> getAllDependencyReport() {
+        final List<PromotionReportView> reports = new ArrayList<PromotionReportView>();
+        for(PromotionReportView report: dependencyReports.values()){
+            reports.addAll(report.getAllDependencyReport());
+        }
+        reports.add(this);
+
+        return reports;
+    }
+
+    public List<String> getPromotionPlan(){
+        return unPromotedDependencies;
     }
 
 
-    // WorkAround for Freemarker
-    @JsonIgnore
-    public PromotionReportView getThis(){
-        return this;
+    private class PromotionPlanComparator implements Comparator<String> {
+        private final Map<String, PromotionReportView> dependencyReports;
+
+        public PromotionPlanComparator(final Map<String, PromotionReportView> dependencyReports) {
+            this.dependencyReports = dependencyReports;
+        }
+
+
+        @Override
+        public int compare(final String module1, final String module2) {
+            final PromotionReportView report1 = dependencyReports.get(module1);
+            final PromotionReportView report2 = dependencyReports.get(module2);
+
+            if(report1.canBePromoted() ||
+                    report2.getUnPromotedDependencies().contains(module1)){
+                return -1;
+            }
+            else if(report2.canBePromoted() ||
+                    report1.getUnPromotedDependencies().contains(module2)){
+                return 1;
+            }
+
+            return 0;
+        }
     }
 }
