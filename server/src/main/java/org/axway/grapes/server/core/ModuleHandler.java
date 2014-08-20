@@ -159,7 +159,7 @@ public class ModuleHandler {
         // Checks if each dependency module has been promoted
         for(Dependency dependency: depHandler.getModuleDependencies(moduleId, filters)){
             final DbModule depModule = repositoryHandler.getRootModuleOf(dependency.getTarget().getGavc());
-            if(depModule!= null && !depModule.isPromoted()){
+            if(depModule!= null && !depModule.getId().equals(moduleId) && !depModule.isPromoted()){
                 report.addUnPromotedDependency(modelMapper.getModule(depModule));
 
                 if(filters.getDepthHandler().getFullRecursive()){
