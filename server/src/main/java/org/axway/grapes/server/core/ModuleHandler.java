@@ -1,12 +1,10 @@
 package org.axway.grapes.server.core;
 
-import com.sun.naming.internal.VersionHelper;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.core.options.filters.CorporateFilter;
 import org.axway.grapes.server.core.options.filters.PromotedFilter;
-import org.axway.grapes.server.core.version.Version;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
