@@ -81,8 +81,15 @@ public class PromotionReportView extends View {
     }
 
     public Boolean canBePromoted() {
+        if(isSnapshot()){
+            return false;
+        }
         return unPromotedDependencies.isEmpty() &&
                 doNotUseArtifacts.isEmpty();
+    }
+
+    public boolean isSnapshot() {
+        return getRootModule().getVersion().contains("SNAPSHOT");
     }
 
     public Set<String> getMisMatchModules(){

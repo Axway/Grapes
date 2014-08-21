@@ -61,7 +61,11 @@
                     <#if canBePromoted()>
                         <div id="promotion_ok">The module can be promoted.<br/></div>
                     <#else>
-                        <div id="promotion_ko"><strong>The module cannot be promoted!!!</strong><br/></div>
+                        <#if isSnapshot()>
+                            <div id="promotion_ko"><strong>Snapshot module cannot be promoted!!!</strong><br/></div>
+                        <#else>
+                            <div id="promotion_ko"><strong>The module cannot be promoted!!!</strong><br/></div>
+                        </#if>
 
                         <#if getReportsWithDoNotUseArtifacts()?has_content >
                             <h3>ThirdParty that should not be used</h3>
