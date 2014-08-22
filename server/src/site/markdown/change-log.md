@@ -1,6 +1,7 @@
 1.4.1
 -------------
-* Fix webapp reports
+* Fix webapp reports display
+* Enhance promotion report
 
 1.4.0
 -------------
