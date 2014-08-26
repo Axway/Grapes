@@ -43,7 +43,7 @@ download_file_if_needed()
 	fi
 }
 
-download_file_if_needed ${DOWNLOADURL} SOURCES/grapes-${ARTIFACT_VERSION}.zip
+download_file_if_needed ${DOWNLOADURL} SOURCES/grapes-server-$ARTIFACT_VERSION.jar
 
 # prepare fresh directories
 rm -rf BUILD RPMS SRPMS TEMP
