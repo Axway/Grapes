@@ -4,10 +4,10 @@ if [ $# -ge 1 ]; then
 fi
 
 if [ -z "$ARTIFACT_VERSION" ]; then
-  ARTIFACT_VERSION=1.1.0
+  ARTIFACT_VERSION=1.4.1
 fi
 
-DOWNLOADURL=https://github.com/Axway/Grapes/releases/download/$ARTIFACT_VERSION/grapes-$ARTIFACT_VERSION.zip
+DOWNLOADURL=https://repo1.maven.org/maven2/org/axway/grapes/grapes-server/$ARTIFACT_VERSION/grapes-server-$ARTIFACT_VERSION.jar
 
 download_file_if_needed()
 {
