@@ -20,7 +20,7 @@
 %if 0%{?APP_VERSION}
 %define app_ver %{APP_VERSION}
 %else
-%define app_ver 1.1.0
+%define app_ver 1.4.1
 %endif
 
 #
@@ -299,6 +299,9 @@ exit 0
 %attr(0755,%{ciappusername},%{ciappusername}) %dir %{ciappdatadir}/repository
 
 %changelog
+* Tue Aug 26 2014 henri.gomez@gmail.com 1.4.1-1
+- Update to 1.4.1
+
 * Tue Apr 15 2014 henri.gomez@gmail.com 1.1.0-4
 - Remove Mongo requirements, server could be hosted elsewhere
 - Modify init.d to generate server-conf.yml at startup time from server-conf.yml.skel 
