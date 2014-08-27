@@ -20,14 +20,14 @@
 %if 0%{?APP_VERSION}
 %define app_ver %{APP_VERSION}
 %else
-%define app_ver 1.1.0
+%define app_ver 1.4.1
 %endif
 
 #
 # RPM release, to be updated when app_ver/app_rel don't change but spec file has been updated 
 # Note : OBS will generate RPM release number by itself, incremented at each build
 #
-%define rpm_rel    4
+%define rpm_rel    1
 
 Name: grapes
 Version: %{app_ver}
@@ -81,7 +81,7 @@ Requires: java >= 1.6.0
 Requires: java >= 1:1.6.0
 %endif
 
-Source0: https://github.com/Axway/Grapes/releases/download/%{app_ver}/grapes-%{app_ver}.zip
+Source0: https://repo1.maven.org//maven2/org/axway/grapes/grapes-server/%{app_ver}/grapes-server-%{app_ver}.jar
 Source1: initd.skel
 Source2: sysconfig.skel
 Source3: jmxremote.access.skel
@@ -119,9 +119,7 @@ mkdir -p %{buildroot}%{ciappdatadir}/repository
 mkdir -p %{buildroot}%{ciapptmpdir}
 
 # copy jar
-unzip %{SOURCE0}
-mv grapes-%{app_ver}/grapes-server-%{app_ver}.jar %{buildroot}%{ciapplibdir}/server.jar
-rm -rf grapes-%{app_ver}
+cp %{SOURCE0} %{buildroot}%{ciapplibdir}/server.jar
 
 # init.d
 cp  %{SOURCE1} %{buildroot}%{_initrddir}/%{ciapp}
@@ -299,6 +297,10 @@ exit 0
 %attr(0755,%{ciappusername},%{ciappusername}) %dir %{ciappdatadir}/repository
 
 %changelog
+* Tue Aug 26 2014 henri.gomez@gmail.com 1.4.1-1
+- Update to 1.4.1
+- Use jar from Maven Central
+
 * Tue Apr 15 2014 henri.gomez@gmail.com 1.1.0-4
 - Remove Mongo requirements, server could be hosted elsewhere
 - Modify init.d to generate server-conf.yml at startup time from server-conf.yml.skel 
