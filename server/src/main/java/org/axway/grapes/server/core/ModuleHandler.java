@@ -165,7 +165,7 @@ public class ModuleHandler {
                     if (!depModule.isPromoted()) {
                         report.addUnPromotedDependency(depModule.getId());
                         report.addDependencyPromotionReport(depModule.getId(), getPromotionReport(depModule.getId()));
-                      }
+                    }
                 }
             }
 
