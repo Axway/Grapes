@@ -174,6 +174,10 @@ public class ModuleHandler {
             for (DbDependency dependency : DataUtils.getAllDbDependencies(module)) {
                 final DbArtifact artifactDep = repositoryHandler.getArtifact(dependency.getTarget());
 
+                if (artifactDep == null) {
+                    // handle the case of a corporate artifact which is not available in the repository
+                    continue;
+                }
                 if (artifactDep.getDoNotUse() && !treatedArtifacts.contains(artifactDep.getGavc())) {
                     report.addDoNotUseArtifact(modelMapper.getArtifact(artifactDep));
                     treatedArtifacts.add(artifactDep.getGavc());
