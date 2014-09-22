@@ -1,3 +1,7 @@
+1.4.2
+-------------
+* [Pull request #33](https://github.com/Axway/Grapes/pull/33) Fix promotion report
+
 1.4.1
 -------------
 * Fix webapp reports display
