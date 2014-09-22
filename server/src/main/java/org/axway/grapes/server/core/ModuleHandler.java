@@ -164,8 +164,8 @@ public class ModuleHandler {
                 if (depModule != null && !depModule.getId().equals(moduleId)) {
                     if (!depModule.isPromoted()) {
                         report.addUnPromotedDependency(depModule.getId());
+                        report.addDependencyPromotionReport(depModule.getId(), getPromotionReport(depModule.getId()));
                     }
-                    report.addDependencyPromotionReport(depModule.getId(), getPromotionReport(depModule.getId()));
                 }
             }
 
@@ -174,6 +174,10 @@ public class ModuleHandler {
             for (DbDependency dependency : DataUtils.getAllDbDependencies(module)) {
                 final DbArtifact artifactDep = repositoryHandler.getArtifact(dependency.getTarget());
 
+                if (artifactDep == null) {
+                    // handle the case of a corporate artifact which is not available in the repository
+                    continue;
+                }
                 if (artifactDep.getDoNotUse() && !treatedArtifacts.contains(artifactDep.getGavc())) {
                     report.addDoNotUseArtifact(modelMapper.getArtifact(artifactDep));
                     treatedArtifacts.add(artifactDep.getGavc());
