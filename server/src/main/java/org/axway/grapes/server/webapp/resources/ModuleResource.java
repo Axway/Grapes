@@ -1,7 +1,6 @@
 package org.axway.grapes.server.webapp.resources;
 
 import com.yammer.dropwizard.auth.Auth;
-import com.yammer.dropwizard.jersey.caching.CacheControl;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Dependency;
@@ -29,7 +28,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Module Resource
@@ -105,7 +103,6 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path(ServerAPI.GET_NAMES)
-    @CacheControl(maxAge = 30, maxAgeUnit = TimeUnit.SECONDS)
     public Response getNames(@Context final UriInfo uriInfo){
         LOG.info("Got a get module names request.");
 
@@ -148,7 +145,6 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}" + ServerAPI.GET_VERSIONS)
-    @CacheControl(maxAge = 30, maxAgeUnit = TimeUnit.SECONDS)
     public Response getVersions(@PathParam("name") final String name, @Context final UriInfo uriInfo){
         LOG.info("Got a get versions request.");
 
@@ -244,7 +240,6 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}" + ServerAPI.GET_ANCESTORS)
-    @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getAncestors(@PathParam("name") final String name,
                                    @PathParam("version") final String version,
                                      @Context final UriInfo uriInfo){
@@ -288,7 +283,6 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}" + ServerAPI.GET_DEPENDENCIES)
-    @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getDependencies(@PathParam("name") final String name,
                                     @PathParam("version") final String version,
                                     @Context final UriInfo uriInfo){
@@ -317,7 +311,6 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}" + ServerAPI.GET_DEPENDENCIES + ServerAPI.GET_REPORT)
-    @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getDependencyReport(@PathParam("name") final String name,
                                     @PathParam("version") final String version,
                                     @Context final UriInfo uriInfo){
@@ -343,7 +336,6 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}" + ServerAPI.GET_LICENSES)
-    @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getLicenses(@PathParam("name") final String name, @PathParam("version") final String version){
         LOG.info("Got a get module licenses request.");
 
@@ -413,7 +405,6 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/{name}/{version}" + ServerAPI.PROMOTION + ServerAPI.GET_REPORT)
-    @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getPromotionStatusReport(@PathParam("name") final String name, @PathParam("version") final String version){
         LOG.info("Got a get promotion report request.");
         final String moduleId = DbModule.generateID(name, version);
@@ -483,7 +474,6 @@ public class ModuleResource extends AbstractResource{
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path(ServerAPI.GET_ALL)
-    @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getAllModules(@Context final UriInfo uriInfo){
         LOG.info("Got a get all modules request.");
 

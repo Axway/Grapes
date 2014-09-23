@@ -1,7 +1,6 @@
 package org.axway.grapes.server.webapp.resources;
 
 import com.yammer.dropwizard.auth.Auth;
-import com.yammer.dropwizard.jersey.caching.CacheControl;
 import com.yammer.dropwizard.jersey.params.BooleanParam;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.Artifact;
@@ -28,7 +27,6 @@ import javax.ws.rs.core.UriInfo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Artifact Resource
@@ -153,7 +151,6 @@ public class ArtifactResource extends AbstractResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{gavc}" + ServerAPI.GET_LAST_VERSION)
-    @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getLastVersion(@PathParam("gavc") final String gavc){
         LOG.info("Got a get artifact last version request.");
 
@@ -312,7 +309,6 @@ public class ArtifactResource extends AbstractResource {
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{gavc}" + ServerAPI.GET_ANCESTORS)
-    @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getAncestors(@PathParam("gavc") final String gavc, @Context final UriInfo uriInfo){
         LOG.info("Got a get artifact request.");
 
@@ -473,7 +469,6 @@ public class ArtifactResource extends AbstractResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path(ServerAPI.GET_ALL)
-    @CacheControl(maxAge = 5, maxAgeUnit = TimeUnit.MINUTES)
     public Response getAll(@Context final UriInfo uriInfo){
         LOG.info("Got a get all artifact request.");
 
