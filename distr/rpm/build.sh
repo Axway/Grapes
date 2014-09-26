@@ -4,7 +4,7 @@ if [ $# -ge 1 ]; then
 fi
 
 if [ -z "$ARTIFACT_VERSION" ]; then
-  ARTIFACT_VERSION=1.4.1
+  ARTIFACT_VERSION=1.4.2
 fi
 
 DOWNLOADURL=https://repo1.maven.org/maven2/org/axway/grapes/grapes-server/$ARTIFACT_VERSION/grapes-server-$ARTIFACT_VERSION.jar
