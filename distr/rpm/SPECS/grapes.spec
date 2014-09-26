@@ -20,7 +20,7 @@
 %if 0%{?APP_VERSION}
 %define app_ver %{APP_VERSION}
 %else
-%define app_ver 1.4.1
+%define app_ver 1.4.2
 %endif
 
 #
@@ -297,6 +297,9 @@ exit 0
 %attr(0755,%{ciappusername},%{ciappusername}) %dir %{ciappdatadir}/repository
 
 %changelog
+* Fri Sep 26 2014 jdcoffre@gmail.com 1.4.2-1
+- Update to 1.4.2
+
 * Tue Aug 26 2014 henri.gomez@gmail.com 1.4.1-1
 - Update to 1.4.1
 - Use jar from Maven Central
