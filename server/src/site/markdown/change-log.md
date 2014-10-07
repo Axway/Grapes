@@ -1,3 +1,7 @@
+1.4.3
+-------------
+* [Github issue #34](https://github.com/Axway/Grapes/issues/34) Fix potential NPE while performing module deletion
+
 1.4.2
 -------------
 * [Pull request #33](https://github.com/Axway/Grapes/pull/33) Fix promotion report

@@ -199,9 +199,7 @@ public class ModelMapper {
 
         //Dependencies
         for(DbDependency dbDependency: dbModule.getDependencies()){
-            final DbArtifact dbArtifact = repositoryHandler.getArtifact(dbDependency.getTarget());
-            final Artifact artifact = getArtifact(dbArtifact);
-            final Dependency dependency = DataModelFactory.createDependency(artifact, dbDependency.getScope());
+            final Dependency dependency = getDependency(dbDependency, module.getName(), module.getVersion());
             dependency.setSourceName(module.getName());
             dependency.setSourceVersion(module.getVersion());
             module.addDependency(dependency);
@@ -224,7 +222,13 @@ public class ModelMapper {
      */
     public Dependency getDependency(final DbDependency dbDependency, final String sourceName, final String sourceVersion) {
         final DbArtifact dbArtifact = repositoryHandler.getArtifact(dbDependency.getTarget());
-        final Artifact artifact = getArtifact(dbArtifact);
+        final Artifact artifact;
+
+        if(dbArtifact == null){
+            artifact = DataUtils.createArtifact(dbDependency.getTarget());
+        } else {
+            artifact = getArtifact(dbArtifact);
+        }
 
         final Dependency dependency = DataModelFactory.createDependency(artifact, dbDependency.getScope());
         dependency.setSourceName(sourceName);
