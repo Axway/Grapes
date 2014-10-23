@@ -137,6 +137,28 @@ public class GrapesClient {
     }
 
     /**
+     * Get a module build info
+     *
+     * @param moduleName String
+     * @param moduleVersion String
+     * @throws GrapesCommunicationException
+     */
+    public Map<String, String> getBuildInfo(final String moduleName, final String moduleVersion) throws GrapesCommunicationException {
+        final Client client = getClient();
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getBuildInfoPath(moduleName, moduleVersion));
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
+            final String message = "Failed to GET buildInfo";
+            LOG.error(message + ". Http status: " + response.getStatus());
+            throw new GrapesCommunicationException(message, response.getStatus());
+        }
+
+        return response.getEntity(new GenericType<Map<String,String>>(){});
+    }
+
+    /**
      * Post a module to the server
      *
      * @param module

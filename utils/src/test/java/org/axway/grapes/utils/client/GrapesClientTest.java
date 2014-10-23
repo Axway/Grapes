@@ -1179,6 +1179,51 @@ public class GrapesClientTest {
     }
 
     @Test
+    public void getBuildInfo() throws IOException {
+        final String moduleName = "module";
+        final String moduleVersion = "1.0.0-SNAPSHOT";
+        final Map<String, String> buildInfo = new HashMap<String, String>();
+        buildInfo.put("test", "test.test");
+
+        stubFor(get(urlMatching("/" + ServerAPI.MODULE_RESOURCE + "/" + moduleName + "/" + moduleVersion + ServerAPI.GET_BUILD_INFO))
+                .willReturn(aResponse()
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .withBody(JsonUtils.serialize(buildInfo))
+                        .withStatus(Status.OK.getStatusCode())));
+
+        Map<String, String> gotBuildInfo= null;
+        Exception exception = null;
+
+        try {
+            gotBuildInfo = client.getBuildInfo(moduleName, moduleVersion);
+        } catch (Exception e) {
+            exception = e;
+        }
+
+        assertNull(exception);
+        assertNotNull(gotBuildInfo);
+    }
+
+    @Test
+    public void getBuildInfoNotFound() throws IOException {
+        final String moduleName = "module";
+        final String moduleVersion = "1.0.0-SNAPSHOT";
+
+        stubFor(get(urlMatching("/" + ServerAPI.MODULE_RESOURCE + "/" + moduleName + "/" + moduleVersion + ServerAPI.GET_BUILD_INFO))
+                .willReturn(aResponse().withStatus(Status.NOT_FOUND.getStatusCode())));
+
+        Exception exception = null;
+
+        try {
+            client.getBuildInfo(moduleName, moduleVersion);
+        } catch (Exception e) {
+            exception = e;
+        }
+
+        assertNotNull(exception);
+    }
+
+    @Test
     public void getProductModuleNames() throws IOException {
         final String product = "product";
         final List<String> names = Lists.newArrayList("module1", "module2", "module3", "module4");
