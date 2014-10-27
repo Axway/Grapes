@@ -1,6 +1,7 @@
 1.4.3
 -------------
 * [Github issue #34](https://github.com/Axway/Grapes/issues/34) Fix potential NPE while performing module deletion
+* Extends Grapes utils API
 
 1.4.2
 -------------
