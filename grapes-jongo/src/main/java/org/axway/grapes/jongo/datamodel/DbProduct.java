@@ -1,5 +1,5 @@
 package org.axway.grapes.jongo.datamodel;
-
+//todo tostring method
 import org.axway.grapes.model.datamodel.Product;
 import org.jongo.marshall.jackson.oid.Id;
 
@@ -17,6 +17,18 @@ public class DbProduct extends Product {
 
     @Id
     private String name;
+
+    //constructor
+    public DbProduct(Product p) {
+        this.name= p.getName();
+        setName(p.getName());
+        setDeliveries(p.getDeliveries());
+        setModules(p.getModules());
+        setOrganization(p.getOrganization());
+    }
+
+    public DbProduct() {
+    }
 
     public String getName() {
         return name;

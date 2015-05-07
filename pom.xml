@@ -108,6 +108,9 @@
 		<module>commons</module>
 		<module>utils</module>
 		<module>server</module>
+		<module>grapes-core</module>
+		<module>grapes-jongo</module>
+		<module>grapes-model</module>
 	</modules>
 
 	<build>

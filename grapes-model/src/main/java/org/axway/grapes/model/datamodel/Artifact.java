@@ -16,6 +16,8 @@ import java.util.List;
  */
 public class Artifact {
 
+    //this is the id in the jongo datamodel
+    private String gavc;
     private String artifactId;
     private String groupId = "";
     private String version = "";
@@ -32,8 +34,12 @@ public class Artifact {
 
     private List<String> licenses = new ArrayList<String>();
 
-    protected Artifact() {
+    public Artifact() {
         // Should only be instantiated via the DataModelObjectFactory
+    }
+
+    public void setGavc(String gavc) {
+        this.gavc = gavc;
     }
 
     public String getArtifactId() {

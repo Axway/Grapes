@@ -1,4 +1,5 @@
 package org.axway.grapes.jongo.datamodel;
+//todo tostring method
 
 import org.axway.grapes.model.datamodel.License;
 import org.jongo.marshall.jackson.oid.Id;
@@ -19,6 +20,19 @@ public class DbLicense extends License {
     @Id
     private String name = "";
 
+    public DbLicense(License license) {
+        this.name = license.getName();
+        setName(license.getName());
+        setApproved(license.isApproved());
+        setComments(license.getComments());
+        setLongName(license.getLongName());
+        setRegexp(license.getRegexp());
+        setUnknown(license.isUnknown());
+        setUrl(license.getUrl());
+    }
+
+    public DbLicense() {
+    }
 
     public void setDataModelVersion(final String newVersion) {
         this.datamodelVersion = newVersion;

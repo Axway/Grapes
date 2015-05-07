@@ -1,4 +1,5 @@
 package org.axway.grapes.jongo.datamodel;
+//todo tostring method
 
 import org.axway.grapes.model.datamodel.Artifact;
 import org.axway.grapes.model.datamodel.Dependency;
@@ -23,6 +24,26 @@ public class DbModule extends Module {
 
     @Id
     private String id = "";
+
+    public DbModule(Module m) {
+       this.id = m.getId();
+        setName(m.getName());
+        setVersion(getVersion());
+        setArtifacts(m.getArtifacts());
+        setBuildInfo(m.getBuildInfo());
+        setDependencies(m.getDependencies());
+        setHas(m.getHas());
+        setId(m.getId());
+        setOrganization(m.getOrganization());
+        setPromoted(m.isPromoted());
+        setSubmodules(m.getSubmodules());
+        setUses(m.getUses());
+
+    }
+
+    public DbModule() {
+
+    }
 
     /**
      * Here is a workaround because of this mongodb open issue:

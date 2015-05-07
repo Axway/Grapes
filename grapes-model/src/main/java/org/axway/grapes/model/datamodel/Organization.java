@@ -19,7 +19,7 @@ public class Organization {
 
     private List<String> corporateGroupIdPrefixes = new ArrayList<String>();
 
-    protected Organization() {
+    public Organization() {
         // Should only be instantiated via the DataModelObjectFactory
     }
 

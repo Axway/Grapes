@@ -1,5 +1,5 @@
 package org.axway.grapes.jongo.datamodel;
-
+//todo tostring method
 import org.axway.grapes.model.datamodel.Credential;
 import org.jongo.marshall.jackson.oid.Id;
 
@@ -19,6 +19,15 @@ public class DbCredential extends Credential {
     @Id
     private String user;
 
+    public DbCredential(Credential credential) {
+        this.user = credential.getUser();
+        setUser(credential.getUser());
+        setPassword(credential.getPassword());
+        setRoles(credential.getRoles());
+    }
+
+    public DbCredential() {
+    }
 
     @Override
     public void setUser(String user) {

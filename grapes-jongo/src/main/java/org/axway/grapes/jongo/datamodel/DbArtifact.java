@@ -1,5 +1,5 @@
 package org.axway.grapes.jongo.datamodel;
-
+//todo tostring method
 import org.axway.grapes.model.datamodel.Artifact;
 
 
@@ -20,6 +20,26 @@ public class DbArtifact extends Artifact {
     @Id
     private String gavc;
 
+    public DbArtifact(Artifact artifact) {
+        this.gavc = artifact.getGavc();
+        setArtifactId(artifact.getArtifactId());
+        setClassifier(artifact.getClassifier());
+        setExtension(artifact.getExtension());
+        setGroupId(artifact.getGroupId());
+        setVersion(artifact.getVersion());
+        setDoNotUse(artifact.getDoNotUse());
+        setDownloadUrl(artifact.getDownloadUrl());
+        setGavc(artifact.getGavc());
+        setLicenses(artifact.getLicenses());
+        setPromoted(artifact.isPromoted());
+        setProvider(artifact.getProvider());
+        setSize(artifact.getSize());
+        setType(artifact.getType());
+
+    }
+
+    public DbArtifact() {
+    }
 
     public void setDataModelVersion(final String newVersion) {
         this.datamodelVersion = newVersion;

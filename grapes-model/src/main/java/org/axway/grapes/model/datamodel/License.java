@@ -1,4 +1,5 @@
 package org.axway.grapes.model.datamodel;
+//todo all models should have a to string method?
 
 /**
  * License Model Class
@@ -27,7 +28,7 @@ public class License {
     private boolean unknown = false;
 
 
-    protected License() {
+    public License() {
 		// Should only be instantiated via the DataModelObjectFactory
 	}
 	

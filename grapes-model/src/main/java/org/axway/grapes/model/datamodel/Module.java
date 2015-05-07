@@ -12,6 +12,7 @@ import java.util.*;
  */
 public class Module {
 
+    private String id ;
     private String name;
     private String version;
 
@@ -30,6 +31,22 @@ public class Module {
 
     protected Module() {
         // Must be instantiated via the DataModelObjectFactory
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setUses(List<Artifact> uses) {
+        this.uses = uses;
+    }
+
+    public void setHas(List<Artifact> has) {
+        this.has = has;
     }
 
     public String getName() {
