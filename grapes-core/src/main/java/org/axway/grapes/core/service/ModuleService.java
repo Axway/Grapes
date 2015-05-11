@@ -31,11 +31,9 @@ public interface ModuleService {
 Organization getOrganization(Module module);
 
    List<Module> getModules(FiltersHolder filters);
-    void removeModulesOrganization(final Organization organization);
-    void removeModulesOrganization(final String corporateGidPrefix, final Organization organization);
-    void addModulesOrganization(final String corporateGidPrefix, final Organization organization);
 
     Module getRootModuleOf(String gavc);
 
     List<Module> getAncestors(Artifact artifact, FiltersHolder filters);
+    Organization getMatchingOrganization(Module module);
 }

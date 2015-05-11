@@ -1,5 +1,5 @@
 package org.axway.grapes.model.datamodel;
-
+//todo look at how the id is formed and make sure we get the right thing kinda like gavac for artifact.
 import java.util.*;
 
 /**
@@ -29,7 +29,7 @@ public class Module {
 
     private List<Artifact> uses = new ArrayList<>();
 
-    protected Module() {
+    public Module() {
         // Must be instantiated via the DataModelObjectFactory
     }
 

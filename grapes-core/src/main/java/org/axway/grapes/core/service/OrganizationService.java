@@ -16,6 +16,8 @@ public interface OrganizationService {
 
     Organization getOrganization(String organizationId);
 
+    List<Organization> getAllOrganizations();
+
     void deleteOrganization(String organizationId);
 
     List<String> getCorporateGroupIds(String organizationId);
@@ -24,5 +26,9 @@ public interface OrganizationService {
 
     void removeCorporateGroupId(String organizationId, String corporateGroupId);
 
-    Organization getMatchingOrganization(Module module);
+
+    void removeModulesOrganization(final Organization organization);
+    void removeModulesOrganization(final String corporateGidPrefix, final Organization organization);
+    void addModulesOrganization(final String corporateGidPrefix, final Organization organization);
+
 }

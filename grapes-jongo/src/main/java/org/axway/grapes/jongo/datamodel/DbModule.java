@@ -26,7 +26,7 @@ public class DbModule extends Module {
     private String id = "";
 
     public DbModule(Module m) {
-       this.id = m.getId();
+
         setName(m.getName());
         setVersion(getVersion());
         setArtifacts(m.getArtifacts());
