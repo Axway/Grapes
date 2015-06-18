@@ -1,8 +1,6 @@
 package org.axway.grapes.jongo.datamodel;
-//todo tostring method
+
 import org.axway.grapes.model.datamodel.Artifact;
-
-
 import org.jongo.marshall.jackson.oid.Id;
 
 /**

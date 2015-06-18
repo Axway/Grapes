@@ -1,6 +1,7 @@
 package org.axway.grapes.jongo.datamodel;
-//todo tostring method
 
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.axway.grapes.model.datamodel.License;
 import org.jongo.marshall.jackson.oid.Id;
 
@@ -16,6 +17,7 @@ public class DbLicense extends License {
 
     public static final String DATA_MODEL_VERSION = "datamodelVersion";
     private String datamodelVersion = DbCollections.datamodelVersion;
+
 
     @Id
     private String name = "";
@@ -41,11 +43,11 @@ public class DbLicense extends License {
     public String getDataModelVersion() {
         return datamodelVersion;
     }
-
+    @JsonProperty("name")
     public final String getName() {
         return name;
     }
-
+    @JsonProperty("name")
     public final void setName(final String name) {
         this.name = name;
     }

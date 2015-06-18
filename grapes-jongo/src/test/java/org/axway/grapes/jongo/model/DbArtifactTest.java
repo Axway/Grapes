@@ -1,9 +1,8 @@
 package org.axway.grapes.jongo.model;
 
+import org.axway.grapes.jongo.datamodel.DbArtifact;
 import org.axway.grapes.model.datamodel.Artifact;
 import org.axway.grapes.model.datamodel.DataModelFactory;
-import org.axway.grapes.jongo.datamodel.DbArtifact;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

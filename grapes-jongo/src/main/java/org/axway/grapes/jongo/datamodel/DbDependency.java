@@ -1,6 +1,5 @@
 package org.axway.grapes.jongo.datamodel;
 
-import org.axway.grapes.model.datamodel.Artifact;
 import org.axway.grapes.model.datamodel.Dependency;
 import org.axway.grapes.model.datamodel.Scope;
 
@@ -20,13 +19,11 @@ public class DbDependency extends Dependency {
     public DbDependency() {
     }
 
-    public DbDependency(String source, Artifact target, Scope scope) {
+    public DbDependency(String source, String target, Scope scope) {
         super(source, target, scope);
     }
 
-    public DbDependency(String source, String targetGAVC, Scope scope) {
-        super(source, targetGAVC, scope);
-    }
+
 
     public void setDataModelVersion(final String newVersion) {
         this.datamodelVersion = newVersion;
@@ -51,7 +48,7 @@ public class DbDependency extends Dependency {
     public int hashCode() {
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(super.getSource());
+        sb.append(super.generateSourceID());
         sb.append(":");
         sb.append(super.getTarget());
         sb.append(":");

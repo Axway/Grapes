@@ -1,14 +1,14 @@
 package org.axway.grapes.jongo.model;
 
-import org.axway.grapes.model.datamodel.Credential.AvailableRoles;
 import org.axway.grapes.jongo.datamodel.DbCollections;
 import org.axway.grapes.jongo.datamodel.DbCredential;
+import org.axway.grapes.model.datamodel.Credential.AvailableRoles;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 public class DbCredentialTest {
 
     @Test

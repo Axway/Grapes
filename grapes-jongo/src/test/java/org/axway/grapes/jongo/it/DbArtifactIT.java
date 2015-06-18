@@ -1,7 +1,6 @@
 package org.axway.grapes.jongo.it;
 
 import org.axway.grapes.jongo.datamodel.DbArtifact;
-
 import org.junit.Test;
 import org.wisdom.api.model.Crud;
 import org.wisdom.test.parents.Filter;
