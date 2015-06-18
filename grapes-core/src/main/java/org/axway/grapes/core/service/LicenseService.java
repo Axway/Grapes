@@ -10,19 +10,22 @@ import java.util.List;
  */
 public interface LicenseService {
 
-    public void hello();
-    void store(License license);
+    public void store(License license);
+    public  void storeUnknown(String name);
 
-    List<String> getLicensesNames(FiltersHolder filters);
+    public License getLicense(String name);
 
-    License getLicense(String name);
+    public List<String> getLicensesNames(FiltersHolder filters);
 
-    void deleteLicense(String name);
+   // public List<License> getAllLicenses();
 
-    void approveLicense(String name, Boolean approved);
+   // public List<License> getAllLicenses(String name);
 
-    License resolve(String licenseId);
+    public List<License> getLicenses();
 
-    List<License> getLicenses();
+    public void deleteLicense(String name);
 
+    public void approveLicense(String name, Boolean approved);
+
+    public License resolve(String licenseId);
 }

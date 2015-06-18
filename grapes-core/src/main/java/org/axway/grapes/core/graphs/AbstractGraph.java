@@ -4,7 +4,6 @@ import org.axway.grapes.model.datamodel.Artifact;
 import org.axway.grapes.model.datamodel.Module;
 import org.axway.grapes.model.datamodel.Scope;
 
-
 import java.util.ArrayList;
 import java.util.List;
 

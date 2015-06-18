@@ -1,6 +1,5 @@
 package org.axway.grapes.core.service;
 
-
 import org.axway.grapes.core.options.FiltersHolder;
 import org.axway.grapes.model.datamodel.Artifact;
 import org.axway.grapes.model.datamodel.License;
@@ -13,44 +12,46 @@ import java.util.List;
  * Created by jennifer on 4/24/15.
  */
 public interface ArtifactService {
+
     void store(Artifact artifact);
 
     void storeIfNew(Artifact artifact);
 
-    void addLicense(String gavc, String licenseId);
+    Artifact getArtifact(String gavc);
 
-   List<String> getArtifactGavcs(FiltersHolder filters);
+    List<Artifact> getAllArtifacts();
+
+    List<Artifact> getArtifacts(FiltersHolder filters);
+
+    List<String> getArtifactGavcs(FiltersHolder filters);
 
     List<String> getArtifactGroupIds(FiltersHolder filters);
 
-    List<String> getArtifactVersions(String gavc);
+    List<License> getArtifactLicenses(String gavc, FiltersHolder filters);
 
     String getArtifactLastVersion(String gavc);
 
-    Artifact getArtifact(String gavc);
+    List<String> getArtifactVersions(String gavc);
+
+    List<String> getArtifactVersions(Artifact artifact);
+
+    List<Module> getAncestors(String gavc, FiltersHolder filters);
 
     Module getModule(Artifact artifact);
 
     Organization getOrganization(Artifact artifact);
 
+    void updateDoNotUse(String gavc, Boolean doNotUse);
+
     void updateDownLoadUrl(String gavc, String downLoadUrl);
 
     void updateProvider(String gavc, String provider);
 
-    void deleteArtifact(String gavc);
-
-    void updateDoNotUse(String gavc, Boolean doNotUse);
-
-    List<Module> getAncestors(String gavc, FiltersHolder filters);
-
-   List<License> getArtifactLicenses(String gavc, FiltersHolder filters);
+    void addLicense(String gavc, String licenseId);
 
     void addLicenseToArtifact(String gavc, String licenseId);
 
     void removeLicenseFromArtifact(String gavc, String licenseId);
 
-    List<Artifact> getArtifacts(FiltersHolder filters);
-    List<String> getArtifactVersions(Artifact artifact);
-
-    List<String> getGavcs(FiltersHolder filters);
+    void deleteArtifact(String gavc);
 }

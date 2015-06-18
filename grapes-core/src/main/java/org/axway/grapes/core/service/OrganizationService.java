@@ -1,6 +1,5 @@
 package org.axway.grapes.core.service;
 
-
 import org.axway.grapes.model.datamodel.Module;
 import org.axway.grapes.model.datamodel.Organization;
 
@@ -10,25 +9,28 @@ import java.util.List;
  * Created by jennifer on 4/24/15.
  */
 public interface OrganizationService {
-    void store(Organization organization);
+    public void store(Organization organization);
 
-    List<String> getOrganizationNames();
+    public Organization getOrganization(String organizationName);
 
-    Organization getOrganization(String organizationId);
+    public List<String> getOrganizationNames();
 
-    List<Organization> getAllOrganizations();
+    public List<Organization> getAllOrganizations();
 
-    void deleteOrganization(String organizationId);
+    public void deleteOrganization(String organizationName);
 
-    List<String> getCorporateGroupIds(String organizationId);
+    public List<String> getCorporateGroupIds(String organizationName);
 
-    void addCorporateGroupId(String organizationId, String corporateGroupId);
+    void addCorporateGroupId(String organizationName, String corporateGroupId);
 
-    void removeCorporateGroupId(String organizationId, String corporateGroupId);
-
+    void removeCorporateGroupId(String organizationName, String corporateGroupId);
 
     void removeModulesOrganization(final Organization organization);
+
     void removeModulesOrganization(final String corporateGidPrefix, final Organization organization);
+
     void addModulesOrganization(final String corporateGidPrefix, final Organization organization);
+    public Organization getMatchingOrganization(final Module module);
+
 
 }

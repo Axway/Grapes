@@ -2,7 +2,8 @@ package org.axway.grapes.core.options;
 
 import org.axway.grapes.model.api.ServerAPI;
 
-import javax.ws.rs.core.MultivaluedMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Decorator
@@ -80,9 +81,9 @@ public class Decorator {
         }
     }
 
-    private void setShowLicenses(final String showLicenses) {
+    private void setShowLicenses(final List<String> showLicenses) {
         if(showLicenses != null){
-            setShowLicenses(Boolean.valueOf(showLicenses));
+            setShowLicenses(Boolean.valueOf(showLicenses.get(0)));
         }
     }
 
@@ -96,9 +97,9 @@ public class Decorator {
         }
     }
 
-    private void setShowScopes(final String showScopes) {
+    private void setShowScopes(final List<String> showScopes) {
         if(showScopes != null){
-            setShowScopes(Boolean.valueOf(showScopes));
+            setShowScopes(Boolean.valueOf(showScopes.get(0)));
         }
     }
 
@@ -112,9 +113,9 @@ public class Decorator {
         }
     }
 
-    private void setShowAncestors(final String showAncestors) {
+    private void setShowAncestors(final List<String> showAncestors) {
         if(showAncestors != null){
-            setShowAncestors(Boolean.valueOf(showAncestors));
+            setShowAncestors(Boolean.valueOf(showAncestors.get(0)));
         }
     }
 
@@ -128,9 +129,9 @@ public class Decorator {
         }
     }
 
-    private void setShowCorporate(final String showCorporate) {
+    private void setShowCorporate(final List<String> showCorporate) {
         if(showCorporate != null){
-            setShowCorporate(Boolean.valueOf(showCorporate));
+            setShowCorporate(Boolean.valueOf(showCorporate.get(0)));
         }
     }
 
@@ -144,9 +145,9 @@ public class Decorator {
         }
     }
 
-    private void setShowThirdparty(final String showThirdparty) {
+    private void setShowThirdparty(final List<String> showThirdparty) {
         if(showThirdparty != null){
-            setShowThirdparty(Boolean.valueOf(showThirdparty));
+            setShowThirdparty(Boolean.valueOf(showThirdparty.get(0)));
         }
     }
 
@@ -160,9 +161,9 @@ public class Decorator {
         }
     }
 
-    private void setShowSources(final String showSources) {
+    private void setShowSources(final List<String> showSources) {
         if(showSources != null){
-            setShowSources(Boolean.valueOf(showSources));
+            setShowSources(Boolean.valueOf(showSources.get(0)));
         }
     }
 
@@ -176,9 +177,9 @@ public class Decorator {
         }
     }
 
-    private void setShowProviders(final String showProvider) {
+    private void setShowProviders(final List<String> showProvider) {
         if(showProvider != null){
-            setShowProviders(Boolean.valueOf(showProvider));
+            setShowProviders(Boolean.valueOf(showProvider.get(0)));
         }
     }
 
@@ -192,9 +193,9 @@ public class Decorator {
         }
     }
 
-    public void setShowLicensesLongName(final String showLicensesLongName) {
+    public void setShowLicensesLongName(final List<String> showLicensesLongName) {
         if (showLicensesLongName != null){
-            this.showLicensesLongName = Boolean.valueOf(showLicensesLongName);
+            this.showLicensesLongName = Boolean.valueOf(showLicensesLongName.get(0));
         }
     }
 
@@ -208,9 +209,9 @@ public class Decorator {
         }
     }
 
-    public void setShowLicensesUrl(final String showLicensesUrl) {
+    public void setShowLicensesUrl(final List<String> showLicensesUrl) {
         if(showLicensesUrl != null) {
-            this.showLicensesUrl = Boolean.valueOf(showLicensesUrl);
+            this.showLicensesUrl = Boolean.valueOf(showLicensesUrl.get(0));
         }
     }
 
@@ -224,9 +225,9 @@ public class Decorator {
         }
     }
 
-    public void setShowLicensesComment(final String showLicensesComment) {
+    public void setShowLicensesComment(final List<String> showLicensesComment) {
         if(showLicensesComment != null) {
-            this.showLicensesComment = Boolean.valueOf(showLicensesComment);
+            this.showLicensesComment = Boolean.valueOf(showLicensesComment.get(0));
         }
     }
 
@@ -240,9 +241,9 @@ public class Decorator {
         }
     }
 
-    public void setShowSourcesVersion(final String showSourcesVersion) {
+    public void setShowSourcesVersion(final List<String> showSourcesVersion) {
         if( showSourcesVersion != null ) {
-            this.showSourcesVersion = Boolean.valueOf(showSourcesVersion);
+            this.showSourcesVersion = Boolean.valueOf(showSourcesVersion.get(0));
         }
     }
 
@@ -256,9 +257,9 @@ public class Decorator {
         }
     }
 
-    public void setShowTargets(final String showTargets) {
+    public void setShowTargets(final List<String> showTargets) {
         if(showTargets != null) {
-            this.showTargets = Boolean.valueOf(showTargets);
+            this.showTargets = Boolean.valueOf(showTargets.get(0));
         }
     }
 
@@ -272,9 +273,9 @@ public class Decorator {
         }
     }
 
-    public void setShowTargetsDownloadUrl(final String showTargetsDownloadUrl) {
+    public void setShowTargetsDownloadUrl(final List<String> showTargetsDownloadUrl) {
         if(showTargetsDownloadUrl != null) {
-            this.showTargetsDownloadUrl = Boolean.valueOf(showTargetsDownloadUrl);
+            this.showTargetsDownloadUrl = Boolean.valueOf(showTargetsDownloadUrl.get(0));
         }
     }
 
@@ -288,26 +289,26 @@ public class Decorator {
         }
     }
 
-    public void setShowTargetsSize(final String showTargetsSize) {
+    public void setShowTargetsSize(final List<String> showTargetsSize) {
         if(showTargetsSize != null) {
-            this.showTargetsSize = Boolean.valueOf(showTargetsSize);
+            this.showTargetsSize = Boolean.valueOf(showTargetsSize.get(0));
         }
     }
 
-    public void init(final MultivaluedMap<String, String> queryParameters){
-        setShowScopes(queryParameters.getFirst(ServerAPI.SHOW_SCOPE_PARAM));
-        setShowLicenses(queryParameters.getFirst(ServerAPI.SHOW_LICENSE_PARAM));
-        setShowThirdparty(queryParameters.getFirst(ServerAPI.SHOW_THIRPARTY_PARAM));
-        setShowCorporate(queryParameters.getFirst(ServerAPI.SHOW_CORPORATE_PARAM));
-        setShowSources(queryParameters.getFirst(ServerAPI.SHOW_SOURCES_PARAM));
-        setShowAncestors(queryParameters.getFirst(ServerAPI.SHOW_ANCESTOR_PARAM));
-        setShowProviders(queryParameters.getFirst(ServerAPI.SHOW_PROVIDERS_PARAM));
-        setShowTargets(queryParameters.getFirst(ServerAPI.SHOW_TARGET_PARAM));
-        setShowTargetsDownloadUrl(queryParameters.getFirst(ServerAPI.SHOW_TARGET_URL_PARAM));
-        setShowTargetsSize(queryParameters.getFirst(ServerAPI.SHOW_SIZE));
-        setShowSourcesVersion(queryParameters.getFirst(ServerAPI.SHOW_SOURCES_VERSION_PARAM));
-        setShowLicensesLongName(queryParameters.getFirst(ServerAPI.SHOW_LICENSE_FULL_NAME_PARAM));
-        setShowLicensesComment(queryParameters.getFirst(ServerAPI.SHOW_LICENSE_COMMENT_PARAM));
-        setShowLicensesUrl(queryParameters.getFirst(ServerAPI.SHOW_LICENSE_URL_PARAM));
+    public void init(final Map<String, List<String>> queryParameters){
+        setShowScopes(queryParameters.get(ServerAPI.SHOW_SCOPE_PARAM));
+        setShowLicenses(queryParameters.get(ServerAPI.SHOW_LICENSE_PARAM));
+        setShowThirdparty(queryParameters.get(ServerAPI.SHOW_THIRPARTY_PARAM));
+        setShowCorporate(queryParameters.get(ServerAPI.SHOW_CORPORATE_PARAM));
+        setShowSources(queryParameters.get(ServerAPI.SHOW_SOURCES_PARAM));
+        setShowAncestors(queryParameters.get(ServerAPI.SHOW_ANCESTOR_PARAM));
+        setShowProviders(queryParameters.get(ServerAPI.SHOW_PROVIDERS_PARAM));
+        setShowTargets(queryParameters.get(ServerAPI.SHOW_TARGET_PARAM));
+        setShowTargetsDownloadUrl(queryParameters.get(ServerAPI.SHOW_TARGET_URL_PARAM));
+        setShowTargetsSize(queryParameters.get(ServerAPI.SHOW_SIZE));
+        setShowSourcesVersion(queryParameters.get(ServerAPI.SHOW_SOURCES_VERSION_PARAM));
+        setShowLicensesLongName(queryParameters.get(ServerAPI.SHOW_LICENSE_FULL_NAME_PARAM));
+        setShowLicensesComment(queryParameters.get(ServerAPI.SHOW_LICENSE_COMMENT_PARAM));
+        setShowLicensesUrl(queryParameters.get(ServerAPI.SHOW_LICENSE_URL_PARAM));
     }
 }

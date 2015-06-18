@@ -1,6 +1,5 @@
 package org.axway.grapes.core.service;
 
-
 import org.axway.grapes.core.options.FiltersHolder;
 import org.axway.grapes.model.datamodel.Artifact;
 import org.axway.grapes.model.datamodel.License;
@@ -13,27 +12,37 @@ import java.util.List;
  * Created by jennifer on 4/24/15.
  */
 public interface ModuleService {
-    void store(Module dbModule);
 
-  List<String> getModuleNames(FiltersHolder filters);
+    public void store(Module dbModule);
 
-   List<String> getModuleVersions(String name, FiltersHolder filters);
+    public Module getModule(String moduleId);
 
-    Module getModule(String moduleId);
+    public List<String> getModuleNames(FiltersHolder filters);
 
-    void deleteModule(String moduleId);
+    public List<Module> getModules(FiltersHolder filters);
 
-    List<License> getModuleLicenses(String moduleId);
+    public List<Artifact> getModuleArtifacts(String moduleId);
 
-    void promoteModule(String moduleId);
+    public void getModuleDependencies();
 
-   //TODO PromotionReportView getPromotionReport(String moduleId);
-Organization getOrganization(Module module);
+    public List<License> getModuleLicenses(String moduleId);
 
-   List<Module> getModules(FiltersHolder filters);
+    public List<String> getModuleVersions(String name, FiltersHolder filters);
 
-    Module getRootModuleOf(String gavc);
+    public Organization getOrganization(Module module);
+
+    Module getModuleOf(String gavc);
+
+    public Module getRootModuleOf(String gavc);
+
+    public void promoteModule(String moduleId);
+
+    public boolean canBePromoted(Module module);
+
+    public void deleteModule(String moduleId);
 
     List<Module> getAncestors(Artifact artifact, FiltersHolder filters);
+
     Organization getMatchingOrganization(Module module);
+    //TODO PromotionReportView getPromotionReport(String moduleId);
 }

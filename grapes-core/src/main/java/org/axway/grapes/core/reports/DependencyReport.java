@@ -1,13 +1,15 @@
 package org.axway.grapes.core.reports;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
+import org.axway.grapes.core.handler.DataUtils;
+import org.axway.grapes.core.webapi.resources.DependencyComplete;
+import org.axway.grapes.jongo.datamodel.DbArtifact;
 import org.axway.grapes.model.datamodel.Artifact;
-import org.axway.grapes.model.datamodel.Dependency;
-import org.axway.grapes.model.utils.DataUtils;
 
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Dependency Report
@@ -19,18 +21,20 @@ import java.util.*;
 @JsonSerialize(using=DependencyReportSerializer.class)
 public class DependencyReport  {
 
-  /*  private String title;
-    private List<Dependency> dependencies = new ArrayList<Dependency>();
+    private String title;
+    private List<DependencyComplete> dependencies = new ArrayList<DependencyComplete>();
     private List<String> shouldNotBeUsed = new ArrayList<String>();
+    DataUtils dataUtils = new DataUtils();
 
-    public List<Dependency> getDependencies() {
+    private Map<String, String> lastVersion = new HashMap<String,String>();
+    public List<DependencyComplete> getDependencies() {
         return dependencies;
     }
-    private Map<String, String> lastVersion = new HashMap<String,String>();
+
 
 
     public DependencyReport(final String title) {
-        super("DependencyReport.ftl");
+//        super("DependencyReport.ftl");
         this.title = title;
     }
 
@@ -38,7 +42,7 @@ public class DependencyReport  {
         return title;
     }
 
-    public void addDependency(final Dependency dependency, final String lastRelease) {
+    public void addDependency(final DependencyComplete dependency, final String lastRelease) {
         final String depId = Artifact.generateGAVC(dependency.getTarget());
 
         if(!dependencies.contains(dependency)){
@@ -55,7 +59,7 @@ public class DependencyReport  {
         final List<Artifact> targets = new ArrayList<Artifact>();
         final List<String> gavcs = new ArrayList<String>();
 
-        for(Dependency dependency: dependencies){
+        for(DependencyComplete dependency: dependencies){
             final String depGavc = DbArtifact.generateGAVC(dependency.getTarget());
             if(!gavcs.contains(depGavc)){
                 targets.add(dependency.getTarget());
@@ -63,7 +67,7 @@ public class DependencyReport  {
             }
         }
 
-        DataUtils.sort(targets);
+        dataUtils.sort(targets);
 
         return targets;
     }
@@ -71,7 +75,7 @@ public class DependencyReport  {
     public List<String> getVersions(final Artifact target){
         final List<String> versions = new ArrayList<String>();
 
-        for(Dependency dependency: dependencies){
+        for(DependencyComplete dependency: dependencies){
             final String depGavc = DbArtifact.generateGAVC(dependency.getTarget());
             if(depGavc.equals(DbArtifact.generateGAVC(target))
                     && !versions.contains(dependency.getTarget().getVersion())){
@@ -106,10 +110,10 @@ public class DependencyReport  {
         return nbEntries;
     }
 
-    public List<Dependency> getDependencies(final Artifact target, final String version) {
-        final List<Dependency> sources = new ArrayList<Dependency>();
+    public List<DependencyComplete> getDependencies(final Artifact target, final String version) {
+        final List<DependencyComplete> sources = new ArrayList<DependencyComplete>();
 
-        for(Dependency dependency: dependencies){
+        for(DependencyComplete dependency: dependencies){
             if(target.getGavc().equals(dependency.getTarget().getGavc()) &&
                     version.equals(dependency.getTarget().getVersion())){
                 sources.add(dependency);
@@ -121,10 +125,10 @@ public class DependencyReport  {
             int newn = 0;
 
             for(int i = 1 ; i <= n-1 ; i++){
-                if (sources.get(i-1).getSourceName().compareTo(sources.get(i).getSourceName()) > 0){
-                    Collections.swap(sources,i-1,i);
-                    newn = i;
-                }
+//                if (sources.get(i-1).getSource().compareTo(sources.get(i).getSource()) > 0){
+//                    Collections.swap(sources, i - 1, i);
+//                    newn = i;
+//                }
             }
 
             n = newn;
@@ -136,19 +140,19 @@ public class DependencyReport  {
     public void addShouldNotUse(final String gavc){
         shouldNotBeUsed.add(gavc);
     }
-
+//
     /**
      * Return 1 if the targeted artifact has the flag "DO_NOT_USE" otherwise 0
      *
      * @param gavc
      * @return int
      */
-   /* public int shouldNotBeUsed(final String gavc){
+    public int shouldNotBeUsed(final String gavc){
         if(shouldNotBeUsed.contains(gavc)){
             return 1;
         }
 
         return 0;
     }
-*/
+
 }

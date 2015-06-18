@@ -1,4 +1,6 @@
 package org.axway.grapes.core.options.filters;
+//todo This method never diplays values to be validated because even if it is empty in the database the get method fills in the value with false if it is missing.
+//todo However apprently it doesnt work correctly in the other version either.
 
 import org.axway.grapes.model.datamodel.License;
 
@@ -20,17 +22,13 @@ public class ToBeValidatedFilter implements Filter {
 
     @Override
     public boolean filter(final Object datamodelObj) {
-        if(datamodelObj instanceof License){
-//todo
-//            if(toBeValidated){
-//                return ((License)datamodelObj).isApproved() == null;
-//            }
-//            else{
-//                return ((License)datamodelObj).isApproved() != null;
-//            }
-        return true;
+        if (datamodelObj instanceof License) {
+            if (toBeValidated) {
+                return ((License) datamodelObj).isApproved() == null;
+            } else {
+                return ((License) datamodelObj).isApproved() != null;
+            }
         }
-
         return false;
     }
 

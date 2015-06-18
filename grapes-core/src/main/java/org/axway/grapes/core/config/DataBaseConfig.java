@@ -2,7 +2,6 @@ package org.axway.grapes.core.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 

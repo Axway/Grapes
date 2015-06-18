@@ -1,13 +1,10 @@
 package org.axway.grapes.core.options;
 
-
-import org.axway.grapes.model.api.ServerAPI;
 import org.axway.grapes.core.options.filters.*;
-
+import org.axway.grapes.model.api.ServerAPI;
 import org.axway.grapes.model.datamodel.Dependency;
 import org.axway.grapes.model.datamodel.License;
 
-import javax.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,87 +61,89 @@ public class FiltersHolder {
         filters.add(newFilter);
     }
 
-	public void init(final MultivaluedMap<String, String> queryParameters) {
+    public void init(final Map<String, List<String>> queryParameters) {
         scopeHandler.init(queryParameters);
         decorator.init(queryParameters);
         depthHandler.init(queryParameters);
 
-        final String approved = queryParameters.getFirst(ServerAPI.APPROVED_PARAM);
+        final List<String> approved = queryParameters.get(ServerAPI.APPROVED_PARAM);
         if(approved != null){
-            filters.add(new ApprovedFilter(Boolean.valueOf(approved)));
+            filters.add(new ApprovedFilter(Boolean.valueOf(approved.get(0))));
         }
 
-        final String promoted = queryParameters.getFirst(ServerAPI.PROMOTED_PARAM);
+        final List<String> promoted = queryParameters.get(ServerAPI.PROMOTED_PARAM);
         if(promoted != null){
-            filters.add(new PromotedFilter(Boolean.valueOf(promoted)));
+            filters.add(new PromotedFilter(Boolean.valueOf(promoted.get(0))));
         }
 
-        final String doNotUse = queryParameters.getFirst(ServerAPI.DO_NOT_USE);
+        final List<String> doNotUse = queryParameters.get(ServerAPI.DO_NOT_USE);
         if(doNotUse != null){
-            filters.add(new DoNotUseFilter(Boolean.valueOf(doNotUse)));
+            filters.add(new DoNotUseFilter(Boolean.valueOf(doNotUse.get(0))));
         }
 
-        final String gavc = queryParameters.getFirst(ServerAPI.GAVC);
+        final List<String> gavc = queryParameters.get(ServerAPI.GAVC);
         if(gavc != null){
-            filters.add(new GavcFilter(gavc));
+            filters.add(new GavcFilter(gavc.get(0)));
         }
 
-        final String hasLicense = queryParameters.getFirst(ServerAPI.HAS_LICENSE_PARAM);
+        final List<String> hasLicense = queryParameters.get(ServerAPI.HAS_LICENSE_PARAM);
         if(hasLicense != null){
-            filters.add(new HasLicenseFilter(Boolean.valueOf(hasLicense)));
+            filters.add(new HasLicenseFilter(Boolean.valueOf(hasLicense.get(0))));
         }
 
-        final String toBeValidated = queryParameters.getFirst(ServerAPI.TO_BE_VALIDATED_PARAM);
+        final List<String> toBeValidated = queryParameters.get(ServerAPI.TO_BE_VALIDATED_PARAM);
         if(toBeValidated != null){
-            filters.add(new ToBeValidatedFilter(Boolean.valueOf(toBeValidated)));
+           filters.add(new ToBeValidatedFilter(Boolean.valueOf(toBeValidated.get(0))));
         }
 
-        final String licenseId = queryParameters.getFirst(ServerAPI.LICENSE_ID_PARAM);
+        final List<String> licenseId = queryParameters.get(ServerAPI.LICENSE_ID_PARAM);
         if(licenseId != null){
-            filters.add(new LicenseIdFilter(licenseId));
+            filters.add(new LicenseIdFilter(licenseId.get(0)));
         }
 
-        final String classifier = queryParameters.getFirst(ServerAPI.CLASSIFIER_PARAM);
+        final List<String> classifier = queryParameters.get(ServerAPI.CLASSIFIER_PARAM);
         if(classifier != null){
-            filters.add(new ClassifierFilter(classifier));
+            filters.add(new ClassifierFilter(classifier.get(0)));
         }
 
-        final String extension = queryParameters.getFirst(ServerAPI.EXTENSION_PARAM);
+        final List<String> extension = queryParameters.get(ServerAPI.EXTENSION_PARAM);
         if(extension != null){
-            filters.add(new ExtensionFilter(extension));
+            filters.add(new ExtensionFilter(extension.get(0)));
         }
 
-        final String type = queryParameters.getFirst(ServerAPI.TYPE_PARAM);
+        final List<String> type = queryParameters.get(ServerAPI.TYPE_PARAM);
         if(type != null){
-            filters.add(new TypeFilter(type));
+            filters.add(new TypeFilter(type.get(0)));
         }
 
-        final String version = queryParameters.getFirst(ServerAPI.VERSION_PARAM);
+        final List<String> version = queryParameters.get(ServerAPI.VERSION_PARAM);
         if(version != null){
-            filters.add(new VersionFilter(version));
+            filters.add(new VersionFilter(version.get(0)));
         }
 
-        final String artifactId = queryParameters.getFirst(ServerAPI.ARTIFACTID_PARAM);
+        final List<String> artifactId = queryParameters.get(ServerAPI.ARTIFACTID_PARAM);
         if(artifactId != null){
-            filters.add(new ArtifactIdFilter(artifactId));
+
+            filters.add(new ArtifactIdFilter(artifactId.get(0)));
+
         }
 
-        final String groupId = queryParameters.getFirst(ServerAPI.GROUPID_PARAM);
+        final List<String> groupId = queryParameters.get(ServerAPI.GROUPID_PARAM);
+
         if(groupId != null){
-            filters.add(new GroupIdFilter(groupId));
+            filters.add(new GroupIdFilter(groupId.get(0)));
         }
 
-        final String name = queryParameters.getFirst(ServerAPI.NAME_PARAM);
+        final List<String> name = queryParameters.get(ServerAPI.NAME_PARAM);
         if(name != null){
-            filters.add(new ModuleNameFilter(name));
+            filters.add(new ModuleNameFilter(name.get(0)));
         }
 
-        final String organization = queryParameters.getFirst(ServerAPI.ORGANIZATION_PARAM);
+        final List<String> organization = queryParameters.get(ServerAPI.ORGANIZATION_PARAM);
         if(organization != null){
-            filters.add(new OrganizationFilter(organization));
+            filters.add(new OrganizationFilter(organization.get(0)));
         }
-	}
-
+    }
     public boolean shouldBeInReport(final License license) {
         for(Filter filter: filters){
             if(!filter.filter(license)){

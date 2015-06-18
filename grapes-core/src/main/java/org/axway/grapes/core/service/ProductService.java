@@ -1,6 +1,7 @@
 package org.axway.grapes.core.service;
 
 
+import org.axway.grapes.core.exceptions.DataValidationException;
 import org.axway.grapes.model.datamodel.Product;
 
 import java.util.List;
@@ -9,15 +10,19 @@ import java.util.List;
  * Created by jennifer on 4/24/15.
  */
 public interface ProductService {
-    void create(Product product);
 
-    void update(Product product);
 
-    List<String> getProductNames();
+   public void create(Product product) throws DataValidationException;
 
-    Product getProduct(String name);
+    public void store(Product product);
 
-    void deleteProduct(String name);
+    public void update(Product product);
 
-    void setProductModules(String name, List<String> moduleNames);
+    public List<String> getProductNames();
+
+    public Product getProduct(String name);
+
+    public  void deleteProduct(String name);
+
+    public void setProductModules(String name, List<String> moduleNames);
 }

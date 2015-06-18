@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import org.axway.grapes.model.datamodel.Artifact;
-import org.axway.grapes.model.datamodel.Dependency;
 
 import java.io.IOException;
 
@@ -39,7 +37,7 @@ public class DependencyReportSerializer extends JsonSerializer<DependencyReport>
                 for(Dependency dep: report.getDependencies(target, version)){
                     json.writeStartObject();
                     json.writeStringField("scope", dep.getScope().toString());
-                    json.writeStringField("gavc", dep.getSourceName());
+                    json.writeStringField("gavc", dep.getSource());
                     json.writeEndObject();
                 }
                 json.writeEndArray();

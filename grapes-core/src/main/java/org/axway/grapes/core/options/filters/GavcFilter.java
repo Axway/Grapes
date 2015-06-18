@@ -1,7 +1,7 @@
 package org.axway.grapes.core.options.filters;
 
 import org.axway.grapes.model.datamodel.Artifact;
-import  org.axway.grapes.model.datamodel.DbCollections;
+import org.axway.grapes.model.datamodel.DbCollections;
 
 import java.util.Collections;
 import java.util.HashMap;

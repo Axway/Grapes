@@ -1,13 +1,17 @@
 package org.axway.grapes.core.options.filters;
 
+import org.axway.grapes.core.handler.DataUtils;
 import org.axway.grapes.model.datamodel.Artifact;
 import org.axway.grapes.model.datamodel.Dependency;
 import org.axway.grapes.model.datamodel.Module;
 import org.axway.grapes.model.datamodel.Organization;
 import org.axway.grapes.model.utils.DBRegExp;
-import org.axway.grapes.model.utils.DataUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CorporateFilter implements Filter {
 
@@ -33,7 +37,8 @@ public class CorporateFilter implements Filter {
     }
 
     public boolean matches(final Module module) {
-        final Set<Artifact> artifacts = DataUtils.getAllArtifacts(module);
+        DataUtils dataUtils = new DataUtils();
+        final Set<Artifact> artifacts = dataUtils.getAllArtifacts( dataUtils.getAllArtifactsGavcs(module));
 
         if(artifacts.isEmpty()){
             return evaluate(module.getId());
@@ -49,7 +54,7 @@ public class CorporateFilter implements Filter {
     }
 
     public boolean matches(final Dependency dependency) {
-        return evaluate(dependency.getTarget().getArtifactId());
+        return evaluate(dependency.getTarget());
     }
 
     @Override
@@ -72,7 +77,7 @@ public class CorporateFilter implements Filter {
         return queryParams;
     }
 
-    private boolean evaluate(final String id){
+    public boolean evaluate(final String id){
         for(String corporateGroupId: organization.getCorporateGroupIdPrefixes()){
             if(id.startsWith(corporateGroupId)){
                 return true;

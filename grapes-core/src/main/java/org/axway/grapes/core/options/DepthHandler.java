@@ -2,7 +2,8 @@ package org.axway.grapes.core.options;
 
 import org.axway.grapes.model.api.ServerAPI;
 
-import javax.ws.rs.core.MultivaluedMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Depth Handler
@@ -31,9 +32,9 @@ public class DepthHandler {
         }
     }
 
-    private void setFullRecursive(final String recursif) {
+    private void setFullRecursive(final List<String> recursif) {
         if(recursif != null){
-            setFullRecursive(Boolean.valueOf(recursif));
+            setFullRecursive(Boolean.valueOf(recursif.get(0)));
         }
     }
 
@@ -47,16 +48,16 @@ public class DepthHandler {
         }
     }
 
-    private void setDepth(final String depth) {
+    private void setDepth(final List<String> depth) {
         if(depth != null){
-            setDepth(Integer.valueOf(depth));
+            setDepth(Integer.valueOf(depth.get(0)));
         }
     }
 
 
-    public void init(final MultivaluedMap<String, String> queryParameters) {
-        setFullRecursive(queryParameters.getFirst(ServerAPI.RECURSIVE_PARAM));
-        setDepth(queryParameters.getFirst(ServerAPI.DEPTH_PARAM));
+    public void init(final Map<String, List<String>> queryParameters) {
+        setFullRecursive(queryParameters.get(ServerAPI.RECURSIVE_PARAM));
+        setDepth(queryParameters.get(ServerAPI.DEPTH_PARAM));
     }
 
 

@@ -1,11 +1,5 @@
 package org.axway.grapes.core.config;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 /**
  * @author jdcoffre
  * Configuration class of Grapes service class.

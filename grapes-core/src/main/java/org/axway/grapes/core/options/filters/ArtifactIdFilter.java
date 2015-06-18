@@ -16,7 +16,9 @@ public class ArtifactIdFilter implements Filter {
      * @param artifactId
      */
     public ArtifactIdFilter(final String artifactId) {
+
         this.artifactId = artifactId;
+
     }
 
     @Override
