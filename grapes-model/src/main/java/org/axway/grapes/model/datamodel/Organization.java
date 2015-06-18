@@ -1,4 +1,5 @@
 package org.axway.grapes.model.datamodel;
+//todo used yb the plugin neds to stay the same
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +21,7 @@ public class Organization {
     private List<String> corporateGroupIdPrefixes = new ArrayList<String>();
 
     public Organization() {
-        // Should only be instantiated via the DataModelObjectFactory
+
     }
 
     public String getName() {
@@ -62,7 +63,7 @@ public class Organization {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-
+    //todo why is this null?
         sb.append("name: ");
         sb.append(name);
 

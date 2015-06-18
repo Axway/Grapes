@@ -117,7 +117,7 @@ public final class DataModelFactory {
      */
     public static Dependency createDependency(final Artifact artifact, final Scope scope) {
         final Dependency dependency = new Dependency();
-        dependency.setTarget(artifact);
+        dependency.setTarget(artifact.getGavc());
         dependency.setScope(scope);
 
         return dependency;

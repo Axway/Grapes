@@ -1,6 +1,6 @@
 package org.axway.grapes.model.datamodel;
 
-
+//todo used by the plugin needs to stay the same, however the package name has changed?
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -38,7 +38,8 @@ public class Artifact {
         // Should only be instantiated via the DataModelObjectFactory
     }
 
-    public void setGavc(String gavc) {
+    //should only be used internally and not manually set
+    protected void setGavc(String gavc) {
         this.gavc = gavc;
     }
 
@@ -99,7 +100,9 @@ public class Artifact {
     }
 
     public void addLicense(final String licenseName) {
-        licenses.add(licenseName);
+        if (!getLicenses().contains(licenseName)) {
+            getLicenses().add(licenseName);
+        }
     }
 
     public void removeLicense(final String licenseId) {
@@ -146,11 +149,7 @@ public class Artifact {
         this.provider = provider;
     }
 
-    public void addLicense2(final String licenseId) {
-        if (!getLicenses().contains(licenseId)) {
-            getLicenses().add(licenseId);
-        }
-    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonIgnore
     public String getGavc() {
@@ -182,6 +181,24 @@ public class Artifact {
         }
 
         return false;
+    }
+    public static String generateGAVC(final String groupId, final String artifactId, final String version, final String classifier, final String extension) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(groupId);
+        sb.append(":");
+        sb.append(artifactId);
+        sb.append(":");
+        sb.append(version);
+        sb.append(":");
+        sb.append(classifier);
+        sb.append(":");
+        sb.append(extension);
+
+        return sb.toString();
+    }
+
+    public static String generateGAVC(final Artifact artifact) {
+        return generateGAVC(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact.getClassifier(), artifact.getExtension());
     }
 
     @Override

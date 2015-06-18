@@ -100,7 +100,7 @@ public class JsonUtilsTest {
             exception = e;
             System.out.println(e);
         }
-
+//this causes a circulare dependency
         assertNull(exception);
         assertNotNull(module2);
         assertTrue(module1.equals(module2));

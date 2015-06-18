@@ -13,36 +13,38 @@ import java.util.Map;
 
 /**
  * Json Utils
- * 
+ * <p>
  * <P> Utility class that ease Json serialization/un-serialization
- * 
+ *
  * @author jdcoffre
  */
 public final class JsonUtils {
-	
-	// Utility class, though no constructor
-	private JsonUtils() {}
 
-	/**
-	 * Json content type id
-	 */
-	public static final String JSON_CONTENT_TYPE = "application/json";
+    // Utility class, though no constructor
+    private JsonUtils() {
+    }
 
-	/**
-	 * Serialize an object with Json
-	 * @param obj Object
-	 * @return String
-	 * @throws java.io.IOException
-	 */
-	public static String serialize(final Object obj) throws IOException {
-		final ObjectMapper mapper = new ObjectMapper();
+    /**
+     * Json content type id
+     */
+    public static final String JSON_CONTENT_TYPE = "application/json";
+
+    /**
+     * Serialize an object with Json
+     *
+     * @param obj Object
+     * @return String
+     * @throws java.io.IOException
+     */
+    public static String serialize(final Object obj) throws IOException {
+        final ObjectMapper mapper = new ObjectMapper();
         mapper.disable(MapperFeature.USE_GETTERS_AS_SETTERS);
-		return mapper.writeValueAsString(obj);
-
-	}
+        return mapper.writeValueAsString(obj);
+    }
 
     /**
      * Un-serialize a Json into Organization
+     *
      * @param organization String
      * @return Organization
      * @throws java.io.IOException
@@ -55,6 +57,7 @@ public final class JsonUtils {
 
     /**
      * Un-serialize a Json into Module
+     *
      * @param module String
      * @return Module
      * @throws java.io.IOException
@@ -67,38 +70,41 @@ public final class JsonUtils {
 
     /**
      * Un-serialize a Json into BuildInfo
+     *
      * @param buildInfo String
      * @return Map<String,String>
      * @throws java.io.IOException
      */
-    public static Map<String,String> unserializeBuildInfo(final String buildInfo) throws IOException {
+    public static Map<String, String> unserializeBuildInfo(final String buildInfo) throws IOException {
         final ObjectMapper mapper = new ObjectMapper();
         mapper.disable(MapperFeature.USE_GETTERS_AS_SETTERS);
-        return mapper.readValue(buildInfo,   new TypeReference<Map<String, Object>>(){});
+        return mapper.readValue(buildInfo, new TypeReference<Map<String, Object>>() {
+        });
     }
 
-	/**
-	 * Un-serialize a report with Json
-	 * @param artifact String
-	 * @return Artifact
-	 * @throws java.io.IOException
-	 */
-	public static Artifact unserializeArtifact(final String artifact) throws IOException {
-		final ObjectMapper mapper = new ObjectMapper();
+    /**
+     * Un-serialize a report with Json
+     *
+     * @param artifact String
+     * @return Artifact
+     * @throws java.io.IOException
+     */
+    public static Artifact unserializeArtifact(final String artifact) throws IOException {
+        final ObjectMapper mapper = new ObjectMapper();
         mapper.disable(MapperFeature.USE_GETTERS_AS_SETTERS);
-		return mapper.readValue(artifact, Artifact.class);
-	}
+        return mapper.readValue(artifact, Artifact.class);
+    }
 
-	/**
-	 * Un-serialize a report with Json
-	 * @param license String
-	 * @return License
-	 * @throws java.io.IOException
-	 */
-	public static License unserializeLicense(final String license) throws IOException {
-		final ObjectMapper mapper = new ObjectMapper();
+    /**
+     * Un-serialize a report with Json
+     *
+     * @param license String
+     * @return License
+     * @throws java.io.IOException
+     */
+    public static License unserializeLicense(final String license) throws IOException {
+        final ObjectMapper mapper = new ObjectMapper();
         mapper.disable(MapperFeature.USE_GETTERS_AS_SETTERS);
-		return mapper.readValue(license, License.class);
-	}
-	
+        return mapper.readValue(license, License.class);
+    }
 }
