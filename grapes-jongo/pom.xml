@@ -133,6 +133,13 @@
                             <port>12345</port>
                             <version>2.6.1</version>
                             <databaseDirectory>${project.build.directory}/mongotest</databaseDirectory>
+                            <logging>file</logging>
+                            <!-- optional (file|console|none), default console -->
+
+                            <logFile>${project.build.directory}/myfile.log</logFile>
+                            <!-- optional, can be used when logging=file, default is ./embedmongo.log -->
+
+                            <logFileEncoding>utf-8</logFileEncoding>
                             <bindIp>127.0.0.1</bindIp>
                         </configuration>
                     </execution>
