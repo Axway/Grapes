@@ -1,4 +1,5 @@
 package org.axway.grapes.model.datamodel;
+//todo used by the plugin needs to stay the same
 
 /**
  * Dependency Model Class
@@ -9,50 +10,57 @@ package org.axway.grapes.model.datamodel;
  */
 public class Dependency {
 
-    private String targetGAVC;
+    private String datamodelVersion = DbCollections.datamodelVersion;
+    //module name and version
     private String source;
-    private String sourceName;
-    private String sourceVersion;
-    private Artifact target;
+    //artifact gavc
+    private String target;
     private Scope scope;
 
-    protected Dependency() {
+    public Dependency() {
         // Should only be instantiated via the DataModelObjectFactory
     }
 
-    public Dependency(final String source, final Artifact target, final Scope scope) {
-
-        this.setSource(source);
+    public Dependency(final String sourceId, final String target, final Scope scope) {
+        this.source = sourceId;
         this.setScope(scope);
         this.target = target;
-        this.targetGAVC = target.getGavc();
-
     }
 
-    public Dependency(final String source, final String targetGAVC, final Scope scope) {
-
-        this.setSource(source);
-        this.setScope(scope);
-        // We don't have the artifacts
-        this.target = null;
-        this.targetGAVC = targetGAVC;
+    public void setSourceNameAndSourceVersionFromSourceID(String sourceId) {
+        if (sourceId == null || sourceId.split(":").length == 0) {
+            setSource("");
+            setTarget("");
+            return;
+        }
+        String[] s = sourceId.split(":");
+        if (s.length == 1) {
+            setSource(s[0]);
+            setTarget("");
+        } else {
+            setSource(s[0]);
+            setTarget(s[1]);
+        }
     }
 
-    public String getTargetGavc() {
-        return targetGAVC;
+    public String generateSourceID() {
+        return this.getSource() + ":" + this.getTarget();
     }
 
-    public void setTargetGavc(String targetGavc) {
-        this.targetGAVC = targetGavc;
+    public String getSource() {
+        return source;
     }
 
-    public Artifact getTarget() {
+    public String getTarget() {
         return target;
     }
 
-    protected void setTarget(final Artifact artifact) {
-        this.target = artifact;
-        this.targetGAVC = artifact.getGavc();
+    public void setTarget(final String target) {
+        this.target = target;
+    }
+
+    public void setSource(final String source) {
+        this.source = source;
     }
 
     public Scope getScope() {
@@ -63,30 +71,13 @@ public class Dependency {
         this.scope = scope;
     }
 
-    public String getSourceVersion() {
-        return sourceVersion;
+    public void setDataModelVersion(final String newVersion) {
+        this.datamodelVersion = newVersion;
     }
 
-    public void setSourceVersion(final String sourceVersion) {
-        this.sourceVersion = sourceVersion;
+    public String getDataModelVersion() {
+        return datamodelVersion;
     }
-
-    public String getSourceName() {
-        return sourceName;
-    }
-
-    public void setSourceName(final String sourceName) {
-        this.sourceName = sourceName;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(final String source) {
-        this.source = source;
-    }
-
 
     /**
      * Checks if the dependency is the same than an other one.
@@ -99,25 +90,19 @@ public class Dependency {
         if (obj instanceof Dependency) {
             return hashCode() == obj.hashCode();
         }
-
         return false;
     }
 
     @Override
     public int hashCode() {
         final StringBuilder sb = new StringBuilder();
-
-        sb.append(sourceName);
-        sb.append(sourceVersion);
-        sb.append(target.getGroupId());
-        sb.append(target.getArtifactId());
-        sb.append(target.getClassifier());
-        sb.append(target.getVersion());
-        sb.append(target.getType());
-        sb.append(scope.toString());
-
+        sb.append(source);
+        sb.append(":");
+        sb.append(target);
+        sb.append(":");
+        if (scope != null) {
+            sb.append(scope.toString());
+        }
         return sb.toString().hashCode();
     }
-
-
 }

@@ -1,5 +1,5 @@
 package org.axway.grapes.model.utils;
-
+//todo I am pretty sure this is never used and can be removed or maybe we cna use it for the reports?
 import org.axway.grapes.model.datamodel.Artifact;
 import org.axway.grapes.model.datamodel.Dependency;
 import org.axway.grapes.model.datamodel.Module;
@@ -33,9 +33,10 @@ public final class ModuleUtils {
         for(Module subModule: module.getSubmodules()){
             artifacts.addAll(getAllArtifacts(subModule));
         }
+//todo put this back if used?
 
-        artifacts.addAll(module.getArtifacts());
-
+//        artifacts.addAll(module.getArtifacts());
+//
         return artifacts;
     }
 
@@ -68,7 +69,7 @@ public final class ModuleUtils {
         final Set<Dependency> dependencies = new HashSet<Dependency>();
 
         for(Dependency dependency: module.getDependencies()){
-            if(!producedArtifacts.contains(dependency.getTarget().getGavc())){
+            if(!producedArtifacts.contains(dependency.getTarget())){
                 dependencies.add(dependency);
             }
         }
@@ -93,7 +94,7 @@ public final class ModuleUtils {
         final Pattern corporatePattern = generateCorporatePattern(corporateFilters);
 
         for(Dependency dependency: getAllDependencies(module)){
-            if(dependency.getTarget().getGavc().matches(corporatePattern.pattern())){
+            if(dependency.getTarget().matches(corporatePattern.pattern())){
                 corporateDependencies.add(dependency);
             }
         }
@@ -114,7 +115,7 @@ public final class ModuleUtils {
         final Pattern corporatePattern = generateCorporatePattern(corporateFilters);
 
         for(Dependency dependency: getAllDependencies(module)){
-            if(!dependency.getTarget().getGavc().matches(corporatePattern.pattern())){
+            if(!dependency.getTarget().matches(corporatePattern.pattern())){
                 thirdParty.add(dependency);
             }
         }
