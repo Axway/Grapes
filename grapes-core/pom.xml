@@ -30,6 +30,13 @@
 
     <packaging>wisdom</packaging>
 
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.testSource>1.8</maven.compiler.testSource>
+        <maven.compiler.testTarget>1.8</maven.compiler.testTarget>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.wisdom-framework</groupId>
@@ -68,6 +75,11 @@
             <artifactId>grapes-jongo</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0.1</version>
+        </dependency>
 
         <!-- Test dependencies -->
         <dependency>
@@ -97,6 +109,13 @@
             <version>1.7.9</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo</artifactId>
+            <version>1.47.0</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <!-- Additional applications -->
         <dependency>
@@ -107,7 +126,7 @@
         <dependency>
             <groupId>org.wisdom-framework</groupId>
             <artifactId>documentation</artifactId>
-            <version>0.8.0</version>
+            <version>0.9.1</version>
         </dependency>
     </dependencies>
 
@@ -117,7 +136,7 @@
                 <!-- Define all the versions of the dependencies provided by Wisdom -->
                 <groupId>org.wisdom-framework</groupId>
                 <artifactId>wisdom-bom</artifactId>
-                <version>0.8.0</version>
+                <version>0.9.1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -127,9 +146,47 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>com.github.joelittlejohn.embedmongo</groupId>
+                <artifactId>embedmongo-maven-plugin</artifactId>
+                <version>0.1.12</version>
+                <executions>
+                    <execution>
+                        <id>start</id>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <phase>
+                            pre-integration-test
+                        </phase>
+                        <configuration>
+                            <port>12345</port>
+                            <version>2.6.1</version>
+                            <databaseDirectory>${project.build.directory}/mongotest</databaseDirectory>
+                            <logging>file</logging>
+                            <!-- optional (file|console|none), default console -->
+
+                            <logFile>${project.build.directory}/myfile.log</logFile>
+                            <!-- optional, can be used when logging=file, default is ./embedmongo.log -->
+
+                            <logFileEncoding>utf-8</logFileEncoding>
+                            <bindIp>127.0.0.1</bindIp>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                        <phase>
+                            post-integration-test
+                        </phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.wisdom-framework</groupId>
                 <artifactId>wisdom-maven-plugin</artifactId>
-                <version>0.8.0</version>
+                <version>0.9.1</version>
                 <extensions>true</extensions>
             </plugin>
 
