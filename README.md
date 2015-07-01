@@ -1,3 +1,6 @@
+This repository is for updating grapes to version 2.0, migrating the project to use the Wisdom-Framework. 
+As it is a work in progress it is not meant to be used in this current state, therefore use at your own risk.
+
 Grapes
 =========
 
