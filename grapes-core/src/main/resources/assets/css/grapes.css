@@ -1,0 +1,14 @@
+.grapes-ariane-navbar {
+    display: inline-block;
+    margin-top:15;
+ }
+
+.grapes-ariane-navbar .navbar-inner ul li a {
+    padding-right:0;
+    padding-left:0;
+}
+
+.grapes-ariane-navbar .navbar-inner .nav .dropdown .dropdown-menu li a {
+     padding-right:20;
+     padding-left:20;
+ }
