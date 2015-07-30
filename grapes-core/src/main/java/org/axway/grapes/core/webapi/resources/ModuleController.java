@@ -69,6 +69,7 @@ public class ModuleController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "")
     public Result welcome() {
         LOG.info("Got a post Module doc request.");
+
         return ok(render(ModuleResourceDocumentation, "welcome", "Welcome to The New Grapes Under Construction!"));
     }
 
@@ -97,6 +98,8 @@ public class ModuleController extends DefaultController {
         // Add the artifacts
         final Set<Artifact> artifacts = dataUtils.getAllArtifacts(moduleComplete);
         for (final Artifact artifact : artifacts) {
+            //todo should check if the module is promtoted if it is then all the artifacts in the model should be set to promoted also and saved to the database?
+            //this stores the gavcs
             artifactService.store(artifact);
         }
 //        Add dependencies that does not already exist
@@ -181,6 +184,10 @@ public class ModuleController extends DefaultController {
      */
     @Route(method = HttpMethod.GET, uri = "/{name}/{version}")
     public Result get(@PathParameter("name") final String name, @PathParameter("version") final String version) {
+        if("versions".equalsIgnoreCase(version)){
+            LOG.info("Redirecting to list version for module.");
+            return getVersions(name);
+        }
         LOG.info("Got a get module request. ");
         final String moduleId = Module.generateID(name, version);
         try {
@@ -317,12 +324,14 @@ public class ModuleController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/{name}/{version}" + ServerAPI.GET_DEPENDENCIES)
     public Result getDependencies(@PathParameter("name") final String name,
                                   @PathParameter("version") final String version) {
-        LOG.info("Got a get module dependencies request.");
+        LOG.info("Got a get module dependencies request for ."+name +version);
         final FiltersHolder filters = new FiltersHolder();
         filters.init(context().parameters());
         final String moduleId = Module.generateID(name, version);
         Module module = moduleService.getModule(moduleId);
+        LOG.error("module"+moduleId);
         List<Dependency> list = dependencyService.getModuleDependencies(moduleId, filters);
+        LOG.error("dep list legnth "+list.size());
         return ok(list).json();
     }
 
@@ -441,7 +450,7 @@ public class ModuleController extends DefaultController {
     }
 
     /**
-     * todo need to create a promotion report.
+     * todo need to create a promotion report. Return the data in json format.
      * Return a promotion report
      *
      * @return Result A promotion report

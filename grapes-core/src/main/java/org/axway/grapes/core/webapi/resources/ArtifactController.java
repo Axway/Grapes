@@ -29,6 +29,7 @@ import org.wisdom.api.http.HttpMethod;
 import org.wisdom.api.http.Result;
 import org.wisdom.api.security.Authenticated;
 import org.wisdom.api.templates.Template;
+import scala.annotation.meta.param;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -112,9 +113,15 @@ public class ArtifactController extends DefaultController {
         LOG.info("Got a get gavc request.");
         final FiltersHolder filters = new FiltersHolder();
         filters.init(context().parameters());
+        Long start = System.nanoTime();
         final List<String> gavcs = artifactService.getArtifactGavcs(filters);
+        Long stop = System.nanoTime();
+        Long total = stop -start;
+        double seconds = (double)total / 1000000000.0;
+        System.out.println("time is : "+seconds +" for "+gavcs.size()+" records");
         Collections.sort(gavcs);
         return ok(gavcs).json();
+        //return ok();
     }
 
     /**
@@ -133,6 +140,74 @@ public class ArtifactController extends DefaultController {
         return ok(groupIds).json();
     }
 
+
+    /**
+     * todo does the filter work?
+     * Get all of the atrifacts in the database.
+     * The results can be limited by using filters in the query paramters.
+     *
+     * @return
+     */
+    @Route(method = HttpMethod.GET, uri = ServerAPI.GET_ALL)
+    public Result getAll() {
+        LOG.info("Got a get all artifact request.");
+        final FiltersHolder filters = new FiltersHolder();
+        filters.init(context().parameters());
+        final List<Artifact> artifacts = artifactService.getArtifacts(filters);
+        return ok(artifacts);
+    }
+
+    //todo is there a server error on the real grapes?
+    //todo the other one doest show organization info so why is it here?
+    @Route(method = HttpMethod.GET, uri = "/{gavc}")
+    public Result get(@PathParameter("gavc") String gavc) {
+        if(gavc.equalsIgnoreCase("groupids")){
+           return getGroupIds();
+        }
+        else if(gavc.equalsIgnoreCase("gavcs")){
+           return getGavcs();
+        }
+        else if (gavc.equalsIgnoreCase("all")){
+            return  getAll();
+        }
+
+        LOG.info("Got a get artifact request.");
+        try {
+            final Artifact artifact = artifactService.getArtifact(gavc);
+            //todo
+            final Organization organization = artifactService.getOrganization(artifact);
+//       ObjectNode result = json.newObject();
+//       result.
+//       result.put("artifact:", String.valueOf(artifact));
+//       result.put("organization", String.valueOf(organization));
+            return ok(artifact);
+        } catch (NoSuchElementException e) {
+            return ok().status(Result.NOT_FOUND).render("The gavc " + gavc + " does not exist.");
+        }
+    }
+
+   /**
+            * todo the old version just deletes the artifact but doesnt remove it from any modules should it?
+            *
+            * @param
+    gavc unique artifact id.
+            * @return
+            */
+    @Authenticated("grapes-authenticator")
+    @Route(method = HttpMethod.DELETE, uri = "/{gavc}")
+    public Result delete(@PathParameter("gavc") String gavc) {
+        if (!session("roles").contains(String.valueOf(Credential.AvailableRoles.DATA_DELETER))) {
+            return ok().status(Result.UNAUTHORIZED);
+        }
+        LOG.info("Got a delete artifact request.");
+        try {
+            artifactService.deleteArtifact(gavc);
+        } catch (NoSuchElementException e) {
+            return ok().status(Result.NOT_FOUND).render("The gavc " + gavc + " does not exist.");
+        }
+        return ok("done");
+    }
+
     /**
      * Gets all of the versions of an artifact.
      *
@@ -147,42 +222,6 @@ public class ArtifactController extends DefaultController {
             final List<String> versions = artifactService.getArtifactVersions(gavc);
             Collections.sort(versions);
             return ok(versions).json();
-        } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The gavc " + gavc + " does not exist.");
-        }
-    }
-
-    /**
-     * Gets the last version of an artifact.
-     *
-     * @param gavc the artifacts gavc id.
-     * @return the version number in json; or a not found response.
-     */
-    @Route(method = HttpMethod.GET, uri = "/{gavc}" + ServerAPI.GET_LAST_VERSION)
-    public Result getLastVersion(@PathParameter("gavc") String gavc) {
-        LOG.info("Got a get artifact last version request.");
-        try {
-            final String lastVersion = artifactService.getArtifactLastVersion(gavc);
-            return ok(lastVersion).json();
-        } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The gavc " + gavc + " does not exist.");
-        }
-    }
-
-    //todo is there a server error on the real grapes?
-    //todo the other one doest show organization info so why is it here?
-    @Route(method = HttpMethod.GET, uri = "/{gavc}")
-    public Result get(@PathParameter("gavc") String gavc) {
-        LOG.info("Got a get artifact request.");
-        try {
-            final Artifact artifact = artifactService.getArtifact(gavc);
-            //todo
-            final Organization organization = artifactService.getOrganization(artifact);
-//       ObjectNode result = json.newObject();
-//       result.
-//       result.put("artifact:", String.valueOf(artifact));
-//       result.put("organization", String.valueOf(organization));
-            return ok(artifact);
         } catch (NoSuchElementException e) {
             return ok().status(Result.NOT_FOUND).render("The gavc " + gavc + " does not exist.");
         }
@@ -214,6 +253,24 @@ public class ArtifactController extends DefaultController {
     }
 
     /**
+     * Gets the last version of an artifact.
+     *
+     * @param gavc the artifacts gavc id.
+     * @return the version number in json; or a not found response.
+     */
+    @Route(method = HttpMethod.GET, uri = "/{gavc}" + ServerAPI.GET_LAST_VERSION)
+    public Result getLastVersion(@PathParameter("gavc") String gavc) {
+        LOG.info("Got a get artifact last version request.");
+        try {
+            final String lastVersion = artifactService.getArtifactLastVersion(gavc);
+            return ok(lastVersion).json();
+        } catch (NoSuchElementException e) {
+            return ok().status(Result.NOT_FOUND).render("The gavc " + gavc + " does not exist.");
+        }
+    }
+
+
+    /**
      * Update the provider of an artifact.
      *
      * @param gavc     unique artifact id.
@@ -238,26 +295,7 @@ public class ArtifactController extends DefaultController {
         return ok("done");
     }
 
-    /**
-     * todo the old version just deletes the artifact but doesnt remove it from any modules should it?
-     *
-     * @param gavc unique artifact id.
-     * @return
-     */
-    @Authenticated("grapes-authenticator")
-    @Route(method = HttpMethod.DELETE, uri = "/{gavc}")
-    public Result delete(@PathParameter("gavc") String gavc) {
-        if (!session("roles").contains(String.valueOf(Credential.AvailableRoles.DATA_DELETER))) {
-            return ok().status(Result.UNAUTHORIZED);
-        }
-        LOG.info("Got a delete artifact request.");
-        try {
-            artifactService.deleteArtifact(gavc);
-        } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The gavc " + gavc + " does not exist.");
-        }
-        return ok("done");
-    }
+
 
     /**
      * Update the doNotUse flag of an atrifact.
@@ -308,7 +346,7 @@ public class ArtifactController extends DefaultController {
      */
     @Route(method = HttpMethod.GET, uri = "/{gavc}" + ServerAPI.GET_ANCESTORS)
     public Result getAncestors(@PathParameter("gavc") String gavc) {
-        LOG.info("Got a get artifact request.");
+        LOG.info("Got a get artifact ancestors request.");
         final FiltersHolder filters = new FiltersHolder();
         filters.getDecorator().setShowLicenses(false);
         filters.init(context().parameters());
@@ -432,19 +470,5 @@ public class ArtifactController extends DefaultController {
         }
     }
 
-    /**
-     * todo does the filter work?
-     * Get all of the atrifacts in the database.
-     * The results can be limited by using filters in the query paramters.
-     *
-     * @return
-     */
-    @Route(method = HttpMethod.GET, uri = ServerAPI.GET_ALL)
-    public Result getAll() {
-        LOG.info("Got a get all artifact request.");
-        final FiltersHolder filters = new FiltersHolder();
-        filters.init(context().parameters());
-       final List<Artifact> artifacts = artifactService.getArtifacts(filters);
-        return ok(artifacts);
-    }
+
 }

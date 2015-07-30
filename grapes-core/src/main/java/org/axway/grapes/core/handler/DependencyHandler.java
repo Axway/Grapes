@@ -39,6 +39,7 @@ public class DependencyHandler implements DependencyService {
 
     @Override
     public List<Dependency> getModuleDependencies(String moduleId, FiltersHolder filters) {
+        LOG.error("inside of the level one get dependencies");
         final Module module = moduleService.getModule(moduleId);
         final Organization organization = moduleService.getOrganization(module);
         filters.setCorporateFilter(new CorporateFilter(organization));
@@ -47,13 +48,16 @@ public class DependencyHandler implements DependencyService {
 
     private List<Dependency> getModuleDependencies(final Module module, final FiltersHolder filters, final int depth, final List<String> doneModuleIds) {
         // Checks if the module has already been done
+        LOG.error("inside level two of get depe");
         if (module == null || doneModuleIds.contains(module.getId())) {
+            LOG.error("returnings empty list");
             return Collections.<Dependency>emptyList();
         } else {
             doneModuleIds.add(module.getId());
         }
         final List<Dependency> dependencies = new ArrayList<Dependency>();
         for (Dependency dependency : dataUtils.getAllDbDependencies(module)) {
+            LOG.error(" should be in report ? "+dependency.getTarget()+" "+filters.shouldBeInReport(dependency));
             if (filters.shouldBeInReport(dependency)) {
                 // final Dependency dependency = modelMapper.getDependency(dbDependency, module.getName(), module.getVersion());
                 dependencies.add(dependency);

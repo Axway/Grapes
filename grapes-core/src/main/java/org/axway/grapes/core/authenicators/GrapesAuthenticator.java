@@ -37,7 +37,7 @@ public class GrapesAuthenticator implements Authenticator {
      */
     @Override
     public String getName() {
-        //System.out.println("inside auth");
+        System.out.println("inside auth");
         return "grapes-authenticator";
     }
 
@@ -51,8 +51,8 @@ public class GrapesAuthenticator implements Authenticator {
     public String getUserName(Context context) {
         String str="";
        String authHeader =context.header("Authorization");
-      //  System.out.println("auth header recived: "+authHeader);
-//        System.out.println(context.session().getData());
+        System.out.println("auth header recived: "+authHeader);
+        System.out.println(context.session().getData());
 
 
 
@@ -62,17 +62,17 @@ public class GrapesAuthenticator implements Authenticator {
             byte[] bytes = crypto.decodeBase64(userNameAndPassword);
             try {
                 str = new String(bytes, "UTF-8");
-//                System.out.println(str);
+                System.out.println(str);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-//            System.out.println("str is still " + str);
+            System.out.println("str is still " + str);
             String[] strings = str.split(":");
             if (strings.length==2){
-//                System.out.println("string 0 is "+strings[0]);
-//                System.out.println("string 1 is "+strings[1]);
+                System.out.println("string 0 is "+strings[0]);
+                System.out.println("string 1 is "+strings[1]);
                 List<Credential.AvailableRoles> roles = getsomething(strings[0], strings[1]);
-//                System.out.println("rolese is "+roles);
+                System.out.println("rolese is "+roles);
 
                 if (roles != null) {
                     if(!roles.isEmpty()){
@@ -82,7 +82,7 @@ public class GrapesAuthenticator implements Authenticator {
 
                 }
             }
-//            System.out.println("grrr");
+            System.out.println("grrr");
         }
         if(context.session().get("roles") != null){
             return context.session().get("roles");
@@ -104,7 +104,7 @@ public class GrapesAuthenticator implements Authenticator {
     private List<Credential.AvailableRoles> getsomething(String username, String password){
 
         if(username!= null && !username.isEmpty() && (password !=null && !password.isEmpty())){
-            //        System.out.println("in my new spiffy method user: "+username + " password: "+password);
+                    System.out.println("in my new spiffy method user: "+username + " password: "+password);
           try {
               Credential credential = credentialService.getCredential(username);
               if (credential != null && password.equals(credential.getPassword())) {
@@ -112,7 +112,7 @@ public class GrapesAuthenticator implements Authenticator {
               }
           }catch(NoSuchElementException e){
 
-//              System.out.println("invalid credentials");
+              System.out.println("invalid credentials");
              // return null;
           }
         }

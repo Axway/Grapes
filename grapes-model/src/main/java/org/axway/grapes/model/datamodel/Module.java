@@ -177,11 +177,14 @@ public class Module {
     public void addArtifact(final Artifact artifact) {
         if (!artifacts.contains(artifact.getGavc())) {
             if (promoted) {
+                //todo this will be done inside the controller when we first create the module.
                 //todo this needs to be saved to the database somehow
                 //or throw an error that you cant add artifacts after a module is promoted
+                //so here we should check if promoted, check that the artifact is already promoted; throw an error msg if the module is promoted that artifact is not.
+               // give a warning that your adding artifacts to an already protoed.
                 artifact.setPromoted(promoted);
             }
-
+            //only add if the the module is not promoted.
             artifacts.add(artifact.getGavc());
         }
     }
@@ -195,7 +198,7 @@ public class Module {
      * @param artifacts Listof Artifact
      */
     public void addAllArtifacts(final List<Artifact> artifacts) {
-        //todo check promoted then if model is promoted and artifact is promoted add it otherwise reject it
+        //todo check promoted then if model is promoted and artifact is promoted add it otherwise reject it. See above
         for (Artifact artifact : artifacts) {
             addArtifact(artifact);
         }

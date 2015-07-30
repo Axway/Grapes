@@ -106,6 +106,10 @@ public class LicenseController extends DefaultController {
      */
     @Route(method = HttpMethod.GET, uri = "/{name}")
     public Result get(@PathParameter("name") final String name) {
+        if("names".equals(name)){
+            LOG.info("Got a get license names request2.");
+            return getNames();
+        }
         LOG.info("Got a get license request.");
         try {
             final License license = licenseService.getLicense(name);
@@ -162,4 +166,6 @@ public class LicenseController extends DefaultController {
         }
         return ok("done");
     }
+
+    //todo need a udpate unknown status method
 }
