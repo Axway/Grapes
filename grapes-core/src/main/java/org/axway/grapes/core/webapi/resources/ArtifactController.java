@@ -38,7 +38,7 @@ import java.util.NoSuchElementException;
 //todo basically done
 
 /**
- * Created by jennifer on 4/28/15.
+ * This class provides the REST API endpoints to manage Artifacts.
  */
 @Path("/" + ServerAPI.ARTIFACT_RESOURCE)
 @Controller
@@ -53,15 +53,15 @@ public class ArtifactController extends DefaultController {
     LicenseService licenseService;
     @Requires
     Json json;
-    @View("ArtifactResourceDocumentation")
-    Template ArtifactResourceDocumentation;
     @Requires
     DataUtils dataUtils;
 
+    @View("ArtifactResourceDocumentation")
+    Template ArtifactResourceDocumentation;
     /**
      * Documentation page maybe we can use thymeleaf template.
      *
-     * @return the welcome page
+     * @return the artifact API documentation page.
      */
     @Route(method = HttpMethod.GET, uri = "")
     public Result welcome() {
@@ -70,9 +70,11 @@ public class ArtifactController extends DefaultController {
 
     /**
      * todo see todo below otherwise done
+     * Post an artifact to the database.
      *
-     * @param artifact
-     * @return
+     * @param artifact in JSON format in the body of the request.
+     * @return Unauthorized, if user not authorized to post. Bad Request if the JSON artifact is not valid format,
+     *  Created if the request was successful.
      */
     @Route(method = HttpMethod.POST, uri = "")
     @Authenticated("grapes-authenticator")
@@ -106,7 +108,7 @@ public class ArtifactController extends DefaultController {
      * Gets a list of gavcs for all artifacts in the database.
      * It can use filters to limit results.
      *
-     * @return a list of gavcs (the unique identifier of an artifact) in json form.
+     * @return a list of gavcs (the unique identifier of an artifact) in JSON form.
      */
     @Route(method = HttpMethod.GET, uri = ServerAPI.GET_GAVCS)
     public Result getGavcs() {
@@ -125,8 +127,8 @@ public class ArtifactController extends DefaultController {
     }
 
     /**
-     * Gets all of the exsiting groupids for all artifacts.
-     * The results can be limited to spefic crtiria via filters.
+     * Gets all of the existing groupIds for all artifacts.
+     * The results can be limited to specific criteria filters.
      *
      * @return list of group ids in json.
      */
@@ -143,8 +145,8 @@ public class ArtifactController extends DefaultController {
 
     /**
      * todo does the filter work?
-     * Get all of the atrifacts in the database.
-     * The results can be limited by using filters in the query paramters.
+     * Get all of the artifacts in the database.
+     * The results can be limited by using filters in the query parameters.
      *
      * @return
      */

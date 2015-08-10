@@ -33,8 +33,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.6</java.version>
-		<jv.version>1.6</jv.version>
+		<java.version>1.8</java.version>
+		<jv.version>1.8</jv.version>
 		<maven.version>3.0.3</maven.version>
 		<jakson.version>2.2.0</jakson.version>
 	</properties>
@@ -105,9 +105,6 @@
 	</dependencyManagement>
 
 	<modules>
-		<module>commons</module>
-		<module>utils</module>
-		<module>server</module>
 		<module>grapes-core</module>
 		<module>grapes-jongo</module>
 		<module>grapes-model</module>

@@ -1,11 +1,57 @@
 //todo how come my delete doesnt pass the data?
 //todo should make a section for button handlers
 //todo look at restructing
-var GrapesOrganization = {}
-var GrapesOrganizationHandlers = {}
-var GrapesOrganizationViews = {}
-var GrapesOrganizationTabOverview = {}
-var GrapesOrganizationTab = {}
+/*******************************COMMONS FUNCTIONS***************************************/
+/*function getRestResources(url, callback) {
+
+    return $.getJSON(url)
+        .done(function (jsonData) {
+            callback(jsonData);
+        })
+        .fail(function (jsonData) {
+            stuffFailed(jsonData);
+            console.log("we failed to retrive the resource should have a call back method for failures" + url);
+        })
+        .always(function () {
+            console.log("we should always see this message test version");
+        })
+}
+function stuffFailed(jsonData) {
+    console.log("FAILED: " + jsonData.responseText + " " + jsonData.status + " " + jsonData.statusText);
+}
+*/
+/*remove the selected extension based on the database id number */
+/*
+function deleteRestResource(url, callback, misc) {
+    console.log("inside remove orgname is ", misc);
+    $.ajax({
+        url: url,
+        type: 'DELETE'})
+        .done(function (result) {
+            console.log("iside complete organme should be the same ", misc);
+            callback(result, misc);
+            $("#error-msg").html("").removeClass("alert-success").removeClass("alert-danger").removeClass("alert-warning");
+            //   load();
+        })
+        .fail(function (result) {
+            console.log("Failed to delete",result.responseText);
+        })
+}
+
+
+function GrapesCommons.postRestResource(url, data, callback) {
+    $.ajax({
+        url: url,
+        method: 'POST',
+        contentType: 'application/json',
+        data: data,
+        error: function (xhr, error) {
+            alert("The action cannot be performed: status " + xhr.status);
+        }
+    }).done(function () {
+        console.log("made it to done we need a fail and always?")
+    });
+}*/
 
 var OrgUrls = {
     orgRoot: "/organization",
@@ -54,27 +100,36 @@ function setOrganizationList(jsonData) {
 
 /*********functions used in ajax callbacks**************************/
 function createOrganizationViews(jsonData) {
-   // createAdminTab(jsonData);
+    createAdminTab(jsonData);
     createOverviewTab(jsonData);
     return;
 }
 
-function reloadOrgPage() {
-    GrapesCommons.getRestResources(OrgUrls.orgUrl($("#deleteOrgBtn").data("orgName")), createOrganizationViews);
+function reloadOrgPage(result, orgName) {
+       GrapesCommons.getRestResources(OrgUrls.orgUrl(orgName), createOrganizationViews);
 }
 
 /*******************************organization Tabs************************************/
-function showOrgAdminElements(){
-    console.log("inside show elements");
-    console.log("admin is: "+GrapesCommons.getIsAdmin());
-    GrapesCommons.setIsAdmin();
-    if(GrapesCommons.getIsAdmin()){
-        console.log("show damnit");
-        $("#deleteOrgBtn").show();
-        $("#addCorpIdform").show();
-        $(".isAdminhide").show();
-    }
-    }
+function createAdminTab(json) {
+    var tabletitle = "Corperate Id Prefixes";
+    var table = $("<table/>").addClass(' table table-striped');
+
+    table.append("<thead><tr><td>" + tabletitle + "</td><td>Add new Id</td> </tr></thead>");
+
+    $.each(json.corporateGroupIdPrefixes, function (key, val) {
+        var row = $("<tr/>").append("<td/>").text(val).append(getActionBarForExtension(json.name, val));
+
+        table.append(row);
+
+        console.log("key", key, " value ", val);
+
+    });
+    $("#orgAdminTable").empty().append(table);
+    $("#deleteOrgBtn").text("Delete Organization: " + json.name)
+        .data("orgName", json.name)
+        .show();
+    $("#addCorpIdform").show();
+}
 
 function createOverviewTab(json) {
     var tabletitle = "Corperate Id Prefixes";
@@ -84,7 +139,8 @@ function createOverviewTab(json) {
     table.append("<thead><tr><td>" + tabletitle + "</td> </tr></thead>");
 
     $.each(json.corporateGroupIdPrefixes, function (key, val) {
-        var row = $("<tr/>").append("<td/>").text(val).append(getActionBarForExtensionOrgs(json.name, val));
+        var row = $("<tr/>").append("<td/>").text(val);
+
         table.append(row);
 
         console.log("key", key, " value ", val);
@@ -92,17 +148,21 @@ function createOverviewTab(json) {
     });
     $("#corpIdTable").empty().append(table);
     $("#orgInfo").hide();
-    $("#deleteOrgBtn").text("Delete Organization: " + json.name)
-        .data("orgName", json.name);
-    showOrgAdminElements();
-
 }
 
 /****************************************MISC Functions******************************************/
 
+function appendTableColumn(table, rowData) {
+    var lastRow = $('<tr/>').appendTo(table.find('tbody:last'));
+    $.each(rowData, function (colIndex, c) {
+        lastRow.append($('<td/>').text(c));
+    });
+
+    return lastRow;
+}
 
 
-function getActionBarForExtensionOrgs(orgName, corpId) {
+function getActionBarForExtension(orgName, corpId) {
     var bar = $("<div></div>").addClass("bundle-action-bar pull-right").addClass("btn-toolbar").attr("role",
         "toolbar");
     var inner = $("<div></div>").addClass("btn-group");
@@ -118,7 +178,7 @@ function getActionBarForExtensionOrgs(orgName, corpId) {
     inner.append(uninstall);
     inner.append(extupdate);
     bar.append(inner);
-    return $("<td></td>").addClass("isAdminhide").append(bar).hide();
+    return $("<td></td>").append(bar);
 }
 
 
@@ -144,7 +204,7 @@ function createOrganization() {
         GrapesCommons.postRestResource(OrgUrls.orgRoot, data);
         GrapesCommons.getRestResources(OrgUrls.listNamesUrl, setOrganizationList);
         reloadOrgPage("do",orgName);
-        $('#createOrgName').find('input[name="orgname"]').val('');
+         $('#createOrgName').find('input[name="orgname"]').val('');
         $('#createOrgName').find('input[name="corpidlist"]').val('');
         $("#orgModal").modal('hide');
     }
@@ -162,7 +222,7 @@ function updateCorporateId(){
         alert("needs to be not empty or click close to cancel creation");
     }
     else {
-        GrapesCommons.postRestResource(OrgUrls.addCorpIdUrl(orgName), '"' + newcorpId + '"',postcallback);
+        GrapesCommons.postRestResource(OrgUrls.addCorpIdUrl(orgName), '"' + newcorpId + '"');
         //potentially the remove could happen before the add it is async so the reshrsh could not show the new id
         GrapesCommons.deleteRestResource(OrgUrls.getCorpIdUrl(orgName, oldcorpId), reloadOrgPage, orgName);
         $('#editCorpId').find('input[name="corpId"]').val('');
@@ -173,20 +233,15 @@ function updateCorporateId(){
 
 function addCorporateId(){
     console.log("stupid button did you even press?");
-    var listofCorpIds = $('#addCorpIdform').find('input[name="addCorpId"]').val();
+    var listofCorpIds = $('#orgAdmin').find('input[name="addCorpId"]').val();
     if (listofCorpIds || listofCorpIds.length > 0) {
-        GrapesCommons.postRestResource(OrgUrls.addCorpIdUrl($("#deleteOrgBtn").data("orgName")),stringtoarray(listofCorpIds),reloadOrgPage);
-        $('#addCorpIdform').find('input[name="addCorpId"]').val('');
-
-
-        $('#addCorpIdform').find('input[name="addCorpId"]').val('');
+        GrapesCommons.postRestResource(OrgUrls.addCorpIdUrl($("#deleteOrgBtn").data("orgName")),stringtoarray(listofCorpIds));
+        reloadOrgPage("do",$("#deleteOrgBtn").data("orgName"));
+        $('#orgAdmin').find('input[name="addCorpId"]').val('');
 
     }
 
 
-}
-function postcallback(){
-    console.log("i do nothing");
 }
 function removeOrganization(){
     console.log("DELETE ME muahahahah");

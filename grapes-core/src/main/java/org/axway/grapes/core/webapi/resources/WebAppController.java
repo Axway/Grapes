@@ -39,7 +39,6 @@ public class WebAppController extends DefaultController {
     @View("webapp/artifact")
     Template artifactView;
 
-
     @View("webApp2")
     Template webApp;
 
