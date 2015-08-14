@@ -318,7 +318,7 @@ var GrapesArtifact = {
         var groupId = $(document.body).data("artifactGroupId");
         var artifactId = $(document.body).data("artifactId");
         var version = $(document.body).data("artifactVersion");
-        alert("reloading the page" + GrapesArtifactUrls.artifactGav(groupId, artifactId, version));
+      //  alert("reloading the page" + GrapesArtifactUrls.artifactGav(groupId, artifactId, version));
         GrapesCommons.getRestResources(GrapesArtifactUrls.artifactGav(groupId, artifactId, version), GrapesArtifactViews.createArtifactViews);
         //  GrapesCommons.getRestResources(GrapesArtifactUrls.artifact($(document.body).data("gavc")), createArtifactViews);
     }

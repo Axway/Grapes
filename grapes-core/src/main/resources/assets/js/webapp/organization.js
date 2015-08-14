@@ -136,7 +136,7 @@ function createOrganization() {
     var listofCorpIds = $('#createOrgName').find('input[name="corpidlist"]').val();
 
     if (!orgName || orgName.length === 0) {
-        alert("needs to be not empty or lcik close to cancel creation");
+        //alert("needs to be not empty or lcik close to cancel creation");
     }
     else {
         var data = '{ "name": "' + orgName + '", "corporateGroupIdPrefixes": [' + stringtoarray(listofCorpIds) + ']}';
@@ -159,7 +159,7 @@ function updateCorporateId(){
     var newcorpId = $('#editCorpId').find('input[name="corpId"]').val();
 
     if (!newcorpId || newcorpId.length === 0) {
-        alert("needs to be not empty or click close to cancel creation");
+        //alert("needs to be not empty or click close to cancel creation");
     }
     else {
         GrapesCommons.postRestResource(OrgUrls.addCorpIdUrl(orgName), '"' + newcorpId + '"',postcallback);

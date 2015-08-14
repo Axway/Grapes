@@ -31,13 +31,13 @@
     <div class="row header-row">
         <!--Header div-->
         <div class="col-sm-3 col-md-2">
-            <h1 class="page-header">product</h1>
+            <h1 class="page-header">Product</h1>
 
         </div>
 
         <!--Search container Div-->
         <div class="col-sm-3 col-md-6">
-            search container
+
             <select class="form-control" id="productList">
                 <option value="1">None Found
                 </option>
@@ -136,7 +136,7 @@
                     <div class="modal-body">
                         <div class="form-group">
 
-                            <P>Warning deleteing the product is a permanent action and cannot be undone.</P>
+                            <P>Warning deleting the product is a permanent action and cannot be undone.</P>
 
                         </div>
                     </div>
@@ -152,7 +152,7 @@
     </div>
     <div class="row">
         <div class="col-md-8">
-            <p id="pageInfoMsg">This is where messages will show up </p>
+            <p id="pageInfoMsg">This is where information messages will show up </p>
         </div>
         <div class="col-md-4">
             <button id="deleteProductBtn" type="button" class="btn btn-danger btn-sm adminOnly" data-toggle="modal"
@@ -167,10 +167,10 @@
         <div class="container-fluid">
             <!-- Navigation Tabs  maybe put in a seperate container see layout?-->
             <ul class="nav nav-tabs">
-                <li role="presentation" class="active"><a data-toggle="tab" href="#productTabOverview">Overview</a></li>
-                <li role="presentation"><a data-toggle="tab" href="#productDependencies">Artifacts Dependencies</a></li>
+                <li role="presentation" class="active"><a data-toggle="tab" href="#productOverview">Overview</a></li>
+                <li role="presentation"><a data-toggle="tab" href="#productDependencies">Dependencies</a></li>
                 <li role="presentation"><a data-toggle="tab" href="#productLicenses">Licenses</a></li>
-                <li role="presentation"><a data-toggle="tab" href="#productPromotionReport">Promotion Report</a></li>
+
             </ul>
             <!-- Navigation Tab views-->
             <div class="tab-content col-md-12">
@@ -180,7 +180,7 @@
 
                     <h3 id="productId"></h3>
 
-                    <p id="productInfo">Please chose an product in the search box above to see an overview.</p>
+                    <p id="productInfo">Please chose a product in the search box above to see an overview.</p>
 
                     <div id="productModuleSection" class="col-md-6">
                         <div class="row">
@@ -219,18 +219,18 @@
 
                 <!-- product dependencies-->
                 <div id="productDependencies" class="tab-pane fade">
-                    <h3>Dependencies For the product</h3>
+                    <h3>Product Dependencies</h3>
 
-                    <p id="dependecyInfoMsg"></p>
+                    <p id="dependecyInfoMsg">TODO: List of dependencies goes here</p>
 
                     <div id="dependencyList" class="col-md-6"></div>
                     <div id="3rdPartyDependencyList" class="col-md-6"></div>
                 </div>
                 <!-- product Ancestors Tab-->
-                <div id="productAncestors" class="tab-pane fade">
-                    <h3>Ancestors for product</h3>
+                <div id="productLicenses" class="tab-pane fade">
+                    <h3>Product Licenses</h3>
 
-                    <p id="ancestorInfoMsg">blahb lbah</p>
+                    <p id="ancestorInfoMsg">TODO list of licences used by the product goes here.</p>
 
                     <div id="ancestorsList" class="col-md-6">
 
@@ -238,9 +238,9 @@
                 </div>
                 <!-- product Promotion report)-->
                 <div id="productPromotionReport" class="tab-pane fade">
-                    <h3>Ancestors for product</h3>
+                    <h3>Product Promotion Report</h3>
 
-                    <p>protion report goes here</p>
+                    <p></p>
 
                 </div>
 

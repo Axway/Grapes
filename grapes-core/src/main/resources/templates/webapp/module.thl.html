@@ -36,7 +36,7 @@
         </div>
 
         <div class="col-sm-3 col-md-6">
-            search container
+
             <select id="moduleList" class="form-control">
                 <option value="1">None Found
                 </option>
@@ -131,7 +131,7 @@
                     <div class="modal-body">
                         <div class="form-group">
 
-                            <P>Warning deleteing the module is a a permanent action and cannot be undone.</P>
+                            <P>Warning deleting the module is a  permanent action and cannot be undone.</P>
 
                         </div>
                     </div>
@@ -152,6 +152,7 @@
                 <li role="presentation" class="active"><a data-toggle="tab" href="#moduleOverview">Overview</a></li>
                 <li role="presentation"><a data-toggle="tab" href="#moduleDependencies">Dependencies</a></li>
                 <li role="presentation"><a data-toggle="tab" href="#moduleAncestors">Ancestors</a></li>
+                <li role="presentation"><a data-toggle="tab" href="#moduleDependencyReport">Dependency Report</a></li>
                 <li role="presentation"><a data-toggle="tab" href="#modulePromotionReport">Promotion Report</a></li>
             </ul>
             <!-- Navigation Tab views-->
@@ -160,9 +161,9 @@
                 <!-- Overview Tab-->
                 <div id="moduleOverview" class="tab-pane fade in active">
                     <h3 id="moduleId"></h3>
-                    <p id="moduleInfo">Please chose an module in the search box above to see an overview.</p>
+                    <p id="moduleInfo">Please chose a module in the search box above to see an overview.</p>
                     <div id="moduleOverviewTable" class="col-md-6"></div>
-                    <div id="moduleLicTable" class="col-md-6">Licenses</div>
+                    <div id="moduleLicTable" class="col-md-6"></div>
                 </div>
 
                 <!-- Module dependencies-->
@@ -175,18 +176,26 @@
                 </div>
                 <!-- module Ancestors Tab-->
                 <div id="moduleAncestors" class="tab-pane fade">
-                    <h3>Ancestors for module</h3>
+                    <h3>Module Ancestors</h3>
 
-                    <p id="ancestorInfoMsg">blahb lbah</p>
+                    <p id="ancestorInfoMsg">TODO: list of module ancestors will go here.</p>
                     <div id="ancestorsList" class="col-md-6">
 
                     </div>
                 </div>
                 <!-- module Promotion report)-->
                 <div id="modulePromotionReport" class="tab-pane fade">
-                    <h3>Ancestors for module</h3>
+                    <h3>Module Promotion Report</h3>
 
-                    <p >protion report goes here</p>
+                    <p id="promotionReportInfoMsg"></p>
+                    <div id="promotionReportList" class="col-md-6"></div>
+
+                </div>
+                <!-- module Promotion report)-->
+                <div id="moduleDependencyReport" class="tab-pane fade">
+                    <h3>Module Dependency Report</h3>
+
+                    <p id="promotionDependencyInfoMsg"></p>
 
                 </div>
 

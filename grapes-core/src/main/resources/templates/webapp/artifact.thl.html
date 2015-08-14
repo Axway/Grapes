@@ -36,7 +36,7 @@
         </div>
 
         <div class="col-sm-3 col-md-6">
-            search container
+
             <!--artifactList-->
             <select class="form-control" id="artifactGroupIdsList">
                 <option value="1">None Found
@@ -137,7 +137,7 @@
                     <div class="modal-body">
                         <div class="form-group">
 
-                            <P>Warning deleteing the artifact is a a permanent action and cannot be undone.</P>
+                            <P>Warning deleting the artifact is a permanent action and cannot be undone.</P>
 
                         </div>
                     </div>
@@ -157,7 +157,7 @@
             <ul class="nav nav-tabs">
                 <li role="presentation" class="active"><a data-toggle="tab" href="#artOverview">Overview</a></li>
                 <li role="presentation"><a data-toggle="tab" href="#artAncestors">Ancestors</a></li>
-                <li role="presentation"><a data-toggle="tab" href="#artLicenses">Licencense</a></li>
+                <li role="presentation"><a data-toggle="tab" href="#artLicenses">Licences</a></li>
             </ul>
 <!-- Navigation Tab views-->
             <div class="tab-content">
@@ -170,7 +170,7 @@
 
                     <div id="artOverviewTable" class="col-md-6"></div>
                     <div id="artAdminTable" class="col-md-6"></div>
-                    <div id="artLicTable" class="col-md-6">Licenses</div>
+                    <div id="artLicTable" class="col-md-6"></div>
                 </div>
                 <div class="col-sm-3 col-md-6">
                     <button id="editArt" style="display:none" type="button" class="btn btn-danger btn-sm" data-toggle="modal"
@@ -182,34 +182,22 @@
                     </button>
                 </div>
 
-                <!-- Admin Tab-->
-                <div id="artAdmin" class="tab-pane fade">
-                    <h3>Admin Tab</h3>
 
-                    <p>Should only see this tab if you have the correct rights
-                        don't break things!</p>
-
-                    <!-- Button Groups-->
-
-                </div>
 
                 <!-- Artifact Ancestors Tab-->
                 <div id="artAncestors" class="tab-pane fade">
-                    <h3>Ancestors for artifact</h3>
+                    <h3>Artifact Ancestors</h3>
 
-                    <p id="ancestorInfoMsg">blahb lbah</p>
+                    <p id="ancestorInfoMsg">TODO the ancestors of the artifact will be listed here.</p>
                     <div id="ancestorsList" class="col-md-6">
 
                     </div>
                 </div>
                 <!-- Artifact Licesne Tab (propably don't need)-->
                 <div id="artLicenses" class="tab-pane fade">
-                    <h3>Dropdown 2</h3>
+                    <h3>Artifact Licenses</h3>
 
-                    <p>Donec vel placerat quam, ut euismod risus. Sed a mi suscipit, elementum sem a, hendrerit velit.
-                        Donec at erat magna. Sed dignissim orci nec eleifend egestas. Donec eget mi consequat massa
-                        vestibulum laoreet. Mauris et ultrices nulla, malesuada volutpat ante. Fusce ut orci lorem.
-                        Donec molestie libero in tempus imperdiet. Cum sociis natoque penatibus et magnis.</p>
+                    <p id="licenseInfoMsg">TODO the list of licenses for the artifact will go here.</p>
                 </div>
             </div>
         </div>

@@ -51,7 +51,7 @@ createLicense: function () {
 
     if (!licName || licName.length === 0
         || !licLongName || licLongName.length === 0) {
-        alert("license name, longname are required fields");
+      //  alert("license name, longname are required fields");
     }
     else {
         var data = '{ "name": "' + licName + '", "longName": "' + licLongName + '", "comments": "' + licComments
@@ -76,7 +76,7 @@ removeLicense:function () {
 },
 
 editLicenseFields:function () {
-    alert("I edit stuff someday");
+    //alert("I edit stuff someday");
     $('#editLic').hide();
     $('#saveLic').show();
     $('.hideme').toggle();
@@ -84,7 +84,7 @@ editLicenseFields:function () {
 },
 
 saveLicenseField: function () {
-    alert("i saved suff");
+    //alert("i saved suff");
     var licId = $("#deleteLicBtn").data("licName");
 
     var licUnknownField = $('#adminLicTable').find('input[name="unknown"]:checked').val();
@@ -97,7 +97,7 @@ saveLicenseField: function () {
         + '", "regexp": "' + licRegexp + '", "url": "' + licUrl + '", "approved": '+licApproved+' , "unknown" : '+licUnknownField+'}';
 
 console.log(data);
-    alert("is data ok?");
+    //alert("is data ok?");
 
     GrapesCommons.postRestResource(LicenseUrls.root, data,GrapesLicense.reloadPage);
     GrapesCommons.getRestResources(LicenseUrls.listNames, GrapesLicenseView.setLicenseList);

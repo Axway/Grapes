@@ -36,7 +36,7 @@
         </div>
         <!-- Main search container -->
         <div class="col-sm-3 col-md-6">
-            search container
+           
             <select class="form-control" id="LicenseList">
                 <option value="1">None Found
                 </option>
@@ -171,7 +171,7 @@
                 <li role="presentation"><a data-toggle="tab" href="#productList">Products</a></li>
                 <li role="presentation"><a data-toggle="tab" href="#moduleList">Modules</a></li>
                 <li role="presentation"><a data-toggle="tab" href="#artifactList">Artifacts</a></li>
-                <li role="presentation"><a data-toggle="tab" href="#licAdmin">License Admin</a></li>
+
             </ul>
 
             <!-- Navigation Tab views -->
@@ -180,14 +180,14 @@
                 <div id="licOverview" class="tab-pane fade in active">
                     <h3 id="licId"></h3>
 
-                    <p id="licInfo">Please chose an License in the search box above to see an overview.</p>
+                    <p id="licInfo">Please chose a License in the search box above to see an overview.</p>
 
                     <div id="licAdminTable" class="col-md-6"></div>
                     <div class="col-sm-3 col-md-6">
-                        <button id="editLic" type="button" class="btn btn-danger btn-sm" style="display:none">
+                        <button id="editLic" type="button" class="btn btn-priamry btn-sm" style="display:none">
                             Edit Lic
                         </button>
-                        <button id="saveLic" type="button" class="btn btn-danger btn-sm" style="display:none">
+                        <button id="saveLic" type="button" class="btn btn-success btn-sm" style="display:none">
                             Save Lic
                         </button>
 
@@ -197,45 +197,29 @@
                         </button>
                     </div>
 
-                    <div id="orgProducts" class="col-md-6">This can have somethng else here?</div>
+                    <div id="orgProducts" class="col-md-6"></div>
                 </div>
 
-             <!-- Admin tab -->
-                <div id="licAdmin" class="tab-pane fade">
-                    <h3>Admin Tab</h3>
-
-                    <p>Should only see this tab if you have the correct rights
-                        don't break things!</p>
-
-                    <div id="licenseOverviewTable" class="col-md-6"></div>
-                                   </div>
 
             <!-- Product List View (all products the use the license) -->
                 <div id="productList" class="tab-pane fade">
-                    <h3>Dropdown 1</h3>
+                    <h3>Products That Use This License</h3>
 
-                    <p>Please chose an organization in the search box above to see an overview.
-
-                        This will show us all the modules that use this license and will have clickable links to the module overview</p>
+                    <p>TODO this will have a list of products here.</p>
                 </div>
 
             <!-- Artifact List View (all the artifacts that use the license) -->
                 <div id="artifactList" class="tab-pane fade">
-                    <h3>Dropdown 1</h3>
+                    <h3>Artifacts That Use This License</h3>
 
-                    <p>Please chose an organization in the search box above to see an overview.
-
-                        
-                        This will show us all the modules that use this license and will have clickable links to the module overview</p>
+                    <p>TODO this will have a list of Artifacts here.</p>
                 </div>
 
             <!-- Module list view (all modules that us the license) -->
                 <div id="moduleList" class="tab-pane fade">
-                    <h3>Dropdown 1</h3>
+                    <h3>Modules That Use This License</h3>
 
-                    <p>Please chose an organization in the search box above to see an overview.
-
-                        This will show us all the modules that use this license and will have clickable links to the module overview.</p>
+                    <p>This Will Have a list of modules here.</p>
                 </div>
             </div>
         </div>
