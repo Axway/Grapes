@@ -3,7 +3,7 @@ package org.axway.grapes.core.reports;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.axway.grapes.core.handler.DataUtils;
 import org.axway.grapes.core.webapi.resources.DependencyComplete;
-import org.axway.grapes.jongo.datamodel.DbArtifact;
+
 import org.axway.grapes.model.datamodel.Artifact;
 
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public class DependencyReport  {
         final List<String> gavcs = new ArrayList<String>();
 
         for(DependencyComplete dependency: dependencies){
-            final String depGavc = DbArtifact.generateGAVC(dependency.getTarget());
+            final String depGavc = Artifact.generateGAVC(dependency.getTarget());
             if(!gavcs.contains(depGavc)){
                 targets.add(dependency.getTarget());
                 gavcs.add(depGavc);
@@ -76,8 +76,8 @@ public class DependencyReport  {
         final List<String> versions = new ArrayList<String>();
 
         for(DependencyComplete dependency: dependencies){
-            final String depGavc = DbArtifact.generateGAVC(dependency.getTarget());
-            if(depGavc.equals(DbArtifact.generateGAVC(target))
+            final String depGavc = Artifact.generateGAVC(dependency.getTarget());
+            if(depGavc.equals(Artifact.generateGAVC(target))
                     && !versions.contains(dependency.getTarget().getVersion())){
                 versions.add(dependency.getTarget().getVersion());
             }

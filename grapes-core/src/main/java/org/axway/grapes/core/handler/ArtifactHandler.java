@@ -177,10 +177,14 @@ public class ArtifactHandler implements ArtifactService {
     @Override
     //todo it only searches the uses field which is the dependencies and not the artifacts.
     public List<Module> getAncestors(String gavc, FiltersHolder filters) {
+        LOG.error("inside get ancestors in artifact handler for gavc: "+gavc);
         Artifact artifact = getArtifact(gavc);
+        LOG.error("I should have an id: "+artifact.getGavc());
         final Map<String, Object> queryParams = filters.getModuleFieldsFilters();
         queryParams.put("'uses'", artifact.getGavc());
+        LOG.error("query paramteres"+ JongoUtils.generateQuery(queryParams));
         final Iterable<Module> results = moduleCrud.findAll(new MongoFilter<Module>(JongoUtils.generateQuery(queryParams)));
+
         final List<Module> ancestors = new ArrayList<>();
         for (Module ancestor : results) {
             ancestors.add(ancestor);

@@ -17,6 +17,7 @@ import java.util.NoSuchElementException;
 public class CredentialHandler implements CredentialService {
 
     //todo see mongo handler for this cache thing
+    //there is no cache apprently distrubeted was attempted and failed completly
     private LoadingCache<String, Credential> credentialCache;
     @Model(value = Credential.class)
     private Crud<Credential, String> credentialCrud;

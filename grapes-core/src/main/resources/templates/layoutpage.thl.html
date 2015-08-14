@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content="Grapes Webapp"/>
+    <meta name="author" content="me"/>
+    <link rel="shortcut icon" href="/assets/images/owl-small.png"/>
+
+    <script src="/libs/jquery.min.js"></script>
+    <script src="/libs/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/libs/css/bootstrap.css" media="screen"/>
+
+    <title>Grapes WebApp</title>
+</head>
+<body>
+<div th:replace="basepage :: topbar"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="basepage :: sidebar"></div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" layout:fragment="content">
+            This is the content.
+        </div>
+    </div>
+    <div th:replace="basepage :: footer"></div>
+
+</div>
+<div layout:fragment="longModelFragment" class="modal fade" id="loginModel" tabindex="-1" role="dialog" aria-labelledby="loginModelLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <h4 class="modal-title" id="loginModelLabel">Login </h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+
+                    <div id="loginDetails" class="col-sm-10">
+                        <input type="text" class="form-control" name="loginUserName" placeholder="User Name"/>
+                        <input type="password" class="form-control" name="loginUserPassword" placeholder="Password"/>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <p id="loginModalInfo"> </p>
+                <button id="loginCloseBtn" type="button" class="btn btn-default" data-dismiss="modal">Cancel
+                </button>
+                <button id="loginLoginBtn" type="button" class="btn btn-primary">Go</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/assets/js/webapp/commons.js"></script>
+<script src="/assets/js/webapp/organization.js"></script>
+<script src="/assets/js/webapp/artifact.js"></script>
+<script src="/assets/js/webapp/product.js"></script>
+<script src="/assets/js/webapp/license.js"></script>
+<script src="/assets/js/webapp/module.js"></script>
+
+</body>
+</html>

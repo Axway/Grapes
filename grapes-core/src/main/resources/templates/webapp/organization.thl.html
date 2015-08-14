@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html layout:decorator="layoutpage">
+
+<head lang="en">
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <link rel="icon" href="../../favicon.ico"/>
+
+    <title>Dashboard Template for Bootstrap</title>
+    <link rel="stylesheet" href="/assets/css/fuzzyDropdown.css"/>
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/libs/b335/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/dashboard.css" rel="stylesheet"/>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div class="row header-row">
+
+        <div class="col-sm-3 col-md-2">
+            <h1 class="page-header">Organization</h1>
+
+        </div>
+
+        <div class="col-sm-3 col-md-6">
+            search container
+            <select class="form-control" id="organizationList">
+                <option value="1">None Found
+                </option>
+
+
+            </select>
+
+        </div>
+
+
+        <div class="col-sm-3 col-md-4">
+            <button id="createOrgBtn" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#orgModal">
+            Create new Organization
+        </button></div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="orgModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Create new organization</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+
+                            <div id="createOrgName" class="col-sm-10">
+                                <input type="text" class="form-control"
+                                        name="orgname" placeholder="Enter the name of the New Organization"/>
+                                <input type="text" class="form-control"
+                                       name="corpidlist" placeholder="Enter corps"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="creatOrgCloseBtn" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="createOrgSaveBtn" type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="corpIdModal" tabindex="-1" role="dialog" aria-labelledby="coperateIdModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="coperateIdModalLabel">Edit the corprate id</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+
+                            <div id="editCorpId" class="col-sm-10">
+                                <span id="oldCorpId">oldname here</span>
+                                <input type="text" class="form-control"
+                                       name="corpId" placeholder="Enter the corrected name"/>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="updateOrgCloseBtn" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="updateOrgSaveBtn" type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="deleteOrgModal" tabindex="-1" role="dialog" aria-labelledby="deleteOrgModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="deleteOrgModalLabel">Remove Organization from the System</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+
+                           <P>Warning deleteing the organization is a a permanent action and cannot be undone.</P>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="delOrgCancelBtn" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button id="delOrgProceedBtn" type="button" class="btn btn-primary">Proceed</button>
+                    </div>
+                </div>
+            </div>
+
+
+    </div>
+
+    <div class="row row-2">
+        <div class="container-fluid">
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="active"><a data-toggle="tab" href="#orgOverview">Overview</a></li>
+              </ul>
+
+            <div class="tab-content">
+                <div id="orgOverview" class="tab-pane fade in active">
+                    <h3 id="orgId"></h3>
+                    <p id="orgInfo">Please chose an organization in the search box above to see an overview.</p>
+                    <button id="deleteOrgBtn" type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteOrgModal" style="display:none">
+                        Delete the organization
+                    </button>
+                    <div class="modal-footer" id="addCorpIdform" style="display:none">
+                        <input type="text" class="form-control"
+                               name="addCorpId" placeholder="Enter the new Corp Id"/>
+                        <button id="addOrgCorpIdBtn" type="button" class="btn btn-primary" >add</button>
+                    </div>
+
+                    <div id="corpIdTable" class="col-md-6"></div>
+                    <div id="orgProducts" class="col-md-6">This can have somethng else here?</div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="/assets/libs/jquery-1.11.3/jquery-1.11.3.min.js"></script>
+<script src="/assets/libs/b335/js/bootstrap.min.js"></script>
+<script src="/assets/js/fuse.min.js"></script>
+<script src="/assets/js/fuzzyDropdown.min.js"></script>
+
+</body>
+</html>

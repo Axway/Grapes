@@ -39,8 +39,7 @@ public class ModuleHandler implements ModuleService {
     @Requires(optional = true)
     private ArtifactService artifactService;
 
-    @Requires(optional = true)
-    private MiscService miscService;
+
 
     @Requires(optional = true)
     private OrganizationService organizationService;

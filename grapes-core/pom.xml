@@ -128,6 +128,7 @@
             <artifactId>documentation</artifactId>
             <version>0.9.1</version>
         </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -159,7 +160,7 @@
                             pre-integration-test
                         </phase>
                         <configuration>
-                            <port>12345</port>
+                            <port>27017</port>
                             <version>2.6.1</version>
                             <databaseDirectory>${project.build.directory}/mongotest</databaseDirectory>
                             <logging>file</logging>
@@ -211,6 +212,7 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head th:fragment="head" lang="en">
+
+    <!-- Basic Page Needs
+  ================================================== -->
+    <meta charset="utf-8"/>
+    <title>Grapes</title>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+
+    <!-- Mobile Specific Metas
+  ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+    <!-- CSS
+  ================================================== -->
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/skeleton/1.2/base.min.css"/>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/skeleton/1.2/skeleton.min.css"/>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/skeleton/1.2/layout.css"/>
+    <link rel="stylesheet" href="../../assets/style.css"/>
+
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<nav th:fragment="topbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Grapes WebApp</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="link-login" th:unless="${#session.get('roles')}"><a data-toggle="modal" data-target="#loginModel" href="#">Log In</a></li>
+                <li class="link-logout" th:if="${#session.get('roles')}"><a href="#">Log out</a></li>
+                <li><a href="#">Help</a></li>
+            </ul>
+            <form class="navbar-form navbar-right">
+                <input type="hidden" id="isAdmin" th:value="${#session.get('roles')}"/>
+                <!--<input type="text" class="form-control" placeholder="Search..."/>-->
+            </form>
+
+        </div>
+    </div>
+
+</nav>
+
+
+
+
+<!--
+The side bar is computed using JavaScript.
+Expected structure: container-fluid \ row \ us | content
+ -->
+<div th:fragment="sidebar" class="col-sm-3 col-md-2 sidebar" id="sidebar">
+
+    <ul class="nav nav-sidebar" id="root">
+    </ul>
+
+    <h4 class="text-muted menu-header">Applications</h4>
+    <ul class="nav nav-sidebar" id="grapes">
+        <li id="link-products"><a href="/webapp/products">Products <span class="sr-only">(current)</span></a></li>
+        <li id="link-modules"><a href="/webapp/modules">Modules</a></li>
+        <li id="link-organization"><a href="/webapp/organization">Organization</a></li>
+        <li id="link-artifacts"><a href="/webapp/artifacts">Artifacts</a></li>
+        <li id="link-licenses"><a href="/webapp/licenses">Licences</a></li>
+    </ul>
+
+    <h4 class="text-muted menu-header">Reports</h4>
+    <ul class="nav nav-sidebar" id="reports">
+        <li id="link-2"><a href="">Dependency Reports</a></li>
+        <li id="link-1"><a href="">Product reports</a></li>
+        <li id="link-0"><a href="">Create your own</a></li>
+    </ul>
+
+
+    <ul class="nav nav-sidebar">
+        <li><a href="">Favorites</a></li>
+
+    </ul>
+
+</div>
+
+<div th:fragment="footer" class="footer">
+    <div>Grapes <strong>brought you by Pandas</strong> </div>
+</div>
+
+
+
+</body>
+</html>
+
+

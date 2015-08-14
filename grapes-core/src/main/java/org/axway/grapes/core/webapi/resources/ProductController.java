@@ -104,6 +104,9 @@ public class ProductController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/{name}")
     public Result get(@PathParameter("name") final String name) {
         LOG.info("Got a get product request.");
+        if ("names".equalsIgnoreCase(name)){
+            return getNames();
+        }
         try {
             final Product dbProduct = productService.getProduct(name);
             return ok(dbProduct);

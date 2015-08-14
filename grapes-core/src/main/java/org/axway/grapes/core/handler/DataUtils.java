@@ -5,7 +5,7 @@ import org.apache.felix.ipojo.annotations.Requires;
 import org.axway.grapes.core.webapi.resources.DependencyComplete;
 import org.axway.grapes.core.webapi.resources.ModuleComplete;
 import org.axway.grapes.core.service.ArtifactService;
-import org.axway.grapes.jongo.datamodel.DbModule;
+
 import org.axway.grapes.model.datamodel.Artifact;
 import org.axway.grapes.model.datamodel.DataModelFactory;
 import org.axway.grapes.model.datamodel.Dependency;
@@ -172,7 +172,7 @@ public  class DataUtils {
      * @return DbModule
      */
     public Module translateIntoModule(final ModuleComplete moduleComplete) {
-        final Module module = new DbModule();
+        final Module module = new Module();
 
         module.setName(moduleComplete.getName());
         module.setVersion(moduleComplete.getVersion());

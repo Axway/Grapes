@@ -35,7 +35,7 @@ public class Artifact {
     private List<String> licenses = new ArrayList<String>();
 
     public Artifact() {
-        // Should only be instantiated via the DataModelObjectFactory
+
     }
 
     //should only be used internally and not manually set

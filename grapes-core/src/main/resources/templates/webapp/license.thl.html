@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html layout:decorator="layoutpage">
+
+<head lang="en">
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <link rel="icon" href="../../favicon.ico"/>
+
+    <title>Dashboard Template for Bootstrap</title>
+    <link rel="stylesheet" href="/assets/css/fuzzyDropdown.css"/>
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/libs/b335/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/dashboard.css" rel="stylesheet"/>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div class="row header-row">
+
+        <div class="col-sm-3 col-md-2">
+            <h1 class="page-header">License</h1>
+
+        </div>
+        <!-- Main search container -->
+        <div class="col-sm-3 col-md-6">
+            search container
+            <select class="form-control" id="LicenseList">
+                <option value="1">None Found
+                </option>
+            </select>
+
+        </div>
+
+        <!-- Create Licesne Button -->
+        <div class="col-sm-3 col-md-4">
+            <button id="createLicBtn" type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+                    data-target="#licModal">
+                Create new License
+            </button>
+        </div>
+
+
+
+        <!-- Modal creation -->
+        <div class="modal fade" id="licModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Create new license</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group" id="createNewLicense">
+                            <label class="control-label" for="licName">Name</label>
+
+                            <div class="controls">
+                                <input class="input-large" type="text" id="licName" placeholder="Short license name"/>
+                            </div>
+                            <label class="control-label" for="licLongName">Long Name</label>
+
+                            <div class="controls">
+                                <input class="input-large" type="text" id="licLongName" placeholder="License full name"/>
+                            </div>
+                            <label class="control-label" for="licURL">URL</label>
+
+                            <div class="controls">
+                                <input class="input-large" type="text" id="licURL"
+                                       placeholder="License url (not mandatory)"/>
+                            </div>
+                            <label class="control-label" for="licComments">Comments</label>
+
+                            <div class="controls">
+                                <input class="input-large" type="text" id="licComments"
+                                       placeholder="Comments (not mandatory)"/>
+                            </div>
+                            <label class="control-label" for="licRegexp">Regexp</label>
+
+                            <div class="controls">
+                                <input class="input-large" type="text" id="licRegexp" placeholder="Regexp (not mandatory)"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="createLicCloseBtn" type="button" class="btn btn-default" data-dismiss="modal">Close
+                        </button>
+                        <button id="createLicSaveBtn" type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Modal License Edition -->
+
+
+        <div class="modal fade" id="editLicdModal" tabindex="-1" role="dialog" aria-labelledby="editLicModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="editLicModalLabel">Edit the license</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+
+                            <div id="editCorpId" class="col-sm-10">
+                                <span id="oldCorpId">oldname here</span>
+                                <input type="text" class="form-control"
+                                       name="corpId" placeholder="Enter the corrected name"/>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="updateLicCloseBtn" type="button" class="btn btn-default" data-dismiss="modal">Close
+                        </button>
+                        <button id="updateLicSaveBtn" type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<!-- Delete license Model -->
+        <div class="modal fade" id="deleteLicModal" tabindex="-1" role="dialog" aria-labelledby="deleteLicModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="deleteLicModalLabel">Remove License from the System</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+
+                            <P>Warning deleteing the organization is a a permanent action and cannot be undone.</P>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="delLicCancelBtn" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button id="delLicProceedBtn" type="button" class="btn btn-primary">Proceed</button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Navigation Tabs  -->
+    <div class="row row-2">
+        <div class="container-fluid">
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="active"><a data-toggle="tab" href="#licOverview">Overview</a></li>
+                <li role="presentation"><a data-toggle="tab" href="#productList">Products</a></li>
+                <li role="presentation"><a data-toggle="tab" href="#moduleList">Modules</a></li>
+                <li role="presentation"><a data-toggle="tab" href="#artifactList">Artifacts</a></li>
+                <li role="presentation"><a data-toggle="tab" href="#licAdmin">License Admin</a></li>
+            </ul>
+
+            <!-- Navigation Tab views -->
+            <div class="tab-content">
+            <!-- Overview Tab -->
+                <div id="licOverview" class="tab-pane fade in active">
+                    <h3 id="licId"></h3>
+
+                    <p id="licInfo">Please chose an License in the search box above to see an overview.</p>
+
+                    <div id="licAdminTable" class="col-md-6"></div>
+                    <div class="col-sm-3 col-md-6">
+                        <button id="editLic" type="button" class="btn btn-danger btn-sm" style="display:none">
+                            Edit Lic
+                        </button>
+                        <button id="saveLic" type="button" class="btn btn-danger btn-sm" style="display:none">
+                            Save Lic
+                        </button>
+
+                        <button id="deleteLicBtn" type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+                                data-target="#deleteLicModal" style="display:none">
+                            Delete the license
+                        </button>
+                    </div>
+
+                    <div id="orgProducts" class="col-md-6">This can have somethng else here?</div>
+                </div>
+
+             <!-- Admin tab -->
+                <div id="licAdmin" class="tab-pane fade">
+                    <h3>Admin Tab</h3>
+
+                    <p>Should only see this tab if you have the correct rights
+                        don't break things!</p>
+
+                    <div id="licenseOverviewTable" class="col-md-6"></div>
+                                   </div>
+
+            <!-- Product List View (all products the use the license) -->
+                <div id="productList" class="tab-pane fade">
+                    <h3>Dropdown 1</h3>
+
+                    <p>Please chose an organization in the search box above to see an overview.
+
+                        This will show us all the modules that use this license and will have clickable links to the module overview</p>
+                </div>
+
+            <!-- Artifact List View (all the artifacts that use the license) -->
+                <div id="artifactList" class="tab-pane fade">
+                    <h3>Dropdown 1</h3>
+
+                    <p>Please chose an organization in the search box above to see an overview.
+
+                        
+                        This will show us all the modules that use this license and will have clickable links to the module overview</p>
+                </div>
+
+            <!-- Module list view (all modules that us the license) -->
+                <div id="moduleList" class="tab-pane fade">
+                    <h3>Dropdown 1</h3>
+
+                    <p>Please chose an organization in the search box above to see an overview.
+
+                        This will show us all the modules that use this license and will have clickable links to the module overview.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="/assets/libs/jquery-1.11.3/jquery-1.11.3.min.js"></script>
+<script src="/assets/libs/b335/js/bootstrap.min.js"></script>
+<script src="/assets/js/fuse.min.js"></script>
+<script src="/assets/js/fuzzyDropdown.min.js"></script>
+<script src="/assets/js/webapp/license.js"></script>
+
+</body>
+</html>

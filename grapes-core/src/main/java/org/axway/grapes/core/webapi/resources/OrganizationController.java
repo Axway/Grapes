@@ -99,6 +99,9 @@ public class OrganizationController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/{name}")
     public Result get(@PathParameter("name") final String name) {
         LOG.info("Got a get organization request.");
+        if(name.equals("names")){
+           return getNames();
+        }
         try {
             final Organization dbOrganization = organizationService.getOrganization(name);
             return ok(dbOrganization).json();
@@ -179,6 +182,7 @@ public class OrganizationController extends DefaultController {
 
     /**
      * todo done but should use regex
+     * todo had to change from body to path param for corpids
      * Remove an existing Corporate GroupId from an organization.
      *
      * @param organizationId  String organization name.
@@ -186,9 +190,9 @@ public class OrganizationController extends DefaultController {
      * @return Result
      */
     @Authenticated("grapes-authenticator")
-    @Route(method = HttpMethod.DELETE, uri = "/{name}" + ServerAPI.GET_CORPORATE_GROUPIDS)
-    public Result removeCorporateGroupIdPrefix(@PathParameter("name") final String organizationId, @Body final String corporateGroupId) {
-        LOG.info("Got an remove a corporate groupId prefix request for organization " + organizationId + ".");
+    @Route(method = HttpMethod.DELETE, uri = "/{name}" + ServerAPI.GET_CORPORATE_GROUPIDS+"/{corpId}")
+    public Result removeCorporateGroupIdPrefix(@PathParameter("name") final String organizationId, @PathParameter("corpId") final String corporateGroupId) {
+        LOG.info("Got an remove a corporate groupId prefix "+ corporateGroupId+" request for organization " + organizationId + ".");
         if (!session("roles").contains(String.valueOf(Credential.AvailableRoles.DATA_UPDATER))) {
             return ok().status(Result.UNAUTHORIZED);
         }
