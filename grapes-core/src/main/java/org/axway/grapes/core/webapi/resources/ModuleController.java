@@ -8,6 +8,8 @@ import org.axway.grapes.core.handler.DataUtils;
 import org.axway.grapes.core.options.FiltersHolder;
 import org.axway.grapes.core.options.filters.CorporateFilter;
 import org.axway.grapes.core.reports.DependencyReport;
+import org.axway.grapes.core.reports.PromotionReport;
+import org.axway.grapes.core.reports.ReportToJson;
 import org.axway.grapes.core.service.ArtifactService;
 import org.axway.grapes.core.service.DependencyService;
 import org.axway.grapes.core.service.ModuleService;
@@ -62,6 +64,8 @@ public class ModuleController extends DefaultController {
     DataUtils dataUtils;
     @View("ModuleResourceDocumentation")
     Template ModuleResourceDocumentation;
+    @Requires
+    ReportToJson reportToJson;
 
     /**
      * @return the welcome page
@@ -353,8 +357,8 @@ public class ModuleController extends DefaultController {
         final String moduleId = Module.generateID(name, version);
         //todo the below method
         final DependencyReport report = dependencyService.getDependencyReport(moduleId, filters);
-        // return ok(report);
-        return ok("todo");
+         return ok(report);
+        //return ok("todo");
     }
 
     /**
@@ -458,10 +462,15 @@ public class ModuleController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/{name}/{version}" + ServerAPI.PROMOTION + ServerAPI.GET_REPORT)
     public Result getPromotionStatusReport(@PathParameter("name") final String name, @PathParameter("version") final String version) {
         LOG.info("Got a get promotion report request.");
-//        final String moduleId = Module.generateID(name, version);
-//        final PromotionReportView promotionReportView =moduleService.getPromotionReport(moduleId);
-//        return ok(promotionReportView);
-        return ok("todo");
+
+        final String moduleId = Module.generateID(name, version);
+        final FiltersHolder filters = new FiltersHolder();
+        filters.init(context().parameters());
+        final PromotionReport promotionReport =moduleService.getPromotionReport(moduleId, filters);
+        reportToJson.promotionReportToJson(promotionReport);
+
+      return ok(reportToJson.promotionReportToJson(promotionReport));
+        //return ok("todo");
     }
 
     /**

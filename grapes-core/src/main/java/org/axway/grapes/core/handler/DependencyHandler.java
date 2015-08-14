@@ -62,7 +62,10 @@ public class DependencyHandler implements DependencyService {
                 // final Dependency dependency = modelMapper.getDependency(dbDependency, module.getName(), module.getVersion());
                 dependencies.add(dependency);
                 if (filters.getDepthHandler().shouldGoDeeper(depth)) {
+                    LOG.error("checking on dependencie: "+dependency.generateSourceID()+" for target "+dependency.getTarget());
                     final Module dependencyModule = moduleService.getRootModuleOf(dependency.getTarget());
+                    //todo if rootmodual is the same as original module no need to recall this
+                    LOG.error(" the root modal for this dependencie is "+dependencyModule);
                     dependencies.addAll(getModuleDependencies(dependencyModule, filters, depth + 1, doneModuleIds));
                 }
             }

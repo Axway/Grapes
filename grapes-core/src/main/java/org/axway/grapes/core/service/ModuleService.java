@@ -1,6 +1,7 @@
 package org.axway.grapes.core.service;
 
 import org.axway.grapes.core.options.FiltersHolder;
+import org.axway.grapes.core.reports.PromotionReport;
 import org.axway.grapes.model.datamodel.Artifact;
 import org.axway.grapes.model.datamodel.License;
 import org.axway.grapes.model.datamodel.Module;
@@ -45,5 +46,5 @@ public interface ModuleService {
     List<Module> getAncestors(Artifact artifact, FiltersHolder filters);
 
     Organization getMatchingOrganization(Module module);
-    //TODO PromotionReportView getPromotionReport(String moduleId);
+     PromotionReport getPromotionReport(String moduleId, FiltersHolder filters);
 }

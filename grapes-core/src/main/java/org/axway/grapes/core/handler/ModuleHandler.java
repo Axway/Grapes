@@ -3,15 +3,27 @@ package org.axway.grapes.core.handler;
 import com.google.common.collect.Lists;
 import org.apache.felix.ipojo.annotations.Requires;
 import org.axway.grapes.core.options.FiltersHolder;
+import org.axway.grapes.core.options.filters.CorporateFilter;
+import org.axway.grapes.core.options.filters.PromotedFilter;
+import org.axway.grapes.core.reports.PromotionReport;
+import org.axway.grapes.core.reports.ReportToJson;
+import org.axway.grapes.core.service.DependencyService;
 import org.axway.grapes.core.webapi.utils.JongoUtils;
 import org.axway.grapes.core.service.ArtifactService;
 import org.axway.grapes.core.service.MiscService;
 import org.axway.grapes.core.service.ModuleService;
 import org.axway.grapes.core.service.OrganizationService;
+import org.axway.grapes.jongo.datamodel.DbArtifact;
+import org.axway.grapes.jongo.datamodel.DbDependency;
+import org.axway.grapes.jongo.datamodel.DbModule;
 import org.axway.grapes.model.datamodel.Artifact;
+import org.axway.grapes.model.datamodel.DataModelFactory;
+import org.axway.grapes.model.datamodel.Dependency;
 import org.axway.grapes.model.datamodel.License;
 import org.axway.grapes.model.datamodel.Module;
 import org.axway.grapes.model.datamodel.Organization;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wisdom.api.annotations.Model;
 import org.wisdom.api.annotations.Service;
 import org.wisdom.api.model.Crud;
@@ -29,7 +41,7 @@ import java.util.Set;
  */
 @Service
 public class ModuleHandler implements ModuleService {
-
+    private static final Logger LOG = LoggerFactory.getLogger(ModuleHandler.class);
     @Model(value = Module.class)
     private Crud<Module, String> moduleCrud;
     @Model(value = Organization.class)
@@ -38,6 +50,8 @@ public class ModuleHandler implements ModuleService {
     private Crud<Artifact, String> artifactCrud;
     @Requires(optional = true)
     private ArtifactService artifactService;
+    @Requires(optional = true)
+    private DependencyService dependencyService;
 
 
 
@@ -169,7 +183,11 @@ public class ModuleHandler implements ModuleService {
     public Module getRootModuleOf(final String gavc) {
         System.out.println(JongoUtils.generateQuery("has", gavc));
         Module module = moduleCrud.findOne(new MongoFilter<Module>(JongoUtils.generateQuery("has", gavc)));
-        return module;
+        Module module2 = moduleCrud.findOne(new MongoFilter<Module>(JongoUtils.generateQuery("uses", gavc)));
+        LOG.error("INSDIE FIND ROOT for: "+gavc+". Found in has "+module +" found in use "+module2);
+
+            return module;
+
 //        return datastore.getCollection(DbCollections.DB_MODULES)
 //                .findOne(JongoUtils.generateQuery(DbModule.HAS_DB_FIELD, gavc))
 //                .as(DbModule.class);
@@ -201,44 +219,47 @@ public class ModuleHandler implements ModuleService {
 
     }
 
-    /*  public PromotionReportView getPromotionReport(final String moduleId) {
-        final DependencyHandler depHandler = new DependencyHandler(repositoryHandler);
-        final ModelMapper modelMapper = new ModelMapper(repositoryHandler);
+      public PromotionReport getPromotionReport(final String moduleId, FiltersHolder filters) {
+        //fitlers passed in from context?scopeTest=true&scopeRuntime=true&showThirdparty=true&showCorporate=false&showSources=false&showLicenses=true&fullRecursive=true
         final Module module = getModule(moduleId);
         final Organization organization = getOrganization(module);
 
 
-        final PromotionReportView report = new PromotionReportView();
-        report.setRootModule(DataModelFactory.createModule(module.getName(), module.getVersion()));
+        final PromotionReport report = new PromotionReport();
+        report.setRootModule(module);
 
-        if(!report.isSnapshot()) {
+        if(!report.isSnapshot()) {//should have some sort of semantic versioning flag because they can be promoted as snapshots
             // filters initialization
-            final FiltersHolder filters = new FiltersHolder();
-            filters.addFilter(new PromotedFilter(false));
-            filters.addFilter(new CorporateFilter(organization));
+//            final FiltersHolder filters = new FiltersHolder();
+//           filters.addFilter(new PromotedFilter(false));
+//           filters.addFilter(new CorporateFilter(organization));
 
             // Checks if each dependency module has been promoted
-            for (Dependency dependency : depHandler.getModuleDependencies(moduleId, filters)) {
-                final DbModule depModule = repositoryHandler.getRootModuleOf(dependency.getTarget().getGavc());
+            for (Dependency dependency : dependencyService.getModuleDependencies(moduleId, filters)) {
+                final Module depModule = getRootModuleOf(dependency.getTarget());
                 if (depModule != null && !depModule.getId().equals(moduleId)) {
                     if (!depModule.isPromoted()) {
                         report.addUnPromotedDependency(depModule.getId());
-                        report.addDependencyPromotionReport(depModule.getId(), getPromotionReport(depModule.getId()));
+                        report.addDependencyPromotionReport(depModule.getId(), getPromotionReport(depModule.getId(),filters));
                     }
                 }
             }
 
             // Checks if the module has dependencies that shouldn't be used
             final List<String> treatedArtifacts = new ArrayList<String>();
-            for (DbDependency dependency : DataUtils.getAllDbDependencies(module)) {
-                final DbArtifact artifactDep = repositoryHandler.getArtifact(dependency.getTarget());
+
+            for (Dependency dependency : dataUtils.getAllDbDependencies(module)) {
+                final Artifact artifactDep = artifactService.getArtifact(dependency.getTarget());
+                LOG.error(" artifact DONOTUSE:::: "+artifactDep.getGavc()+"  "+artifactDep.getDoNotUse());
 
                 if (artifactDep == null) {
                     // handle the case of a corporate artifact which is not available in the repository
                     continue;
                 }
+                LOG.error("if: "+artifactDep.getDoNotUse()+"  "+!treatedArtifacts.contains(artifactDep.getGavc()));
                 if (artifactDep.getDoNotUse() && !treatedArtifacts.contains(artifactDep.getGavc())) {
-                    report.addDoNotUseArtifact(modelMapper.getArtifact(artifactDep));
+                    LOG.error("made it into the if");
+                    report.addDoNotUseArtifact(artifactDep);
                     treatedArtifacts.add(artifactDep.getGavc());
                 }
             }
@@ -247,7 +268,7 @@ public class ModuleHandler implements ModuleService {
         report.compute();
 
         return report;
-    }*/
+    }
 
     @Override
 
