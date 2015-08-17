@@ -1,32 +1,13 @@
-/* Makes the button change color while active*/
-.btn.active {
-	background-color: #FFFFFF;
-	color: #000000;
-}
-/* Makes alert close to navigation bar*/
-.navbar {
-margin-bottom: 0px;
-}
+
 
 /* Background design*/
 body {
-	/*Comes from http://ie.microsoft.com/testdrive/graphics/cssgradientbackgroundmaker/ */
 
-	/* IE10 Consumer Preview */ 
-    background-image: -ms-linear-gradient(left, #FFFFFF 0%, #C9CFEF 100%);
+}
 
-    /* Mozilla Firefox */
-    background-image: -moz-linear-gradient(left, #FFFFFF 0%, #C9CFEF 100%);
 
-    /* Opera */
-    background-image: -o-linear-gradient(left, #FFFFFF 0%, #C9CFEF 100%);
+.grapesTableHeader {
 
-    /* Webkit (Safari/Chrome 10) */
-    background-image: -webkit-gradient(linear, left top, right top, color-stop(0, #FFFFFF), color-stop(1, #C9CFEF));
-
-    /* Webkit (Chrome 11+) */
-    background-image: -webkit-linear-gradient(left, #FFFFFF 0%, #C9CFEF 100%);
-
-    /* W3C Markup, IE10 Release Preview */
-    background-image: linear-gradient(to right, #FFFFFF 0%, #C9CFEF 100%);
+    color: rgb(13, 19, 131);
+    font-size: large
 }
