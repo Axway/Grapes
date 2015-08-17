@@ -7,6 +7,13 @@ var GrapesProduct = {
         var selectedproduct = "";
         //set list of product names
         GrapesCommons.getRestResources(GrapesProductUrls.listNames, GrapesProductViews.setProductList);
+        GrapesCommons.setIsAdmin();
+        if (GrapesCommons.getIsAdmin()){
+            $(GrapesProductHtmlRefs.createProductBtn).show();//todo this should show up before having to choose a product
+        }
+        else{
+           $(GrapesProductHtmlRefs.createProductBtn).hide();
+        }
 //todo should check the size of the list if empty write error msg and stop
         $(GrapesProductHtmlRefs.productList).click(function () {
             selectedproduct = $("#productList option:selected").text();
@@ -31,7 +38,7 @@ var GrapesProduct = {
     },
     reloadPage: function () {
         //todo need to fix the relaod page
-        GrapesCommons.getRestResources(GrapesProductUrls.listNames, GrapesProductViews.setproductList);
+        GrapesCommons.getRestResources(GrapesProductUrls.listNames, GrapesProductViews.setProductList);
         if ($(document.body).data("productName") === undefined) {
             GrapesCommons.load();//todo no longer defined put this in grapes commons
         } else {
@@ -89,6 +96,7 @@ var GrapesProductHtmlRefs = {
     delProceedBtn: "#delProceedBtn",
     addModuleBtn: "#addModuleBtn",
     addDeliveryBtn: "#addDeliveryBtn",
+    createProductBtn: "#createProductBtn",
 
     createProductName: "#createProductName",
     productModuleSection: "#productModuleSection",
@@ -222,6 +230,7 @@ var GrapesProductViews = {
             $(GrapesProductHtmlRefs.addDeliveryNameInput).show();
             $("#moduleList").show();
             $(GrapesProductHtmlRefs.addModuleBtn).show();
+
         }
     },
     createModuleChoiceList: function (jsonData) {
@@ -266,8 +275,12 @@ var GrapesProductTabOverview = {
         $(GrapesProductHtmlRefs.productId).text(json._id);
         $(document.body).data("productModules", json.modules);
 
-        table.append("<thead><tr><td>" + tabletitle + "</td> </tr></thead>");
-        table.append("<tr><td>Module Names</td><td></td></tr>");
+        var title = $("<thead><tr><td>" + tabletitle + "</td> </tr></thead>");
+        title.addClass("grapesTableTitle");
+        table.append(title);
+        var heading = $("<tr><td>Module Names</td><td></td></tr>");
+        heading.addClass("grapesTableHeader");
+        table.append(heading);
 
         //create a table listing all modules in a product
         $.each(json.modules, function (key, val) {
@@ -288,8 +301,9 @@ var GrapesProductTabOverview = {
 
         //create a table of all deliveries for a modal
         var row = "<tr/>";
-
-        table.append("<tr><td>Delivery Information</td> </tr>");
+        var heading2 = $("<tr><td>Delivery Information</td> </tr>");
+        heading2.addClass("grapesTableHeader");
+        table.append(heading2);
         $.each(json.deliveries, function (key, val) {
             console.log("key", key, " value ", val);
 
