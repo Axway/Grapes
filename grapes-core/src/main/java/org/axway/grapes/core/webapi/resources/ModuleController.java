@@ -36,6 +36,7 @@ import org.wisdom.api.http.Result;
 import org.wisdom.api.security.Authenticated;
 import org.wisdom.api.templates.Template;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.net.URLEncoder;
 
 /**
  * Created by jennifer on 4/28/15.
@@ -150,14 +152,21 @@ public class ModuleController extends DefaultController {
             return ok(moduleNames).json();
         }
         LOG.info("Got a get module name request. redirecting to versions :" + name);
-        //todo the redirect doesnt work none of the paramerts are carried over so maybe make a second method that passes the params?
-        getVersions(name);
-        return redirect("/module/" + name + "/versions");
+
+        try {
+
+
+            return redirect("/module/" + URLEncoder.encode(name,"UTF-8") + "/versions");
+        } catch (UnsupportedEncodingException e) {
+            return ok(e.getMessage()).json();
+        }
+
+
     }
 
     /**
      * REDIRECTS TO HERE
-     * todo done how ever the redirect to here doesnt work
+     * 
      * Return a list versions for a module, stored in Grapes, depending on the filters passed in the query parameters.
      * This method is call via GET <dm_url>/module/<name>/versions.
      *

@@ -139,6 +139,7 @@ public class ModuleHandler implements ModuleService {
     public List<String> getModuleVersions(String name, FiltersHolder filters) {
         final Map<String, Object> params = filters.getModuleFieldsFilters();
         params.put("name",name);
+        LOG.error("WTF!!!!!!"+JongoUtils.generateQuery(params));
  Iterable<Module> list = moduleCrud.findAll(new MongoFilter<Module>(JongoUtils.generateQuery(params)));
         Set<String> listOfVersions = new HashSet<>();
         if (Lists.newArrayList(list).isEmpty()) {
