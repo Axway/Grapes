@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html layout:decorator="layoutpage">
+<html layout:decorator="layoutpage" xmlns="http://www.w3.org/1999/html">
 
 <head lang="en">
     <meta charset="utf-8"/>
@@ -38,22 +38,18 @@
         <div class="col-sm-3 col-md-6">
 
             <!--artifactList-->
-            <select class="form-control" id="artifactGroupIdsList">
+           <label class="col-sm-3 col-md-6" id="artifactGroupIdsListLabel">Group Id: <select class="form-control optionHeader" id="artifactGroupIdsList">
                 <option value="1">None Found
                 </option>
-            </select>
-            <select class="form-control" id="artifactIdsList" style="display: none">
+            </select></label>
+            <label class="col-sm-3 col-md-6" id="artifactIdsListLabel">Artifact Id:<select class="form-control optionHeader" id="artifactIdsList" style="display: none">
                 <option value="1">None Found
                 </option>
-
-
-            </select>
-            <select class="form-control" id="artifactVersionsList" style="display: none">
+           </select></label>
+           <label class="col-sm-3 col-md-6" id="artifactVersionsListLabel">Version:<select class="form-control optionHeader" id="artifactVersionsList" style="display: none">
                 <option value="1">None Found
                 </option>
-
-
-            </select>
+            </select></label>
 
 
         </div>
@@ -180,7 +176,7 @@
                         <div id="artAdminTable" class="col-md-6"></div></div>
                     <div id="artLicTable" class="col-md-6"></div>
                 </div>
-                
+
 
 
 

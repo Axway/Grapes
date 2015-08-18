@@ -102,9 +102,9 @@ var GrapesArtifactUrls = {
 var GrapesArtifactViews = {
     setArtifactGroupIdsList: function (jsonData) {
 
-        var option = '';
+        var option = '<option value="false" >Choose a Group ID</option>';
         for (var i = 0; i < jsonData.length; i++) {
-            option += '<option value="' + jsonData[i] + '">' + jsonData[i] + '</option>';
+            option += '<option class="grapesOptionSelect value="' + jsonData[i] + '">' + jsonData[i] + '</option>';
         }
         $('#artifactGroupIdsList').empty().append(option);
 
@@ -112,33 +112,35 @@ var GrapesArtifactViews = {
     },
     setArtifactVersionsList: function (jsonData) {
         var list = [];
-        var option = '';
+        var option = '<option value="false" >Choose a Version</option>';
         for (var i = 0; i < jsonData.length; i++) {
             list.push(jsonData[i].version);
 
         }
         $.unique(list);
         for (i = 0; i < list.length; i++) {
-            option += '<option value="' + list[i] + '">' + list[i] + '</option>';
+            option += '<option class="grapesOptionSelect value="' + list[i] + '">' + list[i] + '</option>';
         }
         $('#artifactVersionsList').empty().append(option);
         $('#artifactVersionsList').show();
+        $('#artifactVersionsListLabel').show();
 
         return;
     },
     setArtifactIdsList: function (jsonData) {
         var list = [];
-        var option = '';
+        var option = '<option value="false" >Choose an Artifact ID</option>';
         for (var i = 0; i < jsonData.length; i++) {
             list.push(jsonData[i].artifactId);
 
         }
         $.unique(list);
         for (i = 0; i < list.length; i++) {
-            option += '<option value="' + list[i] + '">' + list[i] + '</option>';
+            option += '<option class="grapesOptionSelect value="' + list[i] + '">' + list[i] + '</option>';
         }
         $('#artifactIdsList').empty().append(option);
         $('#artifactIdsList').show();
+        $('#artifactIdsListLabel').show();
 
         return;
     },
@@ -282,30 +284,44 @@ var GrapesArtifact = {
 
         //list on click function
         $('#artifactGroupIdsList').click(function () {
-            selectedGroupId = $("#artifactGroupIdsList option:selected").text();
+            $("#artifactIdsList").hide();
+            $("#artifactVersionsList").hide();
+            $("#artifactIdsListLabel").hide();
+            $("#artifactVersionsListLabel").hide();
+            selectedGroupId = $("#artifactGroupIdsList option:selected").val();
             $(document.body).data("artifactGroupId", selectedGroupId);
             //retrieve information on the organization selected from the list.
-            GrapesCommons.getRestResources(GrapesArtifactUrls.artifactIds(selectedGroupId), GrapesArtifactViews.setArtifactIdsList);
-        });
+
+            if(selectedGroupId !=="false"){
+                GrapesCommons.getRestResources(GrapesArtifactUrls.artifactIds(selectedGroupId), GrapesArtifactViews.setArtifactIdsList);
+            }
+           });
 
         //list on click function
         $('#artifactIdsList').click(function () {
-            var selectedArt = $("#artifactIdsList option:selected").text();
+
+            $("#artifactVersionsList").hide();
+            $("#artifactVersionsListLabel").hide();
+            var selectedArt = $("#artifactIdsList option:selected").val();
             $(document.body).data("artifactId", selectedArt);
             console.log("the path we look for is: " + GrapesArtifactUrls.artifactVersions($(document.body).data("artifactGroupId"), selectedArt));
             //retrieve information on the organization selected from the list.
-            GrapesCommons.getRestResources(GrapesArtifactUrls.artifactVersions($(document.body).data("artifactGroupId"), selectedArt), GrapesArtifactViews.setArtifactVersionsList);
+                if(selectedArt !=="false") {
+                    GrapesCommons.getRestResources(GrapesArtifactUrls.artifactVersions($(document.body).data("artifactGroupId"), selectedArt), GrapesArtifactViews.setArtifactVersionsList);
+                }
         });
 
         //list on click function
         $('#artifactVersionsList').click(function () {
-            var selectedArtVersion = $("#artifactVersionsList option:selected").text();
+            var selectedArtVersion = $("#artifactVersionsList option:selected").val();
             $(document.body).data("artifactVersion", selectedArtVersion);
             console.log("end path is : " + GrapesArtifactUrls.artifactGav($(document.body).data("artifactGroupId"),
                 $(document.body).data("artifactId"), selectedArtVersion));
             //retrieve information on the organization selected from the list.
-            GrapesCommons.getRestResources(GrapesArtifactUrls.artifactGav($(document.body).data("artifactGroupId"),
-                $(document.body).data("artifactId"), selectedArtVersion), GrapesArtifactViews.createArtifactViews);
+                if(selectedArtVersion !=="false") {
+                    GrapesCommons.getRestResources(GrapesArtifactUrls.artifactGav($(document.body).data("artifactGroupId"),
+                        $(document.body).data("artifactId"), selectedArtVersion), GrapesArtifactViews.createArtifactViews);
+                }
         });
         //initialize button handlers
         $('#updateArtifactSaveBtn').click(GrapesArtifactHandlers.saveArtifact);
