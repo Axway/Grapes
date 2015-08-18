@@ -13,7 +13,9 @@ var GrapesModule = {
         GrapesCommons.getRestResources(ModuleUrls.listNames, GrapesModuleViews.setModuleList);
 
         $('#moduleList').click(function () {
+            $("#moduleVersionList").hide();
             selectedModule = $("#moduleList option:selected").text();
+
             $(document.body).data("moduleName", selectedModule);
             //retrieve the version numbers fro the module list.
             //todo should either display the first version in the list automaticall or clear the page and put a message to
@@ -69,18 +71,18 @@ var GrapesModuleHandlers = {
 var GrapesModuleViews = {
     setModuleList: function (jsonData) {
 
-        var option = '';
+        var option = '<option value="0" >Choose a Module</option>';
         for (var i = 0; i < jsonData.length; i++) {
-            option += '<option value="' + jsonData[i] + '">' + jsonData[i] + '</option>';
+            option += '<option class="grapesOptionSelect" value="' + jsonData[i] + '">' + jsonData[i] + '</option>';
         }
         $('#moduleList').empty().append(option);
 
 
     },
     createModuleVersionList: function (jsonData) {
-        var option = '';
+        var option = '<option value="0" >Choose a Version</option>';
         for (var i = 0; i < jsonData.length; i++) {
-            option += '<option value="' + jsonData[i] + '">' + jsonData[i] + '</option>';
+            option += '<option class="grapesOptionSelect value="' + jsonData[i] + '">' + jsonData[i] + '</option>';
         }
         $('#moduleVersionList').empty().append(option).show();
 
@@ -111,7 +113,9 @@ var GrapesModuleTabOverview = {
         var moduleId = document.getElementById("moduleId");
         var table = $("<table/>").addClass(' table table-striped');
         $("#moduleId").text(json.name);
-        table.append("<thead><tr><td>" + tabletitle + "</td> </tr></thead>");
+        var title = $("<thead><tr><td>" + tabletitle + "</td> </tr></thead>");
+        title.addClass("grapesTableTitle");
+        table.append(title);
 
         $.each(json, function (key, val) {
             if (key !== "_id") {

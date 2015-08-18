@@ -8,6 +8,17 @@ body {
 
 .grapesTableHeader {
 
-    color: rgb(13, 19, 131);
+    color: #0D1383;
     font-size: large
+}
+
+
+option.grapesOptionSelect {
+    background-color: white;
+
+    color:#555}
+
+select.optionHeader {
+    color:#337AB7;
+    font-weight: bold;
 }

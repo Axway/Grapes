@@ -166,7 +166,7 @@ public class ModuleController extends DefaultController {
 
     /**
      * REDIRECTS TO HERE
-     * 
+     *
      * Return a list versions for a module, stored in Grapes, depending on the filters passed in the query parameters.
      * This method is call via GET <dm_url>/module/<name>/versions.
      *
