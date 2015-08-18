@@ -81,7 +81,9 @@ function createOverviewTab(json) {
     var orgId = document.getElementById("orgId");
     var table = $("<table/>").addClass(' table table-striped');
     $("#orgId").text(json.name);
-    table.append("<thead><tr><td>" + tabletitle + "</td> </tr></thead>");
+    var title = $("<thead><tr><td>" + tabletitle + "</td> </tr></thead>");
+    title.addClass("grapesTableHeader");
+    table.append(title);
 
     $.each(json.corporateGroupIdPrefixes, function (key, val) {
         var row = $("<tr/>").append("<td/>").text(val).append(getActionBarForExtensionOrgs(json.name, val));
@@ -106,12 +108,12 @@ function getActionBarForExtensionOrgs(orgName, corpId) {
     var bar = $("<div></div>").addClass("bundle-action-bar pull-right").addClass("btn-toolbar").attr("role",
         "toolbar");
     var inner = $("<div></div>").addClass("btn-group");
-    var uninstall = $("<button type=\"button\" class=\"btn btn-default btn-xs\"><span class=\"glyphicon glyphicon-remove\"></span></button>");
+    var uninstall = $("<button type=\"button\" class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-remove\"></span></button>");
     uninstall.click(function () {
         GrapesCommons.deleteRestResource(OrgUrls.getCorpIdUrl(orgName, corpId), reloadOrgPage, orgName);
 
     });
-    var extupdate = $("<button type=\"button\" class=\"btn btn-default btn-xs\" data-toggle=\"modal\" data-target=\"#corpIdModal\"><span class=\"glyphicon glyphicon-repeat\"></span></button>");
+    var extupdate = $("<button type=\"button\" class=\"btn btn-primary btn-xs\" data-toggle=\"modal\" data-target=\"#corpIdModal\"><span class=\"glyphicon glyphicon-pencil\"></span></button>");
     extupdate.click(function () {
         updateCorpId(corpId, orgName)
     });

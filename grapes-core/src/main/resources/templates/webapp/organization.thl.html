@@ -18,6 +18,7 @@
     <!-- Custom styles for this template -->
     <link href="/assets/dashboard.css" rel="stylesheet"/>
 
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -48,9 +49,11 @@
 
 
         <div class="col-sm-3 col-md-4">
-            <button id="createOrgBtn" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#orgModal">
-            Create new Organization
-        </button></div>
+            <button id="createOrgBtn" type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+                    data-target="#orgModal">
+                Create new Organization
+            </button>
+        </div>
 
 
         <!-- Modal -->
@@ -58,7 +61,8 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title" id="myModalLabel">Create new organization</h4>
                     </div>
                     <div class="modal-body">
@@ -66,26 +70,28 @@
 
                             <div id="createOrgName" class="col-sm-10">
                                 <input type="text" class="form-control"
-                                        name="orgname" placeholder="Enter the name of the New Organization"/>
+                                       name="orgname" placeholder="Enter the name of the New Organization"/>
                                 <input type="text" class="form-control"
                                        name="corpidlist" placeholder="Enter corps"/>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button id="creatOrgCloseBtn" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="creatOrgCloseBtn" type="button" class="btn btn-default" data-dismiss="modal">Close
+                        </button>
                         <button id="createOrgSaveBtn" type="button" class="btn btn-primary">Save changes</button>
                     </div>
                 </div>
             </div>
         </div>
 
-
+        <!--Create corp Id-->
         <div class="modal fade" id="corpIdModal" tabindex="-1" role="dialog" aria-labelledby="coperateIdModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title" id="coperateIdModalLabel">Edit the corporate id</h4>
                     </div>
                     <div class="modal-body">
@@ -100,59 +106,77 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button id="updateOrgCloseBtn" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="updateOrgCloseBtn" type="button" class="btn btn-default" data-dismiss="modal">
+                            Close
+                        </button>
                         <button id="updateOrgSaveBtn" type="button" class="btn btn-primary">Save changes</button>
                     </div>
                 </div>
             </div>
         </div>
-
+        <!--Delete Organization Modal-->
         <div class="modal fade" id="deleteOrgModal" tabindex="-1" role="dialog" aria-labelledby="deleteOrgModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title" id="deleteOrgModalLabel">Remove Organization from the System</h4>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
 
-                           <P>Warning deleting the organization is a a permanent action and cannot be undone.</P>
+                            <P>Warning deleting the organization is a permanent action and cannot be undone.</P>
 
-                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button id="delOrgCancelBtn" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button id="delOrgProceedBtn" type="button" class="btn btn-primary">Proceed</button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="delOrgCancelBtn" type="button" class="btn btn-default" data-dismiss="modal">Cancel
+                    </button>
+                    <button id="delOrgProceedBtn" type="button" class="btn btn-primary">Proceed</button>
                 </div>
             </div>
+        </div>
 
-
+        <!--Info Row-->
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <p id="pageInfoMsg">This is where information messages will show up </p>
+        </div>
+        <div class="col-md-4">
+            <button id="deleteOrgBtn" type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+                    data-target="#deleteOrgModal" style="display:none">
+                Delete the organization
+            </button>
+        </div>
     </div>
 
     <div class="row row-2">
         <div class="container-fluid">
             <ul class="nav nav-tabs">
                 <li role="presentation" class="active"><a data-toggle="tab" href="#orgOverview">Overview</a></li>
-              </ul>
+            </ul>
 
-            <div class="tab-content">
+            <div class="tab-content col-md-12">
                 <div id="orgOverview" class="tab-pane fade in active">
                     <h3 id="orgId"></h3>
+
                     <p id="orgInfo">Please chose an organization in the search box above to see an overview.</p>
-                    <button id="deleteOrgBtn" type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteOrgModal" style="display:none">
-                        Delete the organization
-                    </button>
-                    <div class="modal-footer" id="addCorpIdform" style="display:none">
+
+                    <div id="oversection1" class="col-md-6">
+                    <div class="input-group" id="addCorpIdform" style="display:none">
                         <input type="text" class="form-control"
                                name="addCorpId" placeholder="Enter the new Corp Id"/>
-                        <button id="addOrgCorpIdBtn" type="button" class="btn btn-primary" >add</button>
+                         <span class="input-group-btn">
+                        <button id="addOrgCorpIdBtn" type="button" class="btn btn-primary">add</button>
+                             </span>
                     </div>
 
-                    <div id="corpIdTable" class="col-md-6"></div>
-                    <div id="orgProducts" class="col-md-6"></div>
+                    <div id="corpIdTable" class="col-md-8"></div>
+                    <div id="orgProducts" class="col-md-8"></div>
+                    </div>
                 </div>
 
 
