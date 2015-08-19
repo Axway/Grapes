@@ -129,6 +129,7 @@
             <version>0.9.1</version>
         </dependency>
 
+
     </dependencies>
 
     <dependencyManagement>
@@ -189,6 +190,22 @@
                 <artifactId>wisdom-maven-plugin</artifactId>
                 <version>0.9.1</version>
                 <extensions>true</extensions>
+            </plugin>
+            <plugin>
+                <groupId>org.wisdom-framework</groupId>
+                <artifactId>wisdom-raml-maven-plugin</artifactId>
+                <version>0.9.1</version>
+                <configuration>
+                    <baseUri>http://localhost:9000/</baseUri>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>create-raml-spec</id>
+                        <goals>
+                            <goal>create-raml</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>

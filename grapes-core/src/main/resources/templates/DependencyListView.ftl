@@ -10,9 +10,9 @@
         <link rel="shortcut icon" type="image/x-icon" href="assets/img/grapes_small.gif"/>
 
 		<!-- Bootstrap -->
-		<link href="/public/twitter-bootstrap-2.3.2/css/bootstrap.css" rel="stylesheet">
-		<link href="/public/twitter-bootstrap-2.3.2/css/bootstrap-responsive.css" rel="stylesheet">
-		<link href="/public/twitter-bootstrap-2.3.2/css/docs.css" rel="stylesheet">
+		<link href="/assets/libs/twitter-bootstrap-2.3.2/css/bootstrap.css" rel="stylesheet">
+		<link href="/assets/libs/twitter-bootstrap-2.3.2/css/bootstrap-responsive.css" rel="stylesheet">
+		<link href="/assets/libs/twitter-bootstrap-2.3.2/css/docs.css" rel="stylesheet">
 
 		<!-- Grapes css -->
 		<link href="/assets/css/grapes.css" rel="stylesheet">
@@ -22,7 +22,7 @@
     <body>
 
         <div class="row-fluid">
-            <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar navbar navbar-fixed-top">
                 <div class="navbar-inner">
                     <div class="container">
                         <a class="brand active" href="/">Grapes</a>
@@ -38,12 +38,7 @@
                                         <li><a tabindex="-1" href="/license">License API</a></li>
                                     </ul>
                                 </li>
-                                <li class="">
-                                    <a href="/sequoia">Sequoïa</a>
-                                </li>
-                                <li class="">
-                                    <a href="/webapp">Data Browser</a>
-                                </li>
+
                             </ul>
                         </div>
                     </div>
@@ -86,8 +81,8 @@
 	 </body>
 
     <!-- Make the table sortable -->
-    <script src="/public/jquery-1.9.1/jquery.js"></script>
-    <script src="/public/jquery-tablesorter-1.10.2/jquery.tablesorter.min.js"></script>
+    <script src="/assets/libs/jquery-1.9.1/jquery.js"></script>
+    <script src="/assets/libs/jquery-tablesorter-1.10.2/jquery.tablesorter.min.js"></script>
     <script type="text/javascript">
         $(function(){
           $('.sortable').tablesorter();
