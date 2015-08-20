@@ -14,20 +14,23 @@ var GrapesModule = {
 
         $('#moduleList').click(function () {
             $("#moduleVersionList").hide();
-            selectedModule = $("#moduleList option:selected").text();
+            selectedModule = $("#moduleList option:selected").val();
+
 
             $(document.body).data("moduleName", selectedModule);
             //retrieve the version numbers fro the module list.
-            //todo should either display the first version in the list automaticall or clear the page and put a message to
-            //todo to choose the version
-            GrapesCommons.getRestResources(ModuleUrls.module(selectedModule), GrapesModuleViews.createModuleVersionList);
+           if(selectedModule!="false") {
+               GrapesCommons.getRestResources(ModuleUrls.module(selectedModule), GrapesModuleViews.createModuleVersionList);
+           }
         });
 
         $('#moduleVersionList').click(function () {
-            var selectedModuleVersion = $("#moduleVersionList option:selected").text();
+            var selectedModuleVersion = $("#moduleVersionList option:selected").val();
             $(document.body).data("moduleVersion", selectedModuleVersion);
             //retrieve the version numbers fro the module list.
-            GrapesCommons.getRestResources(ModuleUrls.modulePlusVersionUrl(selectedModule, selectedModuleVersion), GrapesModuleViews.createViews);
+            if(selectedModuleVersion != "false") {
+                GrapesCommons.getRestResources(ModuleUrls.modulePlusVersionUrl(selectedModule, selectedModuleVersion), GrapesModuleViews.createViews);
+            }
         });
 
 
@@ -71,7 +74,7 @@ var GrapesModuleHandlers = {
 var GrapesModuleViews = {
     setModuleList: function (jsonData) {
 
-        var option = '<option value="0" >Choose a Module</option>';
+        var option = '<option value="false" >Choose a Module</option>';
         for (var i = 0; i < jsonData.length; i++) {
             option += '<option class="grapesOptionSelect" value="' + jsonData[i] + '">' + jsonData[i] + '</option>';
         }
@@ -80,7 +83,7 @@ var GrapesModuleViews = {
 
     },
     createModuleVersionList: function (jsonData) {
-        var option = '<option value="0" >Choose a Version</option>';
+        var option = '<option value="false" >Choose a Version</option>';
         for (var i = 0; i < jsonData.length; i++) {
             option += '<option class="grapesOptionSelect value="' + jsonData[i] + '">' + jsonData[i] + '</option>';
         }
@@ -118,16 +121,45 @@ var GrapesModuleTabOverview = {
         table.append(title);
 
         $.each(json, function (key, val) {
-            if (key !== "_id") {
+            if (key !== "_id" && key!== "has" && key!=="uses"
+                && key!=="dataModelVersion" && key!=="submodules" && key!=="buildInfo") {
                 var col1 = $("<td>").text(key);
                 var col2 = $("<td>").text(val);
                 var row = $("<tr/>").append(col1).append(col2);
                 table.append(row);
             }
+            if(key === "submodules" || key==="buildInfo"){
+                var col1 = $("<td>").text(key);
+                console.log("subs and builds:");
+                console.log(val);
+                GrapesModuleTabOverview.createSubmoduleInfo(val, table);
+            }
         })
         $("#moduleOverviewTable").empty().append(table);
         $("#moduleInfo").hide();
         GrapesModuleViews.showAdminElements();
+    },
+    createSubmoduleInfo: function(submodule,table){
+        console.log("omg I am a function!");
+        console.log(submodule);
+        $.each(submodule, function (key, val) {
+            $.each(val, function(k,v){
+                console.log("inside recursive"+k+v);
+                if (k === "name" || v=== "version") {
+
+                    var col1 = $("<td>").text("submodule "+k);
+                    var col2 = $("<td>").text(v);
+                    var row = $("<tr/>").append(col1).append(col2);
+                    table.append(row);
+                }
+                if(k === "submodules" || k==="buildInfo"){
+                    GrapesModuleTabOverview.createSubmoduleInfo(v, table);
+                    console.log(v);
+                }
+            })
+
+
+        })
     }
 }
 
