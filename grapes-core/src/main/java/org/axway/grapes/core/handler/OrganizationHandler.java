@@ -150,7 +150,7 @@ public class OrganizationHandler implements OrganizationService {
     @Override
     //todo
     public Organization getMatchingOrganization(Module module) {
-        System.out.println("get matching org: "+module.getOrganization());
+
 
             if(module.getOrganization() != null
                     && !module.getOrganization().isEmpty()){
@@ -158,19 +158,19 @@ public class OrganizationHandler implements OrganizationService {
             }
 
             for(Organization organization: getAllOrganizations()){
-                System.out.println("inside org list: "+organization.getName());
+
 
                 List<String> gavcs = dataUtils.getAllArtifactsGavcs(module);
                 Set<Artifact> artifacts = dataUtils.getAllArtifacts(gavcs);
                 final CorporateFilter corporateFilter = new CorporateFilter(organization);
-                System.out.println("corperate filter? "+corporateFilter.matches(module));
+
                 boolean b;
                 if(artifacts.isEmpty()) {
                    b = corporateFilter.evaluate(module.getId());
                 } else{
                     b=   corporateFilter.evaluate(artifacts.iterator().next().getGavc());
                     }
-                System.out.println("b is: "+b);
+
                 if(b){
                 //if(corporateFilter.matches(module)){
                     return organization;

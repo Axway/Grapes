@@ -37,23 +37,23 @@ public class ScopeHandler {
      */
     //    public void init(final MultivaluedMap<String, String> queryParameters) {
         public void init(final Map<String, List<String>> queryParameters) {
-            System.out.println("inside scope");
+           ;
             final List<String> scopeCompileParam = queryParameters.get(ServerAPI.SCOPE_COMPILE_PARAM);
-            System.out.println("inside scope1");
+
             if(scopeCompileParam != null){
                 this.scopeComp = Boolean.valueOf(scopeCompileParam.get(0));
             }
-            System.out.println("inside scope2");
+
             final List<String> scopeProvidedParam = queryParameters.get(ServerAPI.SCOPE_PROVIDED_PARAM);
             if(scopeProvidedParam != null){
                 this.scopePro = Boolean.valueOf(scopeProvidedParam.get(0));
             }
-            System.out.println("inside scope3");
+
             final List<String> scopeRuntimeParam = queryParameters.get(ServerAPI.SCOPE_RUNTIME_PARAM);
             if(scopeRuntimeParam != null){
                 this.scopeRun = Boolean.valueOf(scopeRuntimeParam.get(0));
             }
-            System.out.println("inside scope4");
+
             final List<String> scopeTestParam = queryParameters.get(ServerAPI.SCOPE_TEST_PARAM);
             if(scopeTestParam != null){
                 this.scopeTest = Boolean.valueOf(scopeTestParam.get(0));

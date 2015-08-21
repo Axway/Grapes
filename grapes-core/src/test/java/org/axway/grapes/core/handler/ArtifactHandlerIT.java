@@ -330,8 +330,7 @@ public class ArtifactHandlerIT extends WisdomTest {
         moduleService.store(module);
         final Organization gotOrganization = artifactService.getOrganization(artifact);
         assertThat(gotOrganization).isNotNull();
-        System.out.println(organization.getName());
-        System.out.println(gotOrganization.getName());
+
         assertThat(organization.getName()).isEqualTo(gotOrganization.getName());
     }
 

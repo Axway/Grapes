@@ -11,7 +11,7 @@ var GrapesCommons = {
                 callback(jsonData);
             })
             .fail(function (jsonData) {
-                this.stuffFailed(jsonData);
+                GrapesCommons.stuffFailed(jsonData);
                 console.log("we failed to retrieve the resource should have a call back method for failures" + url);
             })
             .always(function () {

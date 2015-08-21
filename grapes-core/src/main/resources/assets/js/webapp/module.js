@@ -26,6 +26,7 @@ var GrapesModule = {
 
         $('#moduleVersionList').click(function () {
             var selectedModuleVersion = $("#moduleVersionList option:selected").val();
+            //console.log("made it here");
             $(document.body).data("moduleVersion", selectedModuleVersion);
             //retrieve the version numbers fro the module list.
             if(selectedModuleVersion != "false") {
@@ -40,14 +41,12 @@ var GrapesModule = {
 var GrapesModuleHandlers = {
     createModule: function () {
         //todo check handler because unknow should default to true?
-        console.log("save stuff");
         var licName = $('#createNewLicense').find('input[id="licName"]').val();
         var licLongName = $('#createNewLicense').find('input[id="licLongName"]').val();
         var licUrl = $('#createNewLicense').find('input[id="licURL"]').val();
         var licComments = $('#createNewLicense').find('input[id="licComments"]').val();
         var licRegexp = $('#createNewLicense').find('input[id="licRegexp"]').val();
 
-        console.log("I am empty?", licName, licLongName, licUrl, licComments, licRegexp);
 
         if (!licName || licName.length === 0
             || !licLongName || licLongName.length === 0) {
@@ -91,6 +90,7 @@ var GrapesModuleViews = {
 
     },
     createViews: function (jsonData) {
+        //console.log("inside create veiws");
         var moduleName = $(document.body).data("moduleName");
         var moduleVersion = $(document.body).data("moduleVersion")
         GrapesModuleTabOverview.createTab(jsonData);
@@ -102,7 +102,6 @@ var GrapesModuleViews = {
     showAdminElements: function () {
         GrapesCommons.setIsAdmin();
         if (GrapesCommons.getIsAdmin()) {
-            console.log("show damnit");
             //todo show stuff here
         }
 
@@ -112,6 +111,7 @@ var GrapesModuleViews = {
 
 var GrapesModuleTabOverview = {
     createTab: function (json) {
+
         var tabletitle = "Module Information";
         var moduleId = document.getElementById("moduleId");
         var table = $("<table/>").addClass(' table table-striped');
@@ -121,18 +121,24 @@ var GrapesModuleTabOverview = {
         table.append(title);
 
         $.each(json, function (key, val) {
-            if (key !== "_id" && key!== "has" && key!=="uses"
-                && key!=="dataModelVersion" && key!=="submodules" && key!=="buildInfo") {
+            //console.log("inside create ov tab if one");
+            //&& key!== "has" && key!=="uses"
+            alert(key);
+            if (key !== "_id" && key!=="dataModelVersion" && key!=="submodules" && key!=="buildInfo") {
+                //console.log("but really wtf");
                 var col1 = $("<td>").text(key);
                 var col2 = $("<td>").text(val);
                 var row = $("<tr/>").append(col1).append(col2);
                 table.append(row);
+
             }
-            if(key === "submodules" || key==="buildInfo"){
+            //console.log("inside create ov tab if two");
+            if(key === "submodules" ){
                 var col1 = $("<td>").text(key);
-                console.log("subs and builds:");
-                console.log(val);
                 GrapesModuleTabOverview.createSubmoduleInfo(val, table);
+            }
+            if (key==="buildInfo"){
+
             }
         })
         $("#moduleOverviewTable").empty().append(table);
@@ -140,11 +146,9 @@ var GrapesModuleTabOverview = {
         GrapesModuleViews.showAdminElements();
     },
     createSubmoduleInfo: function(submodule,table){
-        console.log("omg I am a function!");
-        console.log(submodule);
         $.each(submodule, function (key, val) {
             $.each(val, function(k,v){
-                console.log("inside recursive"+k+v);
+
                 if (k === "name" || v=== "version") {
 
                     var col1 = $("<td>").text("submodule "+k);
@@ -154,7 +158,7 @@ var GrapesModuleTabOverview = {
                 }
                 if(k === "submodules" || k==="buildInfo"){
                     GrapesModuleTabOverview.createSubmoduleInfo(v, table);
-                    console.log(v);
+
                 }
             })
 
@@ -167,8 +171,8 @@ var GrapesModuleTabDependcies = {
     createTab: function (json) {
         //todo this should have links that are clickable that take you to the module page
         //todo should seperate 3rd party from in house
-        console.log("I should have a list of depen: " + json.length);
-        console.log(json);
+        //console.log("I should have a list of depen: " + json.length);
+        //console.log(json);
         if (json.length > 0) {
             var table = $('<table/>', {
                 class: "table table-striped",
@@ -187,8 +191,8 @@ var GrapesModuleTabDependcies = {
                 col3 = $("<td>").text(value.target);
                 col4 = $("<td>").text(value.scope);
                 row = $("<tr/>").append(col1).append(col2).append(col3).append(col4);
-                console.log(key + " " + value);
-                console.log("dep is " + value + value + value);
+                //console.log(key + " " + value);
+                //console.log("dep is " + value + value + value);
                 table.append(row);
             });
         }
@@ -203,10 +207,10 @@ var GrapesModuleTabDependcies = {
 }
 var GrapesModuleTabAncestors = {
     createTab: function (json) {
-        console.log("DID I MAKE IT HERE?????");
+        //console.log("DID I MAKE IT HERE?????");
         //todo this should have links that are clickable that take you to the module page
         //todo should seperate 3rd party from in house
-        console.log("I should have a list of ancestors: " + json.length + json);
+        //console.log("I should have a list of ancestors: " + json.length + json);
         if (json.length > 0) {
             var table = $('<table/>', {
                 class: "table table-striped",
@@ -222,8 +226,8 @@ var GrapesModuleTabAncestors = {
                 col2 = $("<td>").text(value);
                 col3 = $("<td>").text(value);
                 row = $("<tr/>").append(col1).append(col2).append(col3);
-                console.log(key + " " + value);
-                console.log("dep is " + value + value + value);
+                //console.log(key + " " + value);
+                //console.log("dep is " + value + value + value);
                 table.append(row);
             });
         }
@@ -236,7 +240,7 @@ var GrapesModuleTabAncestors = {
 
     processAncestors: function (jsonData) {
         //todo this should have links that are clickable that take you to the module page
-        console.log("I should have a list of anscrots: " + jsonData.length);
+        //console.log("I should have a list of anscrots: " + jsonData.length);
         if (jsonData.length > 0) {
             var table = $('<table/>', {
                 class: "table table-striped",
@@ -252,8 +256,8 @@ var GrapesModuleTabAncestors = {
                 col2 = $("<td>").text(value.name);
                 col3 = $("<td>").text(value.version);
                 row = $("<tr/>").append(col1).append(col2).append(col3);
-                console.log(key + " " + value);
-                console.log("ancestor is " + value.name + value + value.version);
+                //console.log(key + " " + value);
+                //console.log("ancestor is " + value.name + value + value.version);
                 table.append(row);
             });
         }
@@ -276,8 +280,8 @@ var GrapesModuleTabPromotionReport = {
         //    "doNotUseArtifacts" : "0"
         //todo this should have links that are clickable that take you to the module page
         //todo should seperate 3rd party from in house
-        console.log("I should have a promo report: " + json.length);
-        console.log(json);
+        //console.log("I should have a promo report: " + json.length);
+        //console.log(json);
         //if (json.length > 0) {
             $("#dependecyInfoMsg").text("");
             $("#3rdPartyDependencyList").text("");
@@ -297,8 +301,8 @@ var GrapesModuleTabPromotionReport = {
                 col2 = $("<td>").text(value);
 
                 row = $("<tr/>").append(col1).append(col2);
-                console.log(key + " " + value);
-                console.log("dep is " + value + value + value);
+                //console.log(key + " " + value);
+                //console.log("dep is " + value + value + value);
                 table.append(row);
             });
         //}
@@ -332,7 +336,7 @@ var ModuleUrls = {
         return this.root + "/" + encodeURIComponent(moduleName) + "/" + encodeURIComponent(moduleVersion) + "/ancestors";
     },
     modulePlusVersionUrl: function (moduleName, moduleVersion) {
-        console.log(this.root + "/" + encodeURIComponent(moduleName) + "/" + encodeURIComponent(moduleVersion));
+        //console.log(this.root + "/" + encodeURIComponent(moduleName) + "/" + encodeURIComponent(moduleVersion));
         return this.root + "/" + encodeURIComponent(moduleName) + "/" + encodeURIComponent(moduleVersion);
     },
     modulePromotionReport: function (moduleName, moduleVersion) {

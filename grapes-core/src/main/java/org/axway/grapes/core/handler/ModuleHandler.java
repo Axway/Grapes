@@ -64,17 +64,17 @@ public class ModuleHandler implements ModuleService {
 
     @Override
     public void store(Module module) {
-        System.out.println("module id: " + module.getId());
+
         final Module oldModule = moduleCrud.findOne(module.getId());
         // has to be done due to mongo limitation: https://jira.mongodb.org/browse/SERVER-267
         module.updateHasAndUse();
         if (oldModule == null) {
-            System.out.println("save new mod " + module.getId());
+
             moduleCrud.save(module);
             Module m = moduleCrud.findOne(module.getId());
-            System.out.printf("after save: " + m.getId());
+
         } else {
-            System.out.println("update exsisting");
+
             // let's keep the old build info and override with new values if any
             final Map<String, String> consolidatedBuildInfo = oldModule.getBuildInfo();
             consolidatedBuildInfo.putAll(module.getBuildInfo());
@@ -139,7 +139,7 @@ public class ModuleHandler implements ModuleService {
     public List<String> getModuleVersions(String name, FiltersHolder filters) {
         final Map<String, Object> params = filters.getModuleFieldsFilters();
         params.put("name",name);
-        LOG.error("WTF!!!!!!"+JongoUtils.generateQuery(params));
+//        LOG.error("WTF!!!!!!"+JongoUtils.generateQuery(params));
  Iterable<Module> list = moduleCrud.findAll(new MongoFilter<Module>(JongoUtils.generateQuery(params)));
         Set<String> listOfVersions = new HashSet<>();
         if (Lists.newArrayList(list).isEmpty()) {
@@ -182,16 +182,10 @@ public class ModuleHandler implements ModuleService {
     @Override
     //todo check
     public Module getRootModuleOf(final String gavc) {
-        System.out.println(JongoUtils.generateQuery("has", gavc));
+
         Module module = moduleCrud.findOne(new MongoFilter<Module>(JongoUtils.generateQuery("has", gavc)));
         Module module2 = moduleCrud.findOne(new MongoFilter<Module>(JongoUtils.generateQuery("uses", gavc)));
-        LOG.error("INSDIE FIND ROOT for: "+gavc+". Found in has "+module +" found in use "+module2);
-
             return module;
-
-//        return datastore.getCollection(DbCollections.DB_MODULES)
-//                .findOne(JongoUtils.generateQuery(DbModule.HAS_DB_FIELD, gavc))
-//                .as(DbModule.class);
     }
 
     @Override
@@ -251,15 +245,15 @@ public class ModuleHandler implements ModuleService {
 
             for (Dependency dependency : dataUtils.getAllDbDependencies(module)) {
                 final Artifact artifactDep = artifactService.getArtifact(dependency.getTarget());
-                LOG.error(" artifact DONOTUSE:::: "+artifactDep.getGavc()+"  "+artifactDep.getDoNotUse());
+//                LOG.error(" artifact DONOTUSE:::: "+artifactDep.getGavc()+"  "+artifactDep.getDoNotUse());
 
                 if (artifactDep == null) {
                     // handle the case of a corporate artifact which is not available in the repository
                     continue;
                 }
-                LOG.error("if: "+artifactDep.getDoNotUse()+"  "+!treatedArtifacts.contains(artifactDep.getGavc()));
+//                LOG.error("if: "+artifactDep.getDoNotUse()+"  "+!treatedArtifacts.contains(artifactDep.getGavc()));
                 if (artifactDep.getDoNotUse() && !treatedArtifacts.contains(artifactDep.getGavc())) {
-                    LOG.error("made it into the if");
+//                    LOG.error("made it into the if");
                     report.addDoNotUseArtifact(artifactDep);
                     treatedArtifacts.add(artifactDep.getGavc());
                 }

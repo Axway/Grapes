@@ -8,6 +8,7 @@ import org.axway.grapes.core.service.ModuleService;
 import org.axway.grapes.core.service.VersionsService;
 import org.axway.grapes.core.webapi.utils.JongoUtils;
 import org.axway.grapes.model.datamodel.Artifact;
+import org.axway.grapes.model.datamodel.Dependency;
 import org.axway.grapes.model.datamodel.License;
 import org.axway.grapes.model.datamodel.Module;
 import org.axway.grapes.model.datamodel.Organization;
@@ -23,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * Created by jennifer on 4/28/15.
@@ -35,6 +37,8 @@ public class ArtifactHandler implements ArtifactService {
     VersionsService versionsService;
     @Requires
     ModuleService moduleService;
+    @Requires
+    DataUtils dataUtils;
     @Model(value = Artifact.class)
     private Crud<Artifact, String> artifactCrud;
     @Model(value = License.class)
@@ -62,8 +66,7 @@ public class ArtifactHandler implements ArtifactService {
     //Todo need to think about what to do for licenses when they dont exist in the db but only in the artifact
     private void updateLicensesInDB(Artifact artifact) {
         for (String license : artifact.getLicenses()) {
-            if (licenseCrud.findOne(license) == null)
-            {
+            if (licenseCrud.findOne(license) == null) {
                 License newLicense = new License();
                 newLicense.setName(license);
                 newLicense.setUnknown(true);
@@ -176,18 +179,36 @@ public class ArtifactHandler implements ArtifactService {
 
     @Override
     //todo it only searches the uses field which is the dependencies and not the artifacts.
+    //todo this method should go in moduleshandler
     public List<Module> getAncestors(String gavc, FiltersHolder filters) {
-        LOG.error("inside get ancestors in artifact handler for gavc: "+gavc);
+//        LOG.error("inside get ancestors in artifact handler for gavc: " + gavc);
         Artifact artifact = getArtifact(gavc);
-        LOG.error("I should have an id: "+artifact.getGavc());
+//        LOG.error("I should have an id: " + artifact.getGavc());
         final Map<String, Object> queryParams = filters.getModuleFieldsFilters();
         queryParams.put("'uses'", artifact.getGavc());
-        LOG.error("query paramteres"+ JongoUtils.generateQuery(queryParams));
+//        LOG.error("query paramteres" + JongoUtils.generateQuery(queryParams));
         final Iterable<Module> results = moduleCrud.findAll(new MongoFilter<Module>(JongoUtils.generateQuery(queryParams)));
-
         final List<Module> ancestors = new ArrayList<>();
+        int count = 0;
         for (Module ancestor : results) {
+            count ++;
+//            LOG.error("count: "+count);
             ancestors.add(ancestor);
+//            LOG.error("added first ancestor"+ancestor.getId());
+            Set<Dependency> s = ancestor.getDependencies();
+            for (Dependency d : s) {
+//                LOG.error("list of dependency for this ancestor "+s.size());
+                if (gavc.equals(d.getTarget())) {
+//                    LOG.error("gavc is  " + gavc + " target is " + d.getTarget() + " source is " + d.getSource());
+                    Module module = moduleCrud.findOne(d.getSource());
+                    if(module!=null){
+                        for (final String artifactId : dataUtils.getAllArtifactsGavcs(module)) {
+                            ancestors.addAll(getAncestors(artifactId, filters));
+                    }
+
+                }
+            }
+        }
         }
         return ancestors;
     }

@@ -164,7 +164,7 @@ public class OrganizationController extends DefaultController {
     @Route(method = HttpMethod.POST, uri = "/{name}" + ServerAPI.GET_CORPORATE_GROUPIDS, accepts = {"text/plain", "application/json"})
     public Result addCorporateGroupIdPrefix(@PathParameter("name") final String organizationId, @Body String corporateGroupId) {
         LOG.info("Got an add a corporate groupId prefix request for organization " + organizationId + ".");
-        System.out.println("group is to add is " + corporateGroupId);
+
         if (!session("roles").contains(String.valueOf(Credential.AvailableRoles.DATA_UPDATER))) {
             return ok().status(Result.UNAUTHORIZED);
         }

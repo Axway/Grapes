@@ -40,6 +40,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -287,14 +288,13 @@ public class ModuleController extends DefaultController {
 //todo
             List<Artifact> artifacts = new ArrayList<>();
             Map<Module, List<Artifact>> ancestors = new HashMap<>();
-            System.out.println("artifact for this modules are: " + Lists.newArrayList(dataUtils.getAllArtifactsGavcs(module)));
-            System.out.println("has field is " + Lists.newArrayList(module.getHas()));
+
             //same as the has field
             for (final String artifactId : dataUtils.getAllArtifactsGavcs(module)) {
-                System.out.println("one artifact in the list : " + artifactId);
-                System.out.println("there are this many ancesotrs for this id: " + artifactService.getAncestors(artifactId, filters).size());
+
+                artifactService.getAncestors(artifactId,filters);
                 for (final Module dbAncestor : artifactService.getAncestors(artifactId, filters)) {
-                    System.out.println("one  ancestor for : " + artifactId + " is " + dbAncestor);
+
 //                if(!dbAncestor.getId().equals(module.getId())){
 //                    final Module ancestor = getModelMapper().getModule(dbAncestor);
 //                    view.addAncestor(ancestor, artifact);
@@ -312,6 +312,7 @@ public class ModuleController extends DefaultController {
 
     /**
      * todo done didnt check flags
+     *
      * Return a module dependency list.
      * This method is call via GET <dm_url>/module/<name>/<version>/dependencies
      *
@@ -342,9 +343,14 @@ public class ModuleController extends DefaultController {
         filters.init(context().parameters());
         final String moduleId = Module.generateID(name, version);
         Module module = moduleService.getModule(moduleId);
-        LOG.error("module"+moduleId);
+//        LOG.error("module"+moduleId);
+        Set<Dependency> s = new HashSet<>();
+        for(Dependency d :dependencyService.getModuleDependencies(moduleId, filters)){
+            s.add(d);
+        }
         List<Dependency> list = dependencyService.getModuleDependencies(moduleId, filters);
-        LOG.error("dep list legnth "+list.size());
+//        LOG.error("dep list legnth "+list.size());
+//        LOG.error("dep set legnth "+s.size());
         return ok(list).json();
     }
 

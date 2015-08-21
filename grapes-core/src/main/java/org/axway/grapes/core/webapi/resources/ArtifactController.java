@@ -120,7 +120,7 @@ public class ArtifactController extends DefaultController {
         Long stop = System.nanoTime();
         Long total = stop -start;
         double seconds = (double)total / 1000000000.0;
-        System.out.println("time is : "+seconds +" for "+gavcs.size()+" records");
+
         Collections.sort(gavcs);
         return ok(gavcs).json();
         //return ok();

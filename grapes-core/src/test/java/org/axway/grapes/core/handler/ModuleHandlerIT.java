@@ -282,6 +282,6 @@ public class ModuleHandlerIT extends WisdomTest {
         final Artifact artifact2fromdb = artifactService.getArtifact(artifact2.getGavc());
         dependency =artifactService.getArtifact(dependency.getGavc());
        List<Dependency> list= dependencyService.getModuleDependencies(module.getId(), new FiltersHolder());
-        System.out.println(list.get(0));
+
     }
 }
