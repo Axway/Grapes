@@ -3,6 +3,7 @@ package org.axway.grapes.core.handler;
 import org.apache.felix.ipojo.annotations.Requires;
 import org.axway.grapes.core.options.FiltersHolder;
 import org.axway.grapes.core.options.filters.CorporateFilter;
+import org.axway.grapes.core.reports.DepedencyReport2;
 import org.axway.grapes.core.reports.DependencyReport;
 import org.axway.grapes.core.service.ArtifactService;
 import org.axway.grapes.core.service.DependencyService;
@@ -74,18 +75,36 @@ public class DependencyHandler implements DependencyService {
     }
 
     @Override
-    public DependencyReport getDependencyReport(String moduleId, FiltersHolder filters) {
+    public DepedencyReport2 getDependencyReport(String moduleId, FiltersHolder filters) {
+        LOG.error("Inside get dependecny rrport");
         final Module module = moduleService.getModule(moduleId);
+        List<Dependency> dependencyList = getModuleDependencies(moduleId, filters);
+        LOG.error("list size is ");
         final Organization organization = moduleService.getOrganization(module);
         filters.setCorporateFilter(new CorporateFilter(organization));
-        final DependencyReport report = new DependencyReport(moduleId);
-        final List<String> done = new ArrayList<String>();
-        for (Module submodule : dataUtils.getAllSubmodules(module)) {
-            done.add(submodule.getId());
+        final DepedencyReport2 report = new DepedencyReport2();
+        for(Dependency dependency: dependencyList){
+           Artifact target= artifactService.getArtifact(dependency.getTarget());
+
+            report.addDependency(dependency,versionsService.getLastVersion(target,false),target);
         }
-        addModuleToReport(report, module, filters, done, 1);
+
+
         return report;
     }
+//    @Override
+//    public DependencyReport getDependencyReport(String moduleId, FiltersHolder filters) {
+//        final Module module = moduleService.getModule(moduleId);
+//        final Organization organization = moduleService.getOrganization(module);
+//        filters.setCorporateFilter(new CorporateFilter(organization));
+//        final DependencyReport report = new DependencyReport(moduleId);
+//        final List<String> done = new ArrayList<String>();
+//        for (Module submodule : dataUtils.getAllSubmodules(module)) {
+//            done.add(submodule.getId());
+//        }
+//        addModuleToReport(report, module, filters, done, 1);
+//        return report;
+//    }
 
     private void addModuleToReport(final DependencyReport report, final Module module, final FiltersHolder filters, final List<String> done, final int depth) {
         if (module == null || done.contains(module.getId())) {

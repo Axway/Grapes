@@ -16,4 +16,5 @@ public interface VersionsService {
    String getLastRelease(Collection<String> versions) throws NotHandledVersionException, IncomparableException;
 
    String getLastVersion(Collection<String> versions) throws NotHandledVersionException, IncomparableException;
+    String getLastVersion(Artifact artifact,boolean release);
 }

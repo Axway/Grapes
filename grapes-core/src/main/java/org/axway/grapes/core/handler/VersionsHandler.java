@@ -66,6 +66,20 @@ public class VersionsHandler implements VersionsService {
         return lastRelease.toString();
     }
 
+    public String getLastVersion(Artifact artifact,boolean release) {
+        System.out.println("did I make it to here?");
+        final List<String> versions = artifactService.getArtifactVersions(artifact);
+        final String currentVersion = artifact.getVersion();
+        try {
+            final String lastDevVersion = getLastVersion(versions);
+            final String lastReleaseVersion = getLastRelease(versions);
+            if (release){return lastReleaseVersion;}
+            else{ return lastDevVersion;}
+
+        } catch (Exception e) {
+            return "what happened?";
+        }
+    }
     public String getLastVersion(final Collection<String> versions)
             throws NotHandledVersionException, IncomparableException {
         Version lastVersion = null;

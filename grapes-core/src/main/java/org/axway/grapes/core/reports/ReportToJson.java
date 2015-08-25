@@ -31,4 +31,21 @@ public class ReportToJson {
         return jsonReport;
 //        return null;
     }
+    public ObjectNode dependencyReportToJson(DepedencyReport2 report){
+        ObjectNode jsonReportObject = json.newObject();
+        ObjectNode jsonReport = json.newObject();
+        for(DepedencyReport2.DependencyComplete dependencyComplete :report.getDependencies()){
+            jsonReportObject.put("groupId",dependencyComplete.groupId);
+            jsonReportObject.put("artifactId",dependencyComplete.artifactId);
+            jsonReportObject.put("currentVersion",dependencyComplete.currentVersion);
+            jsonReportObject.put("mostRecentVersion",dependencyComplete.mostRecentVersion);
+            jsonReportObject.put("doNotUse",dependencyComplete.doNotUse);
+            jsonReportObject.put("scope",dependencyComplete.Scope);
+            jsonReportObject.put("source",dependencyComplete.Source);
+
+            jsonReport.putArray("dependencies").addObject();
+        }
+
+        return jsonReportObject;
+    }
 }

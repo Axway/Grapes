@@ -97,6 +97,7 @@ var GrapesModuleViews = {
         GrapesCommons.getRestResources(ModuleUrls.module3rdPartyDependecies(moduleName, moduleVersion), GrapesModuleTabDependcies.createTab);
         GrapesCommons.getRestResources(ModuleUrls.moduleAncestors(moduleName, moduleVersion), GrapesModuleTabAncestors.createTab);
         GrapesCommons.getRestResources(ModuleUrls.modulePromotionReport(moduleName, moduleVersion), GrapesModuleTabPromotionReport.createTab);
+        GrapesCommons.getRestResources(ModuleUrls.moduleDependeciesReport(moduleName, moduleVersion), GrapesModuleTabDependencyReport.createTab);
 
     },
     showAdminElements: function () {
@@ -123,7 +124,7 @@ var GrapesModuleTabOverview = {
         $.each(json, function (key, val) {
             //console.log("inside create ov tab if one");
             //&& key!== "has" && key!=="uses"
-            alert(key);
+
             if (key !== "_id" && key!=="dataModelVersion" && key!=="submodules" && key!=="buildInfo") {
                 //console.log("but really wtf");
                 var col1 = $("<td>").text(key);
@@ -166,9 +167,60 @@ var GrapesModuleTabOverview = {
         })
     }
 }
+var GrapesModuleTabDependencyReport = {
+    createTab: function (json) {
+        //todo this should have links that are clickable that take you to the module page
+        //todo should seperate 3rd party from in house
+        //console.log("I should have a list of depen: " + json.length);
+        //console.log(json);
+        if (json.length > 0) {
+            var table = $('<table/>', {
+                class: "table table-striped",
+                id: "dependencyReportTable"
+            });
 
+            var col1 = $("<td>").text("");
+            var col2 = $("<td>").text("GroupId");
+            var col3 = $("<td>").text("ArtifactId");
+            var col4 = $("<td>").text("Current Version");
+            var col5 = $("<td>").text("Most recent Version");
+            var col6 = $("<td>").text("Do Not Use");
+            var col7 = $("<td>").text("scope");
+            var col8 = $("<td>").text("Source");
+            var row = $("<tr/>").append(col1).append(col2).append(col3).append(col4).append(col5).append(col6).append(col7).append(col8);
+            table.append(row);
+
+            $.each(json, function (key, value) {
+
+                col1 = $("<td>").text(key);
+                col2 = $("<td>").text(value.groupId);
+                col3 = $("<td>").text(value.artifactId);
+                col4 = $("<td>").text(value.currentVersion);
+                col5 = $("<td>").text(value.mostRecentVersion);
+                col6 = $("<td>").text(value.doNotUse);
+                col7 = $("<td>").text(value.Scope);
+                col8 = $("<td>").text(value.Source);
+
+                row = $("<tr/>").append(col1).append(col2).append(col3).append(col4).append(col5).append(col6).append(col7).append(col8);
+                if(value.doNotUse){
+                    row.attr("style","color:red");
+                }
+                //console.log(key + " " + value);
+                //console.log("dep is " + value + value + value);
+                table.append(row);
+            });
+        }
+        else {
+            $("#reportDependencyInfoMsg").text("There are no dependecies for this module");
+
+        }
+        //create tab view here
+        $("#dependencyReportList").empty().append(table);
+    }
+}
 var GrapesModuleTabDependcies = {
     createTab: function (json) {
+
         //todo this should have links that are clickable that take you to the module page
         //todo should seperate 3rd party from in house
         //console.log("I should have a list of depen: " + json.length);
@@ -330,6 +382,13 @@ var ModuleUrls = {
             + encodeURIComponent(moduleName) + "/"
             + encodeURIComponent(moduleVersion)
             + "/dependencies?scopeTest=true&scopeRuntime=true&showThirdparty=true&showCorporate=false&showSources=false&showLicenses=true&fullRecursive=true";
+    },
+    moduleDependeciesReport: function (moduleName, moduleVersion) {
+
+        return this.root + "/"
+            + encodeURIComponent(moduleName) + "/"
+            + encodeURIComponent(moduleVersion)
+            + "/dependencies/report?scopeTest=true&scopeRuntime=true&showThirdparty=true&showCorporate=false&showSources=false&showLicenses=true&fullRecursive=true";
     },
     moduleAncestors: function (moduleName, moduleVersion) {
 

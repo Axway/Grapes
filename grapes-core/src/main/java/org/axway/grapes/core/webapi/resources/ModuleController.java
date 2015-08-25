@@ -7,6 +7,7 @@ import org.axway.grapes.core.exceptions.DataValidationException;
 import org.axway.grapes.core.handler.DataUtils;
 import org.axway.grapes.core.options.FiltersHolder;
 import org.axway.grapes.core.options.filters.CorporateFilter;
+import org.axway.grapes.core.reports.DepedencyReport2;
 import org.axway.grapes.core.reports.DependencyReport;
 import org.axway.grapes.core.reports.PromotionReport;
 import org.axway.grapes.core.reports.ReportToJson;
@@ -371,8 +372,9 @@ public class ModuleController extends DefaultController {
         filters.init(context().parameters());
         final String moduleId = Module.generateID(name, version);
         //todo the below method
-        final DependencyReport report = dependencyService.getDependencyReport(moduleId, filters);
-         return ok(report);
+        final DepedencyReport2 report = dependencyService.getDependencyReport(moduleId, filters);
+
+         return ok(report.getDependencies()).json();
         //return ok("todo");
     }
 

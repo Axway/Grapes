@@ -154,5 +154,15 @@ public class DependencyReport  {
 
         return 0;
     }
+public class DependencyReportObject{
+    public String Name;
+    public String currentVersion;
+    public String mostRecentVersion;
+    public Boolean doNotUse;
+    public String Source;
+    public String Scope;
+        public  DependencyReportObject(){
 
+        }
+    }
 }

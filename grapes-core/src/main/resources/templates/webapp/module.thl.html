@@ -38,15 +38,19 @@
         <div class="col-sm-3 col-md-6">
            <label>Module :
             <select id="moduleList" class="optionHeader form-control">
-                <option value="1">None Found
+                <option value="false">Choose a Modal
                 </option>
+                <option value="false">com.peoplescorp.securetransactions.program:securetransaction-program-sdk-server-samples-pairationnotif
+
+                </option>
+
 
 
             </select>
             </label>
             <label>Version:
             <select class="optionHeader form-control" id="moduleVersionList" style="display : none">
-                <option value="1">None Found
+                <option value="false">None Found
                 </option>
                
 
@@ -198,7 +202,8 @@
                 <div id="moduleDependencyReport" class="tab-pane fade">
                     <h3>Module Dependency Report</h3>
 
-                    <p id="promotionDependencyInfoMsg"></p>
+                    <p id="reportDependencyInfoMsg"></p>
+                    <div id="dependencyReportList" class="col-md-12"></div>
 
                 </div>
 
