@@ -22,7 +22,7 @@ public class WebAppController extends DefaultController {
     private static final Logger LOG = LoggerFactory.getLogger(ArtifactController.class);
 
     @View("layoutpage")
-    Template webapp2;
+    Template webapp;
 
     @View("webapp/organization")
     Template organizationView;
@@ -39,7 +39,7 @@ public class WebAppController extends DefaultController {
     @View("webapp/artifact")
     Template artifactView;
 
-    @View("webApp2")
+    @View("webApp")
     Template webApp;
 
 
@@ -90,7 +90,7 @@ public class WebAppController extends DefaultController {
 @Route(method = HttpMethod.GET, uri = "/webapp")
 public Result welcome2() {
 
-    return ok(render(webapp2, "welcome", "Welcome to The New Grapes Under Construction!"));
+    return ok(render(webapp, "welcome", "Welcome to The New Grapes Under Construction!"));
 }
 
 }
