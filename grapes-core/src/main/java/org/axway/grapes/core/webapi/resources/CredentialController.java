@@ -20,7 +20,7 @@ import org.wisdom.monitor.service.MonitorExtension;
 public class CredentialController extends DefaultController implements MonitorExtension{
 
     private static final Logger LOG = LoggerFactory.getLogger(CredentialController.class);
-    @View("credentials")
+    @View("webapp/credentials")
     Template managecredentials;
 
     @Authenticated("Monitor-Authenticator")
