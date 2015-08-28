@@ -68,6 +68,10 @@ public class ArtifactController extends DefaultController {
         return ok(render(ArtifactResourceDocumentation, "welcome", "Welcome to The New Grapes Under Construction!"));
     }
 
+    @Route(method = HttpMethod.GET, uri = "/")
+    public Result welcome2() {
+        return welcome();
+    }
     /**
      * todo see todo below otherwise done
      * Post an artifact to the database.
@@ -103,6 +107,7 @@ public class ArtifactController extends DefaultController {
         }
         return ok().status(Result.CREATED);
     }
+
 
     /**
      * Gets a list of gavcs for all artifacts in the database.

@@ -38,16 +38,25 @@
         <div class="col-sm-3 col-md-6">
 
             <!--artifactList-->
-           <label class="col-sm-3 col-md-6" id="artifactGroupIdsListLabel">Group Id: <select class="form-control optionHeader" id="artifactGroupIdsList">
-                <option value="1">None Found
+           <label class="col-sm-3 col-md-12" id="artifactGroupIdsListLabel">Group Id: <select class="form-control optionHeader" id="artifactGroupIdsList">
+               <option value="false">Choose Group ID
+               </option>
+               <option value="false">None Found
                 </option>
             </select></label>
-            <label class="col-sm-3 col-md-6" id="artifactIdsListLabel">Artifact Id:<select class="form-control optionHeader" id="artifactIdsList" style="display: none">
-                <option value="1">None Found
+            <label class="col-sm-3 col-md-12" id="artifactIdsListLabel"
+                   style="display: none">Artifact Id:
+                <select class="form-control optionHeader" id="artifactIdsList" style="display: none">
+                <option value="false">Choose Artifact ID
+                </option>
+                <option value="false">None Found
                 </option>
            </select></label>
-           <label class="col-sm-3 col-md-6" id="artifactVersionsListLabel">Version:<select class="form-control optionHeader" id="artifactVersionsList" style="display: none">
-                <option value="1">None Found
+           <label class="col-sm-3 col-md-12" id="artifactVersionsListLabel" style="display: none">Version:
+               <select class="form-control optionHeader" id="artifactVersionsList" style="display: none">
+               <option value="false">Choose Version
+               </option>
+               <option value="false">None Found
                 </option>
             </select></label>
 
@@ -147,6 +156,8 @@
 
 
     </div>
+
+
 <!-- Navigation Tabs -->
     <div class="row row-2">
         <div class="container-fluid">

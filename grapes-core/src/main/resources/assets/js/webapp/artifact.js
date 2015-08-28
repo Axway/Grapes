@@ -33,7 +33,7 @@ var GrapesArtifactHandlers = {
     },
 
     updateArtifact: function () {
-        this.createArtifactUpdateModal();
+        GrapesArtifactHandlers.createArtifactUpdateModal();
         $('#editArt').hide();
         $('#artifactUpdateModal').show();
 

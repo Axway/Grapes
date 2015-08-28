@@ -39,6 +39,7 @@ public class ArtifactHandler implements ArtifactService {
     ModuleService moduleService;
     @Requires
     DataUtils dataUtils;
+
     @Model(value = Artifact.class)
     private Crud<Artifact, String> artifactCrud;
     @Model(value = License.class)
