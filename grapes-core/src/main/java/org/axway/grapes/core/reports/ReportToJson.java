@@ -21,7 +21,7 @@ public class ReportToJson {
     }
 
     public ObjectNode promotionReportToJson(PromotionReport report){
-          
+
        ObjectNode jsonReport = json.newObject();
         jsonReport.put("canBePromoted", report.canBePromoted());
         jsonReport.put("unPromoted", String.valueOf(report.getUnPromotedDependencies()));

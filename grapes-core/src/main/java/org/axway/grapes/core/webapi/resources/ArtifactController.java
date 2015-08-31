@@ -158,6 +158,7 @@ public class ArtifactController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = ServerAPI.GET_ALL)
     public Result getAll() {
         LOG.info("Got a get all artifact request.");
+        LOG.error("params"+ context().parameters());
         final FiltersHolder filters = new FiltersHolder();
         filters.init(context().parameters());
         final List<Artifact> artifacts = artifactService.getArtifacts(filters);
@@ -168,13 +169,13 @@ public class ArtifactController extends DefaultController {
     //todo the other one doest show organization info so why is it here?
     @Route(method = HttpMethod.GET, uri = "/{gavc}")
     public Result get(@PathParameter("gavc") String gavc) {
-        if(gavc.equalsIgnoreCase("groupids")){
+        if("groupids".equalsIgnoreCase(gavc)){
            return getGroupIds();
         }
-        else if(gavc.equalsIgnoreCase("gavcs")){
+        else if("gavcs".equalsIgnoreCase(gavc)){
            return getGavcs();
         }
-        else if (gavc.equalsIgnoreCase("all")){
+        else if ("all".equalsIgnoreCase(gavc)){
             return  getAll();
         }
 

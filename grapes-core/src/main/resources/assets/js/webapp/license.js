@@ -10,11 +10,12 @@ init: function () {
 console.log("Init Lic");
     var selectedLic = "";
     //set list of organization names
+
     GrapesCommons.getRestResources(LicenseUrls.listNames, GrapesLicenseView.setLicenseList);
     $('#LicenseList').click(function () {
         selectedLic = $("#LicenseList option:selected").text();
 
-
+        $(document.body).data("licId", selectedLic);
 
         //retrieve information on the organization selected from the list.
         GrapesCommons.getRestResources(LicenseUrls.license(selectedLic), GrapesLicenseView.createViews);
@@ -139,7 +140,8 @@ var GrapesLicenseView = {
 	createViews: function (jsonData) {
 
     GrapesLicenseTabOverview.createTab(jsonData);
-    return;
+       GrapesCommons.getRestResources(LicenseUrls.artifactsWithLicense($(document.body).data("licId")),GrapesLicenseTabArtifact.creatTab);
+
 }
 
 
@@ -243,7 +245,35 @@ var GrapesLicenseTabOverview = {
 
 }
 var GrapesLicenseTabArtifact = {
-	creatTab: function(){//todo
+	creatTab: function(json){
+        var tabletitle = "Artifacts that use this License";
+        var table = $("<table/>").addClass(' table table-striped');
+        $("#artLicList").text("");
+
+        var table = $('<table/>', {
+            class:"table table-striped",
+            id: "artifactLicTable"
+        });
+
+        table.append("<thead><tr><td>" + tabletitle + "</td></tr></thead>");
+
+
+
+        $.each(json, function (key, val) {
+
+                          var col1 = $("<td>").text(val);
+
+                    var row = $("<tr/>").append(col1);
+                    table.append(row);
+
+
+
+        });
+
+        $("#artifactsForLic").empty().append(table);
+
+
+
 		}
 }
 var GrapesLicenseTabModule = {
@@ -262,6 +292,9 @@ var LicenseUrls = {
         return "/license/" + encodeURIComponent(licName);
     },
     licenseApproval: function (licName, boolAprov) {//POST <dm_url>/license/<name>?approved=<boolean>
+    },
+    artifactsWithLicense: function (licName){
+        return "/artifact/gavcs?licenseId="+encodeURIComponent(licName);
     }
 }
 
