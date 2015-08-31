@@ -113,17 +113,17 @@ public  class DataUtils {
      * @return List<DbDependency>
      */
     public  List<Dependency> getAllDbDependencies(final Module module) {
-        LOG.info("whoo in data utiles getting dependecies");
+//        LOG.info("whoo in data utiles getting dependecies");
         final List<Dependency> dependencies = new ArrayList<Dependency>();
         dependencies.addAll(module.getDependencies());
-        LOG.info("here dependency list: " + Lists.newArrayList(dependencies));
-        LOG.info("subs list" + Lists.newArrayList(module.getSubmodules()));
+//        LOG.info("here dependency list: " + Lists.newArrayList(dependencies));
+//        LOG.info("subs list" + Lists.newArrayList(module.getSubmodules()));
         for(Module submodule: module.getSubmodules()){
-            LOG.error("for sub : " + submodule + " " + submodule.toString() + "depends: " + submodule.getDependencies() + " subs " + submodule.getSubmodules());
+//            LOG.error("for sub : " + submodule + " " + submodule.toString() + "depends: " + submodule.getDependencies() + " subs " + submodule.getSubmodules());
 
             dependencies.addAll(getAllDbDependencies(submodule));
         }
-    LOG.error("returning now: "+dependencies.toString());
+//    LOG.error("returning now: "+dependencies.toString());
         return dependencies;
     }
 

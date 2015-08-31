@@ -94,10 +94,10 @@ var GrapesModuleViews = {
         var moduleName = $(document.body).data("moduleName");
         var moduleVersion = $(document.body).data("moduleVersion")
         GrapesModuleTabOverview.createTab(jsonData);
-        GrapesCommons.getRestResources(ModuleUrls.module3rdPartyDependecies(moduleName, moduleVersion), GrapesModuleTabDependcies.createTab);
-        GrapesCommons.getRestResources(ModuleUrls.moduleAncestors(moduleName, moduleVersion), GrapesModuleTabAncestors.createTab);
+        //GrapesCommons.getRestResources(ModuleUrls.module3rdPartyDependecies(moduleName, moduleVersion), GrapesModuleTabDependcies.createTab);
+        //GrapesCommons.getRestResources(ModuleUrls.moduleAncestors(moduleName, moduleVersion), GrapesModuleTabAncestors.createTab);
         GrapesCommons.getRestResources(ModuleUrls.modulePromotionReport(moduleName, moduleVersion), GrapesModuleTabPromotionReport.createTab);
-        GrapesCommons.getRestResources(ModuleUrls.moduleDependeciesReport(moduleName, moduleVersion), GrapesModuleTabDependencyReport.createTab);
+        //GrapesCommons.getRestResources(ModuleUrls.moduleDependeciesReport(moduleName, moduleVersion), GrapesModuleTabDependencyReport.createTab);
 
     },
     showAdminElements: function () {
@@ -333,7 +333,7 @@ var GrapesModuleTabPromotionReport = {
         //todo this should have links that are clickable that take you to the module page
         //todo should seperate 3rd party from in house
         //console.log("I should have a promo report: " + json.length);
-        //console.log(json);
+        console.log(json);
         //if (json.length > 0) {
             $("#dependecyInfoMsg").text("");
             $("#3rdPartyDependencyList").text("");
@@ -403,7 +403,7 @@ var ModuleUrls = {
         return this.root + "/"
             + encodeURIComponent(moduleName) + "/"
             + encodeURIComponent(moduleVersion)
-            + "/promotion/report?scopeTest=true&scopeRuntime=true&showThirdparty=true&showCorporate=false&showSources=false&showLicenses=true&fullRecursive=true";
+            + "/promotion/report?scopeTest=true&scopeRuntime=true&showThirdparty=true&showCorporate=true&showSources=false&showLicenses=true&fullRecursive=true";
     }
 }
 

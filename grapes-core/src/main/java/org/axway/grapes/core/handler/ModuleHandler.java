@@ -107,8 +107,10 @@ public class ModuleHandler implements ModuleService {
     @Override
 
     public List<Module> getModules(FiltersHolder filters) {
+        System.out.println("query:"+JongoUtils.generateQuery(filters.getModuleFieldsFilters()));
         Iterable<Module> list = moduleCrud.findAll(
                 new MongoFilter<Module>(JongoUtils.generateQuery(filters.getModuleFieldsFilters())));
+        System.out.println(Lists.newArrayList(list).size());
         return Lists.newArrayList(list);
     }
 
@@ -180,11 +182,10 @@ public class ModuleHandler implements ModuleService {
         return module;
     }
     @Override
-    //todo check
     public Module getRootModuleOf(final String gavc) {
 
         Module module = moduleCrud.findOne(new MongoFilter<Module>(JongoUtils.generateQuery("has", gavc)));
-        Module module2 = moduleCrud.findOne(new MongoFilter<Module>(JongoUtils.generateQuery("uses", gavc)));
+
             return module;
     }
 
@@ -218,6 +219,7 @@ public class ModuleHandler implements ModuleService {
         //fitlers passed in from context?scopeTest=true&scopeRuntime=true&showThirdparty=true&showCorporate=false&showSources=false&showLicenses=true&fullRecursive=true
         final Module module = getModule(moduleId);
         final Organization organization = getOrganization(module);
+          System.out.println("organization is "+organization.getName());
 
 
         final PromotionReport report = new PromotionReport();
@@ -244,19 +246,17 @@ public class ModuleHandler implements ModuleService {
             final List<String> treatedArtifacts = new ArrayList<String>();
 
             for (Dependency dependency : dataUtils.getAllDbDependencies(module)) {
-                final Artifact artifactDep = artifactService.getArtifact(dependency.getTarget());
-//                LOG.error(" artifact DONOTUSE:::: "+artifactDep.getGavc()+"  "+artifactDep.getDoNotUse());
-
-                if (artifactDep == null) {
-                    // handle the case of a corporate artifact which is not available in the repository
-                    continue;
-                }
-//                LOG.error("if: "+artifactDep.getDoNotUse()+"  "+!treatedArtifacts.contains(artifactDep.getGavc()));
-                if (artifactDep.getDoNotUse() && !treatedArtifacts.contains(artifactDep.getGavc())) {
-//                    LOG.error("made it into the if");
+                try {
+                    final Artifact artifactDep = artifactService.getArtifact(dependency.getTarget());
+                    if (artifactDep.getDoNotUse() && !treatedArtifacts.contains(artifactDep.getGavc())) {
+                    LOG.error("made it into the if");
                     report.addDoNotUseArtifact(artifactDep);
                     treatedArtifacts.add(artifactDep.getGavc());
                 }
+                }catch (NoSuchElementException e){
+
+                }
+                LOG.error("omg I am null as I should be :p");
             }
         }
 

@@ -142,6 +142,7 @@ public class ModuleController extends DefaultController {
         if ("all".equalsIgnoreCase(name)) {
             LOG.info("Got a get all modules request.");
             final FiltersHolder filters = new FiltersHolder();
+            System.out.println(context().parameters());
             filters.init(context().parameters());
             final List<Module> modules = moduleService.getModules(filters);
             return ok(modules).json();
@@ -479,13 +480,12 @@ public class ModuleController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/{name}/{version}" + ServerAPI.PROMOTION + ServerAPI.GET_REPORT)
     public Result getPromotionStatusReport(@PathParameter("name") final String name, @PathParameter("version") final String version) {
         LOG.info("Got a get promotion report request.");
-
+        System.out.println("name: "+name+ " version "+version+" params: "+context().parameters());
         final String moduleId = Module.generateID(name, version);
         final FiltersHolder filters = new FiltersHolder();
         filters.init(context().parameters());
         final PromotionReport promotionReport =moduleService.getPromotionReport(moduleId, filters);
-        reportToJson.promotionReportToJson(promotionReport);
-
+        System.out.println("why?"+promotionReport.getPromotionPlan());
       return ok(reportToJson.promotionReportToJson(promotionReport));
         //return ok("todo");
     }

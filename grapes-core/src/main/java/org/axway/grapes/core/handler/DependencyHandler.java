@@ -21,6 +21,7 @@ import org.wisdom.api.annotations.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Created by jennifer on 4/28/15.
@@ -40,7 +41,7 @@ public class DependencyHandler implements DependencyService {
 
     @Override
     public List<Dependency> getModuleDependencies(String moduleId, FiltersHolder filters) {
-        LOG.error("inside of the level one get dependencies");
+
         final Module module = moduleService.getModule(moduleId);
         final Organization organization = moduleService.getOrganization(module);
         filters.setCorporateFilter(new CorporateFilter(organization));
@@ -49,24 +50,24 @@ public class DependencyHandler implements DependencyService {
 
     private List<Dependency> getModuleDependencies(final Module module, final FiltersHolder filters, final int depth, final List<String> doneModuleIds) {
         // Checks if the module has already been done
-        LOG.error("inside level two of get depe");
+
         if (module == null || doneModuleIds.contains(module.getId())) {
-            LOG.error("returnings empty list");
+//
             return Collections.<Dependency>emptyList();
         } else {
             doneModuleIds.add(module.getId());
         }
         final List<Dependency> dependencies = new ArrayList<Dependency>();
         for (Dependency dependency : dataUtils.getAllDbDependencies(module)) {
-            LOG.error(" should be in report ? "+dependency.getTarget()+" "+filters.shouldBeInReport(dependency));
+
             if (filters.shouldBeInReport(dependency)) {
-                // final Dependency dependency = modelMapper.getDependency(dbDependency, module.getName(), module.getVersion());
+
                 dependencies.add(dependency);
                 if (filters.getDepthHandler().shouldGoDeeper(depth)) {
-                    LOG.error("checking on dependencie: "+dependency.generateSourceID()+" for target "+dependency.getTarget());
+
                     final Module dependencyModule = moduleService.getRootModuleOf(dependency.getTarget());
                     //todo if rootmodual is the same as original module no need to recall this
-                    LOG.error(" the root modal for this dependencie is "+dependencyModule);
+
                     dependencies.addAll(getModuleDependencies(dependencyModule, filters, depth + 1, doneModuleIds));
                 }
             }
@@ -76,36 +77,23 @@ public class DependencyHandler implements DependencyService {
 
     @Override
     public DepedencyReport2 getDependencyReport(String moduleId, FiltersHolder filters) {
-        LOG.error("Inside get dependecny rrport");
+
         final Module module = moduleService.getModule(moduleId);
         List<Dependency> dependencyList = getModuleDependencies(moduleId, filters);
-        LOG.error("list size is ");
+
         final Organization organization = moduleService.getOrganization(module);
         filters.setCorporateFilter(new CorporateFilter(organization));
         final DepedencyReport2 report = new DepedencyReport2();
-        for(Dependency dependency: dependencyList){
-           Artifact target= artifactService.getArtifact(dependency.getTarget());
-
-            report.addDependency(dependency,versionsService.getLastVersion(target,false),target);
+        for(Dependency dependency: dependencyList) {
+            try {
+                Artifact target = artifactService.getArtifact(dependency.getTarget());
+                report.addDependency(dependency,versionsService.getLastVersion(target,false),target);
+            } catch (NoSuchElementException e){
+            LOG.error(e.getMessage());
         }
-
-
+        }
         return report;
     }
-//    @Override
-//    public DependencyReport getDependencyReport(String moduleId, FiltersHolder filters) {
-//        final Module module = moduleService.getModule(moduleId);
-//        final Organization organization = moduleService.getOrganization(module);
-//        filters.setCorporateFilter(new CorporateFilter(organization));
-//        final DependencyReport report = new DependencyReport(moduleId);
-//        final List<String> done = new ArrayList<String>();
-//        for (Module submodule : dataUtils.getAllSubmodules(module)) {
-//            done.add(submodule.getId());
-//        }
-//        addModuleToReport(report, module, filters, done, 1);
-//        return report;
-//    }
-
     private void addModuleToReport(final DependencyReport report, final Module module, final FiltersHolder filters, final List<String> done, final int depth) {
         if (module == null || done.contains(module.getId())) {
             return;
@@ -116,7 +104,7 @@ public class DependencyHandler implements DependencyService {
         }
     }
 
-    //todo need to create a report
+
     private void addDependenciesToReport(final DependencyReport report, final Dependency dbDependency, final FiltersHolder filters, final List<String> done, final int depth) {
         final Artifact artifact = artifactService.getArtifact(dbDependency.getTarget());
         if (artifact == null) {

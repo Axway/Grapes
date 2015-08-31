@@ -31,7 +31,7 @@ public class OrganizationFilter implements Filter {
     @Override
     public Map<String, Object> moduleFilterFields() {
         final Map<String, Object> fields = new HashMap<String, Object>();
-        fields.put("orginization", organization);
+        fields.put("organization", organization);
         return fields;
     }
 

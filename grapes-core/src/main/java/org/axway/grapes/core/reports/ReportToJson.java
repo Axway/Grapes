@@ -22,6 +22,7 @@ public class ReportToJson {
 
     public ObjectNode promotionReportToJson(PromotionReport report){
             LOG.error("make json report");
+        LOG.error("I should have things: "+report.getPromotionPlan());
        ObjectNode jsonReport = json.newObject();
         jsonReport.put("canBePromoted", report.canBePromoted());
         jsonReport.put("unPromoted", String.valueOf(report.getUnPromotedDependencies()));
