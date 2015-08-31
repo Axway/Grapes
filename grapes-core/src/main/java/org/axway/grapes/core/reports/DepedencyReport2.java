@@ -46,7 +46,7 @@ public class DepedencyReport2 {
         dependencyComplete.groupId = dependency.getGroupId();
         dependencyComplete.artifactId = dependency.getArtifactId();
         dependencyComplete.currentVersion = dependency.getVersion();
-        System.out.println("i am here atleast?");
+
         dependencyComplete.mostRecentVersion = lastVersion;
         dependencyComplete.doNotUse = dependency.getDoNotUse();
         dependencyComplete.Scope = scope;
@@ -62,23 +62,7 @@ public class DepedencyReport2 {
 
 
 
-    public String getLastVersion(final Artifact artifact){
-        System.out.println("and here?");
-//       final String version= versionsService.getLastVersion(artifact,true);
-//
-//        if(version == null){
-//            return "not available";
-//        }
-//
-//        return version;
-        return null;
-    }
-
-
-
-
-
-    public class DependencyComplete{
+      public class DependencyComplete{
         public String groupId;
         public String artifactId;
         public String currentVersion;

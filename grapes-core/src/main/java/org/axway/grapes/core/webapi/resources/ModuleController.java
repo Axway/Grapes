@@ -127,7 +127,7 @@ public class ModuleController extends DefaultController {
             return ok().status(Result.NOT_FOUND).render("The organization " + module.getOrganization() + " does not exist in the DB  but the model was created anyways muahahahah");
         }
     }
-    //todo is null when encoded encoding problem? : encoded as %3a
+
 
     /**
      * A method that redirects to prompt for a module version.
@@ -345,14 +345,13 @@ public class ModuleController extends DefaultController {
         filters.init(context().parameters());
         final String moduleId = Module.generateID(name, version);
         Module module = moduleService.getModule(moduleId);
-//        LOG.error("module"+moduleId);
+
         Set<Dependency> s = new HashSet<>();
         for(Dependency d :dependencyService.getModuleDependencies(moduleId, filters)){
             s.add(d);
         }
         List<Dependency> list = dependencyService.getModuleDependencies(moduleId, filters);
-//        LOG.error("dep list legnth "+list.size());
-//        LOG.error("dep set legnth "+s.size());
+
         return ok(list).json();
     }
 
@@ -376,7 +375,7 @@ public class ModuleController extends DefaultController {
         final DepedencyReport2 report = dependencyService.getDependencyReport(moduleId, filters);
 
          return ok(report.getDependencies()).json();
-        //return ok("todo");
+
     }
 
     /**
@@ -480,12 +479,12 @@ public class ModuleController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/{name}/{version}" + ServerAPI.PROMOTION + ServerAPI.GET_REPORT)
     public Result getPromotionStatusReport(@PathParameter("name") final String name, @PathParameter("version") final String version) {
         LOG.info("Got a get promotion report request.");
-        System.out.println("name: "+name+ " version "+version+" params: "+context().parameters());
+
         final String moduleId = Module.generateID(name, version);
         final FiltersHolder filters = new FiltersHolder();
         filters.init(context().parameters());
         final PromotionReport promotionReport =moduleService.getPromotionReport(moduleId, filters);
-        System.out.println("why?"+promotionReport.getPromotionPlan());
+
       return ok(reportToJson.promotionReportToJson(promotionReport));
         //return ok("todo");
     }

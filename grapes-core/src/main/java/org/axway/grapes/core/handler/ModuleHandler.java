@@ -1,5 +1,6 @@
 package org.axway.grapes.core.handler;
 //todo so many todos.....
+
 import com.google.common.collect.Lists;
 import org.apache.felix.ipojo.annotations.Requires;
 import org.axway.grapes.core.options.FiltersHolder;
@@ -41,6 +42,7 @@ import java.util.Set;
  */
 @Service
 public class ModuleHandler implements ModuleService {
+
     private static final Logger LOG = LoggerFactory.getLogger(ModuleHandler.class);
     @Model(value = Module.class)
     private Crud<Module, String> moduleCrud;
@@ -52,29 +54,21 @@ public class ModuleHandler implements ModuleService {
     private ArtifactService artifactService;
     @Requires(optional = true)
     private DependencyService dependencyService;
-
-
-
     @Requires(optional = true)
     private OrganizationService organizationService;
     //  private final OrganizationService organizationService = new OrganizationHandler();
-
     @Requires
     DataUtils dataUtils;
 
     @Override
     public void store(Module module) {
-
         final Module oldModule = moduleCrud.findOne(module.getId());
         // has to be done due to mongo limitation: https://jira.mongodb.org/browse/SERVER-267
         module.updateHasAndUse();
         if (oldModule == null) {
-
             moduleCrud.save(module);
             Module m = moduleCrud.findOne(module.getId());
-
         } else {
-
             // let's keep the old build info and override with new values if any
             final Map<String, String> consolidatedBuildInfo = oldModule.getBuildInfo();
             consolidatedBuildInfo.putAll(module.getBuildInfo());
@@ -87,7 +81,7 @@ public class ModuleHandler implements ModuleService {
     public Module getModule(String moduleId) {
         final Module module = moduleCrud.findOne(moduleId);
         if (module == null) {
-            throw new NoSuchElementException("Module with id: "+moduleId);
+            throw new NoSuchElementException("Module with id: " + moduleId);
         }
         return module;
     }
@@ -97,7 +91,6 @@ public class ModuleHandler implements ModuleService {
         Set<String> listOfNames = new HashSet<>();
         Iterable<Module> list = moduleCrud.findAll(
                 new MongoFilter<Module>(JongoUtils.generateQuery(filters.getModuleFieldsFilters())));
-
         for (Module module : list) {
             listOfNames.add(module.getName());
         }
@@ -105,12 +98,9 @@ public class ModuleHandler implements ModuleService {
     }
 
     @Override
-
     public List<Module> getModules(FiltersHolder filters) {
-        System.out.println("query:"+JongoUtils.generateQuery(filters.getModuleFieldsFilters()));
         Iterable<Module> list = moduleCrud.findAll(
                 new MongoFilter<Module>(JongoUtils.generateQuery(filters.getModuleFieldsFilters())));
-        System.out.println(Lists.newArrayList(list).size());
         return Lists.newArrayList(list);
     }
 
@@ -132,17 +122,15 @@ public class ModuleHandler implements ModuleService {
         for (Artifact artifact : getModuleArtifacts(module)) {
             licenses.addAll(artifactService.getArtifactLicenses(artifact.getGavc(), filters));
         }
-
         return Lists.newArrayList(licenses);
     }
 
     @Override
-
     public List<String> getModuleVersions(String name, FiltersHolder filters) {
         final Map<String, Object> params = filters.getModuleFieldsFilters();
-        params.put("name",name);
+        params.put("name", name);
 //        LOG.error("WTF!!!!!!"+JongoUtils.generateQuery(params));
- Iterable<Module> list = moduleCrud.findAll(new MongoFilter<Module>(JongoUtils.generateQuery(params)));
+        Iterable<Module> list = moduleCrud.findAll(new MongoFilter<Module>(JongoUtils.generateQuery(params)));
         Set<String> listOfVersions = new HashSet<>();
         if (Lists.newArrayList(list).isEmpty()) {
             throw new NoSuchElementException(name);
@@ -154,7 +142,6 @@ public class ModuleHandler implements ModuleService {
     }
 
     @Override
-
     public Organization getOrganization(Module module) {
         if (module.getOrganization() == null ||
                 module.getOrganization().isEmpty()) {
@@ -163,13 +150,12 @@ public class ModuleHandler implements ModuleService {
             return organization;
         }
         return organizationService.getOrganization(module.getOrganization());
-
     }
+
     @Override
     //todo
     public Module getModuleOf(final String gavc) {
         final Module module = getRootModuleOf(gavc);
-
 //        // It may be a submodule...
 //        if(module != null && !module.getArtifacts().contains(gavc)){
 //            for(Module submodule: DataUtils.getAllSubmodules(module)){
@@ -178,22 +164,20 @@ public class ModuleHandler implements ModuleService {
 //                }
 //            }
 //        }
-
         return module;
     }
+
     @Override
     public Module getRootModuleOf(final String gavc) {
-
         Module module = moduleCrud.findOne(new MongoFilter<Module>(JongoUtils.generateQuery("has", gavc)));
-
-            return module;
+        return module;
     }
 
     @Override
     public void promoteModule(String moduleId) {
         final Module module = getModule(moduleId);
-      promoteArtifacts(true, module);
-         module.setPromoted(true);
+        promoteArtifacts(true, module);
+        module.setPromoted(true);
         moduleCrud.save(module);
     }
 
@@ -204,75 +188,59 @@ public class ModuleHandler implements ModuleService {
         return false;
     }
 
-    public void promoteArtifacts(Boolean promoted, Module module){
-
+    public void promoteArtifacts(Boolean promoted, Module module) {
         for (String artifactGavc : dataUtils.getAllArtifactsGavcs(module)) {
-            Artifact artifact= artifactService.getArtifact(artifactGavc);
+            Artifact artifact = artifactService.getArtifact(artifactGavc);
             artifact.setPromoted(promoted);
             artifactService.store(artifact);
         }
-
-
     }
 
-      public PromotionReport getPromotionReport(final String moduleId, FiltersHolder filters) {
+    public PromotionReport getPromotionReport(final String moduleId, FiltersHolder filters) {
         //fitlers passed in from context?scopeTest=true&scopeRuntime=true&showThirdparty=true&showCorporate=false&showSources=false&showLicenses=true&fullRecursive=true
         final Module module = getModule(moduleId);
         final Organization organization = getOrganization(module);
-          System.out.println("organization is "+organization.getName());
-
-
         final PromotionReport report = new PromotionReport();
         report.setRootModule(module);
-
-        if(!report.isSnapshot()) {//should have some sort of semantic versioning flag because they can be promoted as snapshots
+        if (!report.isSnapshot()) {//should have some sort of semantic versioning flag because they can be promoted as snapshots
             // filters initialization
 //            final FiltersHolder filters = new FiltersHolder();
 //           filters.addFilter(new PromotedFilter(false));
 //           filters.addFilter(new CorporateFilter(organization));
-
             // Checks if each dependency module has been promoted
             for (Dependency dependency : dependencyService.getModuleDependencies(moduleId, filters)) {
                 final Module depModule = getRootModuleOf(dependency.getTarget());
                 if (depModule != null && !depModule.getId().equals(moduleId)) {
                     if (!depModule.isPromoted()) {
                         report.addUnPromotedDependency(depModule.getId());
-                        report.addDependencyPromotionReport(depModule.getId(), getPromotionReport(depModule.getId(),filters));
+                        report.addDependencyPromotionReport(depModule.getId(), getPromotionReport(depModule.getId(), filters));
                     }
                 }
             }
-
             // Checks if the module has dependencies that shouldn't be used
             final List<String> treatedArtifacts = new ArrayList<String>();
-
             for (Dependency dependency : dataUtils.getAllDbDependencies(module)) {
                 try {
                     final Artifact artifactDep = artifactService.getArtifact(dependency.getTarget());
                     if (artifactDep.getDoNotUse() && !treatedArtifacts.contains(artifactDep.getGavc())) {
-                    LOG.error("made it into the if");
-                    report.addDoNotUseArtifact(artifactDep);
-                    treatedArtifacts.add(artifactDep.getGavc());
+                        report.addDoNotUseArtifact(artifactDep);
+                        treatedArtifacts.add(artifactDep.getGavc());
+                    }
+                } catch (NoSuchElementException e) {
+                    LOG.error(e.getMessage());
                 }
-                }catch (NoSuchElementException e){
-
-                }
-                LOG.error("omg I am null as I should be :p");
             }
         }
-
         report.compute();
-
         return report;
     }
 
     @Override
-
     public void deleteModule(String moduleId) {
         final Module module = getModule(moduleId);
-
-        for(String gavcs: dataUtils.getAllArtifactsGavcs(module)){
+        for (String gavcs : dataUtils.getAllArtifactsGavcs(module)) {
             artifactService.deleteArtifact(gavcs);
-       }
+        }
         moduleCrud.delete(moduleId);
     }
 
@@ -311,7 +279,7 @@ public class ModuleHandler implements ModuleService {
     //todo this methos is in data utils
     public List<String> getModuleArtifactsGavcs(final Module module) {
         final List<String> gavcs = new ArrayList<>();
-        for (String artifact: module.getArtifacts()){
+        for (String artifact : module.getArtifacts()) {
             gavcs.add(artifact);
         }
         for (Module submodule : module.getSubmodules()) {
@@ -321,7 +289,7 @@ public class ModuleHandler implements ModuleService {
     }
 
     //todo this method is in data utiles
-        public List<Artifact> getModuleArtifacts(final Module module) {
+    public List<Artifact> getModuleArtifacts(final Module module) {
         final Set<Artifact> artifacts = new HashSet<Artifact>();
         List<String> gavcsList = getModuleArtifactsGavcs(module);
         for (String gavc : gavcsList) {

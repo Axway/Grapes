@@ -67,7 +67,7 @@ public class VersionsHandler implements VersionsService {
     }
 
     public String getLastVersion(Artifact artifact,boolean release) {
-        System.out.println("did I make it to here?");
+
         final List<String> versions = artifactService.getArtifactVersions(artifact);
         final String currentVersion = artifact.getVersion();
         try {
@@ -77,7 +77,7 @@ public class VersionsHandler implements VersionsService {
             else{ return lastDevVersion;}
 
         } catch (Exception e) {
-            return "what happened?";
+            return "unknown";
         }
     }
     public String getLastVersion(final Collection<String> versions)
