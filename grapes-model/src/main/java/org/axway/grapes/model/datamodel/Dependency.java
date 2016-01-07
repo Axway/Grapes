@@ -96,6 +96,7 @@ public class Dependency {
     @Override
     public int hashCode() {
         final StringBuilder sb = new StringBuilder();
+
         sb.append(source);
         sb.append(":");
         sb.append(target);
@@ -103,6 +104,7 @@ public class Dependency {
         if (scope != null) {
             sb.append(scope.toString());
         }
+
         return sb.toString().hashCode();
     }
 }

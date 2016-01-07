@@ -285,7 +285,12 @@ public class Module {
         return sb.toString().hashCode();
     }
     public static String generateID(final String moduleName, final String moduleVersion) {
-        return moduleName + ":" + moduleVersion;
-    }
+        final StringBuilder sb = new StringBuilder();
 
+        sb.append(moduleName);
+        sb.append(":");
+        sb.append(moduleVersion);
+
+        return sb.toString();
+    }
 }

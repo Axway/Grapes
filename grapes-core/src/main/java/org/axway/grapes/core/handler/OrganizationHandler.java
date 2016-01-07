@@ -100,7 +100,7 @@ public class OrganizationHandler implements OrganizationService {
 
     @Override
     public void removeModulesOrganization(Organization organization) {
-        Iterable<Module> list = moduleCrud.findAll(new MongoFilter<Module>(
+        Iterable<Module> list = moduleCrud.findAll(new MongoFilter<>(
                 "{organization:#}", organization.getName()));
         for (Module module : list) {
             module.setOrganization("");
@@ -110,7 +110,7 @@ public class OrganizationHandler implements OrganizationService {
 
 
     public void removeOrganizationFromProduct(Organization organization) {
-        Iterable<Module> list = moduleCrud.findAll(new MongoFilter<Module>(
+        Iterable<Module> list = moduleCrud.findAll(new MongoFilter<>(
                 "{organization:#}", organization.getName()));
         for (Module module : list) {
             module.setOrganization("");
@@ -122,7 +122,7 @@ public class OrganizationHandler implements OrganizationService {
     @Override
     public void removeModulesOrganization(String corporateGidPrefix, Organization organization) {
         //todo it finds both org.blahblahb and borg.blahblah need to find something with regx?
-         Iterable<Module> list = moduleCrud.findAll(new MongoFilter<Module>(
+         Iterable<Module> list = moduleCrud.findAll(new MongoFilter<>(
                 "{$and: [ { has :#} ," + JongoUtils.generateQuery("organization", organization.getName()) + "]}", Pattern.compile(corporateGidPrefix + "*")));
 
         for (Module module : list) {
@@ -134,7 +134,7 @@ public class OrganizationHandler implements OrganizationService {
     @Override
     //todo what is this changing? the organization of the module? sub modules? artifacts? should be in modules?
     public void addModulesOrganization(String corporateGidPrefix, Organization organization) {
-        Iterable<Module> moduleList = moduleCrud.findAll(new MongoFilter<Module>("{ has :#}", Pattern.compile(corporateGidPrefix + "*")));
+        Iterable<Module> moduleList = moduleCrud.findAll(new MongoFilter<>("{ has :#}", Pattern.compile(corporateGidPrefix + "*")));
         for(Module module : moduleList){
             module.setOrganization(organization.getName());
             moduleCrud.save(module);

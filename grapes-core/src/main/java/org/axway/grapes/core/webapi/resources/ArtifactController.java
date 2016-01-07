@@ -323,7 +323,11 @@ public class ArtifactController extends DefaultController {
         try {
             artifactService.updateDoNotUse(gavc, doNotUse);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The gavc " + gavc + " does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The gavc ");
+            sb.append(gavc);
+            sb.append(" does not exist.");
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
         return ok("done");
     }
@@ -341,7 +345,11 @@ public class ArtifactController extends DefaultController {
             final Artifact artifact = artifactService.getArtifact(gavc);
             return ok(artifact.getDoNotUse());
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The gavc " + gavc + " does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The gavc ");
+            sb.append(gavc);
+            sb.append(" does not exist.");
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 
@@ -379,7 +387,11 @@ public class ArtifactController extends DefaultController {
             final List<License> dbLicenses = artifactService.getArtifactLicenses(gavc, filters);
             return ok(dbLicenses);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The gavc " + gavc + " does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The gavc ");
+            sb.append(gavc);
+            sb.append(" does not exist.");
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 
@@ -404,7 +416,11 @@ public class ArtifactController extends DefaultController {
         try {
             artifactService.addLicenseToArtifact(gavc, licenseId);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The gavc " + gavc + " does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The gavc ");
+            sb.append(gavc);
+            sb.append(" does not exist.");
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
         return ok("done");
     }
@@ -430,7 +446,11 @@ public class ArtifactController extends DefaultController {
         try {
             artifactService.removeLicenseFromArtifact(gavc, licenseId);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The gavc " + gavc + " does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The gavc ");
+            sb.append(gavc);
+            sb.append(" does not exist.");
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
         return ok("done");
     }
@@ -474,7 +494,11 @@ public class ArtifactController extends DefaultController {
             final Organization organization = organizationService.getOrganization(module.getOrganization());
             return ok(organization).json();
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The gavc " + gavc + " does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The gavc ");
+            sb.append(gavc);
+            sb.append(" does not exist.");
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 

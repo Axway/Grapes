@@ -111,7 +111,12 @@ public class ProductController extends DefaultController {
             final Product dbProduct = productService.getProduct(name);
             return ok(dbProduct);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The Product " + name + " does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The Product ");
+            sb.append(name);
+            sb.append(" does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 
@@ -131,7 +136,12 @@ public class ProductController extends DefaultController {
         try {
             productService.deleteProduct(name);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The Product " + name + " does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The Product ");
+            sb.append(name);
+            sb.append(" does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
         return ok("done");
     }
@@ -149,7 +159,12 @@ public class ProductController extends DefaultController {
             final Product dbProduct = productService.getProduct(name);
             return ok(dbProduct.getModules()).json();
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The Product " + name + " does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The Product ");
+            sb.append(name);
+            sb.append(" does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 
@@ -176,7 +191,12 @@ public class ProductController extends DefaultController {
         try {
             productService.setProductModules(name, moduleNames);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The Product " + name + " does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The Product ");
+            sb.append(name);
+            sb.append(" does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
         return ok("done");
     }
@@ -196,7 +216,12 @@ public class ProductController extends DefaultController {
             Collections.sort(deliveryNames);
             return ok(deliveryNames);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The Product " + name + " does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The Product ");
+            sb.append(name);
+            sb.append(" does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 
@@ -220,12 +245,23 @@ public class ProductController extends DefaultController {
         try {
             final Product dbProduct = productService.getProduct(name);
             if (dbProduct.getDeliveries().containsKey(deliveryName)) {
-                return ok("Delivery " + deliveryName + " already exist for product " + name + ".").status(Result.CONFLICT);
+                final StringBuilder sb = new StringBuilder();
+                sb.append("Delivery ");
+                sb.append(deliveryName);
+                sb.append(" already exist for product ");
+                sb.append(name);
+                sb.append(".");
+                return ok(sb.toString()).status(Result.CONFLICT);
             }
             dbProduct.getDeliveries().put(deliveryName, new ArrayList<String>());
             productService.update(dbProduct);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The Product " + name + " does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The Product ");
+            sb.append(name);
+            sb.append(" does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
         return ok().status(Result.CREATED);
     }
@@ -244,13 +280,25 @@ public class ProductController extends DefaultController {
             final Product dbProduct = productService.getProduct(name);
             final List<String> modules = dbProduct.getDeliveries().get(delivery);
             if (modules == null) {
-                return ok("Delivery " + delivery + " does not exist for product " + name + ".").status(Result.NOT_FOUND);
+                final StringBuilder sb = new StringBuilder();
+                sb.append("Delivery ");
+                sb.append(delivery);
+                sb.append(" does not exist for product ");
+                sb.append(name);
+                sb.append(".");
+                return ok(sb.toString()).status(Result.NOT_FOUND);
 //
             }
             Collections.sort(modules);
             return ok(modules);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("Product " + name + " does not exist for delivery " + delivery + ".");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("Product ");
+            sb.append(name);
+            sb.append(" does not exist for delivery ");
+            sb.append(delivery);
+            sb.append(".");
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 
@@ -268,25 +316,41 @@ public class ProductController extends DefaultController {
         if (!session("roles").contains(String.valueOf(Credential.AvailableRoles.DATA_UPDATER))) {
             return ok().status(Result.UNAUTHORIZED);
         }
-        LOG.info("Got a set delivery modules request for product " + name + ".");
+        LOG.info("Got a set delivery modules request for product " + name);
         try {
             final Product dbProduct = productService.getProduct(name);
             if (dbProduct.getDeliveries().get(delivery) == null) {
-                return ok("Delivery " + delivery + " does not exist for product " + name + ".").status(Result.NOT_FOUND);
+                final StringBuilder sb = new StringBuilder();
+                sb.append("Delivery ");
+                sb.append(delivery);
+                sb.append(" does not exist for product ");
+                sb.append(name);
+                sb.append(".");
+                return ok(sb.toString()).status(Result.NOT_FOUND);
             }
             //all or nothing!
             for (String moduleId : modules) {
                 try {
                     moduleService.getModule(moduleId);
                 } catch (NoSuchElementException e) {
-                    return ok().status(Result.NOT_FOUND).render("The Module " + moduleId + " does not exist.");
+                    final StringBuilder sb = new StringBuilder();
+                    sb.append("The Module ");
+                    sb.append(moduleId);
+                    sb.append(" does not exist.");
+                    return ok().status(Result.NOT_FOUND).render(sb.toString());
                 }
             }
             Collections.sort(modules);
             dbProduct.getDeliveries().put(delivery, modules);
             productService.update(dbProduct);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("Product " + name + " does not exist for delivery " + delivery + ".");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("Product ");
+            sb.append(name);
+            sb.append(" does not exist for delivery ");
+            sb.append(delivery);
+            sb.append(".");
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
         return ok().status(Result.CREATED);
     }
@@ -309,13 +373,25 @@ public class ProductController extends DefaultController {
         try {
             final Product dbProduct = productService.getProduct(name);
             if (!dbProduct.getDeliveries().containsKey(delivery)) {
-                return ok("Delivery " + delivery + " does not exist for product " + name + ".").status(Result.NOT_FOUND);
+                final StringBuilder sb = new StringBuilder();
+                sb.append("Delivery ");
+                sb.append(delivery);
+                sb.append(" does not exist for product ");
+                sb.append(name);
+                sb.append(".");
+                return ok(sb.toString()).status(Result.NOT_FOUND);
             }
             dbProduct.getDeliveries().remove(delivery);
             productService.update(dbProduct);
             return ok();
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("Product " + name + " does not exist for delivery " + delivery + ".");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("Product ");
+            sb.append(name);
+            sb.append(" does not exist for delivery ");
+            sb.append(delivery);
+            sb.append(".");
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 }

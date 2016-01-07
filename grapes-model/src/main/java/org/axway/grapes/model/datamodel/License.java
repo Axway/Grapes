@@ -88,11 +88,13 @@ public class License {
     @Override
     public int hashCode() {
         final StringBuilder sb = new StringBuilder();
+
         sb.append(name);
         sb.append(longName);
         sb.append(url);
         sb.append(comments);
         sb.append(regexp);
+
         return sb.toString().hashCode();
     }
 }

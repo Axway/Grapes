@@ -133,7 +133,15 @@ public class ArtifactHandler implements ArtifactService {
             final License license = licenseCrud.findOne(name);
             // Here is a license to identify
             if (license == null) {
-                LOG.info("This artifact " + gavc + " has a license " + '"' + name + "'" + " that not found in the database: ");
+                final StringBuilder sb = new StringBuilder();
+                sb.append("This artifact ");
+                sb.append(gavc);
+                sb.append(" has a license ");
+                sb.append('"');
+                sb.append(name);
+                sb.append("'");
+                sb.append(" that not found in the database: ");
+                LOG.info( sb.toString() );
                 final License notIdentifiedLicense = new License();
                 notIdentifiedLicense.setName(name);
                 licensesList.add(notIdentifiedLicense);

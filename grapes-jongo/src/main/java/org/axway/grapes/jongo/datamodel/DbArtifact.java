@@ -83,23 +83,38 @@ public class DbArtifact extends Artifact {
         return gavc;
     }
 
-
-
-
-
     @Override
     public String toString() {
+        final StringBuilder sb = new StringBuilder();
 
-        return "GroupId: " + getGroupId() + ", ArtifactId: " + getArtifactId() + ", Version: " + getVersion();
+        sb.append("GroupId: ");
+        sb.append(getGroupId());
+        sb.append(", ArtifactId: ");
+        sb.append(getArtifactId());
+        sb.append(", Version: ");
+        sb.append(getVersion());
+
+        return sb.toString();
     }
 
     public static String generateGAVC(final String groupId, final String artifactId, final String version, final String classifier, final String extension) {
+        final StringBuilder sb = new StringBuilder();
 
-        return groupId + ":" + artifactId + ":" + version + ":" + classifier + ":" + extension;
+        sb.append(groupId);
+        sb.append(":");
+        sb.append(artifactId);
+        sb.append(":");
+        sb.append(version);
+        sb.append(":");
+        sb.append(classifier);
+        sb.append(":");
+        sb.append(extension);
+
+        return sb.toString();
     }
 
     public static String generateGAVC(final Artifact artifact) {
-        return generateGAVC(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact.getClassifier(), artifact.getExtension());
+        return artifact.getGavc();
     }
 
 }

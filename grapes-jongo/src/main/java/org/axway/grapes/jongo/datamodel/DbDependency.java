@@ -59,5 +59,4 @@ public class DbDependency extends Dependency {
         return sb.toString().hashCode();
     }
 
-
 }

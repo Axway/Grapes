@@ -50,14 +50,11 @@ public  class DataUtils {
             gavcs.add(artifact);
         }
 
-
-
         for (Module submodule : module.getSubmodules()) {
             gavcs.addAll(getAllArtifactsGavcs(submodule));
         }
 
         return gavcs;
-
     }
 
     /**
@@ -83,7 +80,11 @@ public  class DataUtils {
            try {
                artifacts.add(artifactService.getArtifact(gavc));
            }catch (NoSuchElementException e){
-               LOG.error("Artifact "+gavc+" does not exist in database");
+               final StringBuilder sb = new StringBuilder();
+               sb.append("Artifact ");
+               sb.append(gavc);
+               sb.append(" does not exist in database");
+               LOG.error(sb.toString());
                artifacts.add(createArtifact(gavc));
            }
        }

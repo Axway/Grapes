@@ -163,7 +163,7 @@ public class OrganizationController extends DefaultController {
     @Authenticated("grapes-authenticator")
     @Route(method = HttpMethod.POST, uri = "/{name}" + ServerAPI.GET_CORPORATE_GROUPIDS, accepts = {"text/plain", "application/json"})
     public Result addCorporateGroupIdPrefix(@PathParameter("name") final String organizationId, @Body String corporateGroupId) {
-        LOG.info("Got an add a corporate groupId prefix request for organization " + organizationId + ".");
+        LOG.info("Got an add a corporate groupId prefix request for organization " + organizationId);
 
         if (!session("roles").contains(String.valueOf(Credential.AvailableRoles.DATA_UPDATER))) {
             return ok().status(Result.UNAUTHORIZED);
@@ -192,7 +192,7 @@ public class OrganizationController extends DefaultController {
     @Authenticated("grapes-authenticator")
     @Route(method = HttpMethod.DELETE, uri = "/{name}" + ServerAPI.GET_CORPORATE_GROUPIDS+"/{corpId}")
     public Result removeCorporateGroupIdPrefix(@PathParameter("name") final String organizationId, @PathParameter("corpId") final String corporateGroupId) {
-        LOG.info("Got an remove a corporate groupId prefix "+ corporateGroupId+" request for organization " + organizationId + ".");
+        LOG.info("Got an remove a corporate groupId prefix "+ corporateGroupId+" request for organization " + organizationId);
         if (!session("roles").contains(String.valueOf(Credential.AvailableRoles.DATA_UPDATER))) {
             return ok().status(Result.UNAUTHORIZED);
         }

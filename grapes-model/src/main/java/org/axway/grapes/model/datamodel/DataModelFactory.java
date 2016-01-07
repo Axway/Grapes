@@ -139,5 +139,4 @@ public final class DataModelFactory {
             throw new UnsupportedScopeException();
         }
     }
-
 }

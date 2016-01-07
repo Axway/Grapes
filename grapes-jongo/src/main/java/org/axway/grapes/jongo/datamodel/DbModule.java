@@ -80,10 +80,23 @@ public class DbModule extends Module {
 
     @Override
     public String toString() {
-        return "Name: " + super.getName() + ", Version: " + super.getVersion();
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append("Name: ");
+        sb.append(super.getName());
+        sb.append(", Version: ");
+        sb.append(super.getVersion());
+
+        return sb.toString();
     }
 
     public static String generateID(final String moduleName, final String moduleVersion) {
-        return moduleName + ":" + moduleVersion;
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(moduleName);
+        sb.append(":");
+        sb.append(moduleVersion);
+
+        return sb.toString();
     }
 }

@@ -51,5 +51,4 @@ public class DbCredential extends Credential {
         return datamodelVersion;
     }
 
-
 }

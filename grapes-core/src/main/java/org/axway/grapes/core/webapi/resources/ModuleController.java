@@ -124,7 +124,11 @@ public class ModuleController extends DefaultController {
             }
             return ok().status(Result.CREATED);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The organization " + module.getOrganization() + " does not exist in the DB  but the model was created anyways muahahahah");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The organization ");
+            sb.append(module.getOrganization());
+            sb.append(" does not exist in the DB  but the model was created anyways muahahahah");
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 
@@ -186,7 +190,11 @@ public class ModuleController extends DefaultController {
             Collections.sort(versions);
             return ok(versions);
         } catch (NoSuchElementException e) {
-            return ok("Sorry but no versions for the module " + name + " were found. Please check query parameters and that module exists").status(Result.NOT_FOUND);
+            final StringBuilder sb = new StringBuilder();
+            sb.append("Sorry but no versions for the module ");
+            sb.append(name);
+            sb.append(" were found. Please check query parameters and that module exists");
+            return ok(sb.toString()).status(Result.NOT_FOUND);
         }
     }
 
@@ -210,8 +218,14 @@ public class ModuleController extends DefaultController {
             final Module module = moduleService.getModule(moduleId);
             return ok(module);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The version " + version + " and module "
-                    + name + " combination does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The version ");
+            sb.append(version);
+            sb.append(" and module ");
+            sb.append(name);
+            sb.append(" combination does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 
@@ -235,8 +249,14 @@ public class ModuleController extends DefaultController {
             moduleService.deleteModule(Module.generateID(name, version));
             return ok("done");
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The version " + version + " and module "
-                    + name + " combination does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The version ");
+            sb.append(version);
+            sb.append(" and module ");
+            sb.append(name);
+            sb.append(" combination does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 
@@ -257,8 +277,14 @@ public class ModuleController extends DefaultController {
             final Organization organization = moduleService.getOrganization(module);
             return ok(organization);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The version " + version + " and module "
-                    + name + " combination does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The version ");
+            sb.append(version);
+            sb.append(" and module ");
+            sb.append(name);
+            sb.append(" combination does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 
@@ -307,8 +333,14 @@ public class ModuleController extends DefaultController {
 //        }
             return ok("todo");
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The version " + version + " and module "
-                    + name + " combination does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The version ");
+            sb.append(version);
+            sb.append(" and module ");
+            sb.append(name);
+            sb.append(" combination does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 
@@ -397,8 +429,14 @@ public class ModuleController extends DefaultController {
             final List<License> licenses = moduleService.getModuleLicenses(moduleId);
             return ok(licenses);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The version " + version + " and module "
-                    + name + " combination does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The version ");
+            sb.append(version);
+            sb.append(" and module ");
+            sb.append(name);
+            sb.append(" combination does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 
@@ -417,8 +455,14 @@ public class ModuleController extends DefaultController {
             final Boolean promoted = module.isPromoted();
             return ok(promoted);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The version " + version + " and module "
-                    + name + " combination does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The version ");
+            sb.append(version);
+            sb.append(" and module ");
+            sb.append(name);
+            sb.append(" combination does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 
@@ -442,8 +486,14 @@ public class ModuleController extends DefaultController {
         try {
             moduleService.promoteModule(moduleId);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The version " + version + " and module "
-                    + name + " combination does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The version ");
+            sb.append(version);
+            sb.append(" and module ");
+            sb.append(name);
+            sb.append(" combination does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
         return ok("done");
     }
@@ -465,8 +515,14 @@ public class ModuleController extends DefaultController {
             Module module = moduleService.getModule(moduleId);
             return ok(moduleService.canBePromoted(module));
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The version " + version + " and module "
-                    + name + " combination does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The version ");
+            sb.append(version);
+            sb.append(" and module ");
+            sb.append(name);
+            sb.append(" combination does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 
@@ -504,8 +560,14 @@ public class ModuleController extends DefaultController {
             final Module module = moduleService.getModule(moduleId);
             return ok(module.getBuildInfo());
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The version " + version + " and module "
-                    + name + " combination does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The version ");
+            sb.append(version);
+            sb.append(" and module ");
+            sb.append(name);
+            sb.append(" combination does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 
@@ -529,8 +591,14 @@ public class ModuleController extends DefaultController {
             moduleService.store(module);
             return ok().status(Result.CREATED);
         } catch (NoSuchElementException e) {
-            return ok().status(Result.NOT_FOUND).render("The version " + version + " and module "
-                    + name + " combination does not exist.");
+            final StringBuilder sb = new StringBuilder();
+            sb.append("The version ");
+            sb.append(version);
+            sb.append(" and module ");
+            sb.append(name);
+            sb.append(" combination does not exist.");
+
+            return ok().status(Result.NOT_FOUND).render(sb.toString());
         }
     }
 }

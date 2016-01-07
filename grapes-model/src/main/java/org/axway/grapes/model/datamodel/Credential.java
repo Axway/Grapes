@@ -31,9 +31,6 @@ public class Credential {
     public static final String ROLES_FIELD = "roles";
     private List<AvailableRoles> roles = new ArrayList<AvailableRoles>();
 
-
-
-
     public List<AvailableRoles> getRoles() {
         return roles;
     }
@@ -65,7 +62,6 @@ public class Credential {
     public void removeRole(final AvailableRoles role) {
         roles.remove(role);
     }
-
 
 
     public static AvailableRoles getRole(final String roleParam) {

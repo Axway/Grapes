@@ -40,7 +40,7 @@ public class CredentialHandler implements CredentialService {
             }
         } else {
             //todo throw some error
-            System.out.println("omg already exisit s we didnt save it again");
+            System.out.println("omg already exisits, we didnt save it again");
         }
     }
 

@@ -35,7 +35,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<jv.version>1.8</jv.version>
-		<maven.version>3.0.3</maven.version>
+		<maven.version>3.2.1</maven.version>
 		<jakson.version>2.2.0</jakson.version>
 	</properties>
 
@@ -123,8 +123,8 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.1</version>
 					<configuration>
-						<source>1.6</source>
-						<target>1.6</target>
+						<source>${jv.version}</source>
+						<target>${jv.version}</target>
 						<optimize>true</optimize>
 						<showDeprecation>true</showDeprecation>
 					</configuration>
@@ -221,10 +221,10 @@
 					<configuration>
 						<rules>
 							<requireMavenVersion>
-								<version>3.0.5</version>
+								<version>${maven.version}</version>
 							</requireMavenVersion>
 							<requireJavaVersion>
-								<version>1.6</version>
+								<version>${jv.version}</version>
 							</requireJavaVersion>
 						</rules>
 					</configuration>

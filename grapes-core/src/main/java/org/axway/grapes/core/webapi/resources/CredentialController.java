@@ -47,7 +47,12 @@ public class CredentialController extends DefaultController implements MonitorEx
         //should limit the number of attemps maybe?
         LOG.error("inside authenticate method");
         LOG.error(session("roles"));
-        LOG.error("sessions data?: "+context().session().getData()+" id "+context().session().getId());
+        final StringBuilder sb = new StringBuilder();
+        sb.append("sessions data?: ");
+        sb.append(context().session().getData());
+        sb.append(" id ");
+        sb.append(context().session().getId());
+        LOG.error(sb.toString());
         return ok();
     }
     @Authenticated("grapes-authenticator")
@@ -57,7 +62,12 @@ public class CredentialController extends DefaultController implements MonitorEx
         //should limit the number of attemps maybe?
         LOG.error("inside authenticate method");
         LOG.error(session("roles"));
-        LOG.error("sessions data?: "+context().session().getData()+" id "+context().session().getId());
+        final StringBuilder sb = new StringBuilder();
+        sb.append("sessions data?: ");
+        sb.append(context().session().getData());
+        sb.append(" id ");
+        sb.append(context().session().getId());
+        LOG.error(sb.toString());
         return ok();
     }
     @Override

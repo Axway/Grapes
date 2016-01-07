@@ -90,7 +90,7 @@ public class ModuleHandler implements ModuleService {
     public List<String> getModuleNames(FiltersHolder filters) {
         Set<String> listOfNames = new HashSet<>();
         Iterable<Module> list = moduleCrud.findAll(
-                new MongoFilter<Module>(JongoUtils.generateQuery(filters.getModuleFieldsFilters())));
+                new MongoFilter<>(JongoUtils.generateQuery(filters.getModuleFieldsFilters())));
         for (Module module : list) {
             listOfNames.add(module.getName());
         }
@@ -100,7 +100,7 @@ public class ModuleHandler implements ModuleService {
     @Override
     public List<Module> getModules(FiltersHolder filters) {
         Iterable<Module> list = moduleCrud.findAll(
-                new MongoFilter<Module>(JongoUtils.generateQuery(filters.getModuleFieldsFilters())));
+                new MongoFilter<>(JongoUtils.generateQuery(filters.getModuleFieldsFilters())));
         return Lists.newArrayList(list);
     }
 
@@ -130,7 +130,7 @@ public class ModuleHandler implements ModuleService {
         final Map<String, Object> params = filters.getModuleFieldsFilters();
         params.put("name", name);
 //        LOG.error("WTF!!!!!!"+JongoUtils.generateQuery(params));
-        Iterable<Module> list = moduleCrud.findAll(new MongoFilter<Module>(JongoUtils.generateQuery(params)));
+        Iterable<Module> list = moduleCrud.findAll(new MongoFilter<>(JongoUtils.generateQuery(params)));
         Set<String> listOfVersions = new HashSet<>();
         if (Lists.newArrayList(list).isEmpty()) {
             throw new NoSuchElementException(name);
@@ -169,7 +169,7 @@ public class ModuleHandler implements ModuleService {
 
     @Override
     public Module getRootModuleOf(final String gavc) {
-        Module module = moduleCrud.findOne(new MongoFilter<Module>(JongoUtils.generateQuery("has", gavc)));
+        Module module = moduleCrud.findOne(new MongoFilter<>(JongoUtils.generateQuery("has", gavc)));
         return module;
     }
 
