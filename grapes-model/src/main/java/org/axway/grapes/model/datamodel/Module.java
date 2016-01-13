@@ -239,11 +239,9 @@ public class Module {
         uses.clear();
 
         for (Module submodule : getSubmodules()) {
-            if (submodule instanceof Module) {
-                ((Module) submodule).updateHasAndUse();
-                has.addAll(((Module) submodule).has);
-                uses.addAll(((Module) submodule).uses);
-            }
+            submodule.updateHasAndUse();
+            has.addAll(submodule.has);
+            uses.addAll(submodule.uses);
         }
 
 //        has.addAll(getArtifacts());

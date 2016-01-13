@@ -94,8 +94,7 @@ public class DbModuleTest {
         assertEquals(0, module.getSubmodules().size());
     }
 
-    //todo @Test
-
+    @Test
     public void checkUpdateHasAndUse(){
         final DbModule module = new DbModule();
 
@@ -103,9 +102,7 @@ public class DbModuleTest {
         artifact.setGroupId("groupId");
         artifact.setArtifactId("artifactId");
         artifact.setVersion("1");
-        module.addArtifact(artifact);
         module.addDependency(artifact, Scope.COMPILE);
-
 
         final DbModule submodule = new DbModule();
 
@@ -113,13 +110,20 @@ public class DbModuleTest {
         artifact2.setGroupId("groupId2");
         artifact2.setArtifactId("artifactId2");
         artifact2.setVersion("1");
-        submodule.addArtifact(artifact2);
         submodule.addDependency(artifact2, Scope.COMPILE);
+
+
+        final DbArtifact artifact3 = new DbArtifact();
+        artifact2.setGroupId("groupId3");
+        artifact2.setArtifactId("artifactId3");
+        artifact2.setVersion("1");
+        submodule.addArtifact(artifact3);
+
         module.addSubmodule(submodule);
 
         module.updateHasAndUse();
 
-        assertEquals(2, module.getHas().size());
+        assertEquals(1, module.getHas().size());
         assertEquals(2, module.getUses().size());
     }
 }

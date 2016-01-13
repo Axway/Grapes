@@ -161,7 +161,7 @@
                             pre-integration-test
                         </phase>
                         <configuration>
-                            <port>27017</port>
+                            <port>12345</port>
                             <version>2.6.1</version>
                             <databaseDirectory>${project.build.directory}/mongotest</databaseDirectory>
                             <logging>file</logging>
