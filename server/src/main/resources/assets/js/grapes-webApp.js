@@ -178,7 +178,7 @@ function displayModuleLicenseOptions(){
 	getModuleLicenses();
 
 	$(".export").on('click', function (event) {
-        exportTableToCSV.apply(this, [$('table'), 'export.csv']);
+        exportTableToCSV.apply(this, [$('#table_div>table'), 'export.csv']);
     });
 
 }
@@ -1229,7 +1229,7 @@ function getArtifactLicenses(){
 	var html = "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
 	html += "<thead><tr><td>Licenses</td></tr></thead>\n";
 	html += "<tbody>\n";
-
+    
 	$.ajax({
             type: "GET",
             url: "/artifact/"+ gavc + "/licenses",

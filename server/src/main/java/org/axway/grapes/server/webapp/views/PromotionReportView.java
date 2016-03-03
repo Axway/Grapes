@@ -56,7 +56,7 @@ public class PromotionReportView extends View {
         return dependencyReports.get(moduleId);
     }
 
-    private List<Artifact> getDoNotUseArtifacts() {
+    public List<Artifact> getDoNotUseArtifacts() {
         return doNotUseArtifacts;
     }
 

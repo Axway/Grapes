@@ -37,6 +37,7 @@ import java.util.*;
  * The documentation is available in ModuleResourceDocumentation.ftl file.</p>
  * @author jdcoffre
  */
+
 @Path(ServerAPI.MODULE_RESOURCE)
 public class ModuleResource extends AbstractResource{
 
@@ -105,7 +106,8 @@ public class ModuleResource extends AbstractResource{
     @Path(ServerAPI.GET_NAMES)
     public Response getNames(@Context final UriInfo uriInfo){
         LOG.info("Got a get module names request.");
-
+        
+        
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
