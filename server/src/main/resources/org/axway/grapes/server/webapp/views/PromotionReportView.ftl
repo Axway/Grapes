@@ -122,7 +122,7 @@
                                             <td><strong>${report.rootModule.getName()}</strong></td>
                                         </tr>
                                         </thead>
-                                       <#if report.doNotUseArtifacts?has_content >
+                                        <#if report.doNotUseArtifacts?has_content >
                        						 <tbody>
 	                                            <#list report.doNotUseArtifacts as artifact>
 	                                            <td>${artifact.getGavc()}</td>
