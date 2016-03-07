@@ -6,3 +6,6 @@ jenkins/work
 .settings/*
 .project
 .classpath
+.directory
+server/.directory
+server/.settings
