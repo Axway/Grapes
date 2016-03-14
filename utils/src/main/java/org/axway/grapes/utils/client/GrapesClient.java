@@ -448,6 +448,30 @@ public class GrapesClient {
             throw new GrapesCommunicationException(message, response.getStatus());
         }
     }
+    
+    
+    /**
+     * GET "DO_NOT_USE" artifact
+     *
+     * @param gavc
+     * @param doNotUse
+     * @return true if artifact is DO_NOT_USE marked
+     * @throws GrapesCommunicationException
+     */
+    public Boolean isDoNotUseArtifact(final String gavc, final Boolean doNotUse) throws GrapesCommunicationException, AuthenticationException {
+        final Client client = getClient();
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getDoNotUseArtifact(gavc));
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
+            final String message = "Failed to check do not use artifact";
+            LOG.error(message + ". Http status: " + response.getStatus());
+            throw new GrapesCommunicationException(message, response.getStatus());
+        }
+        
+        return response.getEntity(Boolean.class);
+    }
 
 
     /**
