@@ -8,7 +8,12 @@ import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.commons.utils.JsonUtils;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+
+
 
 import javax.naming.AuthenticationException;
 import javax.ws.rs.core.HttpHeaders;
@@ -24,6 +29,9 @@ public class GrapesClientTest {
 
     public static final String PROPERTY_PORT = "server.mock.http.port";
     private static final String DEFAULT_PORT = "8074";
+
+    @Rule
+    public ExpectedException exc = ExpectedException.none();
 
     @ClassRule
     public static WireMockRule wireMockRule = new WireMockRule(Integer.valueOf(System.getProperty(PROPERTY_PORT, DEFAULT_PORT)));
@@ -1263,5 +1271,35 @@ public class GrapesClientTest {
         }
 
         assertNotNull(exception);
+    }
+
+    @Test
+    public void testGetArtifactWith_DO_NOT_USE_Artifacts() throws IOException {
+        String gavc = "dummy";
+        List<String> names = new ArrayList<String>();
+        Boolean mockedReply = Boolean.TRUE;
+
+        stubFor(get(urlMatching("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + gavc + ServerAPI.SET_DO_NOT_USE))
+                .willReturn(aResponse().withStatus(Status.OK.getStatusCode())
+                        .withBody(JsonUtils.serialize(mockedReply))
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
+
+        Exception exception = null;
+
+        try {
+            Boolean reply = client.isMarkedAsDoNotUse(gavc);
+            assertEquals(reply.booleanValue(), mockedReply);
+        } catch (Exception e) {
+            exception = e;
+        }
+
+        assertNull(exception);
+    }
+
+    @Test
+    public void testGetArtifactThrowsException() throws GrapesCommunicationException, AuthenticationException {
+        exc.expect(GrapesCommunicationException.class);
+        exc.expectMessage("Failed to check do not use artifact");
+        client.isMarkedAsDoNotUse("toto");
     }
 }

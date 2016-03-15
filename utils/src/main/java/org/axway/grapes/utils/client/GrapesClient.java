@@ -454,8 +454,7 @@ public class GrapesClient {
      * send a get request to check artifact is marled as "DO_NOT_USE" 
      *
      * @param gavc
-     * @param doNotUse
-     * @return if artifact is using any dependencies which is marked with DO_NOT_USE flag.
+     * @return if artifact is using any dependencies which are marked with DO_NOT_USE flag.
      * @throws GrapesCommunicationException
      */
     public Boolean isMarkedAsDoNotUse(final String gavc) throws GrapesCommunicationException, AuthenticationException {
