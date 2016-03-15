@@ -451,14 +451,14 @@ public class GrapesClient {
     
     
     /**
-     * GET "DO_NOT_USE" artifact
+     * send a get request to check artifact is marled as "DO_NOT_USE" 
      *
      * @param gavc
      * @param doNotUse
-     * @return true if artifact is DO_NOT_USE marked
+     * @return if artifact is using any dependencies which is marked with DO_NOT_USE flag.
      * @throws GrapesCommunicationException
      */
-    public Boolean isDoNotUseArtifact(final String gavc, final Boolean doNotUse) throws GrapesCommunicationException, AuthenticationException {
+    public Boolean isMarkedAsDoNotUse(final String gavc) throws GrapesCommunicationException, AuthenticationException {
         final Client client = getClient();
         final WebResource resource = client.resource(serverURL).path(RequestUtils.getDoNotUseArtifact(gavc));
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
