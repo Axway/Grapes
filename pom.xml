@@ -6,7 +6,7 @@
 	<artifactId>grapes-parent</artifactId>
 	<version>1.4.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	
+
 	<name>Grapes</name>
 	<description>Grapes collects the dependencies of your software production.</description>
     <url>http://axway.github.io/Grapes</url>
@@ -19,9 +19,9 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:git@github.com:Axway/Grapes.git</connection>
-		<url>scm:git:git@github.com:Axway/Grapes.git</url>
-		<developerConnection>scm:git:git@github.com:Axway/Grapes.git</developerConnection>
+		<connection>scm:git:git@git.ecd.axway.int:F11Team/Grapes.git</connection>
+		<url>scm:git:git@git.ecd.axway.int:F11Team/Grapes.git</url>
+		<developerConnection>scm:git:git@git.ecd.axway.int:F11Team/Grapes.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 
@@ -288,5 +288,5 @@
             </build>
         </profile>
     </profiles>
-  
+
 </project>
