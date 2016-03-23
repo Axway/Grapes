@@ -6,6 +6,7 @@ import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.views.ViewBundle;
+
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.db.DBException;
 import org.axway.grapes.server.db.RepositoryHandler;
@@ -72,12 +73,12 @@ public class GrapesServer extends Service<GrapesServerConfig> {
 
         // init the repoHandler
         final RepositoryHandler repoHandler = getRepositoryHandler(config);
-
         // Add credential management
         final GrapesAuthenticator grapesAuthenticator = new GrapesAuthenticator(repoHandler);
         final BasicAuthProvider authProvider = new BasicAuthProvider<DbCredential>(grapesAuthenticator, "Grapes Authenticator Provider");
         env.addProvider(authProvider);
-
+        
+        
         // Tasks
         env.addTask(new AddUserTask(repoHandler));
         env.addTask(new AddRoleTask(repoHandler));
@@ -85,7 +86,9 @@ public class GrapesServer extends Service<GrapesServerConfig> {
         env.addTask(new MaintenanceModeTask(config));
         env.addTask(new KillTask());
         env.addTask(new MigrationTask(config.getDataBaseConfig()));
+        env.addTask(new LoggingTask(config.getLoggingConfiguration().getFileConfiguration().getCurrentLogFilename()));
 
+        
         // Health checks
         env.addHealthCheck(new DataBaseCheck(config.getDataBaseConfig()));
         env.addHealthCheck(new DataModelVersionCheck(config.getDataBaseConfig()));
