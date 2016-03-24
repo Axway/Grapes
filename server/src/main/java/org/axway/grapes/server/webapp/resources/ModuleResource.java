@@ -460,10 +460,14 @@ public class ModuleResource extends AbstractResource{
         LOG.info("Got a post buildInfo report request.");
         final String moduleId = DbModule.generateID(name,version);
         final DbModule dbModule = getModuleHandler().getModule(moduleId);
-        dbModule.getBuildInfo().putAll(buildInfo);
 
-        getModuleHandler().store(dbModule);
+        try {
+            dbModule.getBuildInfo().putAll(buildInfo);
 
+            getModuleHandler().store(dbModule);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         return Response.ok().status(Response.Status.CREATED).build();
     }
 
