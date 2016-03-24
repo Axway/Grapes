@@ -3,13 +3,11 @@ package org.axway.grapes.server.webapp.tasks;
 import com.google.common.collect.ImmutableMultimap;
 import com.yammer.dropwizard.tasks.Task;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.PrintWriter;
+import java.io.*;
+import java.util.IllegalFormatCodePointException;
 
 /**
- * Get Logs Task
+ * Get the content of the log file to the authorized user
  * 
  * <p>
  * This task is able to print logs created by Grapes. To print logs: POST
@@ -19,11 +17,13 @@ import java.io.PrintWriter;
  */
 public class LoggingTask extends Task {
 
-	// path to logs file
 	private String filePath;
 
 	public LoggingTask(final String filePath) {
 		super("getLogs");
+
+        validate(filePath);
+
 		this.filePath = filePath;
 	}
 
@@ -32,26 +32,53 @@ public class LoggingTask extends Task {
 			final ImmutableMultimap<String, String> stringStringImmutableMultimap,
 			final PrintWriter printWriter) throws Exception {
 
-		if (filePath == null) {
-			printWriter
-					.println("ERROR: No log files are found or the path is incorrect.");
-			return;
-		}
+        try {
+            validate(filePath);
+        } catch(IllegalArgumentException e) {
+            printWriter.println(e.getMessage());
+            return;
+        }
 
 		printWriter.println("LOGS...");
-		BufferedReader br;
+		BufferedReader br = null;
+        FileReader fr = null;
 		try {
-			br = new BufferedReader(new FileReader(filePath));
-			String x;
-			while ((x = br.readLine()) != null) {
+            fr = new FileReader(filePath);
+			br = new BufferedReader(fr);
+
+			String line;
+			while ((line = br.readLine()) != null) {
 				// printing out each line in the file
-				printWriter.println(x);
+				printWriter.println(line);
 			}
 
 		} catch (FileNotFoundException e) {
-			printWriter.println(e);
+			printWriter.println("Cannot find the log file");
 			e.printStackTrace();
 		}
-	}
+        finally {
+            if(br != null) {
+                br.close();
+            }
+
+            if(fr != null) {
+                fr.close();
+            }
+        }
+    }
+
+    private void validate(String filePath) throws IllegalArgumentException {
+        if(filePath == null)
+            throw new IllegalArgumentException("Log file path cannot be null");
+
+        File f = new File(filePath);
+
+        if(!f.exists()) {
+            throw new IllegalArgumentException("Cannot find the log file");
+        }
+
+        if(!f.canRead())
+            throw new IllegalArgumentException("Log file cannot be read");
+    }
 
 }
