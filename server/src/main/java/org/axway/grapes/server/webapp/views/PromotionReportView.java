@@ -1,9 +1,12 @@
 package org.axway.grapes.server.webapp.views;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.Lists;
 import com.yammer.dropwizard.views.View;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Module;
+import org.axway.grapes.commons.datamodel.PromotionDetails;
+import org.axway.grapes.server.webapp.views.serialization.PromotionReportSerializer;
 
 import java.util.*;
 
@@ -13,6 +16,8 @@ import java.util.*;
  * <p>This view handle the promotion report. It contains the dependencies that are not promoted.</p>
  *
  */
+
+@JsonSerialize(using= PromotionReportSerializer.class)
 public class PromotionReportView extends View {
 
     private Module rootModule;
@@ -20,6 +25,7 @@ public class PromotionReportView extends View {
     private Map<String, PromotionReportView> dependencyReports = new HashMap<String, PromotionReportView>();
     private List<Artifact> doNotUseArtifacts = new ArrayList<Artifact>();
     private Map<String , List<String>> mismatchVersions = new HashMap<String, List<String>>();
+    private PromotionDetails promotionDetails=new PromotionDetails();
 
     public PromotionReportView() {
         super("PromotionReportView.ftl");
@@ -142,6 +148,16 @@ public class PromotionReportView extends View {
 
     public List<String> getPromotionPlan(){
         return unPromotedDependencies;
+    }
+    
+    public PromotionDetails promotionDetails()
+    {
+    	promotionDetails.canBePromoted=canBePromoted();
+    	promotionDetails.isSnapshot=isSnapshot();
+    	promotionDetails.setDoNotUseArtifacts(doNotUseArtifacts);
+    	promotionDetails.setUnPromotedDependencies(unPromotedDependencies);
+    	
+    	return promotionDetails;
     }
 
 
