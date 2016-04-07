@@ -223,23 +223,18 @@ public abstract class AbstractResource extends View {
     }
 
     /**
-     * Returns the list of available scopes
+     * Returns the comma separated list of available scopes
      *
      * @return String
      */
     public String getScopes(){
         final StringBuilder sb = new StringBuilder();
-        sb.append(Scope.COMPILE);
-        sb.append(", ");
-        sb.append(Scope.PROVIDED);
-        sb.append(", ");
-        sb.append(Scope.RUNTIME);
-        sb.append(", ");
-        sb.append(Scope.TEST);
-        sb.append(", ");
-        sb.append(Scope.IMPORT);
-        sb.append(", ");
-        sb.append(Scope.SYSTEM);
+        String prefix = "";
+        for (Scope scope : Scope.values()) {
+            sb.append(prefix);
+            prefix = ", ";
+            sb.append(scope);
+        }
         return sb.toString();
     }
 }
