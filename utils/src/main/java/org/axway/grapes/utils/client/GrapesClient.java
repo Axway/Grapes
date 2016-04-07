@@ -317,7 +317,7 @@ public class GrapesClient {
     }
 
     /**
-     * Promote a module in the Grapes server
+     * Check if a module can be promoted in the Grapes server
      *
      * @param name
      * @param version
@@ -337,6 +337,30 @@ public class GrapesClient {
         }
 
         return response.getEntity(Boolean.class);
+    }
+
+
+    /**
+     * Check if a module can be promoted in the Grapes server
+     *
+     * @param name
+     * @param version
+     * @return a boolean which is true only if the module can be promoted
+     * @throws GrapesCommunicationException
+     */
+    public PromotionDetails modulePromotionDetails(final String name, final String version) throws GrapesCommunicationException {
+        final Client client = getClient();
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.promoteModuleReportPath(name, version));
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
+            final String message = "Failed to get the promotion status of module " + name + " in version " + version;
+            LOG.error(message + ". Http status: " + response.getStatus());
+            throw new GrapesCommunicationException(message, response.getStatus());
+        }
+
+        return response.getEntity(PromotionDetails.class);
     }
 
     /**

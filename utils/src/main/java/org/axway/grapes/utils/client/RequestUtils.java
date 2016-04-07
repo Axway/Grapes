@@ -104,6 +104,15 @@ public final class RequestUtils {
         return path.toString();
     }
 
+    public static String promoteModuleReportPath(final String name, final String version) {
+        final StringBuilder path = new StringBuilder();
+        path.append(getModulePath(name, version));
+        path.append(ServerAPI.PROMOTION);
+        path.append(ServerAPI.GET_REPORT);
+
+        return path.toString();
+    }
+    
     public static String canBePromotedModulePath(final String name, final String version) {
         final StringBuilder path = new StringBuilder();
         path.append(getModulePath(name, version));
