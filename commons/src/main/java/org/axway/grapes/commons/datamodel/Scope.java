@@ -7,4 +7,4 @@ package org.axway.grapes.commons.datamodel;
  *
  * <p>Defines all the available dependency scopes that could be used</p>
  */
-public enum Scope { COMPILE,PROVIDED,RUNTIME,TEST,SYSTEM,IMPORT }
+public enum Scope { COMPILE,PROVIDED,RUNTIME,TEST,SYSTEM,IMPORT,RSL,THEME }
