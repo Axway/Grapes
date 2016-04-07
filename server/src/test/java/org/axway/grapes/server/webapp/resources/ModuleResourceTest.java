@@ -368,6 +368,46 @@ public class ModuleResourceTest extends ResourceTest {
     }
 
     @Test
+    public void getPromotionStatusReport(){
+        final DbModule dbModule  = new DbModule();
+        dbModule.setName("moduleTest");
+        dbModule.setVersion("1.0.0");
+        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
+
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        
+        PromotionDetails results = response.getEntity(PromotionDetails.class);
+        assertNotNull(results);
+        assertTrue(results.canBePromoted);
+        
+    }
+    
+    @Test
+    public void getPromotionStatusReportForSnapshotVersion(){
+        final DbModule dbModule  = new DbModule();
+        dbModule.setName("moduleTest");
+        dbModule.setVersion("1.0.0-SNAPSHOT");
+        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
+
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        
+        PromotionDetails results = response.getEntity(PromotionDetails.class);
+        assertNotNull(results);
+        
+        assertFalse(results.canBePromoted);        
+        assertTrue(results.isSnapshot);
+        
+    }
+
+    @Test
     public void getModuleOrganization(){
         final DbModule dbModule  = new DbModule();
         dbModule.setName("moduleTest");
