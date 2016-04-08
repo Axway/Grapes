@@ -21,6 +21,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract resource
@@ -220,6 +222,15 @@ public abstract class AbstractResource extends View {
      */
     public String getLicenseJsonModel() throws IOException {
         return JsonUtils.serialize(DataModelFactory.createLicense("","","","",""));
+    }
+    /**
+     * Returns an empty Promotion details in Json
+     *
+     * @return String
+     * @throws IOException
+     */
+    public String getPromotionDetailsJsonModel() throws IOException {
+        return JsonUtils.serialize(DataModelFactory.createPromotionDetails(false,false,new ArrayList<String>(),new ArrayList<Artifact>()));
     }
 
     /**

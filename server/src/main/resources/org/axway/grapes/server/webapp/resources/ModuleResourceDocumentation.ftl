@@ -456,11 +456,30 @@
                             </ul>
                         </div>
                     </section>
-                    <section id="module-buildinfo">
+                    <section id="module-promotion-report">
                         <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion11">
-                            <h2>@ /module/{name}/{version}/buildinfo</h2>
+                            <h2>@ /module/{name}/{version}/promotion/report</h2>
                         </a>
                         <div id="accordion11" class="collapse">
+                            <ul>
+                                <li>
+                                    <h3>GET</h3>
+                                    <ul>
+                                        <li>Get module promotion details</li>
+                                        <li>
+                                        	Returns HTML view or an module promotion details in Json
+                                        	<pre>${getPromotionDetailsJsonModel()}</pre>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </section>
+                    <section id="module-buildinfo">
+                        <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion12">
+                            <h2>@ /module/{name}/{version}/buildinfo</h2>
+                        </a>
+                        <div id="accordion12" class="collapse">
                             <ul>
                                 <li>
                                     <h3>GET</h3>

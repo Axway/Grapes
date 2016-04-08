@@ -1,5 +1,8 @@
 package org.axway.grapes.commons.datamodel;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.axway.grapes.commons.exceptions.UnsupportedScopeException;
 
 
@@ -130,7 +133,7 @@ public final class DataModelFactory {
 	 * @return Dependency
 	 * @throws UnsupportedScopeException 
 	 */
-	public static Dependency  createDependency(final Artifact artifact, final String scope) throws UnsupportedScopeException{
+	public static Dependency createDependency(final Artifact artifact, final String scope) throws UnsupportedScopeException{
         try{
             final Scope depScope = Scope.valueOf(scope.toUpperCase());
             return createDependency(artifact, depScope);
@@ -139,5 +142,30 @@ public final class DataModelFactory {
             throw new UnsupportedScopeException();
         }
 	}
-
+	
+	/**
+	 * Generates a PromotionDetails regarding the parameters.
+	 * 
+	 * @param canBePromoted Boolean
+	 * @param isSnapshot Boolean
+	 * @param unPromotedDependencies List<String>
+	 * @param doNotUseArtifacts List<Artifact>
+	 * @return PromotionDetails
+	 * @throws IOException 
+	 */
+	public static PromotionDetails createPromotionDetails(final Boolean canBePromoted, final Boolean isSnapshot, final List<String> unPromotedDependencies, final List<Artifact> doNotUseArtifacts) throws IOException{
+        try{
+            final PromotionDetails promotionDetails = new PromotionDetails();
+            
+            promotionDetails.canBePromoted=canBePromoted;
+            promotionDetails.isSnapshot=isSnapshot;
+            promotionDetails.setUnPromotedDependencies(unPromotedDependencies);
+            promotionDetails.setDoNotUseArtifacts(doNotUseArtifacts);
+            
+            return promotionDetails;
+        }
+        catch(Exception e){
+            throw new IOException(e);
+        }
+	}
 }
