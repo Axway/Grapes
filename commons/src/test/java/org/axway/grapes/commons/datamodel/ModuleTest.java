@@ -144,4 +144,28 @@ public class ModuleTest {
         module.addDependency(DataModelFactory.createDependency(dependency, Scope.COMPILE));
         assertEquals(1, module.getDependencies().size());
     }
+    
+    @Test
+    public void testDelivery(){
+    	Delivery delivery = new Delivery();
+    	delivery.setCommercialName("test Name");
+    	delivery.setCommercialVersion("1.0.0");
+    	
+        Module module = new Module();
+    	module.setDeliveries(delivery);
+    	
+    	assertEquals(2, module.deliveryStatusCount());
+    	
+    	delivery.setCommercialName("");
+    	delivery.setCommercialVersion("1.0.0");
+    	module.setDeliveries(delivery);
+    	
+    	assertEquals(1, module.deliveryStatusCount());
+    	
+    	delivery.setCommercialName("");
+    	delivery.setCommercialVersion("");
+    	module.setDeliveries(delivery);
+    	
+    	assertEquals(0, module.deliveryStatusCount());
+    }
 }

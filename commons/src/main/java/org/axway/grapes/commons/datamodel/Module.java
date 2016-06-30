@@ -24,6 +24,10 @@ public class Module {
     private Set<Dependency> dependencies = new HashSet<Dependency>();
     private Set<Module> submodules = new HashSet<Module>();
 
+    // productLogicalName and deliveries are used in case of commercial delivery
+    private String productLogicalName;
+    private Delivery deliveries;
+    
     protected Module() {
         // Must be instantiated via the DataModelObjectFactory
     }
@@ -174,5 +178,42 @@ public class Module {
 
         return sb.toString().hashCode();
     }
+    
+
+    /**
+     * 
+     * @return <tt>0</tt> if delivery info doesn't exist.
+     * @return <tt>1</tt> if wrong delivery info entered.
+     * @return <tt>2</tt> if delivery info exist.
+     */
+    
+	public int deliveryStatusCount() {
+		if(this.deliveries==null){
+			return 0;
+		}
+		int count = 0;
+		if(this.deliveries.getCommercialName()!=null && !this.deliveries.getCommercialName().isEmpty()){
+			count++;
+        }
+        if(this.deliveries.getCommercialVersion()!=null && !this.deliveries.getCommercialVersion().isEmpty()){
+        	count++;
+        }        
+	    return count;
+	    
+	 }
+
+	public String getProductLogicalName() {
+		return productLogicalName;
+	}
+	public void setProductLogicalName(String productLogicalName) {
+		this.productLogicalName = productLogicalName;
+	}
+	
+	public Delivery getDeliveries() {
+		return deliveries;
+	}
+	public void setDeliveries(Delivery deliveries) {
+		this.deliveries = deliveries;
+	}
 
 }
