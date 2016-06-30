@@ -1302,4 +1302,66 @@ public class GrapesClientTest {
         exc.expectMessage("Failed to check do not use artifact");
         client.isMarkedAsDoNotUse("toto");
     }
+    
+    @Test
+    public void isProductExistTest() throws IOException {
+        final String product = "product";
+
+        stubFor(get(urlMatching("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product))
+                .willReturn(aResponse().withStatus(Status.NOT_FOUND.getStatusCode())
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
+
+        boolean isProductExist = true;
+        Exception exception = null;
+
+        try {
+        	isProductExist = client.isProductExist(product);
+        } catch (Exception e) {
+            exception = e;
+        }
+
+        assertNull(exception);
+        assertFalse(isProductExist);
+    }
+    
+    @Test
+    public void getProductDeliveriesTest() throws IOException {
+        final String product = "product";
+        
+        List<Delivery> deliverySet = new ArrayList<Delivery>();
+        
+        Delivery delivery1 = new Delivery();
+        delivery1.setCommercialName("commercialName1");
+        delivery1.setCommercialVersion("1.0.0");
+        
+        Delivery delivery2 = new Delivery();
+        delivery2.setCommercialName("commercialName1");
+        delivery2.setCommercialVersion("1.0.0");
+
+        deliverySet.add(delivery1);
+        deliverySet.add(delivery2);
+
+        stubFor(get(urlMatching("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product + ServerAPI.GET_DELIVERIES))
+                .willReturn(aResponse().withStatus(Status.OK.getStatusCode())
+                        .withBody(JsonUtils.serialize(deliverySet))
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
+
+        List<Delivery> deliveries = null;
+        Exception exception = null;
+
+        try {
+        	deliveries = client.getProductDeliveries(product);
+        } catch (Exception e) {
+            exception = e;
+        }
+
+        assertNull(exception);
+        assertNotNull(deliveries.get(0));
+        assertNotNull(deliveries.get(1));
+        assertEquals(deliverySet.get(0).getCommercialName(), deliveries.get(0).getCommercialName());
+        assertEquals(deliverySet.get(1).getCommercialName(), deliveries.get(1).getCommercialName());
+        assertEquals(deliverySet.get(0).getCommercialVersion(), deliveries.get(0).getCommercialVersion());
+        assertEquals(deliverySet.get(1).getCommercialVersion(), deliveries.get(1).getCommercialVersion());
+    }
+
 }

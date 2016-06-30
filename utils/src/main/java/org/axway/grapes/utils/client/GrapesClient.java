@@ -761,7 +761,6 @@ public class GrapesClient {
 
     }
 
-
     /**
      * Returns the list of module names of a product
      *
@@ -782,5 +781,91 @@ public class GrapesClient {
 
         return response.getEntity(new GenericType<List<String>>(){});
 
+    }
+
+    /**
+     * Returns the delivery of Product
+     *
+     * @return Delivery
+     */
+    public boolean isProductExist(final String productLogicalName) throws GrapesCommunicationException{
+        final Client client = getClient();
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getProduct(productLogicalName));
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
+        	if(ClientResponse.Status.NOT_FOUND.getStatusCode() == response.getStatus()){
+            	return false;
+            }
+            final String message = "Failed to check Product existence";
+            LOG.error(message + ". Http status: " + response.getStatus());
+            throw new GrapesCommunicationException(message, response.getStatus());
+        }
+        
+        return true;
+
+    }
+    
+    /**
+     * Returns the delivery of Product
+     *
+     * @return Delivery
+     */
+    public Delivery getProductDelivery(final String productLogicalName, final String commercialName, final String commercialVersion) throws GrapesCommunicationException {
+        final Client client = getClient();
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getProductDelivery(productLogicalName, commercialName, commercialVersion));
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
+            final String message = "Failed to get product deliveries";
+            LOG.error(message + ". Http status: " + response.getStatus());
+            throw new GrapesCommunicationException(message, response.getStatus());
+        }
+        return response.getEntity(Delivery.class);
+
+    }
+    
+    /**
+     * Returns the list of Product delivery
+     *
+     * @return List<Delivery>
+     */
+    public List<Delivery> getProductDeliveries(final String productLogicalName) throws GrapesCommunicationException {
+        final Client client = getClient();
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getProductDelivery(productLogicalName));
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
+            final String message = "Failed to get product deliveries";
+            LOG.error(message + ". Http status: " + response.getStatus());
+            throw new GrapesCommunicationException(message, response.getStatus());
+        }
+        return response.getEntity(new GenericType<List<Delivery>>(){});
+
+    }
+    
+
+    /**
+     * Create an Product delivery
+     *
+     * @throws AuthenticationException, GrapesCommunicationException, IOException 
+     */
+    public void createProductDelivery(final String productLogicalName, final Delivery delivery, final String user, final String password) throws GrapesCommunicationException, AuthenticationException {      
+    	final Client client = getClient(user, password);
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getProductDelivery(productLogicalName));
+        final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, delivery);
+
+        client.destroy();
+        if(ClientResponse.Status.CREATED.getStatusCode() != response.getStatus()){
+            final String message = "Failed to create a delivery";
+            LOG.error(message + ". Http status: " + response.getStatus());
+            throw new GrapesCommunicationException(message, response.getStatus());
+        }
     }
 }
