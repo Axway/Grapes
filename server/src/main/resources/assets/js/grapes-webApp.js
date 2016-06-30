@@ -255,8 +255,8 @@ function getProductList(productNameFieldId, productDeliveryFieldId, targetedFiel
         success: function(data, textStatus) {
             $.each(data, function(i, delivery) {
                 html += "<label class=\"radio\">"
-                html += "<input type=\"radio\" name=\"productRadio\" value=\""+ delivery+ "\" onclick=\"cleanAction()\">";
-                html += delivery;
+                html += "<input type=\"radio\" name=\"productRadio\" value=\""+ delivery.commercialName + "/" + delivery.commercialVersion + "\" onclick=\"cleanAction()\">";
+                html += delivery.commercialName + " " + delivery.commercialVersion;
                 html += "</label>";
             });
 
