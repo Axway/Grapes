@@ -1,11 +1,17 @@
 package org.axway.grapes.server.webapp.views;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.Lists;
 import com.yammer.dropwizard.views.View;
-import org.axway.grapes.server.db.datamodel.DbProduct;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.axway.grapes.commons.datamodel.Delivery;
+import org.axway.grapes.server.db.datamodel.DbProduct;
+import org.axway.grapes.server.webapp.views.serialization.ProductSerializer;
+
+@JsonSerialize(using= ProductSerializer.class)
 public class ProductView extends View{
 
     private final DbProduct product;
@@ -20,6 +26,15 @@ public class ProductView extends View{
     }
 
     public List<String> getDeliveriesVersions() {
-        return Lists.newArrayList(product.getDeliveries().keySet());
+    	List<String> deliveryVersion = new ArrayList<String>();
+    	
+    	for(Delivery delivery : getDeliveries()){
+    		deliveryVersion.add(delivery.getCommercialName() + " " + delivery.getCommercialVersion());
+    	}
+        return deliveryVersion;
+    }
+
+    public List<Delivery> getDeliveries() {
+        return Lists.newArrayList(product.getDeliveries());
     }
 }
