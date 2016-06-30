@@ -1,5 +1,6 @@
 package org.axway.grapes.server.db.datamodel;
 
+import org.axway.grapes.commons.datamodel.Delivery;
 import org.jongo.marshall.jackson.oid.Id;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class DbProduct {
     private List<String> modules = new ArrayList<String>();
 
     public static final String DELIVERIES_DB_FIELD = "deliveries";
-    private Map<String, List<String>> deliveries = new HashMap<String, List<String>>();
+    private List<Delivery> deliveries = new ArrayList<Delivery>();
 
     public String getDatamodelVersion() {
         return datamodelVersion;
@@ -63,11 +64,20 @@ public class DbProduct {
         this.modules = modules;
     }
 
-    public Map<String, List<String>> getDeliveries() {
+    public List<Delivery> getDeliveries() {
         return deliveries;
     }
 
-    public void setDeliveries(Map<String, List<String>> deliveries) {
+    public void setDeliveries(List<Delivery> deliveries) {
         this.deliveries = deliveries;
+    }
+
+    public Delivery getDelivery(String commercialName, String commercialVersion) {
+    	for(Delivery delivery : this.deliveries){
+    		if(delivery.getCommercialName().equals(commercialName) && delivery.getCommercialVersion().equals(commercialVersion)){
+    			return delivery;
+    		}
+    	}
+    	return null;
     }
 }
