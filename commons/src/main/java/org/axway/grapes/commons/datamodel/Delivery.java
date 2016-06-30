@@ -43,4 +43,9 @@ public class Delivery {
 	public void setDependencies(List<String> dependencies) {
 		this.dependencies = dependencies;
 	}
+	
+	public void addDependency(String dependency)
+	{
+		this.dependencies.add(dependency);
+	}
 }
