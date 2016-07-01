@@ -57,7 +57,7 @@ function loadProductDelivery(productName, productDeliverySelect){
             var html = "<option value=\"-\"></option>";
             $.each(data, function(i, version) {
                 html += "<option value=\"";
-                html += version.commercialName + " " + version.commercialVersion + "\">";
+                html += version.commercialName + "/" + version.commercialVersion + "\">";
                 html += version.commercialName + " " + version.commercialVersion + "</option>";
             });
 

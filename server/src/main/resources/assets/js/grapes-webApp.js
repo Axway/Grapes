@@ -25,12 +25,12 @@ function displayProductOptions(){
     $("#targets").empty();
     cleanAction();
     var productIds = "<div class=\"control-group\">\n";
-    productIds += "   <label class=\"control-label\" for=\"productName\" style=\"width: auto;\">name: </label>\n";
-    productIds += "      <div class=\"controls\"  style=\"margin-left: 75px;\"><select id=\"productName\"></select></div>\n";
+    productIds += "   <label class=\"control-label\" for=\"productName\" style=\"width: auto;\">Product Logical Name: </label>\n";
+    productIds += "      <div class=\"controls\"  style=\"margin-left: 165px;\"><select id=\"productName\"></select></div>\n";
     productIds += "</div>\n";
     productIds += "<div class=\"control-group\">\n";
-    productIds += "   <label class=\"control-label\" for=\"productDelivery\" style=\"width: auto;\">delivery: </label>\n";
-    productIds += "      <div class=\"controls\"  style=\"margin-left: 75px;\"><select id=\"productDelivery\"></select></div>\n";
+    productIds += "   <label class=\"control-label\" for=\"productDelivery\" style=\"width: auto;\">Commercial Delivery: </label>\n";
+    productIds += "      <div class=\"controls\"  style=\"margin-left: 165px;\"><select id=\"productDelivery\"></select></div>\n";
     productIds += "</div>\n";
     $("#ids").empty().append(productIds);
     $("#filters").empty();
@@ -231,7 +231,7 @@ function getProductList(productNameFieldId, productDeliveryFieldId, targetedFiel
     if(productDelivery != '-' && productDelivery != null){
         html += "<label class=\"radio\">"
         html += "<input type=\"radio\" name=\"productRadio\" value=\""+ productDelivery+ "\" onclick=\"cleanAction()\">";
-        html += productDelivery;
+        html += productDelivery.replace('/',' ');
         html += "</label>";
         $("#" + targetedFieldId).append(html);
         $("input:radio:first").attr('checked', true);
@@ -240,33 +240,35 @@ function getProductList(productNameFieldId, productDeliveryFieldId, targetedFiel
 
 
     html += "<label class=\"radio\">"
-    html += "<input type=\"radio\" name=\"productRadio\" value=\""+ productName+ "\" onclick=\"cleanAction()\">";
+    html += "<input type=\"radio\" name=\"productRadio\" value=\""+ productName+ "\" onclick=\"cleanAction()\" checked=\"true\">";
     html += productName;
     html += "</label>";
 
-    $.ajax({
-        type: "GET",
-        accept: {
-            json: 'application/json'
-        },
-        url: "/product/" + productName + "/deliveries",
-        data: {},
-        dataType: "json",
-        success: function(data, textStatus) {
-            $.each(data, function(i, delivery) {
-                html += "<label class=\"radio\">"
-                html += "<input type=\"radio\" name=\"productRadio\" value=\""+ delivery.commercialName + "/" + delivery.commercialVersion + "\" onclick=\"cleanAction()\">";
-                html += delivery.commercialName + " " + delivery.commercialVersion;
-                html += "</label>";
-            });
+    $("#" + targetedFieldId).append(html);
 
-            $("#" + targetedFieldId).append(html);
-        }
-    }).done(function(){
-        setTimeout(function(){
-            $("input:radio:first").attr('checked', true);
-        }, 500);
-    });
+//    $.ajax({
+//        type: "GET",
+//        accept: {
+//            json: 'application/json'
+//        },
+//        url: "/product/" + productName + "/deliveries",
+//        data: {},
+//        dataType: "json",
+//        success: function(data, textStatus) {
+//            $.each(data, function(i, delivery) {
+//                html += "<label class=\"radio\">"
+//                html += "<input type=\"radio\" name=\"productRadio\" value=\""+ delivery.commercialName + "/" + delivery.commercialVersion + "\" onclick=\"cleanAction()\">";
+//                html += delivery.commercialName + " " + delivery.commercialVersion;
+//                html += "</label>";
+//            });
+//
+//            $("#" + targetedFieldId).append(html);
+//        }
+//    }).done(function(){
+//        setTimeout(function(){
+//            $("input:radio:first").attr('checked', true);
+//        }, 500);
+//    });
 }
 
 function getModuleList(moduleNameFieldId, moduleVersionFieldId, promotedFieldId, targetedFieldId){
@@ -596,12 +598,12 @@ function getProductOverview(){
                 dataType: "json",
                 success: function(data, textStatus) {
                     $.each(data, function(i, delivery) {
-                        html += "<tr id=\""+delivery+"-row\"><td>" + delivery + "</td></tr>\n";
+                        html += "<tr id=\""+delivery.commercialVersion+"-row\"><td>" + delivery.commercialName + delivery.commercialVersion + "</td></tr>\n";
                     });
 
                     html += "</tbody>\n<br/>\n";
                     html += "</table>\n";
-                    html +="<button type=\"button\" class=\"btn\" style=\"margin:2px;\" onclick=\"createDelivery();\">New Delivery</button>\n";
+//                    html +="<button type=\"button\" class=\"btn\" style=\"margin:2px;\" onclick=\"createDelivery();\">New Delivery</button>\n";
                     $("#results").empty().append(html);
                     addProjectModuleAction(productName);
                 }
@@ -728,10 +730,10 @@ function getProductDeliveryOverview(delivery, product){
 
     var html = "<h3>Delivery Overview</h3><br/>\n";
     html += "<p><strong>Product Name:</strong> "+product+"</p>\n";
-    html += "<p><strong>Delivery Name:</strong> "+delivery+"</p>\n";
+    html += "<p><strong>Delivery Name:</strong> "+delivery.replace('/',' ')+"</p>\n";
 
     html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
-    html += "<thead><tr><th>Module Names</th></tr></thead>\n";
+    html += "<thead><tr><th>Commercial Information</th><th>Release Date</th></tr></thead>\n";
     html += "<tbody>\n";
 
     $.ajax({
@@ -740,15 +742,34 @@ function getProductDeliveryOverview(delivery, product){
         data: {},
         dataType: "json",
         success: function(data, textStatus) {
-            $.each(data, function(i, moduleId) {
-                html += "<tr id=\""+moduleId+"-row\"><td name=\"moduleRow\" id=\""+moduleId+"\" onclick=\"removeDeliveryModuleAction('"+moduleId+"');\">" + moduleId + "</td></tr>\n";
-            });
+            html += "<tr id=\""+data.commercialVersion+"-row\"><td name=\"moduleRow\" id=\""+data.commercialVersion+"\">" + data.commercialName + " " + data.commercialVersion + "</td>" +
+            		"<td>" + data.releaseDate + "</td>" + 
+            		"</tr>\n";
+           
+
+//                $.each(data, function(i, moduleId) {
+//                    html += "<tr id=\""+moduleId+"-row\"><td name=\"moduleRow\" id=\""+moduleId+"\" onclick=\"removeDeliveryModuleAction('"+moduleId+"');\">" + moduleId + "</td></tr>\n";
+//                });
+                
+            html += "</tbody>\n";
+            html += "</table>\n";
+            
+            html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
+            html += "<thead><tr><th>Dependencies</th></tr></thead>\n";
+            html += "<tbody>\n";
+           
+            for(var index=0; index < data.dependencies.length; index++){
+                html += "<tr><td>" +
+                data.dependencies[index] +
+                		"</td></tr>";
+            }
 
             html += "</tbody>\n";
             html += "</table>\n";
+            
             html += "<div id=\"moduleAddDiv\"/>\n";
             $("#results").empty().append(html);
-            addDeliveryModuleAction(delivery, product);
+//          addDeliveryModuleAction(delivery, product);
         }
     })
 }
