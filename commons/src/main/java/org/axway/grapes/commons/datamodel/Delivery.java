@@ -1,5 +1,6 @@
 package org.axway.grapes.commons.datamodel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Delivery {
@@ -7,7 +8,7 @@ public class Delivery {
 	private String commercialName;
 	private String commercialVersion;
 	private String releaseDate;
-	private List<String> dependencies;
+	private List<String> dependencies = new ArrayList<String>();
 
 	public Delivery() {
 		// Only for creating an instance
