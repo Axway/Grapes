@@ -1320,6 +1320,7 @@ public class GrapesClientTest {
             exception = e;
         }
 
+        // checks
         assertNull(exception);
         assertFalse(isProductExist);
     }
@@ -1354,7 +1355,9 @@ public class GrapesClientTest {
         } catch (Exception e) {
             exception = e;
         }
-
+        
+        
+        // checks
         assertNull(exception);
         assertNotNull(deliveries.get(0));
         assertNotNull(deliveries.get(1));
