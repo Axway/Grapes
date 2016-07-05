@@ -18,7 +18,7 @@ public class Delivery {
 	}
 
 	public void setCommercialName(String commercialName) {
-		this.commercialName = commercialName;
+		this.commercialName = commercialName.trim();
 	}
 
 	public String getCommercialVersion() {
@@ -26,7 +26,7 @@ public class Delivery {
 	}
 
 	public void setCommercialVersion(String commercialVersion) {
-		this.commercialVersion = commercialVersion;
+		this.commercialVersion = commercialVersion.trim();
 	}
 
 	public String getReleaseDate() {
