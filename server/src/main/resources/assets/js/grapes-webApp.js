@@ -589,7 +589,7 @@ function getProductOverview(){
             html += "<div id=\"moduleAddDiv\"/>\n";
 
             html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
-            html += "<thead><tr><th>Deliveries</th></tr></thead>\n";
+            html += "<thead><tr><th>Commercial Deliveries</th></tr></thead>\n";
             html += "<tbody>\n";
             $.ajax({
                 type: "GET",
