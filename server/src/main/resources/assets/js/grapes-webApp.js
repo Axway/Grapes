@@ -245,30 +245,6 @@ function getProductList(productNameFieldId, productDeliveryFieldId, targetedFiel
     html += "</label>";
 
     $("#" + targetedFieldId).append(html);
-
-//    $.ajax({
-//        type: "GET",
-//        accept: {
-//            json: 'application/json'
-//        },
-//        url: "/product/" + productName + "/deliveries",
-//        data: {},
-//        dataType: "json",
-//        success: function(data, textStatus) {
-//            $.each(data, function(i, delivery) {
-//                html += "<label class=\"radio\">"
-//                html += "<input type=\"radio\" name=\"productRadio\" value=\""+ delivery.commercialName + "/" + delivery.commercialVersion + "\" onclick=\"cleanAction()\">";
-//                html += delivery.commercialName + " " + delivery.commercialVersion;
-//                html += "</label>";
-//            });
-//
-//            $("#" + targetedFieldId).append(html);
-//        }
-//    }).done(function(){
-//        setTimeout(function(){
-//            $("input:radio:first").attr('checked', true);
-//        }, 500);
-//    });
 }
 
 function getModuleList(moduleNameFieldId, moduleVersionFieldId, promotedFieldId, targetedFieldId){
@@ -567,7 +543,7 @@ function getProductOverview(){
         return;
     }
 
-    var html = "<h3>Project Overview</h3><br/>\n";
+    var html = "<h3>Product Overview</h3><br/>\n";
     html += "<p><strong>Name:</strong> "+productName+"</p>\n";
 
 
@@ -598,12 +574,11 @@ function getProductOverview(){
                 dataType: "json",
                 success: function(data, textStatus) {
                     $.each(data, function(i, delivery) {
-                        html += "<tr id=\""+delivery.commercialVersion+"-row\"><td>" + delivery.commercialName + delivery.commercialVersion + "</td></tr>\n";
+                        html += "<tr id=\""+delivery.commercialVersion+"-row\"><td>" + delivery.commercialName + " " + delivery.commercialVersion + "</td></tr>\n";
                     });
 
                     html += "</tbody>\n<br/>\n";
                     html += "</table>\n";
-//                    html +="<button type=\"button\" class=\"btn\" style=\"margin:2px;\" onclick=\"createDelivery();\">New Delivery</button>\n";
                     $("#results").empty().append(html);
                     addProjectModuleAction(productName);
                 }
@@ -741,16 +716,10 @@ function getProductDeliveryOverview(delivery, product){
         url: "/product/"+ product + "/deliveries/" + delivery,
         data: {},
         dataType: "json",
-        success: function(data, textStatus) {
-            html += "<tr id=\""+data.commercialVersion+"-row\"><td name=\"moduleRow\" id=\""+data.commercialVersion+"\">" + data.commercialName + " " + data.commercialVersion + "</td>" +
-            		"<td>" + data.releaseDate + "</td>" + 
-            		"</tr>\n";
-           
-
-//                $.each(data, function(i, moduleId) {
-//                    html += "<tr id=\""+moduleId+"-row\"><td name=\"moduleRow\" id=\""+moduleId+"\" onclick=\"removeDeliveryModuleAction('"+moduleId+"');\">" + moduleId + "</td></tr>\n";
-//                });
-                
+        success: function(delivery, textStatus) {
+            html += "<tr id=\""+delivery.commercialVersion+"-row\"><td name=\"moduleRow\" id=\""+delivery.commercialVersion+"\">" + delivery.commercialName + " " + delivery.commercialVersion + "</td>";
+            html += "<td>" + delivery.releaseDate + "</td>";
+            html += "</tr>\n";
             html += "</tbody>\n";
             html += "</table>\n";
             
@@ -758,10 +727,8 @@ function getProductDeliveryOverview(delivery, product){
             html += "<thead><tr><th>Dependencies</th></tr></thead>\n";
             html += "<tbody>\n";
            
-            for(var index=0; index < data.dependencies.length; index++){
-                html += "<tr><td>" +
-                data.dependencies[index] +
-                		"</td></tr>";
+            for(var index=0; index < delivery.dependencies.length; index++){
+                html += "<tr><td>" + delivery.dependencies[index] + "</td></tr>";
             }
 
             html += "</tbody>\n";
@@ -769,7 +736,6 @@ function getProductDeliveryOverview(delivery, product){
             
             html += "<div id=\"moduleAddDiv\"/>\n";
             $("#results").empty().append(html);
-//          addDeliveryModuleAction(delivery, product);
         }
     })
 }
