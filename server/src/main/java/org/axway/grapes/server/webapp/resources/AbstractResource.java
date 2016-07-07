@@ -247,4 +247,13 @@ public abstract class AbstractResource extends View {
         String scopes = sb.toString().trim();
         return scopes.substring(0, scopes.length() - 1);
     }
+     /**
+      * Returns an empty Delivery details in Json
+      *
+      * @return String
+      * @throws IOException
+      */
+     public String getDeliveryJsonModel() throws IOException {
+         return JsonUtils.serialize(DataModelFactory.createDelivery("", "", "", new ArrayList<String>()));
+     }
 }

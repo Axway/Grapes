@@ -1,6 +1,7 @@
 package org.axway.grapes.commons.datamodel;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.axway.grapes.commons.exceptions.UnsupportedScopeException;
@@ -163,6 +164,32 @@ public final class DataModelFactory {
             promotionDetails.setDoNotUseArtifacts(doNotUseArtifacts);
             
             return promotionDetails;
+        }
+        catch(Exception e){
+            throw new IOException(e);
+        }
+	}	
+	/**
+	 * Generates a PromotionDetails regarding the parameters.
+	 * 
+	 * @param commercialName String
+	 * @param commercialVersion String
+	 * @param releaseDate String
+	 * @param dependencies List<String>
+	 * @return Delivery
+	 * @throws IOException 
+	 */
+	
+	public static Delivery createDelivery(final String commercialName, final String commercialVersion, final String releaseDate, final List<String> dependencies) throws IOException{
+        try{
+            final Delivery delivery = new Delivery();
+            
+            delivery.setCommercialName(commercialName);
+            delivery.setCommercialVersion(commercialVersion);
+            delivery.setReleaseDate(releaseDate);
+            delivery.setDependencies(dependencies);
+            
+            return delivery;
         }
         catch(Exception e){
             throw new IOException(e);

@@ -74,7 +74,7 @@
                         <li class=""><a data-toggle="collapse" data-target="#accordion32" href="#product-modules"><i class="icon-chevron-right"></i> Get/update the product's modules</a></li>
                         <li class=""><a data-toggle="collapse" data-target="#accordion4" href="#product-deliveries"><i class="icon-chevron-right"></i> Get the existing deliveries</a></li>
                         <li class=""><a data-toggle="collapse" data-target="#accordion4" href="#product-deliveries"><i class="icon-chevron-right"></i> Create a new delivery</a></li>
-                        <li class=""><a data-toggle="collapse" data-target="#accordion5" href="#product-delivery"><i class="icon-chevron-right"></i> Get/update the modules of a delivery</a></li>
+                        <li class=""><a data-toggle="collapse" data-target="#accordion5" href="#product-delivery"><i class="icon-chevron-right"></i> Get/update the dependencies of a delivery</a></li>
                     </ul>
                 </div>
                 <div class="span8">
@@ -174,7 +174,7 @@
                                 <li>
                                     <h3>GET</h3>
                                     <ul>
-                                        <li>Get all the delivery names of a product</li>
+                                        <li>Get all the delivery of a product</li>
                                         <li>Returns a Json list of string which contains the deliveries</li>
                                     </ul>
                                 </li>
@@ -182,8 +182,11 @@
                                     <h3>POST</h3>
                                     <ul>
                                         <li>Create a new delivery for a product</li>
-                                        <li>Expects that the request content contains the name of the new delivery</li>
-                                        <li>Return status 201 if ok, 400 if request is malformed, 409 if the delivery already exist or 404 if the product does not exist</li>
+                                        <li>Expects a JSON delivery in the request content</li>
+                                        <li>Json Module example:
+                                            <pre>${getDeliveryJsonModel()}</pre>
+                                        </li>
+                                        <li>Return status 201 if ok, 400 if the Json does not suits the model, 409 if the delivery already exist or 404 if the product does not exist</li>
                                     </ul>
                                 </li>
                             </ul>
@@ -191,15 +194,16 @@
                     </section>
                     <section id="product-delivery">
                         <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion5">
-                            <h2>@ /product/{name}/deliveries/{deliveryId}</h2>
+                            <h2>@/product/{name}/deliveries/{commercialName}/{commercialVersion}</h2>
                         </a>
                         <div id="accordion5" class="collapse">
                             <ul>
                                 <li>
                                     <h3>GET</h3>
                                     <ul>
-                                        <li>Get the list of module Ids of a delivery</li>
-                                        <li>Returns a Json list of module Ids</li>
+                                        <li>Get an delivery</li>
+                                        <li>Returns HTML view or a Json delivery
+                                        <pre>${getDeliveryJsonModel()}</pre></li>
                                     </ul>
                                 </li>
                                 <li>
@@ -212,8 +216,8 @@
                                 <li>
                                     <h3>POST</h3>
                                     <ul>
-                                        <li>Set a module list to a delivery</li>
-                                        <li>Expects that the request content contains a list of existing moduleIds</li>
+                                        <li>Set a dependencies list to a delivery</li>
+                                        <li>Expects that the request content contains a list of delivery dependencies</li>
                                         <li>Return status 201 if ok, 400 if request is malformed or 404 if the product/delivery/modules don't exist</li>
                                     </ul>
                                 </li>
