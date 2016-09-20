@@ -73,7 +73,7 @@
                                         <button type="button" class="btn btn-inverse" style="margin-left:8px;" onclick='displayProductOptions();'>Products</button>
                                     </div>
                                     <div class="row-fluid" style="padding:4px">
-                                        <button type="button" class="btn btn-inverse" style="margin-left:8px;" onclick='displayModuleOptions();'>Modules</button>
+                                        <button type="button" class="btn btn-inverse" style="margin-left:8px;" id="moduleButton" onclick='displayModuleOptions();'>Modules</button>
                                     </div>
                                     <div class="row-fluid" style="padding:4px">
                                         <button type="button" class="btn btn-inverse" style="margin-left:8px;" onclick='displayArtifactOptions();'>Artifacts</button>

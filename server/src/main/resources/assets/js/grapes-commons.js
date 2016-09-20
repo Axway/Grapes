@@ -80,14 +80,23 @@ function loadModuleNames(moduleNameSelect){
  		dataType: "json",
  		success: function(data, textStatus) {
  			var html = "<option value=\"-\"></option>";
-
+ 			var moduleName=getNameAndVersion('moduleName');
+ 			var moduleVersion=getNameAndVersion('moduleVersion');
  			$.each(data, function(i, name) {
+
+ 				if(name==moduleName){
+ 				html += "<option value=\"";
+ 				html += name + "\" selected>";
+ 				html += name + "</option>";				
+ 					}
+ 				else{
  				html += "<option value=\"";
  				html += name + "\">";
  				html += name + "</option>";
+ 				}
  			});
-
  			$("#" + moduleNameSelect).empty().append(html);
+ 			loadTargetedModuleVersion(moduleName, moduleVersion); 
  		}
  	});
  }

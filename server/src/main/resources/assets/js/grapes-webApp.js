@@ -908,7 +908,6 @@ function productSave(){
     });
 }
 
-
 function getModuleOverview(){
     $("#optional-action").empty();
 
@@ -1559,4 +1558,116 @@ function updateProduct(){
     setTimeout(function(){
         getProductOverview();
     }, 500);
+}
+
+/** *********************************************************************************************** */
+/* Display Overview report of the targeted module */
+/** *********************************************************************************************** */		
+
+var moduleName=getNameAndVersion('moduleName');
+var moduleVersion=getNameAndVersion('moduleVersion');		
+var str = window.location.href;		
+var strval = str.indexOf(moduleName);
+	if (strval > 0) {
+		jQuery(function(){
+		jQuery('#moduleButton').click();
+		});
+
+		getModuleTarget(moduleName,moduleVersion,'false','targets');
+				
+		
+}
+
+<!-- gets targeted module name and version from the url -->
+function getNameAndVersion(val) {
+	var result = "Not found",
+	tmp = [];
+	var items = location.search.substr(1).split("&");
+		for (var index = 0; index < items.length; index++) {
+		tmp = items[index].split("=");
+			if (tmp[0] === val) result = decodeURIComponent(tmp[1]);
+		}
+	return result;
+}
+
+<!-- gets targets -->
+function getModuleTarget(moduleNameFieldValue, moduleVersionFieldValue, promotedFieldValue, targetedFieldValue){
+	$("#" + targetedFieldValue).empty();
+	$('.alert').hide();
+	cleanAction();
+	var moduleName = moduleNameFieldValue;
+	var moduleVersion = moduleVersionFieldValue;
+	
+	var queryParams = "";
+	if(moduleName != '-' && moduleName != null){
+		queryParams += "name="+ moduleName +"&"
+	}
+	if(moduleVersion != '-' && moduleVersion != null){
+		queryParams += "version="+ moduleVersion +"&"
+	}
+	queryParams += "promoted="+ promotedFieldValue
+			
+	$.ajax({
+		type: "GET",
+		accept: {
+			json: 'application/json'
+			},
+		url: "/module/all?" + queryParams ,
+		data: {},
+		dataType: "json",
+		success: function(data, textStatus) {
+			var html = "";
+			$.each(data, function(i, module) {
+				var moduleId = module.name + ":" + module.version;
+				html += "<label class=\"radio\">"
+				html += "<input type=\"radio\" name=\"moduleId\" value=\""+ moduleId+ "\" onclick=\"cleanAction()\">";
+				html += moduleId;
+				html += "</label>"
+			});
+			
+			$("#" + targetedFieldValue).append(html);
+		}
+    }).done(function(){
+        setTimeout(function(){
+            $("input:radio[name=moduleId]:first").attr('checked', true);
+            jQuery(function(){
+        		jQuery('#overviewButton').click();
+        		});
+        }, 500);
+    });
+}
+
+function loadTargetedModuleVersion(moduleName, mVersion){
+	return $.ajax({
+		type: "GET",
+		accept: {
+				json: 'application/json'
+		},
+		url: "/module/" + moduleName + "/versions",
+		data: {},
+		dataType: "json",
+		success: function(data, textStatus) {
+			var html = "<option value=\"-\"></option>";
+
+
+		$.each(data, function(i, version) {
+			if(version==mVersion){
+ 				html += "<option value=\"";
+ 				html += version + "\" selected>";
+ 				html += version + "</option>";
+ 			}
+			else{
+			html += "<option value=\"";
+			html += version + "\">";
+			html += version + "</option>";
+			}
+		});
+
+		$("#" + "moduleVersion").empty().append(html);
+		
+	},
+	error: function (xhr, ajaxOptions, thrownError){
+	    $("#" + "moduleVersion").empty();
+	}
+}); 
 }
