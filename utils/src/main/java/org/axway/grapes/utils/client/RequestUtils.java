@@ -212,11 +212,10 @@ public final class RequestUtils {
         return path.toString();
     }
 
-	public static String getProduct(final String name) {
+	public static String getProductNames() {
 		final StringBuilder path = new StringBuilder();
         path.append(ServerAPI.PRODUCT_RESOURCE);
-        path.append("/");
-        path.append(name);
+        path.append("/names");
 
         return path.toString();
 	}

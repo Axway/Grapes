@@ -785,27 +785,23 @@ public class GrapesClient {
 
     /**
      * Returns the delivery of Product
-     *
+     * 
      * @return Delivery
      */
-    public boolean isProductExist(final String productLogicalName) throws GrapesCommunicationException{
+    public List<String> getAllProductNames() throws GrapesCommunicationException{
         final Client client = getClient();
-        final WebResource resource = client.resource(serverURL).path(RequestUtils.getProduct(productLogicalName));
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.getProductNames());
         final ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
-        	if(ClientResponse.Status.NOT_FOUND.getStatusCode() == response.getStatus()){
-            	return false;
-            }
-            final String message = "Failed to check Product existence";
+            final String message = "Failed to get product names";
             LOG.error(message + ". Http status: " + response.getStatus());
             throw new GrapesCommunicationException(message, response.getStatus());
         }
-        
-        return true;
 
+        return response.getEntity(new GenericType<List<String>>(){});
     }
     
     /**

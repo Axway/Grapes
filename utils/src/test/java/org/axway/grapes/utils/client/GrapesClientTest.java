@@ -1304,25 +1304,29 @@ public class GrapesClientTest {
     }
     
     @Test
-    public void isProductExistTest() throws IOException {
-        final String product = "product";
-
-        stubFor(get(urlMatching("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product))
-                .willReturn(aResponse().withStatus(Status.NOT_FOUND.getStatusCode())
+    public void getProductListTest() throws IOException {
+        final List<String> productDummyList = new ArrayList<String>();
+        productDummyList.add("product1");
+        productDummyList.add("product2");
+        
+        stubFor(get(urlMatching("/" + RequestUtils.getProductNames()))
+                .willReturn(aResponse().withStatus(Status.OK.getStatusCode())
+                		.withBody(JsonUtils.serialize(productDummyList))
                         .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
 
-        boolean isProductExist = true;
+        List<String> productNameList = null;
         Exception exception = null;
 
         try {
-        	isProductExist = client.isProductExist(product);
+        	productNameList = client.getAllProductNames();
         } catch (Exception e) {
             exception = e;
         }
 
         // checks
         assertNull(exception);
-        assertFalse(isProductExist);
+        assertNotNull(productNameList);
+        assertEquals(2, productNameList.size());
     }
     
     @Test
