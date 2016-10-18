@@ -723,6 +723,19 @@ function getProductDeliveryOverview(delivery, product){
             html += "</tbody>\n";
             html += "</table>\n";
             
+            if(delivery.version != null && delivery.jenkinsBuildUrl != null){
+                html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
+                html += "<thead><tr><th>Release technical Version</th><th>Jenkins build</th></tr></thead>\n";
+                html += "<tbody>\n";
+                html += "<tr id=\""+delivery.version+"-row\"><td name=\"moduleRow\" id=\""+delivery.version+"\">" + delivery.version + "</td>";
+                html += "<td>";
+                html += "<a href=\"" + delivery.jenkinsBuildUrl + "\" target=\"_blank\" \">" + getBuildFromJenkinsURL(delivery.jenkinsBuildUrl) + "</a>";
+                html +="</td>";
+                html += "</tr>\n";
+                html += "</tbody>\n";
+                html += "</table>\n";
+            }
+            
             html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
             html += "<thead><tr><th>Dependencies</th></tr></thead>\n";
             html += "<tbody>\n";
@@ -738,6 +751,11 @@ function getProductDeliveryOverview(delivery, product){
             $("#results").empty().append(html);
         }
     })
+}
+
+function getBuildFromJenkinsURL(jenkinsBuildUrl){
+	var urlElements = jenkinsBuildUrl.split("/");
+	return urlElements[urlElements.length-2];
 }
 
 function addDeliveryModuleAction(delivery, product){
