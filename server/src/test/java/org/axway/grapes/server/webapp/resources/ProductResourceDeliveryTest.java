@@ -1,8 +1,6 @@
 package org.axway.grapes.server.webapp.resources;
 
-import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
@@ -28,7 +26,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
-import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
@@ -38,6 +35,8 @@ public class ProductResourceDeliveryTest extends ResourceTest {
 	private String commercialName = "";
 	private String commercialVersion = "";
 	private String commercialNameExpected = "";
+	private String version;
+	private String jenkinsBuildUrl;
 	private boolean isOnlyPost = true;
     private RepositoryHandler repositoryHandler;
 
@@ -51,10 +50,12 @@ public class ProductResourceDeliveryTest extends ResourceTest {
 
     }
     
-    public ProductResourceDeliveryTest(String commercialName, String commercialNameExpected, String commercialVersion, boolean isOnlyPost){
+    public ProductResourceDeliveryTest(String commercialName, String commercialNameExpected, String commercialVersion, final String version, final String jenkinsBuildUrl, boolean isOnlyPost){
         this.commercialName = commercialName;
 		this.commercialNameExpected = commercialNameExpected;
         this.commercialVersion = commercialVersion;
+        this.version = version;
+        this.jenkinsBuildUrl = jenkinsBuildUrl;
         this.isOnlyPost = isOnlyPost;
     }
     
@@ -62,12 +63,12 @@ public class ProductResourceDeliveryTest extends ResourceTest {
     @Parameterized.Parameters(name = "{index}: taskDelivery({0}) Name {1}")
     public static Iterable<Object[]> data() {
         return Arrays.asList(new Object[][] {
-        	{"New Delivery", "New Delivery", "1.1", true},
-        	{"New Delivery ", "New Delivery", "1.2", true},
-        	{"New-Delivery", "New-Delivery", "1.2", true},
-        	{"New%20Delivery ", "New%20Delivery", "1.2", true},
-        	{"New-Delivery", "New-Delivery", "1.2", false},
-        	{"New Delivery", "New%20Delivery", "1.3", false}
+        	{"New Delivery", "New Delivery", "1.1", "1.0.0-1", "http://localhost:8080/job/20", true},
+        	{"New Delivery ", "New Delivery", "1.2", "1.0.0-1", "http://localhost:8080/job/20", true},
+        	{"New-Delivery", "New-Delivery", "1.2", "1.0.0-1", "http://localhost:8080/job/20", true},
+        	{"New%20Delivery ", "New%20Delivery", "1.2", "1.0.0-1", "http://localhost:8080/job/20", true},
+        	{"New-Delivery", "New-Delivery", "1.2", "1.0.0-1", "http://localhost:8080/job/20", false},
+        	{"New Delivery", "New%20Delivery", "1.3", "1.0.0-1", "http://localhost:8080/job/20", false}
         });
     }
 	
@@ -85,6 +86,8 @@ public class ProductResourceDeliveryTest extends ResourceTest {
         Delivery delivery = new Delivery();
         delivery.setCommercialName(commercialName);
         delivery.setCommercialVersion(commercialVersion);
+        delivery.setVersion(version);
+        delivery.setJenkinsBuildUrl(jenkinsBuildUrl);
         
         // creating product in storage
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
@@ -119,6 +122,8 @@ public class ProductResourceDeliveryTest extends ResourceTest {
         Delivery delivery = new Delivery();
         delivery.setCommercialName(commercialName);
         delivery.setCommercialVersion(commercialVersion);
+        delivery.setVersion(version);
+        delivery.setJenkinsBuildUrl(jenkinsBuildUrl);
         product.getDeliveries().add(delivery);
         
 

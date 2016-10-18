@@ -1338,10 +1338,14 @@ public class GrapesClientTest {
         Delivery delivery1 = new Delivery();
         delivery1.setCommercialName("commercialName1");
         delivery1.setCommercialVersion("1.0.0");
+        delivery1.setVersion("1.0.0-1");
+        delivery1.setJenkinsBuildUrl("http://localhost:8080/job/20");
         
         Delivery delivery2 = new Delivery();
         delivery2.setCommercialName("commercialName1");
         delivery2.setCommercialVersion("1.0.0");
+        delivery2.setVersion("2.0.0-1");
+        delivery2.setJenkinsBuildUrl("http://localhost:8080/job/25");
 
         deliverySet.add(delivery1);
         deliverySet.add(delivery2);
@@ -1358,6 +1362,7 @@ public class GrapesClientTest {
         	deliveries = client.getProductDeliveries(product);
         } catch (Exception e) {
             exception = e;
+            System.out.println(e);
         }
         
         

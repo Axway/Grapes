@@ -233,6 +233,8 @@ public class ProductResourceTest extends ResourceTest {
         Delivery delivery = new Delivery();
         delivery.setCommercialName("delivery1");
         delivery.setCommercialVersion("1.0.0");
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
         
         product.getDeliveries().add(delivery);
         
@@ -252,6 +254,8 @@ public class ProductResourceTest extends ResourceTest {
         assertNotNull(deliveries);
         assertEquals(1, deliveries.size());
         assertEquals("delivery1", deliveries.get(0).getCommercialName());
+        assertEquals("1.0.0-1", deliveries.get(0).getVersion());
+        assertEquals("http://localhost:8080/job/20", deliveries.get(0).getJenkinsBuildUrl());
     }
 
     @Test
@@ -271,6 +275,8 @@ public class ProductResourceTest extends ResourceTest {
         Delivery delivery = new Delivery();
         delivery.setCommercialName("delivery1");
         delivery.setCommercialVersion("1.0.0");
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
         
         // creating product in storage
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
@@ -288,6 +294,8 @@ public class ProductResourceTest extends ResourceTest {
         verify(repositoryHandler).store(captor.capture());
         assertEquals(1, captor.getValue().getDeliveries().size());
         assertEquals("delivery1", captor.getValue().getDeliveries().get(0).getCommercialName());
+        assertEquals("1.0.0-1", captor.getValue().getDeliveries().get(0).getVersion());
+        assertEquals("http://localhost:8080/job/20", captor.getValue().getDeliveries().get(0).getJenkinsBuildUrl());
     }
 
     @Test
@@ -315,6 +323,8 @@ public class ProductResourceTest extends ResourceTest {
         Delivery delivery = new Delivery();
         delivery.setCommercialName("delivery1");
         delivery.setCommercialVersion("1.0.0");        
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
         product.getDeliveries().add(delivery);
 
         // creating a dummy product in storage with delivery
@@ -337,6 +347,8 @@ public class ProductResourceTest extends ResourceTest {
         Delivery delivery = new Delivery();
         delivery.setCommercialName("delivery1");
         delivery.setCommercialVersion("1.0.0");
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
 
         // creating a dummy product in storage with delivery
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
@@ -358,6 +370,8 @@ public class ProductResourceTest extends ResourceTest {
         Delivery delivery = new Delivery();
         delivery.setCommercialName("delivery1");
         delivery.setCommercialVersion("1.0.0");     
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
         delivery.setDependencies(Lists.newArrayList("module1:1.0.0", "module2:1.0.0"));
         product.getDeliveries().add(delivery);
         
@@ -375,6 +389,8 @@ public class ProductResourceTest extends ResourceTest {
         //checks
         assertNotNull(deliveries);
         assertEquals(2, deliveries.getDependencies().size());
+        assertEquals("1.0.0-1", deliveries.getVersion());
+        assertEquals("http://localhost:8080/job/20", deliveries.getJenkinsBuildUrl());
 
     }
 
@@ -413,6 +429,8 @@ public class ProductResourceTest extends ResourceTest {
         Delivery delivery = new Delivery();
         delivery.setCommercialName("delivery1");
         delivery.setCommercialVersion("1.0.0");   
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
         product.getDeliveries().add(delivery);
         
         List<String> modules = new ArrayList<String>();
@@ -488,6 +506,8 @@ public class ProductResourceTest extends ResourceTest {
         Delivery delivery = new Delivery();
         delivery.setCommercialName("delivery1");
         delivery.setCommercialVersion("1.0.0");   
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
         product.getDeliveries().add(delivery);
         
         List<String> modules = new ArrayList<String>();
@@ -515,6 +535,8 @@ public class ProductResourceTest extends ResourceTest {
         Delivery delivery = new Delivery();
         delivery.setCommercialName("delivery1");
         delivery.setCommercialVersion("1.0.0");   
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
         product.getDeliveries().add(delivery);
 
         // creating a dummy product in storage with delivery
@@ -574,6 +596,8 @@ public class ProductResourceTest extends ResourceTest {
         Delivery delivery = new Delivery();
         delivery.setCommercialName("delivery1");
         delivery.setCommercialVersion("1.0.0");   
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
         product.getDeliveries().add(delivery);
         
 

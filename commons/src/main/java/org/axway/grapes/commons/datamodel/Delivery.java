@@ -7,6 +7,8 @@ public class Delivery {
 
 	private String commercialName;
 	private String commercialVersion;
+	private String version;
+	private String jenkinsBuildUrl;
 	private String releaseDate;
 	private List<String> dependencies = new ArrayList<String>();
 
@@ -28,6 +30,23 @@ public class Delivery {
 	public void setCommercialVersion(String commercialVersion) {
 		this.commercialVersion = commercialVersion.trim();
 	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version.trim();
+	}
+
+	public String getJenkinsBuildUrl() {
+		return jenkinsBuildUrl;
+	}
+
+	public void setJenkinsBuildUrl(String jenkinsBuildUrl) {
+		this.jenkinsBuildUrl = jenkinsBuildUrl;
+	}
+
 
 	public String getReleaseDate() {
 		return releaseDate;
