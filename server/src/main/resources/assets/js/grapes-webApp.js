@@ -725,7 +725,7 @@ function getProductDeliveryOverview(delivery, product){
             
             if(delivery.version != null && delivery.jenkinsBuildUrl != null){
                 html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
-                html += "<thead><tr><th>Release technical Version</th><th>Jenkins build</th></tr></thead>\n";
+                html += "<thead><tr><th>Release Technical Version</th><th>Jenkins Build</th></tr></thead>\n";
                 html += "<tbody>\n";
                 html += "<tr id=\""+delivery.version+"-row\"><td name=\"moduleRow\" id=\""+delivery.version+"\">" + delivery.version + "</td>";
                 html += "<td>";
@@ -755,7 +755,7 @@ function getProductDeliveryOverview(delivery, product){
 
 function getBuildFromJenkinsURL(jenkinsBuildUrl){
 	var urlElements = jenkinsBuildUrl.split("/");
-	return urlElements[urlElements.length-2];
+	return "#" + urlElements[urlElements.length - 2];
 }
 
 function addDeliveryModuleAction(delivery, product){
