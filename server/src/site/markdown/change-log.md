@@ -1,3 +1,9 @@
+1.4.4
+-------------
+* [ECDDEV-391](https://techweb.axway.com/jira/browse/ECDDEV-391) Allow module page to directly display details of a module
+* [ECDDEV-452](https://techweb.axway.com/jira/browse/ECDDEV-452) Verification against product existing in Grapes should be case insensitive
+* [ECDDEV-469](https://techweb.axway.com/jira/browse/ECDDEV-469) Include the technical version inside the project release
+
 1.4.3
 -------------
 * [Github issue #34](https://github.com/Axway/Grapes/issues/34) Fix potential NPE while performing module deletion
