@@ -254,6 +254,21 @@
                 </plugin>
 			</plugins>
 		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.axway.grapes</groupId>
+				<artifactId>grapes-maven-plugin</artifactId>
+				<version>1.2.3-5</version>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 
     <profiles>
