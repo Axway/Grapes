@@ -200,6 +200,9 @@ public interface ServerAPI {
     /** Value - {@value}, String query parameter used to filter artifacts.*/
     public static final String EXTENSION_PARAM = "extension";
 
+    /** Value - {@value}, String query parameter used to filter artifacts.*/
+    public static final String ORIGIN_PARAM = "origin";
+
     /** Value - {@value}, String query parameter used to add credentials.*/
     public static final String USER_PARAM = "user";
 

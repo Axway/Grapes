@@ -41,6 +41,9 @@ public class DbArtifact {
 	public static final String EXTENSION_DB_FIELD = "extension"; 
 	private String extension = "";
 
+	public static final String ORIGIN_DB_FIELD = "origin";
+	private String origin = "maven";
+
 	public static final String PROMOTION_DB_FIELD = "promoted";
 	private boolean promoted;
 
@@ -126,6 +129,17 @@ public class DbArtifact {
 	public final void setExtension(final String extension) {
 		this.extension = extension;
         updateGavc();
+	}
+
+	public String getOrigin() {
+		return origin;
+	}
+
+	public final void setOrigin(final String origin) {
+		if (!(origin == null || "".equals(origin.trim()))){
+			this.origin = origin;
+		}
+		updateGavc();
 	}
 	
 	public final void updateGavc(){		

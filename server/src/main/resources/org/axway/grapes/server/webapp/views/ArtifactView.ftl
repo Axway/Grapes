@@ -67,6 +67,7 @@
                     <strong>Classifier: </strong>${artifact.getClassifier()}<br/>
                     <strong>Type: </strong>${artifact.getType()}<br/>
                     <strong>Extension: </strong>${artifact.getExtension()}<br/>
+                    <strong>Origin: </strong>${artifact.getOrigin()}<br/>
                     <strong>Provider: </strong>${artifact.getProvider()}<br/>
                     <strong>DownloadUrl: </strong>${artifact.getDownloadUrl()}<br/>
                     <#if isCorporate() && moduleName??>

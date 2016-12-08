@@ -210,7 +210,7 @@ public abstract class AbstractResource extends View {
      * @throws IOException
      */
     public String getDependencyJsonModel() throws IOException {
-        final Artifact artifact = DataModelFactory.createArtifact("","","","","","");
+        final Artifact artifact = DataModelFactory.createArtifact("","","","","","","");
         return JsonUtils.serialize(DataModelFactory.createDependency(artifact, Scope.COMPILE));
     }
 

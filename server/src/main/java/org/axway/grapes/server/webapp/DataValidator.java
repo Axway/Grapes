@@ -29,8 +29,8 @@ public final class DataValidator {
      * @throws WebApplicationException if the data is corrupted
      */
     public static void validate(final Artifact artifact) {
-        if(artifact.getGroupId() == null ||
-                artifact.getGroupId().isEmpty()){
+        if((artifact.getOrigin()== null || artifact.getOrigin() == "maven")
+                && (artifact.getGroupId() == null || artifact.getGroupId().isEmpty())){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
                     .entity("Artifact groupId should not be null or empty")
                     .build());

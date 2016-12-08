@@ -76,6 +76,7 @@ public class Dependency {
         sb.append(target.getClassifier());
         sb.append(target.getVersion());
         sb.append(target.getType());
+        sb.append(target.getOrigin());
         sb.append(scope.toString());
 
         return sb.toString().hashCode();

@@ -161,6 +161,10 @@ public final class DataUtils {
             artifact.setExtension(artifactInfo[4]);
         }
 
+        if(artifactInfo.length > 5){
+            artifact.setOrigin(artifactInfo[5]);
+        }
+
         return artifact;
     }
 
@@ -173,7 +177,7 @@ public final class DataUtils {
      * @return DbArtifact
      */
     public static Artifact createArtifact(final String gavc) {
-        String groupId = null, artifactId = null, version = null, classifier = null, extension = null;
+        String groupId = null, artifactId = null, version = null, classifier = null, extension = null, origin = null;
         final String[] artifactInfo = gavc.split(":");
 
         if(artifactInfo.length > 0){
@@ -185,18 +189,22 @@ public final class DataUtils {
         }
 
         if(artifactInfo.length > 2){
-            version= artifactInfo[2];
+            version = artifactInfo[2];
         }
 
         if(artifactInfo.length > 3){
-            classifier= artifactInfo[3];
+            classifier = artifactInfo[3];
         }
 
         if(artifactInfo.length > 4){
-            extension= artifactInfo[4];
+            extension = artifactInfo[4];
         }
 
-        return DataModelFactory.createArtifact(groupId, artifactId, version, classifier, null, extension);
+        if(artifactInfo.length > 5){
+            origin = artifactInfo[5];
+        }
+
+        return DataModelFactory.createArtifact(groupId, artifactId, version, classifier, null, extension, origin);
     }
 
     /**

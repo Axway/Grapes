@@ -113,6 +113,11 @@ public class FiltersHolder {
             filters.add(new ExtensionFilter(extension));
         }
 
+        final String origin = queryParameters.getFirst(ServerAPI.ORIGIN_PARAM);
+        if(extension != null){
+            filters.add(new OriginFilter(origin));
+        }
+
         final String type = queryParameters.getFirst(ServerAPI.TYPE_PARAM);
         if(type != null){
             filters.add(new TypeFilter(type));

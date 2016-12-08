@@ -17,6 +17,7 @@ public class DbArtifactTest {
         artifact.setClassifier("win");
         artifact.setType("jar");
         artifact.setExtension("jar");
+        artifact.setOrigin("maven");
         assertEquals("com.axway.test:UidTest:1.0.0-SNAPSHOT:win:jar", artifact.getGavc());
     }
 
@@ -41,6 +42,7 @@ public class DbArtifactTest {
         dbArtifact.setClassifier("win");
         dbArtifact.setType("jar");
         dbArtifact.setExtension("jar");
+        dbArtifact.setOrigin("maven");
 
         Artifact artifact = DataModelFactory.createArtifact(
                 dbArtifact.getGroupId(),

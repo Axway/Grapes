@@ -21,6 +21,7 @@ public class Artifact {
     private String classifier = "";
     private String type = "";
     private String extension = "";
+    private String origin = "maven";
 
     private boolean promoted = false;
 
@@ -126,6 +127,14 @@ public class Artifact {
         this.provider = provider;
     }
 
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(final String origin) {
+        this.origin = origin;
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonIgnore
     public String getGavc(){
@@ -169,6 +178,7 @@ public class Artifact {
         sb.append(classifier);
         sb.append(type);
         sb.append(extension);
+        sb.append(origin);
 
         return sb.toString().hashCode();
     }
@@ -188,8 +198,9 @@ public class Artifact {
         sb.append(type);
         sb.append(":");
         sb.append(extension);
+        sb.append(":");
+        sb.append(origin);
 
         return sb.toString();
     }
-
 }

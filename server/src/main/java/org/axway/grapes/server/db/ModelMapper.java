@@ -106,6 +106,7 @@ public class ModelMapper {
         dbArtifact.setClassifier(artifact.getClassifier());
         dbArtifact.setType(artifact.getType());
         dbArtifact.setExtension(artifact.getExtension());
+        dbArtifact.setOrigin(artifact.getOrigin());
         dbArtifact.setPromoted(artifact.isPromoted());
 
         dbArtifact.setSize(artifact.getSize());
@@ -128,7 +129,8 @@ public class ModelMapper {
                 dbArtifact.getVersion(),
                 dbArtifact.getClassifier(),
                 dbArtifact.getType(),
-                dbArtifact.getExtension()
+                dbArtifact.getExtension(),
+		        dbArtifact.getOrigin()
         );
 
         artifact.setPromoted(dbArtifact.isPromoted());
