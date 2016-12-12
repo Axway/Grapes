@@ -145,10 +145,14 @@ public class Artifact {
         sb.append(artifactId);
         sb.append(":");
         sb.append(version);
-        sb.append(":");
-        sb.append(classifier);
-        sb.append(":");
-        sb.append(extension);
+        if (!(classifier == null || "".equals(classifier.trim()))){
+            sb.append(":");
+            sb.append(classifier);
+        }
+        if (!(extension == null || "".equals(extension.trim()))){
+            sb.append(":");
+            sb.append(extension);
+        }
 
         return sb.toString();
     }
@@ -192,12 +196,18 @@ public class Artifact {
         sb.append(artifactId);
         sb.append(":");
         sb.append(version);
-        sb.append(":");
-        sb.append(classifier);
-        sb.append(":");
-        sb.append(type);
-        sb.append(":");
-        sb.append(extension);
+        if (!(classifier == null || "".equals(classifier.trim()))){
+            sb.append(":");
+            sb.append(classifier);
+        }
+        if (!(type == null || "".equals(type.trim()))){
+            sb.append(":");
+            sb.append(type);
+        }
+        if (!(extension == null || "".equals(extension.trim()))){
+            sb.append(":");
+            sb.append(extension);
+        }
         sb.append(":");
         sb.append(origin);
 

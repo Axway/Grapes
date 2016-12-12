@@ -226,11 +226,15 @@ public class DbArtifact {
 		sb.append(artifactId);
 		sb.append(":");
 		sb.append(version);
-        sb.append(":");
-        sb.append(classifier);
-        sb.append(":");
-        sb.append(extension);
-		
+		if (!(classifier == null || "".equals(classifier.trim()))){
+			sb.append(":");
+			sb.append(classifier);
+		}
+		if (!(extension == null || "".equals(extension.trim()))){
+			sb.append(":");
+			sb.append(extension);
+		}
+
 		return sb.toString();
 	}
 
