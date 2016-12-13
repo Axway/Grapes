@@ -142,7 +142,7 @@
                 <h3 id="myModalLabel">Delete Element</h3>
             </div>
             <div class="modal-body">
-                <strong>Warning:</strong> This operation cannot be undone! Are you really sure you want te delete this element?
+                <strong>Warning:</strong> This operation cannot be undone! Are you really sure you want to delete this element?
                 <div id="toDelete"></div>
                 <br/>
                 <div id="impactedElements"></div>
@@ -153,6 +153,56 @@
             </div>
         </div>
 
+        <!-- Modal new Artifact Edition -->
+        <div id="newArtifactEdition" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">×</button>
+                <h3 id="myModalLabel">Create Artifact</h3>
+            </div>
+            <div class="modal-body">
+            	<span style="color:red; font-style:italic;" id="artifactError"></span>
+                <form class="form-horizontal">
+                    <label class="control-label" for="inputDownloadUrl">Artifact ID (Name)*</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputArtifactId" placeholder="artifact-name">
+                    </div>
+                    <!-- add e.g. -->
+                    <label class="control-label" for="inputDownloadUrl">File Checksum*</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputArtifactSHA" placeholder="SHA-256 code">
+                    </div>
+                    <label class="control-label" for="inputDownloadUrl">Group ID</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputArtifactGroupId" placeholder="com.axway.project">
+                    </div>
+                    <label class="control-label" for="inputDownloadUrl">Version</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputArtifactVersion" placeholder="1.0.0-1">
+                    </div>
+                    <label class="control-label" for="inputArtifactClassifier">Classifier</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputArtifactClassifier" placeholder="debug, site">
+                    </div>
+                    <label class="control-label" for="inputArtifactType">Type</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputArtifactType" placeholder="jar, pdf">
+                    </div>
+                    <label class="control-label" for="inputArtifactExtension">Extension</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputArtifactExtension" placeholder="jar, xml">
+                    </div>
+                    <label class="control-label" for="inputArtifactOrigin">Origin</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputArtifactOrigin" placeholder="maven">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">Cancel</button>
+                <button class="btn btn-primary" id="saveArtifact" onclick='artifactSave();'>Save changes</button>
+            </div>
+        </div>
+        
         <!-- Modal Artifact Edition -->
         <div id="artifactEdition" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-header">

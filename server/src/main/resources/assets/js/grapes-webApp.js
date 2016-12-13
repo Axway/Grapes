@@ -113,6 +113,7 @@ function displayArtifactOptions(){
 	artifactFilters += "</div>\n";
 	$("#filters").empty().append(artifactFilters);
 	var artifactActions = "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
+	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='createArtifact();'>New Artifact</button>\n";
 	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='getArtifactOverview();'>Overview</button>\n";
 	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='getArtifactAncestors();'>Ancestors</button>\n";
 	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='doNotUseArtifact();'>Do not use</button>\n";
@@ -333,7 +334,7 @@ function getArtifactList(groupIdFieldId, artifactIdFieldId, versionFieldId, doNo
     			    if(typeof artifact.extension!='undefined'){
                         gavc+= artifact.extension;
     			    }
-
+    			    
     			    html += "<label class=\"radio\">"
     				html += "<input type=\"radio\" name=\"gavc\" value=\""+ gavc+ "\" onclick=\"cleanAction()\">";
     				html += gavc;
@@ -523,11 +524,48 @@ function deleteOrganization(organizationId){
     );
  }
 
-function createProduct(){
-    $('#productEdition').find('#inputProductName').val("");
-    $("#productEdition").modal('show');
-}
+ function createProduct(){
+     $('#productEdition').find('#inputProductName').val("");
+     $("#productEdition").modal('show');
+ }
 
+ function createArtifact(){
+     $('#newArtifactEdition').find('#inputArtifactId').val("");
+     $("#newArtifactEdition").modal('show');
+ }
+
+ function artifactSave(){
+     var artifactId = $("#inputArtifactId").val();
+     var artifactSHA = $("#inputArtifactSHA").val();
+     var artifactGroupId = $("#inputArtifactGroupId").val();
+     var artifactVersion = $("#inputArtifactVersion").val();
+     var artifactClassifier = $("#inputArtifactClassifier").val();
+     var artifactType = $("#inputArtifactType").val();
+     var artifactExtension = $("#inputArtifactExtension").val();
+     var artifactOrigin = $("#inputArtifactOrigin").val();
+     
+     if(artifactId == null || artifactId == ''){
+         $('#artifactError').html("Please provide artifact id");
+    	 return;
+     }
+     if(artifactSHA == null || artifactSHA == ''){
+         $('#artifactError').html("Please provide artifact checksum");
+    	 return;
+     }
+	 $('#saveArtifact').attr("data-dismiss", "modal");
+     $.ajax({
+         url: "/artifact",
+         method: 'POST',
+         data: '{"artifactId": "' + artifactId + '","groupId": "' + artifactGroupId + '","version": "' + artifactVersion + '", "classifier": "' + artifactClassifier + '","type": "' + artifactType + '", "extension": "' + artifactExtension + '","origin": "' + artifactOrigin + '","sha256": "' + artifactSHA + '", "promoted": true,"size": "", "downloadUrl": "","provider": ""}',
+         contentType: 'application/json',
+         error: function(xhr, error){
+             alert("The action cannot be performed: status " + xhr.status);
+         }
+     }).done(function(){
+         cleanAction();
+         updateArtifact();
+     });
+ }
 function getProductOverview(){
     var target = $('input:checked', '#targets').val();
     if(target == null){
