@@ -22,6 +22,7 @@ public class Artifact {
     private String type = "";
     private String extension = "";
     private String origin = "maven";
+    private String sha256 = "";
 
     private boolean promoted = false;
 
@@ -67,6 +68,13 @@ public class Artifact {
         this.type = type;
     }
 
+    public String getSha256() {
+		return this.sha256;
+	}
+	public void setSha256(String sha256) {
+		this.sha256 = sha256;
+	}
+    
     public boolean isPromoted() {
         return promoted;
     }

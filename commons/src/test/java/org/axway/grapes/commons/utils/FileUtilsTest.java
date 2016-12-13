@@ -74,4 +74,18 @@ public class FileUtilsTest {
     }
 
 
+    @Test
+    public void getFileChecksumSHA256Test() throws IOException {
+    	String sha256 = "5d3c31974d3bc3921db07e3b24816fc3146757b5d4738c31d05f01714feb096d";
+    	
+    	ClassLoader classLoader = getClass().getClassLoader();
+    	File jarFile = new File(classLoader.getResource("sample-jar/sample.jar").getFile());
+    	
+    	String generatedSHA256 = FileUtils.getFileChecksumSHA256(jarFile);
+    	
+    	assertNotNull(generatedSHA256);
+    	assertEquals(sha256, generatedSHA256);
+    }
+
+
 }
