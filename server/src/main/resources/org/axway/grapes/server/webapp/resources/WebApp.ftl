@@ -164,36 +164,32 @@
                 <form class="form-horizontal">
                     <label class="control-label" for="inputDownloadUrl">Artifact ID (Name)*</label>
                     <div class="controls">
-                        <input class="input-large" type="text" id="inputArtifactId" placeholder="artifact-name">
+                        <input class="input-large" type="text" id="inputArtifactId" placeholder="e.g. artifact-name">
                     </div>
                     <!-- add e.g. -->
                     <label class="control-label" for="inputDownloadUrl">File Checksum*</label>
                     <div class="controls">
-                        <input class="input-large" type="text" id="inputArtifactSHA" placeholder="SHA-256 code">
+                        <input class="input-large" type="text" id="inputArtifactSHA" placeholder="e.g. SHA-256 code">
                     </div>
                     <label class="control-label" for="inputDownloadUrl">Group ID</label>
                     <div class="controls">
-                        <input class="input-large" type="text" id="inputArtifactGroupId" placeholder="com.axway.project">
+                        <input class="input-large" type="text" id="inputArtifactGroupId" placeholder="e.g. com.axway.project">
                     </div>
                     <label class="control-label" for="inputDownloadUrl">Version</label>
                     <div class="controls">
-                        <input class="input-large" type="text" id="inputArtifactVersion" placeholder="1.0.0-1">
+                        <input class="input-large" type="text" id="inputArtifactVersion" placeholder="e.g. 1.0.0-1">
                     </div>
                     <label class="control-label" for="inputArtifactClassifier">Classifier</label>
                     <div class="controls">
-                        <input class="input-large" type="text" id="inputArtifactClassifier" placeholder="debug, site">
+                        <input class="input-large" type="text" id="inputArtifactClassifier" placeholder="e.g. debug, site">
                     </div>
                     <label class="control-label" for="inputArtifactType">Type</label>
                     <div class="controls">
-                        <input class="input-large" type="text" id="inputArtifactType" placeholder="jar, pdf">
+                        <input class="input-large" type="text" id="inputArtifactType" placeholder="e.g. jar,pdf">
                     </div>
                     <label class="control-label" for="inputArtifactExtension">Extension</label>
                     <div class="controls">
-                        <input class="input-large" type="text" id="inputArtifactExtension" placeholder="jar, xml">
-                    </div>
-                    <label class="control-label" for="inputArtifactOrigin">Origin</label>
-                    <div class="controls">
-                        <input class="input-large" type="text" id="inputArtifactOrigin" placeholder="maven">
+                        <input class="input-large" type="text" id="inputArtifactExtension" placeholder="e.g. jar, xml">
                     </div>
                 </form>
             </div>

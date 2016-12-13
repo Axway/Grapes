@@ -131,4 +131,37 @@ public final class DataValidator {
                     .build());
         }
     }
+
+    /**
+     * Checks if the provided artifactQuery is valid
+     *
+     * @param artifactQuery ArtifactQuery
+     * @throws WebApplicationException if the data is corrupted
+     */
+    public static void validate(final ArtifactQuery artifactQuery) {
+        if(artifactQuery.getUser() == null ||
+        		artifactQuery.getUser().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("User name cannot be null or empty!")
+                    .build());
+        }
+        if(artifactQuery.getName() == null ||
+        		artifactQuery.getName().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("File Name cannot be null or empty!")
+                    .build());
+        }
+        if(artifactQuery.getSha256() == null ||
+        		artifactQuery.getSha256().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("SHA256 code cannot be null or empty!")
+                    .build());
+        }
+        if(artifactQuery.getType() == null ||
+        		artifactQuery.getType().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("File Type code cannot be null or empty!")
+                    .build());
+        }
+    }
 }

@@ -141,6 +141,17 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
+    public DbArtifact getArtifactUsingSHA256(final String sha256) {
+        for(DbArtifact artifact: artifacts){
+            if(artifact.getSha256().equals(sha256)){
+                return artifact;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public void deleteArtifact(final String gavc) {
         //To change body of implemented methods use File | Settings | File Templates.
     }

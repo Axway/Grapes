@@ -7,6 +7,8 @@ import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.views.ViewBundle;
 
+import net.sourceforge.argparse4j.inf.Namespace;
+
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.db.DBException;
 import org.axway.grapes.server.db.RepositoryHandler;
@@ -20,7 +22,10 @@ import org.axway.grapes.server.webapp.tasks.migrate.MigrationTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.UnknownHostException;
+import java.util.Properties;
 
 /**
  * Grapes service class.
@@ -70,8 +75,7 @@ public class GrapesServer extends Service<GrapesServerConfig> {
 
 	@Override
 	public void run(final GrapesServerConfig config, final Environment env) throws DBException, UnknownHostException {
-
-        // init the repoHandler
+		// init the repoHandler
         final RepositoryHandler repoHandler = getRepositoryHandler(config);
         // Add credential management
         final GrapesAuthenticator grapesAuthenticator = new GrapesAuthenticator(repoHandler);

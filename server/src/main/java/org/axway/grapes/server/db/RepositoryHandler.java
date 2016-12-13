@@ -155,6 +155,14 @@ public interface RepositoryHandler {
     public DbArtifact getArtifact(final String gavc);
 
     /**
+     * Return the targeted artifact
+     *
+     * @param sha256 String
+     * @return DbArtifact
+     */
+    public DbArtifact getArtifactUsingSHA256(final String sha256);
+
+    /**
      * Delete the targeted artifact
      *
      * @param gavc String

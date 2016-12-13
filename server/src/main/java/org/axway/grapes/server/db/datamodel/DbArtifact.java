@@ -59,10 +59,17 @@ public class DbArtifact {
     public static final String DO_NOT_USE = "doNotUse";
     private Boolean doNotUse = false;
 
+    public static final String SHA_256 = "sha256";
+    private String sha256 = "";
+    
     public static final String PROVIDER = "provider";
     private String provider = "";
-
-    public void setDataModelVersion(final String newVersion){
+    
+    public static final String VALIDATION_TYPE_NOT_SUPPORTED = "VALIDATION_TYPE_NOT_SUPPORTED";
+	public static final String QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR = "QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR";
+	public static final String ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE = "ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE";
+    
+	public void setDataModelVersion(final String newVersion){
         this.datamodelVersion = newVersion;
     }
 
@@ -196,6 +203,13 @@ public class DbArtifact {
     public void setDoNotUse(final Boolean doNotUse) {
         this.doNotUse = doNotUse;
     }
+    
+    public String getSha256() {
+		return this.sha256;
+	}
+	public void setSha256(String sha256) {
+		this.sha256 = sha256;
+	}
 
     public String getProvider() {
         return provider;

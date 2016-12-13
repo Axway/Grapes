@@ -148,6 +148,24 @@ public class ArtifactHandler {
         return artifact;
     }
 
+
+    /**
+     * Return an artifact regarding its gavc
+     *
+     * @param sha String
+     * @return DbArtifact
+     */
+    public DbArtifact getArtifactUsingSHA256(final String sha256) {
+        final DbArtifact artifact = repositoryHandler.getArtifactUsingSHA256(sha256);
+
+        if(artifact == null){
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                    .entity("Artifact with SHA-256: " + sha256 + " does not exist.").build());
+        }
+
+        return artifact;
+    }
+
     /**
      * Returns the Module of artifact or null if there is none
      *

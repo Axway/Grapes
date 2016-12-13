@@ -1,0 +1,4 @@
+message1 = Hello Grapes
+VALIDATION_TYPE_NOT_SUPPORTED = Validation is not supported for this type of file
+QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR = You are uploading a non-published artefact.
+ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE = Artifact is not promoted

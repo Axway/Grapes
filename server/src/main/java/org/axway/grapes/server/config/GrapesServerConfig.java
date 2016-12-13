@@ -3,8 +3,14 @@ package org.axway.grapes.server.config;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yammer.dropwizard.config.Configuration;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.axway.grapes.server.core.ErrorMessageHandler;
 
 /**
  * @author jdcoffre
@@ -29,17 +35,44 @@ public class GrapesServerConfig extends Configuration{
     @NotNull
     @JsonProperty
     private final DataBaseConfig database = new DataBaseConfig();
-	
+    
+    @Valid
+    @NotNull
+    @JsonProperty
+    private File messageFile;
+    
+    @Valid
+    @NotNull
+    @JsonProperty
+    private ArrayList<String> artifactValidationType;
+
+
 	@Valid
     @JsonProperty
     private final String authenticationCachePolicy = "maximumSize=10000, expireAfterAccess=10m";
-
+	
+	private ErrorMessageHandler messageHandler;
+	
     private boolean maintenanceModeActif = false;
 
     public DataBaseConfig getDataBaseConfig() {
 		return database;
 	}
 	
+	public ErrorMessageHandler getErrorMessageHandler() {
+		if(messageHandler == null){
+			messageHandler = new ErrorMessageHandler(messageFile);
+		}
+		return messageHandler;
+	}
+	
+	public File getMessageFile(){
+		return messageFile;
+	}
+
+	public List<String> getArtifactValidationType() {
+		return artifactValidationType;
+	}	
 	/**
 	 * Returns the complete Grapes root URL
 	 * 

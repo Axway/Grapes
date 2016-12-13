@@ -4,6 +4,8 @@ import com.yammer.dropwizard.auth.Auth;
 import com.yammer.dropwizard.jersey.params.BooleanParam;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.Artifact;
+import org.axway.grapes.commons.datamodel.ArtifactPromotionStatus;
+import org.axway.grapes.commons.datamodel.ArtifactQuery;
 import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.commons.datamodel.Organization;
 import org.axway.grapes.server.config.GrapesServerConfig;
@@ -187,6 +189,71 @@ public class ArtifactResource extends AbstractResource {
         }
 
         return Response.ok(view).build();
+    }
+    
+
+    /**
+     * Return an Artifact regarding its gavc.
+     * This method is call via POST <grapes_url>/artifact/isPromoted
+     *
+     *
+     * @param gavc String
+     * @return Response An ArtifactPromotionStatus in JSON
+     */
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/isPromoted")
+    public Response isPromoted(final ArtifactQuery artifactQuery){
+        LOG.info("Got a get artifact request. ");
+        
+        DataValidator.validate(artifactQuery);
+        
+        ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
+        
+        List<String> allValidationTypes = getConfig().getArtifactValidationType();        
+        if(!allValidationTypes.contains(artifactQuery.getType())){
+        	promotionStatus.setError(false);
+            promotionStatus.setMessage(errorMessagesHandler.getMessage(DbArtifact.VALIDATION_TYPE_NOT_SUPPORTED));
+            return Response.ok(promotionStatus).build();
+        }
+        
+        final String sha256 = artifactQuery.getSha256();
+        
+        DbArtifact dbArtifact = null;
+        
+        try{
+        	dbArtifact = getArtifactHandler().getArtifactUsingSHA256(sha256);
+        }catch (Exception e) {
+            promotionStatus.setError(true);
+            promotionStatus.setMessage(errorMessagesHandler.getMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR));
+            return Response.ok(promotionStatus).build();
+        }
+        
+	    if(!dbArtifact.isPromoted()){
+	    	promotionStatus.setError(true);
+            promotionStatus.setMessage(errorMessagesHandler.getMessage(DbArtifact.ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE));
+	    	return Response.ok(promotionStatus).build();
+	    }
+
+    	promotionStatus.setError(false);
+        promotionStatus.setMessage("");
+        return Response.ok(promotionStatus).build();
+    }
+
+    /**
+     * Return all Artifact validation type supported.
+     * This method is call via GET <grapes_url>/artifact/validation-types
+     *
+     *
+     * @param gavc String
+     * @return Response An list of String in JSON
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/validation-types")
+    public Response getValidationType(){
+        LOG.info("Got a get artifact request. ");        
+        return Response.ok(getConfig().getArtifactValidationType()).build();
     }
 
     /**

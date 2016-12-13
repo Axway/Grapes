@@ -35,12 +35,14 @@ public abstract class AbstractResource extends View {
 
     private final RepositoryHandler repositoryHandler;
     private final GrapesServerConfig grapesConfig;
+    protected final ErrorMessageHandler errorMessagesHandler;
 
     private final ModelMapper modelMapper;
     
     protected AbstractResource(final RepositoryHandler repoHandler, final String templateName, final GrapesServerConfig dmConfig) {
 		super(templateName);
         this.grapesConfig = dmConfig;
+        this.errorMessagesHandler = dmConfig.getErrorMessageHandler();
         this.repositoryHandler = repoHandler;
         this.modelMapper = new ModelMapper(repoHandler);
 	}
