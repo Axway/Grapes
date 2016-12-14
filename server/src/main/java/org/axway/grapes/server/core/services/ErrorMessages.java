@@ -8,9 +8,11 @@ import java.util.Properties;
 
 public class ErrorMessages {
 
-    private File messageFile;
+private File messageFile;
 	
 	private Properties allMessages;
+	
+	public static final String DEFAULT_ERROR_MESSAGE = "Some Error Occured";
 
 	public ErrorMessages(File messageFile){
 		this.messageFile = messageFile;
@@ -21,7 +23,7 @@ public class ErrorMessages {
 		if(allMessages == null){
 			loadMessagesFromFile();
 		}
-		return allMessages.getProperty(key, "Error Message");
+		return allMessages.getProperty(key, DEFAULT_ERROR_MESSAGE);
 	}
 	
 	private void loadMessagesFromFile(){
@@ -36,3 +38,4 @@ public class ErrorMessages {
 		}	
 	}
 }
+

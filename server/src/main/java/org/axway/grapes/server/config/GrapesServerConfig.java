@@ -10,7 +10,6 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.axway.grapes.server.core.ErrorMessageHandler;
 
 /**
  * @author jdcoffre
@@ -55,8 +54,6 @@ public class GrapesServerConfig extends Configuration{
 	@Valid
     @JsonProperty
     private final String authenticationCachePolicy = "maximumSize=10000, expireAfterAccess=10m";
-	
-	private ErrorMessageHandler messageHandler;
 	
     private boolean maintenanceModeActif = false;
 

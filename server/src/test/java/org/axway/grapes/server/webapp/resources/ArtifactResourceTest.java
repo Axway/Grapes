@@ -12,7 +12,7 @@ import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
-import org.axway.grapes.server.core.ErrorMessageHandler;
+import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
@@ -38,12 +38,14 @@ import static org.mockito.Mockito.*;
 public class ArtifactResourceTest extends ResourceTest {
 
     private RepositoryHandler repositoryHandler;
+    private ServiceHandler serviceHandler;
 
     @Override
     protected void setUpResources() throws Exception {
         repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
+        serviceHandler = GrapesTestUtils.getServiceHandlerMock();
         
-        ArtifactResource resource = new ArtifactResource(repositoryHandler, getGrapesConfig());
+        ArtifactResource resource = new ArtifactResource(repositoryHandler, serviceHandler, getGrapesConfig());
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repositoryHandler), "test auth"));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);
@@ -58,9 +60,6 @@ public class ArtifactResourceTest extends ResourceTest {
         
         final String templatePath = GrapesTestUtils.class.getResource("message.txt").getPath();
         final File messageFile = new File(templatePath);
-        
-        ErrorMessageHandler messageHandler = new ErrorMessageHandler(messageFile);
-        when(config.getErrorMessageHandler()).thenReturn(messageHandler);
         
         return config;
     }

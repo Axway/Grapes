@@ -91,7 +91,7 @@ public class AbstractResourceTest {
 
     private class FakeResource extends AbstractResource {
         protected FakeResource() {
-            super(GrapesTestUtils.getRepoHandlerMock(), "", mock(GrapesServerConfig.class));
+            super(GrapesTestUtils.getRepoHandlerMock(), GrapesTestUtils.getServiceHandlerMock(), "", mock(GrapesServerConfig.class));
         }
     }
 }

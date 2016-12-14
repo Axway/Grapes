@@ -1,6 +1,9 @@
 package org.axway.grapes.server;
 
 import com.google.common.collect.Lists;
+
+import org.axway.grapes.server.core.ServiceHandler;
+import org.axway.grapes.server.core.services.ErrorMessages;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
@@ -9,6 +12,10 @@ import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.io.File;
+
+import static org.mockito.Matchers.any;
 
 public class GrapesTestUtils {
 
@@ -53,5 +60,27 @@ public class GrapesTestUtils {
         }
 
         return mock(RepositoryHandler.class);
+    }
+    
+    public static ServiceHandler getServiceHandlerMock() {
+        try{
+            final ServiceHandler serviceHandler = mock(ServiceHandler.class);
+            
+            final String templatePath = GrapesTestUtils.class.getResource("message.txt").getPath();
+            final File messageFile = new File(templatePath);
+
+            when(serviceHandler.getErrorMessage("QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR")).thenReturn("You are uploading a non-published artefact.");
+            when(serviceHandler.getErrorMessage("VALIDATION_TYPE_NOT_SUPPORTED")).thenReturn("Validation is not supported for this type of file");
+            when(serviceHandler.getErrorMessage("ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE")).thenReturn("Artifact is not promoted");
+            when(serviceHandler.isEmailServiceRunning()).thenReturn(true);
+            when(serviceHandler.sendEmail(any(String[].class), any(String[].class), any(String.class), any(String.class))).thenReturn(true);
+
+            return serviceHandler;
+
+        }catch (Exception e){
+            System.err.println("Failed to mock Grapes configuration due to password encryption error.");
+        }
+
+        return mock(ServiceHandler.class);
     }
 }

@@ -3,6 +3,7 @@ package org.axway.grapes.server.core;
 
 import org.axway.grapes.server.config.GrapesEmailConfig;
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.core.services.ErrorMessages;
 import org.axway.grapes.server.core.services.GrapesEmail;
 
 public class ServiceHandler {
