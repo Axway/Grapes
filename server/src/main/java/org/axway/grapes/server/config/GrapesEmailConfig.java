@@ -5,12 +5,12 @@ import java.util.Properties;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.axway.grapes.server.email.GrapesEmail;
+import org.axway.grapes.server.core.services.GrapesEmail;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yammer.dropwizard.config.Configuration;
 
-public class MailConfig extends Configuration {
+public class GrapesEmailConfig extends Configuration {
     @Valid
     @NotNull
     @JsonProperty
@@ -38,6 +38,11 @@ public class MailConfig extends Configuration {
     @NotNull
     @JsonProperty
     private String smtpFrom;
+    
+    @Valid
+    @NotNull
+    @JsonProperty
+    private boolean debug;
 
     private Properties mailProperties;
 
@@ -48,11 +53,12 @@ public class MailConfig extends Configuration {
 
         mailProperties = new Properties();
         mailProperties.put(GrapesEmail.MAIL_SMTP_HOST, host);
-        mailProperties.put(GrapesEmail.MAIL_SMTP_USER, port);
+        mailProperties.put(GrapesEmail.MAIL_SMTP_PORT, port);
+        mailProperties.put(GrapesEmail.MAIL_SMTP_USER, user);
         mailProperties.put(GrapesEmail.MAIL_SMTP_PASSWORD, pwd);
         mailProperties.put(GrapesEmail.MAIL_SMTP_SSL_TRUST, sslTrust);
-        mailProperties.put(GrapesEmail.MAIL_SMTP_FROM, user);
-        mailProperties.put(GrapesEmail.MAIL_DEBUG, true);
+        mailProperties.put(GrapesEmail.MAIL_SMTP_FROM, smtpFrom);
+        mailProperties.put(GrapesEmail.MAIL_DEBUG, debug);
 
         return mailProperties;
     }

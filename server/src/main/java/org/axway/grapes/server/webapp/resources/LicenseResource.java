@@ -5,6 +5,7 @@ import com.yammer.dropwizard.jersey.params.BooleanParam;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
@@ -38,8 +39,8 @@ public class LicenseResource extends AbstractResource{
     
     private static final Logger LOG = LoggerFactory.getLogger(LicenseResource.class);
     
-    public LicenseResource(final RepositoryHandler repoHandler, final GrapesServerConfig dmConfig){
-        super(repoHandler, "LicenseResourceDocumentation.ftl", dmConfig);
+    public LicenseResource(final RepositoryHandler repoHandler, final ServiceHandler serviceHandler, final GrapesServerConfig dmConfig){
+        super(repoHandler, serviceHandler, "LicenseResourceDocumentation.ftl", dmConfig);
     }
     
     /**

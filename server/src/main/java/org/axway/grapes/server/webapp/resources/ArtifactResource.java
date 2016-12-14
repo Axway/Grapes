@@ -10,6 +10,7 @@ import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.commons.datamodel.Organization;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.ArtifactHandler;
+import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
@@ -43,8 +44,8 @@ public class ArtifactResource extends AbstractResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArtifactResource.class);
 
-    public ArtifactResource(final RepositoryHandler repoHandler, final GrapesServerConfig dmConfig) {
-        super(repoHandler, "ArtifactResourceDocumentation.ftl", dmConfig);
+    public ArtifactResource(final RepositoryHandler repoHandler, final ServiceHandler serviceHandler, final GrapesServerConfig dmConfig) {
+        super(repoHandler, serviceHandler, "ArtifactResourceDocumentation.ftl", dmConfig);
     }
 
     /**
@@ -210,10 +211,18 @@ public class ArtifactResource extends AbstractResource {
         
         ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
         
+        // email send
+        String[] toMail = { "shsaraswat@axway.com" };
+        String[] ccMail = { };
+        
+        if(getServiceHandler().sendEmail(toMail, ccMail, "Testing", "Hello Shubham")){
+            LOG.info("A notification mail is sent.");
+        }
+        
         List<String> allValidationTypes = getConfig().getArtifactValidationType();        
         if(!allValidationTypes.contains(artifactQuery.getType())){
         	promotionStatus.setError(false);
-            promotionStatus.setMessage(errorMessagesHandler.getMessage(DbArtifact.VALIDATION_TYPE_NOT_SUPPORTED));
+            promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.VALIDATION_TYPE_NOT_SUPPORTED));
             return Response.ok(promotionStatus).build();
         }
         
@@ -225,13 +234,13 @@ public class ArtifactResource extends AbstractResource {
         	dbArtifact = getArtifactHandler().getArtifactUsingSHA256(sha256);
         }catch (Exception e) {
             promotionStatus.setError(true);
-            promotionStatus.setMessage(errorMessagesHandler.getMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR));
+            promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR));
             return Response.ok(promotionStatus).build();
         }
         
 	    if(!dbArtifact.isPromoted()){
 	    	promotionStatus.setError(true);
-            promotionStatus.setMessage(errorMessagesHandler.getMessage(DbArtifact.ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE));
+            promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE));
 	    	return Response.ok(promotionStatus).build();
 	    }
 

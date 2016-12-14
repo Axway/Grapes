@@ -8,6 +8,7 @@ import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.ArtifactHandler;
+import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.core.options.filters.CorporateFilter;
 import org.axway.grapes.server.core.reports.DependencyReport;
@@ -44,8 +45,8 @@ public class ModuleResource extends AbstractResource{
     private static final Logger LOG = LoggerFactory.getLogger(ModuleResource.class);
 
 
-    public ModuleResource(final RepositoryHandler repoHandler, final GrapesServerConfig dmConfig) {
-        super(repoHandler, "ModuleResourceDocumentation.ftl", dmConfig);
+    public ModuleResource(final RepositoryHandler repoHandler, final ServiceHandler serviceHandler, final GrapesServerConfig dmConfig) {
+        super(repoHandler, serviceHandler, "ModuleResourceDocumentation.ftl", dmConfig);
     }
 
     /**

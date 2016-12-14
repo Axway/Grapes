@@ -34,16 +34,16 @@ import java.util.List;
 public abstract class AbstractResource extends View {
 
     private final RepositoryHandler repositoryHandler;
+    private final ServiceHandler serviceHandler;
     private final GrapesServerConfig grapesConfig;
-    protected final ErrorMessageHandler errorMessagesHandler;
 
     private final ModelMapper modelMapper;
     
-    protected AbstractResource(final RepositoryHandler repoHandler, final String templateName, final GrapesServerConfig dmConfig) {
+    protected AbstractResource(final RepositoryHandler repoHandler, final ServiceHandler serviceHandler, final String templateName, final GrapesServerConfig dmConfig) {
 		super(templateName);
         this.grapesConfig = dmConfig;
-        this.errorMessagesHandler = dmConfig.getErrorMessageHandler();
         this.repositoryHandler = repoHandler;
+        this.serviceHandler = serviceHandler;
         this.modelMapper = new ModelMapper(repoHandler);
 	}
     
@@ -258,4 +258,8 @@ public abstract class AbstractResource extends View {
      public String getDeliveryJsonModel() throws IOException {
          return JsonUtils.serialize(DataModelFactory.createDelivery("", "", "", new ArrayList<String>()));
      }
+
+	protected ServiceHandler getServiceHandler() {
+		return serviceHandler;
+	}
 }

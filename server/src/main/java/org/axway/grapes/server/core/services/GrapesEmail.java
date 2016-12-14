@@ -1,4 +1,4 @@
-package org.axway.grapes.server.email;
+package org.axway.grapes.server.core.services;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
@@ -39,16 +39,16 @@ public class GrapesEmail {
         this.properties.putAll(getSmtpProperties());
         this.properties.putAll(props);
 
-        logger.info("Setting up server.....");
+        logger.info("Setting up Grapes Email server.....");
         // Get the default Session object.
         session = Session.getDefaultInstance(properties);
-        session.setDebug(Boolean.parseBoolean(properties.get("mail.debug")
+        session.setDebug(Boolean.parseBoolean(properties.get(MAIL_DEBUG)
                 .toString()));
 
         try {
             from = new InternetAddress(
-                    properties.getProperty("mail.smtp.user"),
-                    properties.getProperty("mail.smtp.from"));
+                    properties.getProperty(MAIL_SMTP_USER),
+                    properties.getProperty(MAIL_SMTP_FROM));
         } catch (UnsupportedEncodingException ex) {
             logger.log(Level.SEVERE,
                     "UnsupportedEncodingException :" + ex.getMessage() + ex);

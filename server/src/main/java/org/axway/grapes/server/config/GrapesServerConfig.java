@@ -39,7 +39,7 @@ public class GrapesServerConfig extends Configuration{
     @Valid
     @NotNull
     @JsonProperty
-    private final MailConfig mailing = new MailConfig();
+    private final GrapesEmailConfig mailing = new GrapesEmailConfig();
     
     @Valid
     @NotNull
@@ -64,16 +64,9 @@ public class GrapesServerConfig extends Configuration{
 		return database;
 	}
     
-    public MailConfig getMailConfig() {
+    public GrapesEmailConfig getGrapesEmailConfig() {
         return mailing;
     }
-	
-	public ErrorMessageHandler getErrorMessageHandler() {
-		if(messageHandler == null){
-			messageHandler = new ErrorMessageHandler(messageFile);
-		}
-		return messageHandler;
-	}
 	
 	public File getMessageFile(){
 		return messageFile;
