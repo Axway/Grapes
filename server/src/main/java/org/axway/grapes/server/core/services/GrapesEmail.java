@@ -121,7 +121,6 @@ public class GrapesEmail {
         smtpProperties.put(MAIL_SMTP_STARTTLS_ENABLE, "true");
         smtpProperties.put(MAIL_SMTP_AUTH, true);
         smtpProperties.put(MAIL_SMTP_PORT, "25");
-        smtpProperties.put(MAIL_SMTP_AUTH, "true");
         smtpProperties.put(MAIL_SMTP_SSL_TRUST, "mail.axway.int");
         return smtpProperties;
     }
