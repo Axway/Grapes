@@ -134,7 +134,7 @@ public final class FileUtils {
 	    
 	    while ((bytesCount = fis.read(byteArray)) != -1) {
 	        digest.update(byteArray, 0, bytesCount);
-	    };   
+	    }
 	    
 	    fis.close();
 	   

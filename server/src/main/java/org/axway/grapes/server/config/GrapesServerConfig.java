@@ -48,8 +48,12 @@ public class GrapesServerConfig extends Configuration{
     @Valid
     @NotNull
     @JsonProperty
-    private ArrayList<String> artifactValidationType;
-
+    private ArrayList<String> artifactValidationType;    
+    
+    @Valid
+    @NotNull
+    @JsonProperty
+    private String[] artifactNotificationRecipients;
 
 	@Valid
     @JsonProperty
@@ -72,6 +76,10 @@ public class GrapesServerConfig extends Configuration{
 	public List<String> getArtifactValidationType() {
 		return artifactValidationType;
 	}	
+	
+	public String[] getArtifactNotificationRecipients() {
+		return artifactNotificationRecipients;
+	}
 	/**
 	 * Returns the complete Grapes root URL
 	 * 

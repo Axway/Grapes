@@ -64,11 +64,28 @@ public class ServiceHandler {
 		return false;
 	}
 	
-	public boolean sendEmail(final String[] recipients, final String[] ccRecipients, final String subject, final String message){
+	public String sendEmail(final String[] recipients, final String[] ccRecipients, final String subject, final String message){
+		if(recipients.length == 0 || subject.isEmpty() || message.isEmpty()){
+			return "Skipping sending email either recipients, subject, or message was not provided";
+		}
+		
 		if(!isEmailServiceRunning()){
-			return false;	
+			return "Skipping sending email as there was some error in running Grape email service";
 		}		
-		return grapesEmail.send(recipients, ccRecipients, subject, message, "text/html");
+		
+		if(grapesEmail.send(recipients, ccRecipients, subject, message, "text/html")){
+			
+			StringBuilder successMessage = new StringBuilder();
+			successMessage.append("Successfully sent a notification Email to : ");
+			for(String recipient : recipients){
+				successMessage.append(recipient);
+				successMessage.append(" ");
+			}
+			
+			return successMessage.toString();			
+		}
+
+		return "There was an error in sending email";
 	}
 	
 }

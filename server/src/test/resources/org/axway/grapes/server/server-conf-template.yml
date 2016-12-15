@@ -26,6 +26,7 @@ logging:
 authenticationCachePolicy: maximumSize=10000, expireAfterAccess=1m
 messageFile: message.txt
 artifactValidationType: [program, installer, patch, servicepack, upgradepack, install, axwayjre, JREUpdateTool]
+artifactNotificationRecipients: [xyz@axway.com]
 mailing:
    host: localhost
    port: 587

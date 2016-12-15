@@ -211,13 +211,12 @@ public class ArtifactResource extends AbstractResource {
         
         ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
         
-        // email send
-        String[] toMail = { "shsaraswat@axway.com" };
+        // Sending email notification
+        String[] toMail = getConfig().getArtifactNotificationRecipients();
         String[] ccMail = { };
         
-        if(getServiceHandler().sendEmail(toMail, ccMail, "Testing", "Hello Shubham")){
-            LOG.info("A notification mail is sent.");
-        }
+        String emailStatus = getServiceHandler().sendEmail(toMail, ccMail, "Testing", "Hello Shubham");
+        LOG.info(emailStatus);
         
         List<String> allValidationTypes = getConfig().getArtifactValidationType();        
         if(!allValidationTypes.contains(artifactQuery.getType())){

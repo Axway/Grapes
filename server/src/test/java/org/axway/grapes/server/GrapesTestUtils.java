@@ -73,7 +73,7 @@ public class GrapesTestUtils {
             when(serviceHandler.getErrorMessage("VALIDATION_TYPE_NOT_SUPPORTED")).thenReturn("Validation is not supported for this type of file");
             when(serviceHandler.getErrorMessage("ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE")).thenReturn("Artifact is not promoted");
             when(serviceHandler.isEmailServiceRunning()).thenReturn(true);
-            when(serviceHandler.sendEmail(any(String[].class), any(String[].class), any(String.class), any(String.class))).thenReturn(true);
+            when(serviceHandler.sendEmail(any(String[].class), any(String[].class), any(String.class), any(String.class))).thenReturn("Successfully sent a notification Email");
 
             return serviceHandler;
 
