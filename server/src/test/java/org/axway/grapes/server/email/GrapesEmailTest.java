@@ -51,7 +51,7 @@ public class GrapesEmailTest {
         mailProperties.put(GrapesEmail.MAIL_DEBUG, true);
 
         GrapesEmail grapesEmail = new GrapesEmail();
-        assertTrue(grapesEmail.setup(mailProperties));
+        assertFalse(grapesEmail.setup(mailProperties));
     }
 
     @Test
