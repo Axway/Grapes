@@ -20,9 +20,13 @@ public class ServiceHandler {
 	}
 
 	public String getErrorMessage(final String key) {
+		return getErrorMessage(key, "");
+	}
+
+	public String getErrorMessage(final String key, final String defaultMessage) {
 		if(errorMessages == null){
-			return ErrorMessages.DEFAULT_ERROR_MESSAGE;
-		}		
+			return defaultMessage.isEmpty() ? ErrorMessages.DEFAULT_ERROR_MESSAGE : defaultMessage;
+		}
 		return errorMessages.get(key);
 	}
 

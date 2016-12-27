@@ -210,42 +210,87 @@ public class ArtifactResource extends AbstractResource {
         DataValidator.validate(artifactQuery);
         
         ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
-        
         // Sending email notification
         String[] toMail = getConfig().getArtifactNotificationRecipients();
         String[] ccMail = { };
         
-        String emailStatus = getServiceHandler().sendEmail(toMail, ccMail, "Testing", "Hello Shubham");
-        LOG.info(emailStatus);
+        final String filename=artifactQuery.getName();
+        final String user=artifactQuery.getUser();
+        final String checksum=artifactQuery.getSha256();
         
-        List<String> allValidationTypes = getConfig().getArtifactValidationType();        
+        final String messageSubject = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOTIFICATION_EMAIL_SUBJECT_KEY, DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_SUBJECT);
+        final String messageBody = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOTIFICATION_EMAIL_BODY_KEY, DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_BODY);
+        
+        // Validating type of request file
+        List<String> allValidationTypes = getConfig().getArtifactValidationType();
         if(!allValidationTypes.contains(artifactQuery.getType())){
-        	promotionStatus.setError(false);
-            promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.VALIDATION_TYPE_NOT_SUPPORTED));
+            promotionStatus.setError(false);
+            promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.VALIDATION_TYPE_NOT_SUPPORTED_KEY));
             return Response.ok(promotionStatus).build();
         }
-        
         final String sha256 = artifactQuery.getSha256();
         
         DbArtifact dbArtifact = null;
         
         try{
-        	dbArtifact = getArtifactHandler().getArtifactUsingSHA256(sha256);
+             dbArtifact = getArtifactHandler().getArtifactUsingSHA256(sha256);
         }catch (Exception e) {
             promotionStatus.setError(true);
-            promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR));
+            promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_KEY));
+            
+            // Sending notification message
+            final String subject = String.format(messageSubject, filename);
+            final String message = String.format(messageBody, user, filename, checksum, "known", "");            
+            String emailStatus = getServiceHandler().sendEmail(toMail, ccMail, subject, message);
+            LOG.info(emailStatus);
+            
             return Response.ok(promotionStatus).build();
         }
         
-	    if(!dbArtifact.isPromoted()){
-	    	promotionStatus.setError(true);
-            promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE));
-	    	return Response.ok(promotionStatus).build();
-	    }
+        if(dbArtifact.isPromoted()){
+        	promotionStatus.setError(false);
+            promotionStatus.setMessage("");
+            return Response.ok(promotionStatus).build();
+        }
+        
+        promotionStatus.setError(true);
+        promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE_KEY));
+    	   
+        StringBuilder moduleId = new StringBuilder();
+        moduleId.append(dbArtifact.getGroupId());
+        moduleId.append(":");
+        moduleId.append(dbArtifact.getArtifactId());
+        moduleId.append(":");
+        moduleId.append(dbArtifact.getVersion());
 
-    	promotionStatus.setError(false);
-        promotionStatus.setMessage("");
-        return Response.ok(promotionStatus).build();
+    	LOG.info(moduleId.toString());
+    	   
+        DbModule module = null;
+        
+        try{
+        	module = getModuleHandler().getModule(moduleId.toString());
+        }catch(Exception e){
+        	LOG.warn("No module found for artifact.");
+        }
+        
+        StringBuilder jenkinsBuildInfo = new StringBuilder("");
+        if(module != null && module.getBuildInfo().get("jenkins-job-url") != null){
+        	String jenkinsBuildUrl = module.getBuildInfo().get("jenkins-job-url");
+        	jenkinsBuildInfo.append("<br>Job build: ");
+        	jenkinsBuildInfo.append("<a href=\"");
+        	jenkinsBuildInfo.append(jenkinsBuildUrl);
+        	jenkinsBuildInfo.append("\">");
+        	jenkinsBuildInfo.append(jenkinsBuildUrl);
+        	jenkinsBuildInfo.append("</a>");
+        }
+        
+        // Sending notification message
+        final String subject = String.format(messageSubject, filename);
+        final String message = String.format(messageBody, user, filename, checksum, "promoted", jenkinsBuildInfo.toString());
+        String emailStatus = getServiceHandler().sendEmail(toMail, ccMail, subject , message);
+        LOG.info(emailStatus);
+    	   
+        return Response.ok(promotionStatus).build();       
     }
 
     /**

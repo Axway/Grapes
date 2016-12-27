@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.services.ErrorMessages;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.axway.grapes.server.db.datamodel.DbOrganization;
@@ -72,6 +73,8 @@ public class GrapesTestUtils {
             when(serviceHandler.getErrorMessage("QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR")).thenReturn("You are uploading a non-published artefact.");
             when(serviceHandler.getErrorMessage("VALIDATION_TYPE_NOT_SUPPORTED")).thenReturn("Validation is not supported for this type of file");
             when(serviceHandler.getErrorMessage("ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE")).thenReturn("Artifact is not promoted");
+            when(serviceHandler.getErrorMessage("ARTIFACT_NOTIFICATION_EMAIL_SUBJECT",  DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_SUBJECT)).thenReturn("Webliv publish attempt for %s - untraceable");
+            when(serviceHandler.getErrorMessage("ARTIFACT_NOTIFICATION_EMAIL_BODY",  DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_BODY)).thenReturn("Hello,<br><br>User %s is trying to publish <b>%s</b>.<br> Checksum is <b>%s</b>.<br> The artifact is not <b>%s</b>.%s<br><br>Regards,<br>RD DevOps");
             when(serviceHandler.isEmailServiceRunning()).thenReturn(true);
             when(serviceHandler.sendEmail(any(String[].class), any(String[].class), any(String.class), any(String.class))).thenReturn("Successfully sent a notification Email");
 

@@ -29,7 +29,7 @@ public final class DataValidator {
      * @throws WebApplicationException if the data is corrupted
      */
     public static void validate(final Artifact artifact) {
-        if((artifact.getOrigin()== null || artifact.getOrigin() == "maven")
+        if((artifact.getOrigin()== null || "maven".equals(artifact.getOrigin()))
                 && (artifact.getGroupId() == null || artifact.getGroupId().isEmpty())){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
                     .entity("Artifact groupId should not be null or empty")
@@ -39,12 +39,6 @@ public final class DataValidator {
                 artifact.getArtifactId().isEmpty()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
                     .entity("Artifact artifactId should not be null or empty")
-                    .build());
-        }
-        if(artifact.getVersion() == null ||
-                artifact.getVersion().isEmpty()){
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Artifact version should not be null or empty")
                     .build());
         }
     }
