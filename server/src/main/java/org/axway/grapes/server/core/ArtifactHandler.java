@@ -156,14 +156,7 @@ public class ArtifactHandler {
      * @return DbArtifact
      */
     public DbArtifact getArtifactUsingSHA256(final String sha256) {
-        final DbArtifact artifact = repositoryHandler.getArtifactUsingSHA256(sha256);
-
-        if(artifact == null){
-            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-                    .entity("Artifact with SHA-256: " + sha256 + " does not exist.").build());
-        }
-
-        return artifact;
+        return repositoryHandler.getArtifactUsingSHA256(sha256);
     }
 
     /**
@@ -326,4 +319,25 @@ public class ArtifactHandler {
     public List<DbArtifact> getArtifacts(final FiltersHolder filters) {
         return repositoryHandler.getArtifacts(filters);
     }
+
+    /**k
+     * Returns a list of artifact regarding the filters
+     *
+     * @param filters FiltersHolder
+     * @return List<DbArtifact>
+     */
+	public String getModuleJenkinsJobInfo(final DbArtifact dbArtifact) {
+		DbModule module = getModule(dbArtifact);
+		if(module == null){
+			return "";
+		}
+		
+		String jenkinsJobUrl = module.getBuildInfo().get("jenkins-job-url");
+		
+		if(jenkinsJobUrl == null){
+			return "";			
+		}
+
+		return jenkinsJobUrl;
+	}
 }

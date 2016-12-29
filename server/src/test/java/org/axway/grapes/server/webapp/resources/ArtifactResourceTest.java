@@ -135,6 +135,9 @@ public class ArtifactResourceTest extends ResourceTest {
         
     	ArtifactQuery artifactQuery = new ArtifactQuery();
     	
+    	
+    	
+    	
     	artifactQuery.setName("File1");
     	artifactQuery.setStage(1);
     	artifactQuery.setUser("User");
@@ -154,8 +157,7 @@ public class ArtifactResourceTest extends ResourceTest {
     @Test
     public void isPromotedArtifactNotExisting(){
     	final String sha256 = "abcdefghijklmnopqrstuvwxyz12";
-        when(repositoryHandler.getArtifactUsingSHA256(sha256)).thenThrow(new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-                .entity("Artifact with SHA-256: " + sha256 + " does not exist.").build()));
+        when(repositoryHandler.getArtifactUsingSHA256(sha256)).thenReturn(null);
         
        
     	ArtifactQuery artifactQuery = new ArtifactQuery();

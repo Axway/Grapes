@@ -209,36 +209,36 @@ public class ArtifactResource extends AbstractResource {
         
         DataValidator.validate(artifactQuery);
         
+        final String filename = artifactQuery.getName();
+        final String user = artifactQuery.getUser();
+        final String checksum = artifactQuery.getSha256();
+        final String type = artifactQuery.getType();
+        
         ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
-        // Sending email notification
-        String[] toMail = getConfig().getArtifactNotificationRecipients();
-        String[] ccMail = { };
-        
-        final String filename=artifactQuery.getName();
-        final String user=artifactQuery.getUser();
-        final String checksum=artifactQuery.getSha256();
-        
-        final String messageSubject = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOTIFICATION_EMAIL_SUBJECT_KEY, DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_SUBJECT);
-        final String messageBody = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOTIFICATION_EMAIL_BODY_KEY, DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_BODY);
         
         // Validating type of request file
         List<String> allValidationTypes = getConfig().getArtifactValidationType();
-        if(!allValidationTypes.contains(artifactQuery.getType())){
+        
+        if(!allValidationTypes.contains(type)){
             promotionStatus.setError(false);
             promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.VALIDATION_TYPE_NOT_SUPPORTED_KEY));
             return Response.ok(promotionStatus).build();
         }
-        final String sha256 = artifactQuery.getSha256();
         
-        DbArtifact dbArtifact = null;
+        // Configuring email notification
+        String[] toMail = getConfig().getArtifactNotificationRecipients();
+        String[] ccMail = { };        
+        final String messageSubject = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOTIFICATION_EMAIL_SUBJECT_KEY, DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_SUBJECT);
+        final String messageBody = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOTIFICATION_EMAIL_BODY_KEY, DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_BODY);
+
+        DbArtifact dbArtifact = getArtifactHandler().getArtifactUsingSHA256(checksum);        
         
-        try{
-             dbArtifact = getArtifactHandler().getArtifactUsingSHA256(sha256);
-        }catch (Exception e) {
+        // If no artifact found
+        if(dbArtifact == null){
             promotionStatus.setError(true);
             promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_KEY));
             
-            // Sending notification message
+            // Sending notification email
             final String subject = String.format(messageSubject, filename);
             final String message = String.format(messageBody, user, filename, checksum, "known", "");            
             String emailStatus = getServiceHandler().sendEmail(toMail, ccMail, subject, message);
@@ -247,46 +247,26 @@ public class ArtifactResource extends AbstractResource {
             return Response.ok(promotionStatus).build();
         }
         
+        // If artifact is promoted
         if(dbArtifact.isPromoted()){
         	promotionStatus.setError(false);
             promotionStatus.setMessage("");
             return Response.ok(promotionStatus).build();
         }
-        
+
+        // If artifact is not promoted
         promotionStatus.setError(true);
         promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE_KEY));
-    	   
-        StringBuilder moduleId = new StringBuilder();
-        moduleId.append(dbArtifact.getGroupId());
-        moduleId.append(":");
-        moduleId.append(dbArtifact.getArtifactId());
-        moduleId.append(":");
-        moduleId.append(dbArtifact.getVersion());
-
-    	LOG.info(moduleId.toString());
-    	   
-        DbModule module = null;
+    	
+        String jenkinsJobInfo = getArtifactHandler().getModuleJenkinsJobInfo(dbArtifact);
         
-        try{
-        	module = getModuleHandler().getModule(moduleId.toString());
-        }catch(Exception e){
-        	LOG.warn("No module found for artifact.");
+        if(!jenkinsJobInfo.isEmpty()){
+        	jenkinsJobInfo = String.format("<br>Build job URL: %s", jenkinsJobInfo);
         }
         
-        StringBuilder jenkinsBuildInfo = new StringBuilder("");
-        if(module != null && module.getBuildInfo().get("jenkins-job-url") != null){
-        	String jenkinsBuildUrl = module.getBuildInfo().get("jenkins-job-url");
-        	jenkinsBuildInfo.append("<br>Job build: ");
-        	jenkinsBuildInfo.append("<a href=\"");
-        	jenkinsBuildInfo.append(jenkinsBuildUrl);
-        	jenkinsBuildInfo.append("\">");
-        	jenkinsBuildInfo.append(jenkinsBuildUrl);
-        	jenkinsBuildInfo.append("</a>");
-        }
-        
-        // Sending notification message
+        // Sending notification email
         final String subject = String.format(messageSubject, filename);
-        final String message = String.format(messageBody, user, filename, checksum, "promoted", jenkinsBuildInfo.toString());
+        final String message = String.format(messageBody, user, filename, checksum, "promoted", jenkinsJobInfo);
         String emailStatus = getServiceHandler().sendEmail(toMail, ccMail, subject , message);
         LOG.info(emailStatus);
     	   
