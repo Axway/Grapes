@@ -37,6 +37,11 @@
 		<jv.version>1.6</jv.version>
 		<maven.version>3.0.3</maven.version>
 		<jakson.version>2.2.0</jakson.version>
+
+		<drw.surefire.argLine>-Xmx512m</drw.surefire.argLine>
+		<surefire.argLine>${drw.surefire.argLine}</surefire.argLine> <!-- Kept drw.surefire.argLine for compatibility reason-->
+		<failsafe.argLine>-Xmx512m</failsafe.argLine>
+
 	</properties>
 
 	<developers>
@@ -113,14 +118,17 @@
 	<build>
 		<pluginManagement>
 			<plugins>
+
 				<plugin>
-					<groupId>org.jacoco</groupId>
-					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.7.5.201505241946</version>
+					<artifactId>maven-surefire-plugin</artifactId>
 					<configuration>
-						<includes>
-							<include>org/axway/**</include>
-						</includes>
+						 <argLine>${surefire.argLine} ${jacoco.agent.arg}</argLine>
+					</configuration>
+				</plugin>
+				<plugin>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<configuration>
+						 <argLine>${failsafe.argLine} ${jacoco.agent.arg}</argLine>
 					</configuration>
 				</plugin>
 
@@ -304,7 +312,8 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
+
 		</plugins>
 	</build>
 
