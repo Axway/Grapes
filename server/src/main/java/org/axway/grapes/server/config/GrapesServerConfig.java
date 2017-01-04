@@ -46,7 +46,6 @@ public class GrapesServerConfig extends Configuration{
     private File messageFile;
     
     @Valid
-    @NotNull
     @JsonProperty
     private ArrayList<String> artifactValidationType;    
     
@@ -74,6 +73,17 @@ public class GrapesServerConfig extends Configuration{
 	}
 
 	public List<String> getArtifactValidationType() {
+		if(artifactValidationType == null){
+			artifactValidationType = new ArrayList<String>();
+			artifactValidationType.add("program");
+			artifactValidationType.add("installer");
+			artifactValidationType.add("patch");
+			artifactValidationType.add("servicepack");
+			artifactValidationType.add("upgradepack");
+			artifactValidationType.add("install");
+			artifactValidationType.add("axwayjre");
+			artifactValidationType.add("JREUpdateTool");
+		}
 		return artifactValidationType;
 	}	
 	

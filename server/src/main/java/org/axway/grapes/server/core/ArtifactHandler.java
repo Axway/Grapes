@@ -146,8 +146,7 @@ public class ArtifactHandler {
         }
 
         return artifact;
-    }
-
+    }   
 
     /**
      * Return an artifact regarding its gavc

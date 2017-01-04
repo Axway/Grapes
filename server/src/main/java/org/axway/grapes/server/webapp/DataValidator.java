@@ -41,7 +41,37 @@ public final class DataValidator {
                     .entity("Artifact artifactId should not be null or empty")
                     .build());
         }
+        if(artifact.getVersion() == null ||
+                artifact.getVersion().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Artifact version should not be null or empty")
+                    .build());
+        }
     }
+
+    /**
+     * Checks if the provided artifact is valid and could be stored into the database
+     *
+     * @param artifact the artifact to test
+     * @throws WebApplicationException if the data is corrupted
+     */
+    public static void validatePostArtifact(final Artifact artifact) {
+    	validate(artifact);
+    	
+        if(artifact.getExtension() == null ||
+                artifact.getExtension().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Artifact extension should not be null or empty")
+                    .build());
+        }
+        if(artifact.getSha256() == null ||
+                artifact.getSha256().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Artifact SHA256 checksum should not be null or empty")
+                    .build());
+        }
+    }
+
 
     /**
      * Checks if the provided license is valid and could be stored into the database

@@ -139,7 +139,7 @@ public class TestingRepositoryHandler implements RepositoryHandler {
 
         return null;
     }
-
+	
     @Override
     public DbArtifact getArtifactUsingSHA256(final String sha256) {
         for(DbArtifact artifact: artifacts){
@@ -363,4 +363,5 @@ public class TestingRepositoryHandler implements RepositoryHandler {
             store(license);
         }
     }
+
 }

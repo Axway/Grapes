@@ -57,17 +57,45 @@ public class ArtifactResource extends AbstractResource {
      */
     @POST
     public Response postArtifact(@Auth final DbCredential credential, final Artifact artifact){
-        if(!credential.getRoles().contains(AvailableRoles.DEPENDENCY_NOTIFIER)){
+        if(!credential.getRoles().contains(AvailableRoles.DATA_UPDATER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
-
+        
         LOG.info("Got a post Artifact request.");
-
+        
+        // setting default origin to maven
+        if(artifact.getOrigin() == null || artifact.getOrigin().isEmpty()){
+        	artifact.setOrigin("maven");
+        }
+        
         // Checks if the data is corrupted
-        DataValidator.validate(artifact);
+        DataValidator.validatePostArtifact(artifact);
 
+        
         // Store the Artifact
         final ArtifactHandler artifactHandler = getArtifactHandler();
+
+        // checking artifact with same SHA256
+        final DbArtifact artifactWithSameSHA = artifactHandler.getArtifactUsingSHA256(artifact.getSha256());
+        
+        if(artifactWithSameSHA != null){
+        	throw new WebApplicationException(Response.serverError().status(HttpStatus.CONFLICT_409)
+                        .entity("Artifact with same checksum already exists.").build());
+        }
+        
+        // checking artifact with same SHA256
+        DbArtifact artifactWithSameGAVC = null;
+        try{
+        	artifactWithSameGAVC = artifactHandler.getArtifact(artifact.getGavc());
+        }catch(Exception e){
+        	// no artifact found, nothing to do
+        }
+        
+        if(artifactWithSameGAVC != null){
+        	throw new WebApplicationException(Response.serverError().status(HttpStatus.CONFLICT_409)
+                        .entity("Artifact with same GAVC already exists.").build());
+        }
+                
         final DbArtifact dbArtifact = getModelMapper().getDbArtifact(artifact);
         artifactHandler.store(dbArtifact);
 
@@ -191,21 +219,21 @@ public class ArtifactResource extends AbstractResource {
 
         return Response.ok(view).build();
     }
-    
+
 
     /**
-     * Return an Artifact regarding its gavc.
+     * Return promotion status of an Artifact regarding artifactQuery from third party.
      * This method is call via POST <grapes_url>/artifact/isPromoted
      *
      *
-     * @param gavc String
+     * @param artifactQuery ArtifactQuery
      * @return Response An ArtifactPromotionStatus in JSON
      */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/isPromoted")
     public Response isPromoted(final ArtifactQuery artifactQuery){
-        LOG.info("Got a get artifact request. ");
+        LOG.info("Got a get artifact promotion request. ");
         
         DataValidator.validate(artifactQuery);
         
@@ -221,7 +249,9 @@ public class ArtifactResource extends AbstractResource {
         
         if(!allValidationTypes.contains(type)){
             promotionStatus.setError(false);
-            promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.VALIDATION_TYPE_NOT_SUPPORTED_KEY));
+            
+            String message = getServiceHandler().getErrorMessage(DbArtifact.VALIDATION_TYPE_NOT_SUPPORTED_KEY);            
+            promotionStatus.setMessage(String.format(message, allValidationTypes.toString()));
             return Response.ok(promotionStatus).build();
         }
         
@@ -229,18 +259,23 @@ public class ArtifactResource extends AbstractResource {
         String[] toMail = getConfig().getArtifactNotificationRecipients();
         String[] ccMail = { };        
         final String messageSubject = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOTIFICATION_EMAIL_SUBJECT_KEY, DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_SUBJECT);
-        final String messageBody = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOTIFICATION_EMAIL_BODY_KEY, DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_BODY);
 
         DbArtifact dbArtifact = getArtifactHandler().getArtifactUsingSHA256(checksum);        
         
         // If no artifact found
         if(dbArtifact == null){
             promotionStatus.setError(true);
-            promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_KEY));
+            promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_UPLOAD_KEY));
+
+            // for publish stage
+            if(artifactQuery.getStage() == 1){
+                promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_PUBLISH_KEY));
+            }
             
             // Sending notification email
             final String subject = String.format(messageSubject, filename);
-            final String message = String.format(messageBody, user, filename, checksum, "known", "");            
+            final String messageBody = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY_KEY, DbArtifact.DEFAULT_ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY);
+            final String message = String.format(messageBody, user, filename, checksum, "");            
             String emailStatus = getServiceHandler().sendEmail(toMail, ccMail, subject, message);
             LOG.info(emailStatus);
             
@@ -266,27 +301,12 @@ public class ArtifactResource extends AbstractResource {
         
         // Sending notification email
         final String subject = String.format(messageSubject, filename);
-        final String message = String.format(messageBody, user, filename, checksum, "promoted", jenkinsJobInfo);
+        final String messageBody = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY_KEY, DbArtifact.DEFAULT_ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY);
+        final String message = String.format(messageBody, user, filename, checksum, jenkinsJobInfo);
         String emailStatus = getServiceHandler().sendEmail(toMail, ccMail, subject , message);
         LOG.info(emailStatus);
     	   
         return Response.ok(promotionStatus).build();       
-    }
-
-    /**
-     * Return all Artifact validation type supported.
-     * This method is call via GET <grapes_url>/artifact/validation-types
-     *
-     *
-     * @param gavc String
-     * @return Response An list of String in JSON
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/validation-types")
-    public Response getValidationType(){
-        LOG.info("Got a get artifact request. ");        
-        return Response.ok(getConfig().getArtifactValidationType()).build();
     }
 
     /**

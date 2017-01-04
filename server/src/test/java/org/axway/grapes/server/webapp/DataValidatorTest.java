@@ -86,7 +86,7 @@ public class DataValidatorTest {
     }
 
     @Test
-    public void artifactWithVersionNullIsValid(){
+    public void artifactWithVersionNullIsNotValid(){
         final Artifact artifact = DataModelFactory.createArtifact("groupId", "artifactId", null, null, null, null);
         WebApplicationException exception = null;
 
@@ -96,12 +96,12 @@ public class DataValidatorTest {
         catch (WebApplicationException e){
             exception = e;
         }
-        System.out.println(exception);
-        assertNull(exception);
+        
+        assertNotNull(exception);
     }
 
     @Test
-    public void artifactWithVersionEmptyIsValid(){
+    public void artifactWithVersionEmptyIsNotValid(){
         final Artifact artifact = DataModelFactory.createArtifact("groupId", "artifactId", "", null, null, null);
         WebApplicationException exception = null;
 
@@ -112,7 +112,7 @@ public class DataValidatorTest {
             exception = e;
         }
 
-        assertNull(exception);
+        assertNotNull(exception);
     }
 
     @Test

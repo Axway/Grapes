@@ -163,7 +163,7 @@ public class ArtifactResourceTest extends ResourceTest {
     	ArtifactQuery artifactQuery = new ArtifactQuery();
     	
     	artifactQuery.setName("File1");
-    	artifactQuery.setStage(1);
+    	artifactQuery.setStage(0);
     	artifactQuery.setUser("User");
     	artifactQuery.setSha256(sha256);
     	artifactQuery.setType("jar");
@@ -179,13 +179,34 @@ public class ArtifactResourceTest extends ResourceTest {
     }
     
     @Test
-    public void getValidationType(){        
-    	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/validation-types");
-        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-        final List<String> results = response.getEntity(new GenericType<List<String>>(){});
+    public void isPromotedArtifactNotExistingStagePublish(){
+    	final String sha256 = "abcdefghijklmnopqrstuvwxyz12";
+        when(repositoryHandler.getArtifactUsingSHA256(sha256)).thenReturn(null);
+        
+       
+    	ArtifactQuery artifactQuery = new ArtifactQuery();
+    	
+    	artifactQuery.setName("File1");
+    	artifactQuery.setStage(1);
+    	artifactQuery.setUser("User");
+    	artifactQuery.setSha256(sha256);
+    	artifactQuery.setType("jar");
+
+    	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifactQuery);
+        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
         
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertFalse(!promotionStatus.isError());
+        assertEquals("You are publishing a non-published artefact.", promotionStatus.getMessage());
+    }
+    
+    @Test
+    public void getValidationType(){        
+
+        final List<String> results = getGrapesConfig().getArtifactValidationType();;
+        
         assertFalse(results.isEmpty());
         assertFalse(!results.contains("jar"));
         assertFalse(!results.contains("jre"));
@@ -194,6 +215,7 @@ public class ArtifactResourceTest extends ResourceTest {
     @Test
     public void postArtifact() throws AuthenticationException, UnknownHostException {
         Artifact artifact = DataModelFactory.createArtifact("groupId", "artifactId", "version", "classifier", "type", "extension");
+        artifact.setSha256("abcdefghijklmnopqrstuvwxyz");
         artifact.setDownloadUrl("downloadUrl");
         artifact.setSize("size");
 

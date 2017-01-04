@@ -543,6 +543,7 @@ function deleteOrganization(organizationId){
      var artifactType = $("#inputArtifactType").val();
      var artifactExtension = $("#inputArtifactExtension").val();
      var artifactOrigin = $("#inputArtifactOrigin").val();
+     var promoted = "false";
      
      if(artifactId == null || artifactId == ''){
          $('#artifactError').html("Please provide artifact id");
@@ -552,19 +553,39 @@ function deleteOrganization(organizationId){
          $('#artifactError').html("Please provide artifact checksum");
     	 return;
      }
+     if(artifactGroupId == null || artifactGroupId == ''){
+         $('#artifactError').html("Please provide artifact groupId");
+    	 return;
+     }
+     if(artifactVersion == null || artifactVersion == ''){
+         $('#artifactError').html("Please provide artifact version");
+    	 return;
+     }
+     if(artifactExtension == null || artifactExtension == ''){
+         $('#artifactError').html("Please provide artifact extension");
+    	 return;
+     }
+     if(artifactOrigin == null || artifactOrigin == ''){
+    	 artifactOrigin = "maven";
+     }
+     if($("#inputArtifactPromotion").is(':checked')){
+    	 promoted = "true";
+     }
 	 $('#saveArtifact').attr("data-dismiss", "modal");
      $.ajax({
          url: "/artifact",
          method: 'POST',
-         data: '{"artifactId": "' + artifactId + '","groupId": "' + artifactGroupId + '","version": "' + artifactVersion + '", "classifier": "' + artifactClassifier + '","type": "' + artifactType + '", "extension": "' + artifactExtension + '","origin": "' + artifactOrigin + '","sha256": "' + artifactSHA + '", "promoted": true,"size": "", "downloadUrl": "","provider": ""}',
+         data: '{"artifactId": "' + artifactId + '","groupId": "' + artifactGroupId + '","version": "' + artifactVersion + '", "classifier": "' + artifactClassifier + '","type": "' + artifactType + '", "extension": "' + artifactExtension + '","origin": "' + artifactOrigin + '","sha256": "' + artifactSHA + '", "promoted": ' + promoted + ',"size": "", "downloadUrl": "","provider": ""}',
          contentType: 'application/json',
          error: function(xhr, error){
-             alert("The action cannot be performed: status " + xhr.status);
+             alert("The action cannot be performed: status " + xhr.status + "\nError: " + xhr.responseText);
          }
      }).done(function(){
+    	 $('#artifactError').html("");
          cleanAction();
-         updateArtifact();
      });
+
+     cleanCreateArtifact();
  }
 function getProductOverview(){
     var target = $('input:checked', '#targets').val();
@@ -1551,6 +1572,17 @@ function cleanAction(){
     $("#results").empty();
     $("#optional-action").empty();
     $("#extra-action").empty();
+}
+
+function cleanCreateArtifact(){
+	$("#inputArtifactId").val('');
+    $("#inputArtifactSHA").val('');
+    $("#inputArtifactGroupId").val('');
+    $("#inputArtifactVersion").val('');
+    $("#inputArtifactClassifier").val('');
+    $("#inputArtifactType").val('');
+    $("#inputArtifactExtension").val('');
+    $("#inputArtifactOrigin").val('');
 }
 
 /*WorkAround*/
