@@ -163,10 +163,16 @@ public final class DataValidator {
      * @throws WebApplicationException if the data is corrupted
      */
     public static void validate(final ArtifactQuery artifactQuery) {
+        Pattern invalidChars = Pattern.compile("[^A-Fa-f0-9]");
         if(artifactQuery.getUser() == null ||
         		artifactQuery.getUser().isEmpty()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
                     .entity("User name cannot be null or empty!")
+                    .build());
+        }
+        if( artifactQuery.getStage() != 0 && artifactQuery.getStage() !=1 ){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Stage value is either empty or invalid! It cannot be other than 1 or 0")
                     .build());
         }
         if(artifactQuery.getName() == null ||
@@ -176,15 +182,15 @@ public final class DataValidator {
                     .build());
         }
         if(artifactQuery.getSha256() == null ||
-        		artifactQuery.getSha256().isEmpty()){
+                artifactQuery.getSha256().isEmpty() || artifactQuery.getSha256().length() < 64 || invalidChars.matcher(artifactQuery.getSha256()).find()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                    .entity("SHA256 code cannot be null or empty!")
+                    .entity("SHA256 code is either empty or invalid!")
                     .build());
         }
         if(artifactQuery.getType() == null ||
         		artifactQuery.getType().isEmpty()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                    .entity("File Type code cannot be null or empty!")
+                    .entity("File Type cannot be null or empty!")
                     .build());
         }
     }

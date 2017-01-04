@@ -214,4 +214,18 @@ public final class DataModelFactory {
             throw new IOException(e);
         }
 	}
+        public static ArtifactQuery createArtifactQuery(final String user, final int stage , final String name, final String sha256, final String type) throws IOException{
+            try{
+                final ArtifactQuery artifactQuery = new ArtifactQuery();
+                
+                artifactQuery.setUser(user);
+                artifactQuery.setStage(stage);
+                artifactQuery.setName(name);
+                artifactQuery.setSha256(sha256);
+                artifactQuery.setType(type);
+                return artifactQuery;
+            }
+            catch(Exception e){
+                throw new IOException(e);
+            }}
 }

@@ -3,7 +3,7 @@ package org.axway.grapes.commons.datamodel;
 public class ArtifactQuery {
 	
 	private String user;
-	private int stage;
+	private int stage = -1;
 	private String name;
 	private String sha256;
 	private String type;
