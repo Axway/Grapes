@@ -666,7 +666,6 @@ public class ArtifactHandlerTest {
         final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
         final FiltersHolder filtersHolder = mock(FiltersHolder.class);
 
-        final DbArtifact artifact = new DbArtifact();
         handler.getArtifacts(filtersHolder);
 
         verify(repositoryHandler, times(1)).getArtifacts(filtersHolder);

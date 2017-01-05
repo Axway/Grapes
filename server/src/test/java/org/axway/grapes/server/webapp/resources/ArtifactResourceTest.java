@@ -58,9 +58,6 @@ public class ArtifactResourceTest extends ResourceTest {
         validationTypes.add("filetype2");
         when(config.getArtifactValidationType()).thenReturn(validationTypes);
         
-        final String templatePath = GrapesTestUtils.class.getResource("message.txt").getPath();
-        final File messageFile = new File(templatePath);
-        
         return config;
     }
 
@@ -230,6 +227,24 @@ public class ArtifactResourceTest extends ResourceTest {
         assertFalse(results.isEmpty());
         assertFalse(!results.contains("filetype1"));
         assertFalse(!results.contains("filetype2"));
+    }
+    
+    @Test
+    public void checkDefaultValidationTypes(){
+    	GrapesServerConfig config = new GrapesServerConfig();
+    	
+    	List<String> allValidationTypes = config.getArtifactValidationType();
+    	
+    	assertNotNull(allValidationTypes);
+    	assertEquals(8, allValidationTypes.size());
+    	assertTrue(allValidationTypes.contains("program"));
+    	assertTrue(allValidationTypes.contains("installer"));
+    	assertTrue(allValidationTypes.contains("patch"));
+    	assertTrue(allValidationTypes.contains("servicepack"));
+    	assertTrue(allValidationTypes.contains("upgradepack"));
+    	assertTrue(allValidationTypes.contains("install"));
+    	assertTrue(allValidationTypes.contains("axwayjre"));
+    	assertTrue(allValidationTypes.contains("JREUpdateTool"));
     }
 
     @Test
