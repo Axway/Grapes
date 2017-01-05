@@ -206,6 +206,16 @@ public abstract class AbstractResource extends View {
     }
 
     /**
+     * Returns an empty model of a Message to check Promotion status 
+     *
+     * @return String
+     * @throws IOException
+     */
+    public String getArtifactPromtotionInputMessage() throws IOException {
+        return JsonUtils.serialize(DataModelFactory.createArtifactQuery("", 0, "", "", ""));
+    }
+    
+    /**
      * Returns an empty model of a Dependency in Json
      *
      * @return String

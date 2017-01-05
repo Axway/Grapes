@@ -71,17 +71,18 @@
                 <li class=""><a data-toggle="collapse" data-target="#accordion1" href="#artifact"><i class="icon-chevron-right"></i> Resource documentation</a></li>
                 <li class=""><a data-toggle="collapse" data-target="#accordion1" href="#artifact"><i class="icon-chevron-right"></i> Add/update an artifact</a></li>
                 <li class=""><a data-toggle="collapse" data-target="#accordion2" href="#artifact-gavcs"><i class="icon-chevron-right"></i> List all artifact ids</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion3" href="#artifact-versions"><i class="icon-chevron-right"></i> List all versions of an artifact</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion4" href="#artifact-last-version"><i class="icon-chevron-right"></i> Last version of an artifact</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion5" href="#artifact-target"><i class="icon-chevron-right"></i> Get an artifact</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion5" href="#artifact-target"><i class="icon-chevron-right"></i> Remove an artifact</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion6" href="#artifact-module"><i class="icon-chevron-right"></i> Get artifact module</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion7" href="#artifact-organization"><i class="icon-chevron-right"></i> Get artifact organization</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion8" href="#artifact-ancestors"><i class="icon-chevron-right"></i> Who use this artifact?</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion9" href="#artifact-licenses"><i class="icon-chevron-right"></i> Get artifact licenses</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion9" href="#artifact-licenses"><i class="icon-chevron-right"></i> Add artifact license</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion9" href="#artifact-licenses"><i class="icon-chevron-right"></i> Remove artifact license</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion10" href="#artifact-notuse"><i class="icon-chevron-right"></i> DO_NOT_USE flag</a></li>
+                <li class=""><a data-toggle="collapse" data-target="#accordion3" href="#artifact-promotion"><i class="icon-chevron-right"></i> Check promotion status</a></li>
+                <li class=""><a data-toggle="collapse" data-target="#accordion4" href="#artifact-versions"><i class="icon-chevron-right"></i> List all versions of an artifact</a></li>
+                <li class=""><a data-toggle="collapse" data-target="#accordion5" href="#artifact-last-version"><i class="icon-chevron-right"></i> Last version of an artifact</a></li>
+                <li class=""><a data-toggle="collapse" data-target="#accordion6" href="#artifact-target"><i class="icon-chevron-right"></i> Get an artifact</a></li>
+                <li class=""><a data-toggle="collapse" data-target="#accordion6" href="#artifact-target"><i class="icon-chevron-right"></i> Remove an artifact</a></li>
+                <li class=""><a data-toggle="collapse" data-target="#accordion7" href="#artifact-module"><i class="icon-chevron-right"></i> Get artifact module</a></li>
+                <li class=""><a data-toggle="collapse" data-target="#accordion8" href="#artifact-organization"><i class="icon-chevron-right"></i> Get artifact organization</a></li>
+                <li class=""><a data-toggle="collapse" data-target="#accordion9" href="#artifact-ancestors"><i class="icon-chevron-right"></i> Who use this artifact?</a></li>
+                <li class=""><a data-toggle="collapse" data-target="#accordion10" href="#artifact-licenses"><i class="icon-chevron-right"></i> Get artifact licenses</a></li>
+                <li class=""><a data-toggle="collapse" data-target="#accordion10" href="#artifact-licenses"><i class="icon-chevron-right"></i> Add artifact license</a></li>
+                <li class=""><a data-toggle="collapse" data-target="#accordion10" href="#artifact-licenses"><i class="icon-chevron-right"></i> Remove artifact license</a></li>
+                <li class=""><a data-toggle="collapse" data-target="#accordion11" href="#artifact-notuse"><i class="icon-chevron-right"></i> DO_NOT_USE flag</a></li>
             </ul>
         </div>
         <div class="span8">
@@ -168,11 +169,32 @@
                 </ul>
             </div>
         </section>
-        <section id="artifact-versions">
+        <section id="artifact-promotion">
             <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion3">
-                <h2>@ /artifact/{gavc}/versions</h2>
+                <h2>@ /artifact/isPromoted</h2>
             </a>
             <div id="accordion3" class="collapse">
+                <ul>
+                    <li>
+                        <h3>POST</h3>
+                        <ul>
+                            <li>Check if the file type is to be validated</li>
+                            <li>Perform two kinds of verifications: if the checksum is present in the database, and, if it is promoted </li>
+                            <li>Input Message example:
+                                <pre>${getArtifactPromtotionInputMessage()}</pre>
+                            <p style="font-style:italic"> stage = 0 for uploading and 1 for promotion <br>
+                            type = [program, installer, patch, servicepack, upgradepack, install, axwayjre, JREUpdateTool]</p>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        <section id="artifact-versions">
+            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion4">
+                <h2>@ /artifact/{gavc}/versions</h2>
+            </a>
+            <div id="accordion4" class="collapse">
                 <ul>
                     <li>
                         <h3>GET</h3>
@@ -186,10 +208,10 @@
             </div>
         </section>
         <section id="artifact-last-version">
-            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion4">
+            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion5">
                 <h2>@ /artifact/{gavc}/lastversion</h2>
             </a>
-            <div id="accordion4" class="collapse">
+            <div id="accordion5" class="collapse">
                 <ul>
                     <li>
                         <h3>GET</h3>
@@ -203,10 +225,10 @@
             </div>
         </section>
         <section id="artifact-target">
-            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion5">
+            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion6">
                 <h2>@ /artifact/{gavc}</h2>
             </a>
-            <div id="accordion5" class="collapse">
+            <div id="accordion6" class="collapse">
                 <ul>
                     <li>
                         <h3>GET</h3>
@@ -231,10 +253,10 @@
             </div>
         </section>
         <section id="artifact-module">
-            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion6">
+            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion7">
                 <h2>@ /artifact/{gavc}/module</h2>
             </a>
-            <div id="accordion6" class="collapse">
+            <div id="accordion7" class="collapse">
                 <ul>
                     <li>
                         <h3>GET</h3>
@@ -260,10 +282,10 @@
             </div>
         </section>
         <section id="artifact-organization">
-            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion7">
+            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion8">
                 <h2>@ /artifact/{gavc}/organization</h2>
             </a>
-            <div id="accordion7" class="collapse">
+            <div id="accordion8" class="collapse">
                 <ul>
                     <li>
                         <h3>GET</h3>
@@ -280,10 +302,10 @@
             </div>
         </section>
         <section id="artifact-ancestors">
-            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion8">
+            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion9">
                 <h2>@ /artifact/{gavc}/ancestors</h2>
             </a>
-            <div id="accordion8" class="collapse">
+            <div id="accordion9" class="collapse">
                 <ul>
                     <li>
                         <h3>GET</h3>
@@ -342,10 +364,10 @@
             </div>
         </section>
         <section id="artifact-licenses">
-            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion9">
+            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion10">
                 <h2>@ /artifact/{gavc}/licenses</h2>
             </a>
-            <div id="accordion9" class="collapse">
+            <div id="accordion10" class="collapse">
                 <ul>
                     <li>
                         <h3>GET</h3>
@@ -414,10 +436,10 @@
             </div>
         </section>
         <section id="artifact-notuse">
-            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion10">
+            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion11">
                 <h2>@ /artifact/{gavc}/donotuse</h2>
             </a>
-            <div id="accordion10" class="collapse">
+            <div id="accordion11" class="collapse">
                 <ul>
                     <li>
                         <h3>GET</h3>
