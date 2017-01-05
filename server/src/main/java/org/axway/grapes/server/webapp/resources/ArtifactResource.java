@@ -245,7 +245,7 @@ public class ArtifactResource extends AbstractResource {
         ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
         
         // Validating type of request file
-        List<String> allValidationTypes = getConfig().getArtifactValidationType();
+        List<String> allValidationTypes = getArtifactValidationTypes();
         
         if(!allValidationTypes.contains(type)){
             promotionStatus.setError(false);

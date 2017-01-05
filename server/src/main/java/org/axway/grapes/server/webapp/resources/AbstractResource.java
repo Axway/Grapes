@@ -272,4 +272,14 @@ public abstract class AbstractResource extends View {
 	protected ServiceHandler getServiceHandler() {
 		return serviceHandler;
 	}
+	
+	/**
+     * Returns a list of Artifact Validation types
+     *
+     * @return List<String>
+     */
+    public List<String> getArtifactValidationTypes() {
+        return grapesConfig.getArtifactValidationType();
+    }
+
 }

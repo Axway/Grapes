@@ -178,12 +178,17 @@
                     <li>
                         <h3>POST</h3>
                         <ul>
-                            <li>Check if the file type is to be validated</li>
-                            <li>Perform two kinds of verifications: if the checksum is present in the database, and, if it is promoted </li>
+                            <li>Checks for the promotion state of an artifact based on the SHA256 checksum</li>
+                            <li>Performs two kinds of verifications: if the checksum is present in the database, and, if it is promoted </li>
+                            <li>It returns JSON text only</li>
                             <li>Input Message example:
                                 <pre>${getArtifactPromtotionInputMessage()}</pre>
-                            <p style="font-style:italic"> stage = 0 for uploading and 1 for promotion <br>
-                            type = [program, installer, patch, servicepack, upgradepack, install, axwayjre, JREUpdateTool]</p>
+                                <p style="font-style:italic"> stage = 0 for uploading and 1 for promotion <br>
+                                type = [ 
+                                <#list getArtifactValidationTypes() as type>
+                                ${type}<#if type_has_next>, </#if>
+                                </#list> ]
+                                </p>
                             </li>
                         </ul>
                     </li>
