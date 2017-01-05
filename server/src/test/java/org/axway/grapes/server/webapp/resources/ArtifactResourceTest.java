@@ -14,12 +14,15 @@ import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
+import org.axway.grapes.server.core.services.GrapesEmail;
 import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -31,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
@@ -145,7 +149,7 @@ public class ArtifactResourceTest extends ResourceTest {
     }
 
     @Test
-    public void isPromotedNotPromotedArtifact(){
+    public void isPromotedTestNonPromotedArtifact(){
     	final DbArtifact artifact = new DbArtifact();
         artifact.setGroupId("groupId");
         artifact.setArtifactId("artifactId");
@@ -217,6 +221,124 @@ public class ArtifactResourceTest extends ResourceTest {
         assertEquals(HttpStatus.OK_200, response.getStatus());
         assertFalse(!promotionStatus.isError());
         assertEquals("You are publishing a non-published artefact.", promotionStatus.getMessage());
+    }
+    
+    @Test
+    public void emailSubjectTest(){
+    	// mocking sending of mail. Returning as an Exception with message used for sending email. 2 is for Email Subject
+    	mockingSendingEmailToReturnArg(2);
+
+        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(null);
+        
+    	ArtifactQuery artifactQuery = new ArtifactQuery();
+    	
+    	artifactQuery.setName("File1");
+    	artifactQuery.setStage(1);
+    	artifactQuery.setUser("User");
+    	artifactQuery.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
+    	artifactQuery.setType("filetype1");
+
+    	Exception exception = null;
+    	
+    	try{    	
+    	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifactQuery);
+        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        
+    	}catch(Exception e){
+    		exception = e;
+    	}
+    	
+    	StringBuilder expectedException = new StringBuilder("java.lang.Exception: ");
+    	expectedException.append(String.format(DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_SUBJECT, "File1"));
+    	
+    	assertNotNull(exception);
+    	// verifying message
+    	assertEquals(expectedException.toString(), exception.getMessage());        
+    }
+    
+    @Test
+    public void emailBodyTestForArtifactNotKnown(){
+    	// mocking sending of mail. Returning as an Exception with message used for sending email. 3 is for Email body
+    	mockingSendingEmailToReturnArg(3);
+
+        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(null);
+        
+    	ArtifactQuery artifactQuery = new ArtifactQuery();
+    	
+    	artifactQuery.setName("File1");
+    	artifactQuery.setStage(1);
+    	artifactQuery.setUser("User");
+    	artifactQuery.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
+    	artifactQuery.setType("filetype1");
+
+    	Exception exception = null;
+    	
+    	try{    	
+    	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifactQuery);
+        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        
+    	}catch(Exception e){
+    		exception = e;
+    	}
+    	
+    	StringBuilder expectedException = new StringBuilder("java.lang.Exception: ");
+    	expectedException.append(String.format(DbArtifact.DEFAULT_ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY, "User", "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", ""));
+    	
+    	assertNotNull(exception);
+    	// verifying message
+    	assertEquals(expectedException.toString(), exception.getMessage());        
+    }
+
+    
+    @Test
+    public void emailBodyTestForArtifactNotPromoted(){
+    	// mocking sending of mail. Returning as an Exception with message used for sending email. 3 is for Email body
+    	mockingSendingEmailToReturnArg(3);
+    	
+    	final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId("groupId");
+        artifact.setArtifactId("artifactId");
+        artifact.setVersion("version");
+        artifact.setClassifier("classifier");
+        artifact.setPromoted(false);
+        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(artifact);
+        
+    	ArtifactQuery artifactQuery = new ArtifactQuery();
+    	
+    	artifactQuery.setName("File1");
+    	artifactQuery.setStage(1);
+    	artifactQuery.setUser("User");
+    	artifactQuery.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
+    	artifactQuery.setType("filetype1");
+
+    	Exception exception = null;
+    	
+    	try{    	
+    	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifactQuery);
+        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        
+    	}catch(Exception e){
+    		exception = e;
+    	}
+    	
+    	StringBuilder expectedException = new StringBuilder("java.lang.Exception: ");
+    	expectedException.append(String.format(DbArtifact.DEFAULT_ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY, "User", "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", ""));
+    	
+    	assertNotNull(exception);
+    	// verifying message
+    	assertEquals(expectedException.toString(), exception.getMessage());        
+    }
+    
+    private void mockingSendingEmailToReturnArg(final int index){
+        when(serviceHandler.sendEmail(any(String[].class), any(String[].class), any(String.class), any(String.class))).thenAnswer(new Answer() {
+        	   public Object answer(InvocationOnMock invocation) throws Throwable  {
+        		     Object[] args = invocation.getArguments();        		     
+        		     throw new Exception((String)args[index]);
+        		   }
+        		});
     }
     
     @Test
