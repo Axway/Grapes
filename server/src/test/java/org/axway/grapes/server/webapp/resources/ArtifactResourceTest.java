@@ -8,6 +8,7 @@ import com.yammer.dropwizard.auth.AuthenticationException;
 import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.testing.ResourceTest;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
+
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.GrapesTestUtils;
@@ -398,6 +399,21 @@ public class ArtifactResourceTest extends ResourceTest {
         response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, DataModelFactory.createArtifact("", "", "", null, null, null));
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+    }
+    
+    @Test
+    public void checkAuthorizationOnPostArtifact() throws AuthenticationException {
+        Artifact artifact = DataModelFactory.createArtifact("groupId", "artifactId", "version", "classifier", "type", "extension");
+        artifact.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
+        artifact.setDownloadUrl("downloadUrl");
+        artifact.setSize("size");
+        
+        //user does not have DATA_UPDATER privileges
+        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.UNAUTHORIZED_USER_FOR_POSTING, GrapesTestUtils.PASSWORD_4TEST));
+        WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifact);
+        assertNotNull(response);
+        assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
     }
 
     @Test

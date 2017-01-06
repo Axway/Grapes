@@ -22,6 +22,8 @@ public class GrapesTestUtils {
 
     public final static String USER_4TEST = "user";
     public final static String PASSWORD_4TEST = "password";
+    
+    public final static String UNAUTHORIZED_USER_FOR_POSTING = "user1";
 
     public final static String WRONG_USER_4TEST = "wrongUser";
     public final static String WRONG_PASSWORD_4TEST = "wrongPassword";
@@ -50,6 +52,15 @@ public class GrapesTestUtils {
             organization.getCorporateGroupIdPrefixes().add(CORPORATE_GROUPID_4TEST);
             when(repositoryHandler.getOrganization(ORGANIZATION_NAME_4TEST)).thenReturn(organization);
             when(repositoryHandler.getAllOrganizations()).thenReturn(Lists.newArrayList(organization));
+            
+            final DbCredential unAuthorizedUser = new DbCredential();
+            unAuthorizedUser.setUser(UNAUTHORIZED_USER_FOR_POSTING);
+            unAuthorizedUser.setPassword(GrapesAuthenticator.encrypt(PASSWORD_4TEST));
+            unAuthorizedUser.addRole(AvailableRoles.ARTIFACT_CHECKER);
+            unAuthorizedUser.addRole(AvailableRoles.DATA_DELETER);
+            unAuthorizedUser.addRole(AvailableRoles.DEPENDENCY_NOTIFIER);
+            unAuthorizedUser.addRole(AvailableRoles.LICENSE_CHECKER);
+            when(repositoryHandler.getCredential(UNAUTHORIZED_USER_FOR_POSTING)).thenReturn(unAuthorizedUser);
 
             return repositoryHandler;
 
