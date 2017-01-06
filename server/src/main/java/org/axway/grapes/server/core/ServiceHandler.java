@@ -24,10 +24,14 @@ public class ServiceHandler {
 	}
 
 	public String getErrorMessage(final String key, final String defaultMessage) {
-		if(errorMessages == null){
+		final String error = errorMessages.get(key);
+		
+		// if no key were found
+		if(error.equals(ErrorMessages.DEFAULT_ERROR_MESSAGE)){
 			return defaultMessage.isEmpty() ? ErrorMessages.DEFAULT_ERROR_MESSAGE : defaultMessage;
 		}
-		return errorMessages.get(key);
+		
+		return error;
 	}
 
 	public ErrorMessages getMessageHandler() {
