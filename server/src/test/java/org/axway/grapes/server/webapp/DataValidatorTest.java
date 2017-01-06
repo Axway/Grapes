@@ -118,6 +118,51 @@ public class DataValidatorTest {
     }
 
     @Test
+    public void artifactWithExtensionNullIsNotValid(){
+        final Artifact artifact = DataModelFactory.createArtifact("groupId", "artifactId", "version", "classifier" , null , null);
+        WebApplicationException exception = null;
+
+        try{
+            DataValidator.validatePostArtifact(artifact);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+
+        assertNotNull(exception);
+    }
+    
+    @Test
+    public void artifactWithExtensionEmptyIsNotValid(){
+        final Artifact artifact = DataModelFactory.createArtifact("groupId", "artifactId", "version", "classifier" , null , "");
+        WebApplicationException exception = null;
+
+        try{
+            DataValidator.validatePostArtifact(artifact);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+
+        assertNotNull(exception);
+    }
+    
+    @Test
+    public void artifactWithNoSha256IsNotValid(){
+        final Artifact artifact = DataModelFactory.createArtifact("groupId", "artifactId", "version", "classifier" , "type" , "extension");
+        WebApplicationException exception = null;
+
+        try{
+            DataValidator.validatePostArtifact(artifact);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+
+        assertNotNull(exception);
+    }
+
+    @Test
     public void validateLicense(){
         final License license = DataModelFactory.createLicense("name", "longName", null, null, null);
         WebApplicationException exception = null;
@@ -440,4 +485,6 @@ public class DataValidatorTest {
         }
         assertNotNull(exception);
     }
+    
+    
 }
