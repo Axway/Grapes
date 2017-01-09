@@ -24,3 +24,14 @@ logging:
     archivedFileCount: 5
     timeZone: UTC
 authenticationCachePolicy: maximumSize=10000, expireAfterAccess=1m
+messageFile: message.txt
+artifactValidationType: [program, installer, patch, servicepack, upgradepack, install, axwayjre, JREUpdateTool]
+artifactNotificationRecipients: [xyz@axway.com]
+mailing:
+   host: localhost
+   port: 587
+   user: test@axway.com
+   pwd: abcd123
+   sslTrust: localhost
+   smtpFrom: test@axway.com
+   debug: true

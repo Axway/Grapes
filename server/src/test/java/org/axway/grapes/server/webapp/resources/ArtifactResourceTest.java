@@ -8,24 +8,34 @@ import com.yammer.dropwizard.auth.AuthenticationException;
 import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.testing.ResourceTest;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
+
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
+import org.axway.grapes.server.core.services.GrapesEmail;
 import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import java.io.File;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
@@ -33,14 +43,27 @@ import static org.mockito.Mockito.*;
 public class ArtifactResourceTest extends ResourceTest {
 
     private RepositoryHandler repositoryHandler;
+    private ServiceHandler serviceHandler;
 
     @Override
     protected void setUpResources() throws Exception {
         repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
-        ArtifactResource resource = new ArtifactResource(repositoryHandler, mock(GrapesServerConfig.class));
+        serviceHandler = GrapesTestUtils.getServiceHandlerMock();
+        
+        ArtifactResource resource = new ArtifactResource(repositoryHandler, serviceHandler, getGrapesConfig());
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repositoryHandler), "test auth"));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);
+    }
+    
+    private GrapesServerConfig getGrapesConfig(){
+        GrapesServerConfig config = mock(GrapesServerConfig.class);
+        List<String> validationTypes = new ArrayList<String>();
+        validationTypes.add("filetype1");
+        validationTypes.add("filetype2");
+        when(config.getArtifactValidationType()).thenReturn(validationTypes);
+        
+        return config;
     }
 
     @Test
@@ -53,8 +76,304 @@ public class ArtifactResourceTest extends ResourceTest {
     }
 
     @Test
+    public void isPromoted(){
+    	final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId("groupId");
+        artifact.setArtifactId("artifactId");
+        artifact.setVersion("version");
+        artifact.setClassifier("classifier");
+        artifact.setPromoted(true);
+        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(artifact);
+        
+    	ArtifactQuery artifactQuery = new ArtifactQuery();
+    	
+    	artifactQuery.setName("File1");
+    	artifactQuery.setStage(1);
+    	artifactQuery.setUser("User");
+    	artifactQuery.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
+    	artifactQuery.setType("filetype1");
+
+    	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifactQuery);
+
+        
+        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertFalse(promotionStatus.isError());
+        assertEquals("", promotionStatus.getMessage());
+    }
+
+    @Test
+    public void isPromotedNotValidTypeStageUpload(){
+        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(null);
+        
+    	ArtifactQuery artifactQuery = new ArtifactQuery();
+    	
+    	artifactQuery.setName("File1");
+    	artifactQuery.setStage(1);
+    	artifactQuery.setUser("User");
+    	artifactQuery.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
+    	artifactQuery.setType("notValidType");
+
+    	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifactQuery);
+        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertFalse(promotionStatus.isError());
+        assertEquals("Validation is not supported for this type of file", promotionStatus.getMessage());
+    }
+    
+    @Test
+    public void isPromotedNotValidTypeStagePublish(){
+        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(null);
+        
+        ArtifactQuery artifactQuery = new ArtifactQuery();
+        
+        artifactQuery.setName("File1");
+        artifactQuery.setStage(0);
+        artifactQuery.setUser("User");
+        artifactQuery.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
+        artifactQuery.setType("notValidType");
+
+        WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifactQuery);
+        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertFalse(promotionStatus.isError());
+        assertEquals("Validation is not supported for this type of file", promotionStatus.getMessage());
+    }
+
+    @Test
+    public void isPromotedTestNonPromotedArtifact(){
+    	final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId("groupId");
+        artifact.setArtifactId("artifactId");
+        artifact.setVersion("version");
+        artifact.setClassifier("classifier");
+        artifact.setPromoted(false);
+        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(artifact);
+        
+    	ArtifactQuery artifactQuery = new ArtifactQuery();
+    	
+    	artifactQuery.setName("File1");
+    	artifactQuery.setStage(1);
+    	artifactQuery.setUser("User");
+    	artifactQuery.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
+    	artifactQuery.setType("filetype1");
+
+    	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifactQuery);
+        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertFalse(!promotionStatus.isError());
+        assertEquals("Artifact is not promoted", promotionStatus.getMessage());
+    }
+    
+    @Test
+    public void isPromotedArtifactNotExistingStageUpload(){
+    	final String sha256 = "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c";
+        when(repositoryHandler.getArtifactUsingSHA256(sha256)).thenReturn(null);
+        
+    	ArtifactQuery artifactQuery = new ArtifactQuery();
+    	
+    	artifactQuery.setName("File1");
+    	artifactQuery.setStage(0);
+    	artifactQuery.setUser("User");
+    	artifactQuery.setSha256(sha256);
+    	artifactQuery.setType("filetype1");
+
+    	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifactQuery);
+        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertFalse(!promotionStatus.isError());
+        assertEquals("You are uploading a non-published artefact.", promotionStatus.getMessage());
+    }
+    
+    @Test
+    public void isPromotedArtifactNotExistingStagePublish(){
+    	final String sha256 = "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c";
+        when(repositoryHandler.getArtifactUsingSHA256(sha256)).thenReturn(null);
+        
+       
+    	ArtifactQuery artifactQuery = new ArtifactQuery();
+    	
+    	artifactQuery.setName("File1");
+    	artifactQuery.setStage(1);
+    	artifactQuery.setUser("User");
+    	artifactQuery.setSha256(sha256);
+    	artifactQuery.setType("filetype1");
+
+    	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifactQuery);
+        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertFalse(!promotionStatus.isError());
+        assertEquals("You are publishing a non-published artefact.", promotionStatus.getMessage());
+    }
+    
+    @Test
+    public void emailSubjectTest(){
+    	// mocking sending of mail. Returning as an Exception with message used for sending email. 2 is for Email Subject
+    	mockingSendingEmailToReturnArg(2);
+
+        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(null);
+        
+    	ArtifactQuery artifactQuery = new ArtifactQuery();
+    	
+    	artifactQuery.setName("File1");
+    	artifactQuery.setStage(1);
+    	artifactQuery.setUser("User");
+    	artifactQuery.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
+    	artifactQuery.setType("filetype1");
+
+    	Exception exception = null;
+    	
+    	try{    	
+    	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifactQuery);
+        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        
+    	}catch(Exception e){
+    		exception = e;
+    	}
+    	
+    	StringBuilder expectedException = new StringBuilder("java.lang.Exception: ");
+    	expectedException.append(String.format(DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_SUBJECT, "File1"));
+    	
+    	assertNotNull(exception);
+    	// verifying message
+    	assertEquals(expectedException.toString(), exception.getMessage());        
+    }
+    
+    @Test
+    public void emailBodyTestForArtifactNotKnown(){
+    	// mocking sending of mail. Returning as an Exception with message used for sending email. 3 is for Email body
+    	mockingSendingEmailToReturnArg(3);
+
+        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(null);
+        
+    	ArtifactQuery artifactQuery = new ArtifactQuery();
+    	
+    	artifactQuery.setName("File1");
+    	artifactQuery.setStage(1);
+    	artifactQuery.setUser("User");
+    	artifactQuery.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
+    	artifactQuery.setType("filetype1");
+
+    	Exception exception = null;
+    	
+    	try{    	
+    	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifactQuery);
+        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        
+    	}catch(Exception e){
+    		exception = e;
+    	}
+    	
+    	StringBuilder expectedException = new StringBuilder("java.lang.Exception: ");
+    	expectedException.append(String.format(DbArtifact.DEFAULT_ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY, "User", "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", ""));
+    	
+    	assertNotNull(exception);
+    	// verifying message
+    	assertEquals(expectedException.toString(), exception.getMessage());        
+    }
+
+    
+    @Test
+    public void emailBodyTestForArtifactNotPromoted(){
+    	// mocking sending of mail. Returning as an Exception with message used for sending email. 3 is for Email body
+    	mockingSendingEmailToReturnArg(3);
+    	
+    	final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId("groupId");
+        artifact.setArtifactId("artifactId");
+        artifact.setVersion("version");
+        artifact.setClassifier("classifier");
+        artifact.setPromoted(false);
+        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(artifact);
+        
+    	ArtifactQuery artifactQuery = new ArtifactQuery();
+    	
+    	artifactQuery.setName("File1");
+    	artifactQuery.setStage(1);
+    	artifactQuery.setUser("User");
+    	artifactQuery.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
+    	artifactQuery.setType("filetype1");
+
+    	Exception exception = null;
+    	
+    	try{    	
+    	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifactQuery);
+        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        
+    	}catch(Exception e){
+    		exception = e;
+    	}
+    	
+    	StringBuilder expectedException = new StringBuilder("java.lang.Exception: ");
+    	expectedException.append(String.format(DbArtifact.DEFAULT_ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY, "User", "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", ""));
+    	
+    	assertNotNull(exception);
+    	// verifying message
+    	assertEquals(expectedException.toString(), exception.getMessage());        
+    }
+    
+    private void mockingSendingEmailToReturnArg(final int index){
+        when(serviceHandler.sendEmail(any(String[].class), any(String[].class), any(String.class), any(String.class))).thenAnswer(new Answer() {
+        	   public Object answer(InvocationOnMock invocation) throws Throwable  {
+        		     Object[] args = invocation.getArguments();        		     
+        		     throw new Exception((String)args[index]);
+        		   }
+        		});
+    }
+    
+    @Test
+    public void getValidationType(){
+
+        final List<String> results = getGrapesConfig().getArtifactValidationType();;
+        
+        assertFalse(results.isEmpty());
+        assertFalse(!results.contains("filetype1"));
+        assertFalse(!results.contains("filetype2"));
+    }
+    
+    @Test
+    public void checkDefaultValidationTypes(){
+    	GrapesServerConfig config = new GrapesServerConfig();
+    	
+    	List<String> allValidationTypes = config.getArtifactValidationType();
+    	
+    	assertNotNull(allValidationTypes);
+    	assertEquals(8, allValidationTypes.size());
+    	assertTrue(allValidationTypes.contains("program"));
+    	assertTrue(allValidationTypes.contains("installer"));
+    	assertTrue(allValidationTypes.contains("patch"));
+    	assertTrue(allValidationTypes.contains("servicepack"));
+    	assertTrue(allValidationTypes.contains("upgradepack"));
+    	assertTrue(allValidationTypes.contains("install"));
+    	assertTrue(allValidationTypes.contains("axwayjre"));
+    	assertTrue(allValidationTypes.contains("JREUpdateTool"));
+    }
+
+    @Test
     public void postArtifact() throws AuthenticationException, UnknownHostException {
         Artifact artifact = DataModelFactory.createArtifact("groupId", "artifactId", "version", "classifier", "type", "extension");
+        artifact.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
         artifact.setDownloadUrl("downloadUrl");
         artifact.setSize("size");
 
@@ -77,13 +396,24 @@ public class ArtifactResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
 
-        response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, DataModelFactory.createArtifact("groupId", "artifactId", null, null, null, null));
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
-
         response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, DataModelFactory.createArtifact("", "", "", null, null, null));
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+    }
+    
+    @Test
+    public void checkAuthorizationOnPostArtifact() throws AuthenticationException {
+        Artifact artifact = DataModelFactory.createArtifact("groupId", "artifactId", "version", "classifier", "type", "extension");
+        artifact.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
+        artifact.setDownloadUrl("downloadUrl");
+        artifact.setSize("size");
+        
+        //user does not have DATA_UPDATER privileges
+        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.UNAUTHORIZED_USER_FOR_POSTING, GrapesTestUtils.PASSWORD_4TEST));
+        WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifact);
+        assertNotNull(response);
+        assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
     }
 
     @Test

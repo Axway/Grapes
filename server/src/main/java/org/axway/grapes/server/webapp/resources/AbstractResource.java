@@ -34,14 +34,16 @@ import java.util.List;
 public abstract class AbstractResource extends View {
 
     private final RepositoryHandler repositoryHandler;
+    private final ServiceHandler serviceHandler;
     private final GrapesServerConfig grapesConfig;
 
     private final ModelMapper modelMapper;
     
-    protected AbstractResource(final RepositoryHandler repoHandler, final String templateName, final GrapesServerConfig dmConfig) {
+    protected AbstractResource(final RepositoryHandler repoHandler, final ServiceHandler serviceHandler, final String templateName, final GrapesServerConfig dmConfig) {
 		super(templateName);
         this.grapesConfig = dmConfig;
         this.repositoryHandler = repoHandler;
+        this.serviceHandler = serviceHandler;
         this.modelMapper = new ModelMapper(repoHandler);
 	}
     
@@ -204,6 +206,16 @@ public abstract class AbstractResource extends View {
     }
 
     /**
+     * Returns an empty model of a Message to check Promotion status 
+     *
+     * @return String
+     * @throws IOException
+     */
+    public String getArtifactPromtotionInputMessage() throws IOException {
+        return JsonUtils.serialize(DataModelFactory.createArtifactQuery("", 0, "", "", ""));
+    }
+    
+    /**
      * Returns an empty model of a Dependency in Json
      *
      * @return String
@@ -256,4 +268,18 @@ public abstract class AbstractResource extends View {
      public String getDeliveryJsonModel() throws IOException {
          return JsonUtils.serialize(DataModelFactory.createDelivery("", "", "", new ArrayList<String>()));
      }
+
+	protected ServiceHandler getServiceHandler() {
+		return serviceHandler;
+	}
+	
+	/**
+     * Returns a list of Artifact Validation types
+     *
+     * @return List<String>
+     */
+    public List<String> getArtifactValidationTypes() {
+        return grapesConfig.getArtifactValidationType();
+    }
+
 }

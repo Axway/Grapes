@@ -7,7 +7,10 @@ import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.views.ViewBundle;
 
+import net.sourceforge.argparse4j.inf.Namespace;
+
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.db.DBException;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
@@ -20,7 +23,10 @@ import org.axway.grapes.server.webapp.tasks.migrate.MigrationTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.UnknownHostException;
+import java.util.Properties;
 
 /**
  * Grapes service class.
@@ -70,9 +76,16 @@ public class GrapesServer extends Service<GrapesServerConfig> {
 
 	@Override
 	public void run(final GrapesServerConfig config, final Environment env) throws DBException, UnknownHostException {
-
-        // init the repoHandler
+		// init the repoHandler
         final RepositoryHandler repoHandler = getRepositoryHandler(config);
+        
+        // init the serviceHandler
+        final ServiceHandler serviceHandler = new ServiceHandler(config);
+        // load error Messages - start service
+        serviceHandler.loadErrorMessages();
+        // start grapes email service
+        serviceHandler.startGrapesEmailService();
+        
         // Add credential management
         final GrapesAuthenticator grapesAuthenticator = new GrapesAuthenticator(repoHandler);
         final BasicAuthProvider authProvider = new BasicAuthProvider<DbCredential>(grapesAuthenticator, "Grapes Authenticator Provider");
@@ -94,14 +107,14 @@ public class GrapesServer extends Service<GrapesServerConfig> {
         env.addHealthCheck(new DataModelVersionCheck(config.getDataBaseConfig()));
 
         // Resources
-        env.addResource(new OrganizationResource(repoHandler, config));
-        env.addResource(new ProductResource(repoHandler, config));
-        env.addResource(new ModuleResource(repoHandler, config));
-        env.addResource(new ArtifactResource(repoHandler, config));
-        env.addResource(new LicenseResource(repoHandler, config));
-        env.addResource(new Sequoia(repoHandler, config));
-        env.addResource(new WebAppResource(repoHandler, config));
-        env.addResource(new RootResource(repoHandler, config));
+        env.addResource(new OrganizationResource(repoHandler, serviceHandler, config));
+        env.addResource(new ProductResource(repoHandler, serviceHandler, config));
+        env.addResource(new ModuleResource(repoHandler, serviceHandler, config));
+        env.addResource(new ArtifactResource(repoHandler, serviceHandler, config));
+        env.addResource(new LicenseResource(repoHandler, serviceHandler, config));
+        env.addResource(new Sequoia(repoHandler, serviceHandler, config));
+        env.addResource(new WebAppResource(repoHandler, serviceHandler, config));
+        env.addResource(new RootResource(repoHandler, serviceHandler, config));
 
 	}
 

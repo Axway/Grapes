@@ -13,6 +13,7 @@ import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.Organization;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbOrganization;
@@ -39,7 +40,8 @@ public class OrganizationResourceTest extends ResourceTest {
         repositoryHandler = mock(RepositoryHandler.class);
 
         final RepositoryHandler repoHandler = GrapesTestUtils.getRepoHandlerMock();
-        final OrganizationResource resource = new OrganizationResource(repositoryHandler, mock(GrapesServerConfig.class));
+        final ServiceHandler serviceHandler = GrapesTestUtils.getServiceHandlerMock();
+        final OrganizationResource resource = new OrganizationResource(repositoryHandler, serviceHandler, mock(GrapesServerConfig.class));
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repoHandler), "test auth"));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);

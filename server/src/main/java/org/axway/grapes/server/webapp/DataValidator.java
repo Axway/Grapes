@@ -29,7 +29,7 @@ public final class DataValidator {
      * @throws WebApplicationException if the data is corrupted
      */
     public static void validate(final Artifact artifact) {
-        if((artifact.getOrigin()== null || artifact.getOrigin() == "maven")
+        if((artifact.getOrigin()== null || "maven".equals(artifact.getOrigin()))
                 && (artifact.getGroupId() == null || artifact.getGroupId().isEmpty())){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
                     .entity("Artifact groupId should not be null or empty")
@@ -48,6 +48,30 @@ public final class DataValidator {
                     .build());
         }
     }
+
+    /**
+     * Checks if the provided artifact is valid and could be stored into the database
+     *
+     * @param artifact the artifact to test
+     * @throws WebApplicationException if the data is corrupted
+     */
+    public static void validatePostArtifact(final Artifact artifact) {
+    	validate(artifact);
+    	
+        if(artifact.getExtension() == null ||
+                artifact.getExtension().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Artifact extension should not be null or empty")
+                    .build());
+        }
+        if(artifact.getSha256() == null ||
+                artifact.getSha256().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Artifact SHA256 checksum should not be null or empty")
+                    .build());
+        }
+    }
+
 
     /**
      * Checks if the provided license is valid and could be stored into the database
@@ -128,6 +152,45 @@ public final class DataValidator {
                 organization.getName().isEmpty()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
                     .entity("Organization name cannot be null or empty!")
+                    .build());
+        }
+    }
+
+    /**
+     * Checks if the provided artifactQuery is valid
+     *
+     * @param artifactQuery ArtifactQuery
+     * @throws WebApplicationException if the data is corrupted
+     */
+    public static void validate(final ArtifactQuery artifactQuery) {
+        Pattern invalidChars = Pattern.compile("[^A-Fa-f0-9]");
+        if(artifactQuery.getUser() == null ||
+        		artifactQuery.getUser().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("User name cannot be null or empty!")
+                    .build());
+        }
+        if( artifactQuery.getStage() != 0 && artifactQuery.getStage() !=1 ){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Stage value is either empty or invalid! It cannot be other than 1 or 0")
+                    .build());
+        }
+        if(artifactQuery.getName() == null ||
+        		artifactQuery.getName().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("File Name cannot be null or empty!")
+                    .build());
+        }
+        if(artifactQuery.getSha256() == null ||
+                artifactQuery.getSha256().isEmpty() || artifactQuery.getSha256().length() < 64 || invalidChars.matcher(artifactQuery.getSha256()).find()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("SHA256 code is either empty or invalid!")
+                    .build());
+        }
+        if(artifactQuery.getType() == null ||
+        		artifactQuery.getType().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("File Type cannot be null or empty!")
                     .build());
         }
     }

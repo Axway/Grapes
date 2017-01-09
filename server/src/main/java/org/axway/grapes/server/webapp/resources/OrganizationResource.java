@@ -4,6 +4,7 @@ import com.yammer.dropwizard.auth.Auth;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.Organization;
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbOrganization;
@@ -32,8 +33,8 @@ public class OrganizationResource extends AbstractResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(OrganizationResource.class);
 
-    public OrganizationResource(final RepositoryHandler repositoryHandler, final GrapesServerConfig configuration) {
-        super(repositoryHandler, "OrganizationResourceDocumentation.ftl", configuration);
+    public OrganizationResource(final RepositoryHandler repositoryHandler, final ServiceHandler serviceHandler, final GrapesServerConfig configuration) {
+        super(repositoryHandler, serviceHandler, "OrganizationResourceDocumentation.ftl", configuration);
     }
 
 

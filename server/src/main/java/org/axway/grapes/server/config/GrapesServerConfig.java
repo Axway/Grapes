@@ -3,8 +3,14 @@ package org.axway.grapes.server.config;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yammer.dropwizard.config.Configuration;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 
 /**
  * @author jdcoffre
@@ -29,17 +35,62 @@ public class GrapesServerConfig extends Configuration{
     @NotNull
     @JsonProperty
     private final DataBaseConfig database = new DataBaseConfig();
-	
+    
+    @Valid
+    @NotNull
+    @JsonProperty
+    private final GrapesEmailConfig mailing = new GrapesEmailConfig();
+    
+    @Valid
+    @NotNull
+    @JsonProperty
+    private File messageFile;
+    
+    @Valid
+    @JsonProperty
+    private ArrayList<String> artifactValidationType;    
+    
+    @Valid
+    @NotNull
+    @JsonProperty
+    private String[] artifactNotificationRecipients;
+
 	@Valid
     @JsonProperty
     private final String authenticationCachePolicy = "maximumSize=10000, expireAfterAccess=10m";
-
+	
     private boolean maintenanceModeActif = false;
 
     public DataBaseConfig getDataBaseConfig() {
 		return database;
 	}
+    
+    public GrapesEmailConfig getGrapesEmailConfig() {
+        return mailing;
+    }
 	
+	public File getMessageFile(){
+		return messageFile;
+	}
+
+	public List<String> getArtifactValidationType() {
+		if(artifactValidationType == null){
+			artifactValidationType = new ArrayList<String>();
+			artifactValidationType.add("program");
+			artifactValidationType.add("installer");
+			artifactValidationType.add("patch");
+			artifactValidationType.add("servicepack");
+			artifactValidationType.add("upgradepack");
+			artifactValidationType.add("install");
+			artifactValidationType.add("axwayjre");
+			artifactValidationType.add("JREUpdateTool");
+		}
+		return artifactValidationType;
+	}	
+	
+	public String[] getArtifactNotificationRecipients() {
+		return artifactNotificationRecipients;
+	}
 	/**
 	 * Returns the complete Grapes root URL
 	 * 

@@ -12,6 +12,7 @@ import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
@@ -42,7 +43,9 @@ public class LicenseResourceTest extends ResourceTest {
 		repositoryHandler = mock(RepositoryHandler.class);
 
         final RepositoryHandler repoHandler = GrapesTestUtils.getRepoHandlerMock();
-        LicenseResource resource = new LicenseResource(repositoryHandler, mock(GrapesServerConfig.class));
+        final ServiceHandler serviceHandler = GrapesTestUtils.getServiceHandlerMock();
+        
+        LicenseResource resource = new LicenseResource(repositoryHandler,serviceHandler , mock(GrapesServerConfig.class));
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repoHandler), "test auth"));
 		addProvider(ViewMessageBodyWriter.class);
 		addResource(resource);	

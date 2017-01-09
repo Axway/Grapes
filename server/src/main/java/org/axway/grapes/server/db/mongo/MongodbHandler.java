@@ -298,6 +298,14 @@ public class MongodbHandler implements RepositoryHandler {
     }
 
     @Override
+    public DbArtifact getArtifactUsingSHA256(final String sha256) {
+        final Jongo datastore = getJongoDataStore();
+        return datastore.getCollection(DbCollections.DB_ARTIFACTS)
+                .findOne(JongoUtils.generateQuery(DbArtifact.SHA_256, sha256))
+                .as(DbArtifact.class);
+    }
+
+    @Override
     public void deleteArtifact(final String gavc) {
         final DbArtifact artifact = getArtifact(gavc);
 

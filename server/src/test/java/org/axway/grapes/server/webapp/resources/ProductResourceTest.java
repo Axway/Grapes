@@ -14,6 +14,7 @@ import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.Delivery;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbModule;
@@ -37,11 +38,13 @@ public class ProductResourceTest extends ResourceTest {
 
 
     private RepositoryHandler repositoryHandler;
+    private ServiceHandler serviceHandler;
 
     @Override
     protected void setUpResources() throws Exception {
         repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
-        final ProductResource resource = new ProductResource(repositoryHandler, mock(GrapesServerConfig.class));
+        serviceHandler = GrapesTestUtils.getServiceHandlerMock();
+        final ProductResource resource = new ProductResource(repositoryHandler, serviceHandler, mock(GrapesServerConfig.class));
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repositoryHandler), "test auth"));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);

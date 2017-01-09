@@ -139,6 +139,17 @@ public class TestingRepositoryHandler implements RepositoryHandler {
 
         return null;
     }
+	
+    @Override
+    public DbArtifact getArtifactUsingSHA256(final String sha256) {
+        for(DbArtifact artifact: artifacts){
+            if(artifact.getSha256().equals(sha256)){
+                return artifact;
+            }
+        }
+
+        return null;
+    }
 
     @Override
     public void deleteArtifact(final String gavc) {
@@ -352,4 +363,5 @@ public class TestingRepositoryHandler implements RepositoryHandler {
             store(license);
         }
     }
+
 }

@@ -1,7 +1,10 @@
 package org.axway.grapes.server;
 
 import com.google.common.collect.Lists;
+
+import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.axway.grapes.server.db.datamodel.DbOrganization;
@@ -10,6 +13,8 @@ import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.mockito.Matchers.any;
+
 public class GrapesTestUtils {
 
     public final static String ORGANIZATION_NAME_4TEST = "corp";
@@ -17,6 +22,8 @@ public class GrapesTestUtils {
 
     public final static String USER_4TEST = "user";
     public final static String PASSWORD_4TEST = "password";
+    
+    public final static String UNAUTHORIZED_USER_FOR_POSTING = "user1";
 
     public final static String WRONG_USER_4TEST = "wrongUser";
     public final static String WRONG_PASSWORD_4TEST = "wrongPassword";
@@ -45,6 +52,15 @@ public class GrapesTestUtils {
             organization.getCorporateGroupIdPrefixes().add(CORPORATE_GROUPID_4TEST);
             when(repositoryHandler.getOrganization(ORGANIZATION_NAME_4TEST)).thenReturn(organization);
             when(repositoryHandler.getAllOrganizations()).thenReturn(Lists.newArrayList(organization));
+            
+            final DbCredential unAuthorizedUser = new DbCredential();
+            unAuthorizedUser.setUser(UNAUTHORIZED_USER_FOR_POSTING);
+            unAuthorizedUser.setPassword(GrapesAuthenticator.encrypt(PASSWORD_4TEST));
+            unAuthorizedUser.addRole(AvailableRoles.ARTIFACT_CHECKER);
+            unAuthorizedUser.addRole(AvailableRoles.DATA_DELETER);
+            unAuthorizedUser.addRole(AvailableRoles.DEPENDENCY_NOTIFIER);
+            unAuthorizedUser.addRole(AvailableRoles.LICENSE_CHECKER);
+            when(repositoryHandler.getCredential(UNAUTHORIZED_USER_FOR_POSTING)).thenReturn(unAuthorizedUser);
 
             return repositoryHandler;
 
@@ -53,5 +69,28 @@ public class GrapesTestUtils {
         }
 
         return mock(RepositoryHandler.class);
+    }
+    
+    public static ServiceHandler getServiceHandlerMock() {
+        try{
+            final ServiceHandler serviceHandler = mock(ServiceHandler.class);
+
+            when(serviceHandler.getErrorMessage("QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_UPLOAD")).thenReturn("You are uploading a non-published artefact.");
+            when(serviceHandler.getErrorMessage("QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_PUBLISH")).thenReturn("You are publishing a non-published artefact.");
+            when(serviceHandler.getErrorMessage("VALIDATION_TYPE_NOT_SUPPORTED")).thenReturn("Validation is not supported for this type of file");
+            when(serviceHandler.getErrorMessage("ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE")).thenReturn("Artifact is not promoted");
+            when(serviceHandler.getErrorMessage("ARTIFACT_NOTIFICATION_EMAIL_SUBJECT",  DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_SUBJECT)).thenReturn(DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_SUBJECT);
+            when(serviceHandler.getErrorMessage("ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY",  DbArtifact.DEFAULT_ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY)).thenReturn(DbArtifact.DEFAULT_ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY);
+            when(serviceHandler.getErrorMessage("ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY",  DbArtifact.DEFAULT_ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY)).thenReturn(DbArtifact.DEFAULT_ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY);
+            when(serviceHandler.isEmailServiceRunning()).thenReturn(true);
+            when(serviceHandler.sendEmail(any(String[].class), any(String[].class), any(String.class), any(String.class))).thenReturn("Successfully sent a notification Email");
+
+            return serviceHandler;
+
+        }catch (Exception e){
+            System.err.println("Failed to mock Grapes configuration due to password encryption error.");
+        }
+
+        return mock(ServiceHandler.class);
     }
 }

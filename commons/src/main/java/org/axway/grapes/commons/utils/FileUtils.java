@@ -1,6 +1,8 @@
 package org.axway.grapes.commons.utils;
 
 import java.io.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * FileUtils
@@ -114,7 +116,35 @@ public final class FileUtils {
             if(doneFOS != null){
                 doneFOS.close();
             }
-        }
+        }  
     }
 
+	public static String getFileChecksumSHA256(final File artifactFile) throws IOException{
+    	MessageDigest digest;
+		try {
+			digest = MessageDigest.getInstance("SHA-256");
+		} catch (NoSuchAlgorithmException e) {
+			throw new IOException(e);
+		}
+		
+    	FileInputStream fis = new FileInputStream(artifactFile);
+	    
+	    byte[] byteArray = new byte[1024];
+	    int bytesCount = 0; 
+	    
+	    while ((bytesCount = fis.read(byteArray)) != -1) {
+	        digest.update(byteArray, 0, bytesCount);
+	    }
+	    
+	    fis.close();
+	   
+	    byte[] bytes = digest.digest();
+	    StringBuilder sb = new StringBuilder();
+	    for(int countr=0; countr< bytes.length ;countr++){
+	        sb.append(Integer.toString((bytes[countr] & 0xff) + 0x100, 16).substring(1));
+	    }
+	   
+	   return sb.toString();
+	}
+    
 }

@@ -147,6 +147,16 @@ public class ArtifactHandler {
         }
 
         return artifact;
+    }   
+
+    /**
+     * Return an artifact regarding its gavc
+     *
+     * @param sha String
+     * @return DbArtifact
+     */
+    public DbArtifact getArtifactUsingSHA256(final String sha256) {
+        return repositoryHandler.getArtifactUsingSHA256(sha256);
     }
 
     /**
@@ -309,4 +319,25 @@ public class ArtifactHandler {
     public List<DbArtifact> getArtifacts(final FiltersHolder filters) {
         return repositoryHandler.getArtifacts(filters);
     }
+
+    /**k
+     * Returns a list of artifact regarding the filters
+     *
+     * @param filters FiltersHolder
+     * @return List<DbArtifact>
+     */
+	public String getModuleJenkinsJobInfo(final DbArtifact dbArtifact) {
+		DbModule module = getModule(dbArtifact);
+		if(module == null){
+			return "";
+		}
+		
+		String jenkinsJobUrl = module.getBuildInfo().get("jenkins-job-url");
+		
+		if(jenkinsJobUrl == null){
+			return "";			
+		}
+
+		return jenkinsJobUrl;
+	}
 }

@@ -13,7 +13,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
@@ -664,10 +666,30 @@ public class ArtifactHandlerTest {
         final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
         final FiltersHolder filtersHolder = mock(FiltersHolder.class);
 
-        final DbArtifact artifact = new DbArtifact();
         handler.getArtifacts(filtersHolder);
 
         verify(repositoryHandler, times(1)).getArtifacts(filtersHolder);
+    }
+
+    @Test
+    public void getModuleJenkinsJobInfoTest(){
+        final DbArtifact artifact = new DbArtifact();
+        artifact.setArtifactId("test");
+        artifact.setVersion("1.0.0-SNAPSHOT");
+        
+        Map<String, String> buildInfo = new HashMap<String, String>();
+        buildInfo.put("jenkins-job-url", "http://localhost:8080/test");
+        
+        DbModule module = new DbModule();
+        module.setBuildInfo(buildInfo);
+
+        final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
+        when(repositoryHandler.getRootModuleOf(artifact.getGavc())).thenReturn(module);
+
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        String jenkinsJobInfo = handler.getModuleJenkinsJobInfo(artifact);
+        
+        assertEquals("http://localhost:8080/test", jenkinsJobInfo);       
     }
 
 }
