@@ -261,6 +261,13 @@ public class DbArtifact {
 		return generateGAVC(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact.getClassifier(), artifact.getExtension());
 	}
 
+	/**
+	 *
+	 * Verifies if the db artifact can be updated
+	 *
+	 * @param dbArtifact
+	 * @return
+	 */
 	public boolean takeUpdatesFrom(final DbArtifact dbArtifact) {
 		return this.equals(dbArtifact) &&
 				// verify if they have the same type
@@ -287,14 +294,10 @@ public class DbArtifact {
 						&& StringUtils.equals(
 						StringUtils.trimToEmpty(this.getProvider()),
 						StringUtils.trimToEmpty(dbArtifact.getProvider()))
-						// verify if they have the same DoNotUse
-						&& (this.getDoNotUse() != null && this.getDoNotUse().equals(dbArtifact.getDoNotUse()))
 						// verify if they have the same Licenses
 						&& (this.getLicenses() != null && Arrays.equals(
 						this.getLicenses().toArray(),
-						dbArtifact.getLicenses().toArray()))
-						// verify if they have the same Promotion
-						&& this.isPromoted() == dbArtifact.isPromoted());
+						dbArtifact.getLicenses().toArray())));
 	}
 
 	@Override
