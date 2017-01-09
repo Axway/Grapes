@@ -108,6 +108,7 @@ public class ModelMapper {
         dbArtifact.setExtension(artifact.getExtension());
         dbArtifact.setOrigin(artifact.getOrigin());
         dbArtifact.setPromoted(artifact.isPromoted());
+        dbArtifact.setLicenses(artifact.getLicenses());
 
         dbArtifact.setSize(artifact.getSize());
         dbArtifact.setDownloadUrl(artifact.getDownloadUrl());

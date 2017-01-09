@@ -48,8 +48,9 @@ public class ArtifactHandler {
      * @param dbArtifact DbArtifact
      */
     public void storeIfNew(final DbArtifact dbArtifact) {
-        if(repositoryHandler.getArtifact(dbArtifact.getGavc()) == null){
-            store(dbArtifact);
+        final DbArtifact currentDbArtifact = repositoryHandler.getArtifact(dbArtifact.getGavc());
+        if(currentDbArtifact == null || currentDbArtifact.takeUpdatesFrom(dbArtifact)){
+	        store(dbArtifact);
         }
     }
 

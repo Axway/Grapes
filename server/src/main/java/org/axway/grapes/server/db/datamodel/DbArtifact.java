@@ -1,44 +1,46 @@
 package org.axway.grapes.server.db.datamodel;
 
+import org.apache.commons.lang3.StringUtils;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.jongo.marshall.jackson.oid.Id;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * Database Artifact 
- * 
+ * Database Artifact
+ * <p>
  * <p>Class that holds the representation of the artifacts stored in the database.
  * The gavc is used to identify the DbArtifacts Object. A database index is created on it.
  * </p>
- * 
+ *
  * @author jdcoffre
  */
 public class DbArtifact {
 
-    public static final String DATA_MODEL_VERSION = "datamodelVersion";
-    private String datamodelVersion = DbCollections.datamodelVersion;
+	public static final String DATA_MODEL_VERSION = "datamodelVersion";
+	private String datamodelVersion = DbCollections.datamodelVersion;
 
-    @Id
+	@Id
 	private String gavc;
 
-	public static final String GROUPID_DB_FIELD = "groupId"; 
+	public static final String GROUPID_DB_FIELD = "groupId";
 	private String groupId;
 
-	public static final String ARTIFACTID_DB_FIELD = "artifactId"; 
+	public static final String ARTIFACTID_DB_FIELD = "artifactId";
 	private String artifactId;
 
-	public static final String VERSION_DB_FIELD = "version"; 
+	public static final String VERSION_DB_FIELD = "version";
 	private String version;
 
-	public static final String CLASSIFIER_DB_FIELD = "classifier"; 
+	public static final String CLASSIFIER_DB_FIELD = "classifier";
 	private String classifier = "";
 
-	public static final String TYPE_DB_FIELD = "type"; 
+	public static final String TYPE_DB_FIELD = "type";
 	private String type = "";
 
-	public static final String EXTENSION_DB_FIELD = "extension"; 
+	public static final String EXTENSION_DB_FIELD = "extension";
 	private String extension = "";
 
 	public static final String ORIGIN_DB_FIELD = "origin";
@@ -47,28 +49,28 @@ public class DbArtifact {
 	public static final String PROMOTION_DB_FIELD = "promoted";
 	private boolean promoted;
 
-	public static final String LICENCES_DB_FIELD = "licenses"; 
+	public static final String LICENCES_DB_FIELD = "licenses";
 	private List<String> licenses = new ArrayList<String>();
 
-	public static final String DOWNLOAD_URL_DB_FIELD = "downloadUrl"; 
+	public static final String DOWNLOAD_URL_DB_FIELD = "downloadUrl";
 	private String downloadUrl = "";
 
-    public static final String SIZE_DB_FIELD = "size";
-    private String size = "";
+	public static final String SIZE_DB_FIELD = "size";
+	private String size = "";
 
-    public static final String DO_NOT_USE = "doNotUse";
-    private Boolean doNotUse = false;
+	public static final String DO_NOT_USE = "doNotUse";
+	private Boolean doNotUse = false;
 
-    public static final String PROVIDER = "provider";
-    private String provider = "";
+	public static final String PROVIDER = "provider";
+	private String provider = "";
 
-    public void setDataModelVersion(final String newVersion){
-        this.datamodelVersion = newVersion;
-    }
+	public void setDataModelVersion(final String newVersion) {
+		this.datamodelVersion = newVersion;
+	}
 
-    public String getDataModelVersion(){
-        return datamodelVersion;
-    }
+	public String getDataModelVersion() {
+		return datamodelVersion;
+	}
 
 	public String getGroupId() {
 		return groupId;
@@ -128,7 +130,7 @@ public class DbArtifact {
 
 	public final void setExtension(final String extension) {
 		this.extension = extension;
-        updateGavc();
+		updateGavc();
 	}
 
 	public String getOrigin() {
@@ -136,21 +138,21 @@ public class DbArtifact {
 	}
 
 	public final void setOrigin(final String origin) {
-		if (!(origin == null || "".equals(origin.trim()))){
+		if (!(origin == null || "".equals(origin.trim()))) {
 			this.origin = origin;
 		}
 		updateGavc();
 	}
-	
-	public final void updateGavc(){		
+
+	public final void updateGavc() {
 		gavc = generateGAVC(groupId, artifactId, version, classifier, extension);
 	}
-	
-	public String getGavc(){
+
+	public String getGavc() {
 		return gavc;
 	}
 
-	public List<String> getLicenses(){
+	public List<String> getLicenses() {
 		return licenses;
 	}
 
@@ -158,20 +160,20 @@ public class DbArtifact {
 		this.licenses = licenses;
 	}
 
-    public void addLicense(final String licenseId) {
-        if(!licenses.contains(licenseId)){
-            this.licenses.add(licenseId);
-        }
-    }
+	public void addLicense(final String licenseId) {
+		if (!licenses.contains(licenseId)) {
+			this.licenses.add(licenseId);
+		}
+	}
 
-    public void addLicense(final DbLicense license) {
-        addLicense(license.getName());
-    }
+	public void addLicense(final DbLicense license) {
+		addLicense(license.getName());
+	}
 
 	public void removeLicense(final String licenseId) {
 		licenses.remove(licenseId);
 	}
-	
+
 
 	public String getDownloadUrl() {
 		return downloadUrl;
@@ -189,24 +191,24 @@ public class DbArtifact {
 		this.size = size;
 	}
 
-    public Boolean getDoNotUse() {
-        return doNotUse;
-    }
+	public Boolean getDoNotUse() {
+		return doNotUse;
+	}
 
-    public void setDoNotUse(final Boolean doNotUse) {
-        this.doNotUse = doNotUse;
-    }
+	public void setDoNotUse(final Boolean doNotUse) {
+		this.doNotUse = doNotUse;
+	}
 
-    public String getProvider() {
-        return provider;
-    }
+	public String getProvider() {
+		return provider;
+	}
 
-    public void setProvider(final String provider) {
-        this.provider = provider;
-    }
+	public void setProvider(final String provider) {
+		this.provider = provider;
+	}
 
-    @Override
-	public String toString(){
+	@Override
+	public String toString() {
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append("GroupId: ");
@@ -215,27 +217,91 @@ public class DbArtifact {
 		sb.append(artifactId);
 		sb.append(", Version: ");
 		sb.append(version);
-		
+
 		return sb.toString();
 	}
 
 	public static String generateGAVC(final String groupId, final String artifactId, final String version, final String classifier, final String extension) {
-		final StringBuilder sb = new StringBuilder();
-		sb.append(groupId);
-		sb.append(":");
-		sb.append(artifactId);
-		sb.append(":");
-		sb.append(version);
-		sb.append(":");
-		sb.append(classifier);
-		sb.append(":");
-		sb.append(extension);
-
-		return sb.toString();
+		return new StringBuilder()
+				.append(groupId)
+				.append(":")
+				.append(artifactId)
+				.append(":")
+				.append(version)
+				.append(":")
+				.append(classifier)
+				.append(":")
+				.append(extension)
+				.toString();
 	}
 
 	public static String generateGAVC(final Artifact artifact) {
 		return generateGAVC(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact.getClassifier(), artifact.getExtension());
 	}
-	
+
+	public boolean takeUpdatesFrom(final DbArtifact dbArtifact) {
+		return this.equals(dbArtifact) &&
+				// verify if they have the same type
+				!(StringUtils.equals(
+						StringUtils.trimToEmpty(this.getType()),
+						StringUtils.trimToEmpty(dbArtifact.getType()))
+						// verify if they have the same extension
+						&& StringUtils.equals(
+						StringUtils.trimToEmpty(this.getExtension()),
+						StringUtils.trimToEmpty(dbArtifact.getExtension()))
+						// verify if they have the same origin
+						&& StringUtils.equals(
+						StringUtils.trimToEmpty(this.getOrigin()),
+						StringUtils.trimToEmpty(dbArtifact.getOrigin()))
+						// verify if they have the same Download Url
+						&& StringUtils.equals(
+						StringUtils.trimToEmpty(this.getDownloadUrl()),
+						StringUtils.trimToEmpty(dbArtifact.getDownloadUrl()))
+						// verify if they have the same size
+						&& StringUtils.equals(
+						StringUtils.trimToEmpty(this.getSize()),
+						StringUtils.trimToEmpty(dbArtifact.getSize()))
+						// verify if they have the same provider
+						&& StringUtils.equals(
+						StringUtils.trimToEmpty(this.getProvider()),
+						StringUtils.trimToEmpty(dbArtifact.getProvider()))
+						// verify if they have the same DoNotUse
+						&& (this.getDoNotUse() != null && this.getDoNotUse().equals(dbArtifact.getDoNotUse()))
+						// verify if they have the same Licenses
+						&& (this.getLicenses() != null && Arrays.equals(
+						this.getLicenses().toArray(),
+						dbArtifact.getLicenses().toArray()))
+						// verify if they have the same Promotion
+						&& this.isPromoted() == dbArtifact.isPromoted());
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (!(obj instanceof DbArtifact)) {
+			return false;
+		}
+		final DbArtifact dbArtifact = (DbArtifact) obj;
+		return StringUtils.equals(
+				StringUtils.trimToEmpty(this.getGroupId()),
+				StringUtils.trimToEmpty(dbArtifact.getGroupId()))
+				&& StringUtils.equals(
+				StringUtils.trimToEmpty(this.getArtifactId()),
+				StringUtils.trimToEmpty(dbArtifact.getArtifactId()))
+				&& StringUtils.equals(
+				StringUtils.trimToEmpty(this.getVersion()),
+				StringUtils.trimToEmpty(dbArtifact.getVersion()))
+				&& StringUtils.equals(
+				StringUtils.trimToEmpty(this.getClassifier()),
+				StringUtils.trimToEmpty(dbArtifact.getClassifier()));
+	}
+
+	@Override
+	public int hashCode() {
+		int hashCode = super.hashCode();
+		hashCode = 31 * hashCode + (this.getGroupId() == null ? 0 : this.getGroupId().hashCode());
+		hashCode = 31 * hashCode + (this.getArtifactId() == null ? 0 : this.getArtifactId().hashCode());
+		hashCode = 31 * hashCode + (this.getVersion() == null ? 0 : this.getVersion().hashCode());
+		hashCode = 31 * hashCode + (this.getClassifier() == null ? 0 : this.getClassifier().hashCode());
+		return hashCode;
+	}
 }
