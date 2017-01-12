@@ -62,11 +62,11 @@ public class AbstractResourceTest {
     }
     
     @Test
-    public void checkArtifactPromtotionInputMessage(){
+    public void checkArtifactPromtotionResponseMessage(){
         final FakeResource resource = new FakeResource();
         Exception exception = null;
         try {
-            final String inputMessage = JsonUtils.serialize(resource.getArtifactPromtotionInputMessage());
+            final String inputMessage = JsonUtils.serialize(resource.getArtifactPromtotionResponseMessage());
             assertNotNull(inputMessage);
         }catch (Exception e){
             exception = e;
