@@ -112,6 +112,7 @@ public class ModelMapper {
 
         dbArtifact.setSize(artifact.getSize());
         dbArtifact.setSha256(artifact.getSha256());
+        dbArtifact.setDescription(artifact.getDescription());
         dbArtifact.setDownloadUrl(artifact.getDownloadUrl());
         dbArtifact.setProvider(artifact.getProvider());
 
@@ -134,8 +135,9 @@ public class ModelMapper {
                 dbArtifact.getExtension(),
 		        dbArtifact.getOrigin()
         );
-        
+
         artifact.setSha256(dbArtifact.getSha256());
+        artifact.setDescription(dbArtifact.getDescription());
         artifact.setPromoted(dbArtifact.isPromoted());
         artifact.setSize(dbArtifact.getSize());
         artifact.setDownloadUrl(dbArtifact.getDownloadUrl());

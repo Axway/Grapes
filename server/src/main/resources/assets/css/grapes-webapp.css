@@ -30,3 +30,13 @@ body {
     /* W3C Markup, IE10 Release Preview */
     background-image: linear-gradient(to right, #FFFFFF 0%, #C9CFEF 100%);
 }
+
+#inputArtifactSHA{
+	font-size: 11px;
+	resize: none;
+}
+
+#artifactError{
+	color:red; 
+	font-style:italic;
+}

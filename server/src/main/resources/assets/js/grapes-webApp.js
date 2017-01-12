@@ -542,7 +542,8 @@ function deleteOrganization(organizationId){
      var artifactClassifier = $("#inputArtifactClassifier").val();
      var artifactType = $("#inputArtifactType").val();
      var artifactExtension = $("#inputArtifactExtension").val();
-     var artifactOrigin = $("#inputArtifactOrigin").val();
+     var artifactOrigin = "maven";
+     var artifactDescription = $("#inputArtifactDescription").val();
      var promoted = "false";
      
      if(artifactId == null || artifactId == ''){
@@ -551,6 +552,10 @@ function deleteOrganization(organizationId){
      }
      if(artifactSHA == null || artifactSHA == ''){
          $('#artifactError').html("Please provide artifact checksum");
+    	 return;
+     }
+     if(artifactSHA.length != 64){
+         $('#artifactError').html("Artifact checksum length should be 64");
     	 return;
      }
      if(artifactGroupId == null || artifactGroupId == ''){
@@ -565,17 +570,17 @@ function deleteOrganization(organizationId){
          $('#artifactError').html("Please provide artifact extension");
     	 return;
      }
-     if(artifactOrigin == null || artifactOrigin == ''){
-    	 artifactOrigin = "maven";
-     }
      if($("#inputArtifactPromotion").is(':checked')){
     	 promoted = "true";
+     }
+     if($("#inputArtifactOriginN").is(':checked')){
+    	 artifactOrigin = "npm";
      }
 	 $('#saveArtifact').attr("data-dismiss", "modal");
      $.ajax({
          url: "/artifact",
          method: 'POST',
-         data: '{"artifactId": "' + artifactId + '","groupId": "' + artifactGroupId + '","version": "' + artifactVersion + '", "classifier": "' + artifactClassifier + '","type": "' + artifactType + '", "extension": "' + artifactExtension + '","origin": "' + artifactOrigin + '","sha256": "' + artifactSHA + '", "promoted": ' + promoted + ',"size": "", "downloadUrl": "","provider": ""}',
+         data: '{"artifactId": "' + artifactId + '","groupId": "' + artifactGroupId + '","version": "' + artifactVersion + '", "classifier": "' + artifactClassifier + '","type": "' + artifactType + '", "extension": "' + artifactExtension + '","origin": "' + artifactOrigin + '","sha256": "' + artifactSHA + '", "promoted": ' + promoted + ', "description": "'  + artifactDescription + '","size": "", "downloadUrl": "","provider": ""}',
          contentType: 'application/json',
          error: function(xhr, error){
              alert("The action cannot be performed: status " + xhr.status + "\nError: " + xhr.responseText);
@@ -1583,6 +1588,7 @@ function cleanCreateArtifact(){
     $("#inputArtifactType").val('');
     $("#inputArtifactExtension").val('');
     $("#inputArtifactOrigin").val('');
+    $("#inputArtifactDescription").val('');
 }
 
 /*WorkAround*/

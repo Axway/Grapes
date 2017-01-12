@@ -229,18 +229,16 @@ public class ArtifactResource extends AbstractResource {
      * @param artifactQuery ArtifactQuery
      * @return Response An ArtifactPromotionStatus in JSON
      */
-    @POST
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/isPromoted")
-    public Response isPromoted(final ArtifactQuery artifactQuery){
+    public Response isPromoted(@QueryParam("user") final String user, @QueryParam("stage") final int stage, @QueryParam("name") final String filename, @QueryParam("sha256") final String sha256, @QueryParam("type") final String type){
         LOG.info("Got a get artifact promotion request. ");
         
-        DataValidator.validate(artifactQuery);
+        final ArtifactQuery artifactQuery = new ArtifactQuery(user, stage, filename, sha256, type);
         
-        final String filename = artifactQuery.getName();
-        final String user = artifactQuery.getUser();
-        final String checksum = artifactQuery.getSha256();
-        final String type = artifactQuery.getType();
+        DataValidator.validate(artifactQuery);
+
         
         ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
         
@@ -252,7 +250,7 @@ public class ArtifactResource extends AbstractResource {
             
             String message = getServiceHandler().getErrorMessage(DbArtifact.VALIDATION_TYPE_NOT_SUPPORTED_KEY);            
             promotionStatus.setMessage(String.format(message, allValidationTypes.toString()));
-            return Response.ok(promotionStatus).build();
+            return Response.ok(promotionStatus).status(HttpStatus.BAD_REQUEST_400).build();
         }
         
         // Configuring email notification
@@ -260,7 +258,7 @@ public class ArtifactResource extends AbstractResource {
         String[] ccMail = { };        
         final String messageSubject = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOTIFICATION_EMAIL_SUBJECT_KEY, DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_SUBJECT);
 
-        DbArtifact dbArtifact = getArtifactHandler().getArtifactUsingSHA256(checksum);        
+        DbArtifact dbArtifact = getArtifactHandler().getArtifactUsingSHA256(sha256);        
         
         // If no artifact found
         if(dbArtifact == null){
@@ -268,24 +266,24 @@ public class ArtifactResource extends AbstractResource {
             promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_UPLOAD_KEY));
 
             // for publish stage
-            if(artifactQuery.getStage() == 1){
+            if(stage == 1){
                 promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_PUBLISH_KEY));
             }
             
             // Sending notification email
             final String subject = String.format(messageSubject, filename);
             final String messageBody = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY_KEY, DbArtifact.DEFAULT_ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY);
-            final String message = String.format(messageBody, user, filename, checksum, "");            
+            final String message = String.format(messageBody, user, filename, sha256, "");            
             String emailStatus = getServiceHandler().sendEmail(toMail, ccMail, subject, message);
             LOG.info(emailStatus);
             
-            return Response.ok(promotionStatus).build();
+            return Response.ok(promotionStatus).status(HttpStatus.NOT_FOUND_404).build();
         }
         
         // If artifact is promoted
         if(dbArtifact.isPromoted()){
         	promotionStatus.setError(false);
-            promotionStatus.setMessage("");
+            promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_IS_PROMOTED_MESSAGE_KEY, DbArtifact.DEFAULT_ARTIFACT_IS_PROMOTED_MESSAGE));
             return Response.ok(promotionStatus).build();
         }
 
@@ -302,7 +300,7 @@ public class ArtifactResource extends AbstractResource {
         // Sending notification email
         final String subject = String.format(messageSubject, filename);
         final String messageBody = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY_KEY, DbArtifact.DEFAULT_ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY);
-        final String message = String.format(messageBody, user, filename, checksum, jenkinsJobInfo);
+        final String message = String.format(messageBody, user, filename, sha256, jenkinsJobInfo);
         String emailStatus = getServiceHandler().sendEmail(toMail, ccMail, subject , message);
         LOG.info(emailStatus);
     	   

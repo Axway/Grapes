@@ -63,6 +63,9 @@ public class DbArtifact {
 
     public static final String SHA_256 = "sha256";
     private String sha256 = "";
+    
+	public static final String DESCRIPTION_FIELD = "description";
+	private String description = "";
 
     public static final String PROVIDER = "provider";
     private String provider = "";
@@ -71,10 +74,12 @@ public class DbArtifact {
 	public static final String QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_UPLOAD_KEY = "QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_UPLOAD";
 	public static final String QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_PUBLISH_KEY = "QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_PUBLISH";
 	public static final String ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE_KEY = "ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE";
+	public static final String ARTIFACT_IS_PROMOTED_MESSAGE_KEY = "ARTIFACT_IS_PROMOTED_MESSAGE";
 	public static final String ARTIFACT_NOTIFICATION_EMAIL_SUBJECT_KEY = "ARTIFACT_NOTIFICATION_EMAIL_SUBJECT";
 	public static final String ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY_KEY = "ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY";
 	public static final String ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY_KEY = "ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY";
-
+	public static final String DEFAULT_ARTIFACT_IS_PROMOTED_MESSAGE = "Artifact is Promoted";
+	
 	public static final String DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_SUBJECT = "Webliv publish attempt for %s";
 	public static final String DEFAULT_ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY = "Hello,<br><br>User %s is trying to publish <b>%s</b>.<br> Checksum is <b>%s</b>.<br> The artifact is not known.<br><br>Regards,<br>RD DevOps";
 	public static final String DEFAULT_ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY = "Hello,<br><br>User %s is trying to publish <b>%s</b>.<br> Checksum is <b>%s</b>.<br> The artifact is not promoted.<br><br>Regards,<br>RD DevOps";
@@ -328,5 +333,13 @@ public class DbArtifact {
 		hashCode = 31 * hashCode + (this.getVersion() == null ? 0 : this.getVersion().hashCode());
 		hashCode = 31 * hashCode + (this.getClassifier() == null ? 0 : this.getClassifier().hashCode());
 		return hashCode;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

@@ -70,6 +70,11 @@ public final class DataValidator {
                     .entity("Artifact SHA256 checksum should not be null or empty")
                     .build());
         }
+        if(artifact.getSha256().length() != 64){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Artifact SHA256 checksum length should be 64")
+                    .build());
+        }
     }
 
 

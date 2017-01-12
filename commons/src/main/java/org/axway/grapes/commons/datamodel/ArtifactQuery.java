@@ -8,6 +8,13 @@ public class ArtifactQuery {
 	private String sha256;
 	private String type;
 	
+	public ArtifactQuery(String user, int stage, String name, String sha256, String type) {
+		this.user = user;
+		this.stage = stage;
+		this.name = name;
+		this.sha256 = sha256;
+		this.type = type;
+	}
 	public String getUser() {
 		return user;
 	}

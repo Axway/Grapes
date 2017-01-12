@@ -160,7 +160,7 @@
                 <h3 id="myModalLabel">Create Artifact</h3>
             </div>
             <div class="modal-body">
-            	<span style="color:red; font-style:italic;" id="artifactError"></span>
+            	<span id="artifactError"></span>
                 <form class="form-horizontal">
                     <label class="control-label" for="inputDownloadUrl">Artifact ID (Name)*</label>
                     <div class="controls">
@@ -169,7 +169,7 @@
                     <!-- add e.g. -->
                     <label class="control-label" for="inputDownloadUrl">File Checksum*</label>
                     <div class="controls">
-                        <input class="input-large" type="text" id="inputArtifactSHA" placeholder="SHA-256 code">
+                    	<textarea class="input-large" rows="2" id="inputArtifactSHA" placeholder="SHA-256 code" spellcheck="false"></textarea>
                     </div>
                     <label class="control-label" for="inputDownloadUrl">Group ID*</label>
                     <div class="controls">
@@ -189,16 +189,23 @@
                     </div>
                     <label class="control-label" for="inputArtifactOrigin">Origin</label>
                     <div class="controls">
-                        <input class="input-large" type="text" id="inputArtifactOrigin" placeholder="maven, npm">
+                    	<span style="display:block">
+	                        <input type="radio" id="inputArtifactOrigin" name="origin" checked>&nbsp;Maven &nbsp;&nbsp;&nbsp;
+	                        <input type="radio" id="inputArtifactOriginN" name="origin">&nbsp;NPM
+                        </span><br>
                     </div>
                     <label class="control-label" for="inputArtifactExtension">Extension*</label>
                     <div class="controls">
                         <input class="input-large" type="text" id="inputArtifactExtension" placeholder="jar, xml">
                     </div>
+                    <label class="control-label" for="inputArtifactDescription">Description</label>
+                    <div class="controls">
+                    	<textarea class="input-large" id="inputArtifactDescription"></textarea>
+                    </div>   
                     <label class="control-label" for="inputArtifactPromotion">Promoted</label>
                     <div class="controls">
                     	<input class="input-large" type="checkbox" id="inputArtifactPromotion" checked>
-                    </div>                    
+                    </div>                 
                 </form>
             </div>
             <div class="modal-footer">

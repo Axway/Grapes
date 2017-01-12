@@ -23,6 +23,7 @@ public class Artifact {
     private String extension = "";
     private String origin = "maven";
     private String sha256 = "";
+    private String description = "";
 
     private boolean promoted = false;
 
@@ -217,4 +218,12 @@ public class Artifact {
 
         return sb.toString();
     }
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }

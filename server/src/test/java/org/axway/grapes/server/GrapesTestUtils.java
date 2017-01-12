@@ -79,6 +79,7 @@ public class GrapesTestUtils {
             when(serviceHandler.getErrorMessage("QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_PUBLISH")).thenReturn("You are publishing a non-published artefact.");
             when(serviceHandler.getErrorMessage("VALIDATION_TYPE_NOT_SUPPORTED")).thenReturn("Validation is not supported for this type of file");
             when(serviceHandler.getErrorMessage("ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE")).thenReturn("Artifact is not promoted");
+            when(serviceHandler.getErrorMessage("ARTIFACT_IS_PROMOTED_MESSAGE", DbArtifact.DEFAULT_ARTIFACT_IS_PROMOTED_MESSAGE)).thenReturn("Artifact is promoted");
             when(serviceHandler.getErrorMessage("ARTIFACT_NOTIFICATION_EMAIL_SUBJECT",  DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_SUBJECT)).thenReturn(DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_SUBJECT);
             when(serviceHandler.getErrorMessage("ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY",  DbArtifact.DEFAULT_ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY)).thenReturn(DbArtifact.DEFAULT_ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY);
             when(serviceHandler.getErrorMessage("ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY",  DbArtifact.DEFAULT_ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY)).thenReturn(DbArtifact.DEFAULT_ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY);

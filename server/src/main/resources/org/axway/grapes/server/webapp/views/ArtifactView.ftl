@@ -71,6 +71,7 @@
                     <strong>SHA-256: </strong>${artifact.getSha256()}<br/>
                     <strong>Provider: </strong>${artifact.getProvider()}<br/>
                     <strong>DownloadUrl: </strong>${artifact.getDownloadUrl()}<br/>
+                    <strong>Description: </strong>${artifact.getDescription()}<br/>
                     <#if isCorporate() && moduleName??>
                     <strong>Module: </strong>${moduleName} in version ${moduleVersion}<br/>
                     </#if>
