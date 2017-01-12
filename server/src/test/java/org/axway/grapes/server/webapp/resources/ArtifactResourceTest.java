@@ -16,27 +16,22 @@ import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
-import org.axway.grapes.server.core.services.GrapesEmail;
 import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 
-import java.io.File;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -78,7 +73,121 @@ public class ArtifactResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
+    
+    @Test
+    public void postArtifactTest(){
+        Artifact artifact = DataModelFactory.createArtifact(GrapesTestUtils.CORPORATE_GROUPID_4TEST, "artifactId", "version", "classifier", "type", "extension");
+        artifact.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
+        
+        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        final WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
+        final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifact);
+        assertNotNull(response);
+        assertEquals(HttpStatus.CREATED_201, response.getStatus());
 
+        final ArgumentCaptor<DbArtifact> captor = ArgumentCaptor.forClass(DbArtifact.class);
+        verify(repositoryHandler, times(1)).store(captor.capture());
+
+        assertEquals("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", captor.getValue().getSha256());
+    }    
+    
+    @Test
+    public void postArtifactNullSHATest(){
+        Artifact artifact = DataModelFactory.createArtifact(GrapesTestUtils.CORPORATE_GROUPID_4TEST, "artifactId", "version", "classifier", "type", "extension");
+        
+        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        final WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
+        final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifact);
+
+        final String errorMessage = response.getEntity(String.class);
+        
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals("Artifact SHA256 checksum should not be null or empty", errorMessage);        
+        
+        final ArgumentCaptor<DbArtifact> captor = ArgumentCaptor.forClass(DbArtifact.class);
+        verify(repositoryHandler, times(0)).store(captor.capture());
+    } 
+    
+    @Test
+    public void postArtifactWrongSHATest(){
+        Artifact artifact = DataModelFactory.createArtifact(GrapesTestUtils.CORPORATE_GROUPID_4TEST, "artifactId", "version", "classifier", "type", "extension");
+        artifact.setSha256("smallLengthSHACode");
+        
+        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        final WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
+        final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifact);
+
+        final String errorMessage = response.getEntity(String.class);
+        
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals("Artifact SHA256 checksum length should be 64", errorMessage);        
+
+        final ArgumentCaptor<DbArtifact> captor = ArgumentCaptor.forClass(DbArtifact.class);
+        verify(repositoryHandler, times(0)).store(captor.capture());
+    }
+    
+    @Test
+    public void postArtifactDuplicateSHATest(){
+        String sha256 = "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c";
+        DbArtifact dbArtifact = new DbArtifact();
+        dbArtifact.setArtifactId("artifact");
+        dbArtifact.setGroupId("groupId");
+        dbArtifact.setVersion("version");
+        dbArtifact.setClassifier("classifier");
+        dbArtifact.setExtension("extension");
+        dbArtifact.setSha256(sha256);
+        
+        when(repositoryHandler.getArtifactUsingSHA256(sha256)).thenReturn(dbArtifact);
+        
+    	Artifact artifact = DataModelFactory.createArtifact(GrapesTestUtils.CORPORATE_GROUPID_4TEST, "artifactId", "version", "classifier", "type", "extension");
+        artifact.setSha256(sha256);
+        
+        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        final WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
+        final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifact);
+
+        final String errorMessage = response.getEntity(String.class);
+        
+        assertNotNull(response);
+        assertEquals(HttpStatus.CONFLICT_409, response.getStatus());
+        assertEquals("Artifact with same checksum already exists.", errorMessage);        
+
+        final ArgumentCaptor<DbArtifact> captor = ArgumentCaptor.forClass(DbArtifact.class);
+        verify(repositoryHandler, times(0)).store(captor.capture());
+    }    
+    
+    @Test
+    public void postArtifactDuplicateGAVCTest(){
+        String sha256 = "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c";
+        DbArtifact dbArtifact = new DbArtifact();
+        dbArtifact.setArtifactId("artifactId");
+        dbArtifact.setGroupId(GrapesTestUtils.CORPORATE_GROUPID_4TEST);
+        dbArtifact.setVersion("version");
+        dbArtifact.setClassifier("classifier");
+        dbArtifact.setExtension("extension");
+        dbArtifact.setSha256(sha256);
+        
+        when(repositoryHandler.getArtifact(dbArtifact.getGavc())).thenReturn(dbArtifact);
+        
+    	Artifact artifact = DataModelFactory.createArtifact(GrapesTestUtils.CORPORATE_GROUPID_4TEST, "artifactId", "version", "classifier", "type", "extension");
+        artifact.setSha256(sha256);
+        
+        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        final WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
+        final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifact);
+
+        final String errorMessage = response.getEntity(String.class);
+        
+        assertNotNull(response);
+        assertEquals(HttpStatus.CONFLICT_409, response.getStatus());
+        assertEquals("Artifact with same GAVC already exists.", errorMessage);        
+
+        final ArgumentCaptor<DbArtifact> captor = ArgumentCaptor.forClass(DbArtifact.class);
+        verify(repositoryHandler, times(0)).store(captor.capture());
+    }
+    
     @Test
     public void isPromoted(){
     	final DbArtifact artifact = new DbArtifact();

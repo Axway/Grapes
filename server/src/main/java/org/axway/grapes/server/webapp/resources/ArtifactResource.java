@@ -68,6 +68,7 @@ public class ArtifactResource extends AbstractResource {
         	artifact.setOrigin("maven");
         }
         
+        LOG.info("Validating Artifact request..");
         // Checks if the data is corrupted
         DataValidator.validatePostArtifact(artifact);
 
@@ -87,8 +88,8 @@ public class ArtifactResource extends AbstractResource {
         DbArtifact artifactWithSameGAVC = null;
         try{
         	artifactWithSameGAVC = artifactHandler.getArtifact(artifact.getGavc());
-        }catch(Exception e){
-        	// no artifact found, nothing to do
+        }catch(WebApplicationException e){
+        	LOG.info("Validating result for artifact GAVC: No matching artifact found " + e);
         }
         
         if(artifactWithSameGAVC != null){
