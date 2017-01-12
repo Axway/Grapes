@@ -176,19 +176,54 @@
             <div id="accordion3" class="collapse">
                 <ul>
                     <li>
-                        <h3>POST</h3>
+                        <h3>GET</h3>
                         <ul>
                             <li>Checks for the promotion state of an artifact based on the SHA256 checksum</li>
                             <li>Performs two kinds of verifications: if the checksum is present in the database, and, if it is promoted </li>
-                            <li>It returns JSON text only</li>
-                            <li>Input Message example:
-                                <pre>${getArtifactPromtotionInputMessage()}</pre>
-                                <p style="font-style:italic"> stage = 0 for uploading and 1 for promotion <br>
-                                type = [ 
-                                <#list getArtifactValidationTypes() as type>
-                                ${type}<#if type_has_next>, </#if>
-                                </#list> ]
-                                </p>
+                            <li>It returns JSON text only
+                            	<pre>${getArtifactPromtotionResponseMessage()}</pre>
+                            </li>
+                            <li>Return status 400 if input is not correct (e.g. any field is missing or empty or SHA256 hash length is not 64)</li>
+                            <li>Return status 422 if validation type is not supported</li>
+                            <li>Return status 404 if Artifact not found</li>
+                            <li>Return status 200 if Artifact is promoted or not promoted</li>
+                            <li>
+                                Mandatory parameter:
+                                <br/>
+                                <table class="table table-bordered table-hover" style="font-size:90%;margin-top:8px;">
+                                    <thead>
+                                    <tr>
+                                        <td><strong>Parameter</strong></td>
+                                        <td><strong>Description</strong></td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>user</td>
+                                        <td>User who is requesting</td>
+                                    </tr>
+                                    <tr>
+                                        <td>stage</td>
+                                        <td>0(for uploading) or 1(for publishing)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>name</td>
+                                        <td>Name of file</td>
+                                    </tr>
+                                    <tr>
+                                        <td>sha256</td>
+                                        <td>File checksum (SHA-256 hash)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>type</td>
+                                        <td>Type of file. Supported types are : [ 
+                                						<#list getArtifactValidationTypes() as type>
+						                                ${type}<#if type_has_next>, </#if>
+						                                </#list> ]
+                                		</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </li>
                         </ul>
                     </li>

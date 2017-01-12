@@ -211,8 +211,8 @@ public abstract class AbstractResource extends View {
      * @return String
      * @throws IOException
      */
-    public String getArtifactPromtotionInputMessage() throws IOException {
-        return JsonUtils.serialize(DataModelFactory.createArtifactQuery("", 0, "", "", ""));
+    public String getArtifactPromtotionResponseMessage() throws IOException {
+        return JsonUtils.serialize(DataModelFactory.createArtifactPromotionStatus(false, ""));
     }
     
     /**

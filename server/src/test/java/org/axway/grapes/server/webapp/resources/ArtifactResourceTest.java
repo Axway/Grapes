@@ -237,7 +237,7 @@ public class ArtifactResourceTest extends ResourceTest {
         final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
         
         assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY_422, response.getStatus());
         assertFalse(promotionStatus.isError());
         assertEquals("Validation is not supported for this type of file", promotionStatus.getMessage());
     }
@@ -260,7 +260,7 @@ public class ArtifactResourceTest extends ResourceTest {
         final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
         
         assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY_422, response.getStatus());
         assertFalse(promotionStatus.isError());
         assertEquals("Validation is not supported for this type of file", promotionStatus.getMessage());
     }

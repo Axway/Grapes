@@ -251,7 +251,7 @@ public class ArtifactResource extends AbstractResource {
             
             String message = getServiceHandler().getErrorMessage(DbArtifact.VALIDATION_TYPE_NOT_SUPPORTED_KEY);            
             promotionStatus.setMessage(String.format(message, allValidationTypes.toString()));
-            return Response.ok(promotionStatus).status(HttpStatus.BAD_REQUEST_400).build();
+            return Response.ok(promotionStatus).status(HttpStatus.UNPROCESSABLE_ENTITY_422).build();
         }
         
         // Configuring email notification
