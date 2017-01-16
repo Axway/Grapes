@@ -1,0 +1,42 @@
+# To run Grapes server, a YAML configuration file is needed with following information
+# Grapes server
+http:
+  bindHost: localhost
+  port: 8081
+  adminPort: 8082
+  adminUsername: admin
+  adminPassword: admin-password
+database:
+  host: localhost
+  port: db-port (27017)
+  user:
+  pwd:
+  datastore: grapes
+  dbsystem: mongodb
+logging:
+  level: INFO
+  file:
+    enabled: true
+    threshold: ALL
+    currentLogFilename: target/logs/grapes.out
+    archivedLogFilenamePattern: target/archive/grapes_archive-%d.log.gz
+    archivedFileCount: 5
+    timeZone: UTC
+community:
+  issueTracker: https://github.com/Axway/Grapes/issues
+  onlineHelp: https://github.com/Axway/Grapes/wiki
+
+# file containing important messages
+messageFile: messages.properties
+
+# user intended to receive notification from Grapes
+artifactNotificationRecipients: [user@axway.com]
+
+mailing:
+   host: smtp_host(mail.ptx.axway.int)
+   port: smtp_port(587)
+   user: smtp_user
+   pwd: paswword
+   sslTrust: mail.ptx.axway.int
+   smtpFrom: smtp_user
+   debug: false
