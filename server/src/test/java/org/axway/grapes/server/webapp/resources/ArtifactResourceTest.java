@@ -76,8 +76,9 @@ public class ArtifactResourceTest extends ResourceTest {
     
     @Test
     public void postArtifactTest(){
+        final String sha = "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c";
         Artifact artifact = DataModelFactory.createArtifact(GrapesTestUtils.CORPORATE_GROUPID_4TEST, "artifactId", "version", "classifier", "type", "extension");
-        artifact.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
+        artifact.setSha256(sha);
         
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
         final WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
@@ -88,7 +89,7 @@ public class ArtifactResourceTest extends ResourceTest {
         final ArgumentCaptor<DbArtifact> captor = ArgumentCaptor.forClass(DbArtifact.class);
         verify(repositoryHandler, times(1)).store(captor.capture());
 
-        assertEquals("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", captor.getValue().getSha256());
+        assertEquals(sha, captor.getValue().getSha256());
     }    
     
     @Test
@@ -199,13 +200,8 @@ public class ArtifactResourceTest extends ResourceTest {
         when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(artifact);
         
     	ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1", "");
-    	
-    	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-    	params.add("user", artifactQuery.getUser());
-    	params.add("stage", artifactQuery.getStage() + "");
-    	params.add("name", artifactQuery.getName());
-    	params.add("sha256", artifactQuery.getSha256());
-    	params.add("type", artifactQuery.getType());
+
+        MultivaluedMap<String, String> params = makeParams(artifactQuery);
 
     	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -225,12 +221,7 @@ public class ArtifactResourceTest extends ResourceTest {
         
     	ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "notValidType", "");
 
-    	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-    	params.add("user", artifactQuery.getUser());
-    	params.add("stage", artifactQuery.getStage() + "");
-    	params.add("name", artifactQuery.getName());
-    	params.add("sha256", artifactQuery.getSha256());
-    	params.add("type", artifactQuery.getType());
+        MultivaluedMap<String, String> params = makeParams(artifactQuery);
 
     	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -243,16 +234,12 @@ public class ArtifactResourceTest extends ResourceTest {
     
     @Test
     public void isPromotedNotValidTypeStagePublish(){
-        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(null);
+        final String sha = "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c";
+        when(repositoryHandler.getArtifactUsingSHA256(sha)).thenReturn(null);
         
-    	ArtifactQuery artifactQuery = new ArtifactQuery("User", 0, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "notValidType", "");
-        
-    	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-    	params.add("user", artifactQuery.getUser());
-    	params.add("stage", artifactQuery.getStage() + "");
-    	params.add("name", artifactQuery.getName());
-    	params.add("sha256", artifactQuery.getSha256());
-    	params.add("type", artifactQuery.getType());
+    	ArtifactQuery artifactQuery = new ArtifactQuery("User", 0, "File1", sha, "notValidType", "");
+
+        MultivaluedMap<String, String> params = makeParams(artifactQuery);
 
     	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -275,12 +262,7 @@ public class ArtifactResourceTest extends ResourceTest {
         
         ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1", "");
 
-    	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-    	params.add("user", artifactQuery.getUser());
-    	params.add("stage", artifactQuery.getStage() + "");
-    	params.add("name", artifactQuery.getName());
-    	params.add("sha256", artifactQuery.getSha256());
-    	params.add("type", artifactQuery.getType());
+        MultivaluedMap<String, String> params = makeParams(artifactQuery);
 
     	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -299,12 +281,7 @@ public class ArtifactResourceTest extends ResourceTest {
         
         ArtifactQuery artifactQuery = new ArtifactQuery("User", 0, "File1", sha256, "filetype1", "");
 
-    	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-    	params.add("user", artifactQuery.getUser());
-    	params.add("stage", artifactQuery.getStage() + "");
-    	params.add("name", artifactQuery.getName());
-    	params.add("sha256", artifactQuery.getSha256());
-    	params.add("type", artifactQuery.getType());
+        MultivaluedMap<String, String> params = makeParams(artifactQuery);
 
     	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -324,12 +301,7 @@ public class ArtifactResourceTest extends ResourceTest {
        
         ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", sha256, "filetype1", "");
 
-    	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-    	params.add("user", artifactQuery.getUser());
-    	params.add("stage", artifactQuery.getStage() + "");
-    	params.add("name", artifactQuery.getName());
-    	params.add("sha256", artifactQuery.getSha256());
-    	params.add("type", artifactQuery.getType());
+        MultivaluedMap<String, String> params = makeParams(artifactQuery);
 
     	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -351,13 +323,8 @@ public class ArtifactResourceTest extends ResourceTest {
 
     	Exception exception = null;
     	
-    	try{    	
-        	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-        	params.add("user", artifactQuery.getUser());
-        	params.add("stage", artifactQuery.getStage() + "");
-        	params.add("name", artifactQuery.getName());
-        	params.add("sha256", artifactQuery.getSha256());
-        	params.add("type", artifactQuery.getType());
+    	try{
+            MultivaluedMap<String, String> params = makeParams(artifactQuery);
 
         	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
             ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -386,13 +353,8 @@ public class ArtifactResourceTest extends ResourceTest {
 
     	Exception exception = null;
     	
-    	try{    	
-        	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-        	params.add("user", artifactQuery.getUser());
-        	params.add("stage", artifactQuery.getStage() + "");
-        	params.add("name", artifactQuery.getName());
-        	params.add("sha256", artifactQuery.getSha256());
-        	params.add("type", artifactQuery.getType());
+    	try{
+            MultivaluedMap<String, String> params = makeParams(artifactQuery);
 
         	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
             ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -410,7 +372,17 @@ public class ArtifactResourceTest extends ResourceTest {
     	assertEquals(expectedException.toString(), exception.getMessage());        
     }
 
-    
+    private MultivaluedMap<String, String> makeParams(ArtifactQuery artifactQuery) {
+        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+        params.add("user", artifactQuery.getUser());
+        params.add("stage", artifactQuery.getStage() + "");
+        params.add("name", artifactQuery.getName());
+        params.add("sha256", artifactQuery.getSha256());
+        params.add("type", artifactQuery.getType());
+        return params;
+    }
+
+
     @Test
     public void emailBodyTestForArtifactNotPromoted(){
     	// mocking sending of mail. Returning as an Exception with message used for sending email. 3 is for Email body
@@ -428,14 +400,9 @@ public class ArtifactResourceTest extends ResourceTest {
 
     	Exception exception = null;
     	
-    	try{    	
-    	
-        	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-        	params.add("user", artifactQuery.getUser());
-        	params.add("stage", artifactQuery.getStage() + "");
-        	params.add("name", artifactQuery.getName());
-        	params.add("sha256", artifactQuery.getSha256());
-        	params.add("type", artifactQuery.getType());
+    	try{
+
+            MultivaluedMap<String, String> params = makeParams(artifactQuery);
 
         	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
             ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);

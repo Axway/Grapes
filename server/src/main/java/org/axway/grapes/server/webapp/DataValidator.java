@@ -172,35 +172,35 @@ public final class DataValidator {
         if(artifactQuery.getUser() == null ||
         		artifactQuery.getUser().isEmpty()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Mandatory field user missing")
+                    .entity("Mandatory field [user] missing")
                     .build());
         }
         if( artifactQuery.getStage() != 0 && artifactQuery.getStage() !=1 ){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Invalid stage value (supported 0 | 1)")
+                    .entity("Invalid [stage] value (supported 0 | 1)")
                     .build());
         }
         if(artifactQuery.getName() == null ||
         		artifactQuery.getName().isEmpty()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Mandatory field name missing(file Name)")
+                    .entity("Mandatory field [name] missing, it should be the file name")
                     .build());
         }
         if(artifactQuery.getSha256() == null ||
                 artifactQuery.getSha256().isEmpty()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Mandatory field sha256 missing")
+                    .entity("Mandatory field [sha256] missing")
                     .build());
         }
         if(artifactQuery.getSha256().length() < 64 || invalidChars.matcher(artifactQuery.getSha256()).find()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Invalid file SHA256 value")
+                    .entity("Invalid file checksum value")
                     .build());
         }
         if(artifactQuery.getType() == null ||
         		artifactQuery.getType().isEmpty()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                    .entity("File Type cannot be null or empty!")
+                    .entity("Mandatory field [type] missing")
                     .build());
         }
     }
