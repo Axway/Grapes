@@ -198,7 +198,7 @@ public class ArtifactResourceTest extends ResourceTest {
         artifact.setPromoted(true);
         when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(artifact);
         
-    	ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1");
+    	ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1", "");
     	
     	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
     	params.add("user", artifactQuery.getUser());
@@ -215,7 +215,7 @@ public class ArtifactResourceTest extends ResourceTest {
         
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
-        assertFalse(promotionStatus.isError());
+        assertTrue(promotionStatus.isPromoted());
         assertEquals("Artifact is promoted", promotionStatus.getMessage());
     }
 
@@ -223,7 +223,7 @@ public class ArtifactResourceTest extends ResourceTest {
     public void isPromotedNotValidTypeStageUpload(){
         when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(null);
         
-    	ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "notValidType");
+    	ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "notValidType", "");
 
     	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
     	params.add("user", artifactQuery.getUser());
@@ -234,19 +234,18 @@ public class ArtifactResourceTest extends ResourceTest {
 
     	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        final String returnMessage = response.getEntity(String.class);
         
         assertNotNull(response);
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY_422, response.getStatus());
-        assertFalse(promotionStatus.isError());
-        assertEquals("Validation is not supported for this type of file", promotionStatus.getMessage());
+        assertEquals("Validation is not supported for this type of file", returnMessage);
     }
     
     @Test
     public void isPromotedNotValidTypeStagePublish(){
         when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(null);
         
-    	ArtifactQuery artifactQuery = new ArtifactQuery("User", 0, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "notValidType");
+    	ArtifactQuery artifactQuery = new ArtifactQuery("User", 0, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "notValidType", "");
         
     	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
     	params.add("user", artifactQuery.getUser());
@@ -257,12 +256,11 @@ public class ArtifactResourceTest extends ResourceTest {
 
     	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        final String returnMessage = response.getEntity(String.class);
         
         assertNotNull(response);
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY_422, response.getStatus());
-        assertFalse(promotionStatus.isError());
-        assertEquals("Validation is not supported for this type of file", promotionStatus.getMessage());
+        assertEquals("Validation is not supported for this type of file", returnMessage);
     }
 
     @Test
@@ -275,7 +273,7 @@ public class ArtifactResourceTest extends ResourceTest {
         artifact.setPromoted(false);
         when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(artifact);
         
-        ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1");
+        ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1", "");
 
     	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
     	params.add("user", artifactQuery.getUser());
@@ -290,7 +288,7 @@ public class ArtifactResourceTest extends ResourceTest {
         
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
-        assertFalse(!promotionStatus.isError());
+        assertFalse(promotionStatus.isPromoted());
         assertEquals("Artifact is not promoted", promotionStatus.getMessage());
     }
     
@@ -299,7 +297,7 @@ public class ArtifactResourceTest extends ResourceTest {
     	final String sha256 = "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c";
         when(repositoryHandler.getArtifactUsingSHA256(sha256)).thenReturn(null);
         
-        ArtifactQuery artifactQuery = new ArtifactQuery("User", 0, "File1", sha256, "filetype1");
+        ArtifactQuery artifactQuery = new ArtifactQuery("User", 0, "File1", sha256, "filetype1", "");
 
     	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
     	params.add("user", artifactQuery.getUser());
@@ -311,12 +309,11 @@ public class ArtifactResourceTest extends ResourceTest {
     	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
-        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        final String returnMessage = response.getEntity(String.class);
         
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
-        assertFalse(!promotionStatus.isError());
-        assertEquals("You are uploading a non-published artefact.", promotionStatus.getMessage());
+        assertEquals("You are uploading a non-published artefact.", returnMessage);
     }
     
     @Test
@@ -325,7 +322,7 @@ public class ArtifactResourceTest extends ResourceTest {
         when(repositoryHandler.getArtifactUsingSHA256(sha256)).thenReturn(null);
         
        
-        ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", sha256, "filetype1");
+        ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", sha256, "filetype1", "");
 
     	MultivaluedMap<String, String> params = new MultivaluedMapImpl();
     	params.add("user", artifactQuery.getUser());
@@ -336,12 +333,11 @@ public class ArtifactResourceTest extends ResourceTest {
 
     	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-        final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+        final String returnMessage = response.getEntity(String.class);
         
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
-        assertFalse(!promotionStatus.isError());
-        assertEquals("You are publishing a non-published artefact.", promotionStatus.getMessage());
+        assertEquals("You are publishing a non-published artefact.", returnMessage);
     }
     
     @Test
@@ -351,7 +347,7 @@ public class ArtifactResourceTest extends ResourceTest {
 
         when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(null);
         
-        ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1");
+        ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1", "");
 
     	Exception exception = null;
     	
@@ -365,7 +361,7 @@ public class ArtifactResourceTest extends ResourceTest {
 
         	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
             ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+            final String returnMessage = response.getEntity(String.class);
         
     	}catch(Exception e){
     		exception = e;
@@ -386,7 +382,7 @@ public class ArtifactResourceTest extends ResourceTest {
 
         when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(null);
         
-        ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1");
+        ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1", "");
 
     	Exception exception = null;
     	
@@ -400,7 +396,7 @@ public class ArtifactResourceTest extends ResourceTest {
 
         	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
             ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+            final String returnMessage = response.getEntity(String.class);
         
     	}catch(Exception e){
     		exception = e;
@@ -428,7 +424,7 @@ public class ArtifactResourceTest extends ResourceTest {
         artifact.setPromoted(false);
         when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(artifact);
         
-        ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1");
+        ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1", "");
 
     	Exception exception = null;
     	
@@ -444,7 +440,7 @@ public class ArtifactResourceTest extends ResourceTest {
         	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
             ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
-            final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
+            final String returnMessage = response.getEntity(String.class);
         
     	}catch(Exception e){
     		exception = e;

@@ -214,10 +214,10 @@ public final class DataModelFactory {
             throw new IOException(e);
         }
 	}
-	public static ArtifactPromotionStatus createArtifactPromotionStatus(final Boolean isError, final String message) throws IOException{
+	public static ArtifactPromotionStatus createArtifactPromotionStatus(final Boolean promoted, final String message) throws IOException{
 		try{
 			ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
-			promotionStatus.setError(isError);
+			promotionStatus.setPromoted(promoted);
 			promotionStatus.setMessage(message);
 			return promotionStatus;
 		}
@@ -226,9 +226,9 @@ public final class DataModelFactory {
         }
 	}
 	
-    public static ArtifactQuery createArtifactQuery(final String user, final int stage , final String name, final String sha256, final String type) throws IOException{
+    public static ArtifactQuery createArtifactQuery(final String user, final int stage , final String name, final String sha256, final String type, final String location) throws IOException{
         try{
-        	return new ArtifactQuery(user, stage, name, sha256, type);
+        	return new ArtifactQuery(user, stage, name, sha256, type, location);
         }
         catch(Exception e){
             throw new IOException(e);

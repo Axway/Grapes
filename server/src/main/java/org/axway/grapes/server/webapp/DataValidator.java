@@ -172,24 +172,29 @@ public final class DataValidator {
         if(artifactQuery.getUser() == null ||
         		artifactQuery.getUser().isEmpty()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                    .entity("User name cannot be null or empty!")
+                    .entity("Mandatory field user missing")
                     .build());
         }
         if( artifactQuery.getStage() != 0 && artifactQuery.getStage() !=1 ){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Stage value is either empty or invalid! It cannot be other than 1 or 0")
+                    .entity("Invalid stage value (supported 0 | 1)")
                     .build());
         }
         if(artifactQuery.getName() == null ||
         		artifactQuery.getName().isEmpty()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                    .entity("File Name cannot be null or empty!")
+                    .entity("Mandatory field name missing(file Name)")
                     .build());
         }
         if(artifactQuery.getSha256() == null ||
-                artifactQuery.getSha256().isEmpty() || artifactQuery.getSha256().length() < 64 || invalidChars.matcher(artifactQuery.getSha256()).find()){
+                artifactQuery.getSha256().isEmpty()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                    .entity("SHA256 code is either empty or invalid!")
+                    .entity("Mandatory field sha256 missing")
+                    .build());
+        }
+        if(artifactQuery.getSha256().length() < 64 || invalidChars.matcher(artifactQuery.getSha256()).find()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid file SHA256 value")
                     .build());
         }
         if(artifactQuery.getType() == null ||

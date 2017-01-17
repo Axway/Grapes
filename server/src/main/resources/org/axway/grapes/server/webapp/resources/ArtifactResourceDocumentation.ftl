@@ -188,39 +188,57 @@
                             <li>Return status 404 if Artifact not found</li>
                             <li>Return status 200 if Artifact is promoted or not promoted</li>
                             <li>
-                                Mandatory parameter:
+                                Parameters:
                                 <br/>
                                 <table class="table table-bordered table-hover" style="font-size:90%;margin-top:8px;">
                                     <thead>
                                     <tr>
                                         <td><strong>Parameter</strong></td>
+                                        <td><strong>Type</strong></td>
+                                        <td><strong>Mandatory</strong></td>
                                         <td><strong>Description</strong></td>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr>
                                         <td>user</td>
-                                        <td>User who is requesting</td>
+                                        <td>String</td>
+                                        <td>Yes</td>
+                                        <td>The username from external system#</td>
                                     </tr>
                                     <tr>
                                         <td>stage</td>
-                                        <td>0(for uploading) or 1(for publishing)</td>
-                                    </tr>
-                                    <tr>
-                                        <td>name</td>
-                                        <td>Name of file</td>
+                                        <td>integer (0 | 1)</td>
+                                        <td>Yes</td>
+                                        <td>The stage of processing in external system (0 - upload, 1 - publish to GA)</td>
                                     </tr>
                                     <tr>
                                         <td>sha256</td>
-                                        <td>File checksum (SHA-256 hash)</td>
+                                        <td>String (64 chars)</td>
+                                        <td>Yes</td>
+                                        <td>The name of the file to be validated</td>
+                                    </tr>
+                                    <tr>
+                                        <td>name</td>
+                                        <td>String</td>
+                                        <td>Yes</td>
+                                        <td>The SHA256 of the file to be validated</td>
                                     </tr>
                                     <tr>
                                         <td>type</td>
+                                        <td>String</td>
+                                        <td>Yes</td>
                                         <td>Type of file. Supported types are : [ 
                                 						<#list getArtifactValidationTypes() as type>
 						                                ${type}<#if type_has_next>, </#if>
 						                                </#list> ]
                                 		</td>
+                                    </tr>
+                                    <tr>
+                                        <td>location</td>
+                                        <td>String</td>
+                                        <td>No</td>
+                                        <td>The SHA256 of the file to be validated</td>
                                     </tr>
                                     </tbody>
                                 </table>

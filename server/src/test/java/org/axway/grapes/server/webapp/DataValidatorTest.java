@@ -390,7 +390,7 @@ public class DataValidatorTest {
     }
     @Test
     public void validateArtifactQuery() throws IOException{
-        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", 0 , "file.jar", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "ServicePack");
+        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", 0 , "file.jar", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "ServicePack", "");
         WebApplicationException exception = null;
 
         try{
@@ -404,7 +404,7 @@ public class DataValidatorTest {
     
     @Test
     public void artifactQueryWithMissingUser() throws IOException{
-        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery(null, 0 , "file.jar", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "ServicePack");
+        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery(null, 0 , "file.jar", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "ServicePack", "");
         WebApplicationException exception = null;
 
         try{
@@ -418,7 +418,7 @@ public class DataValidatorTest {
     
     @Test
     public void artifactQueryWithInvalidStage() throws IOException{
-        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", -1 , "file.jar", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "ServicePack");
+        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", -1 , "file.jar", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "ServicePack", "");
         WebApplicationException exception = null;
 
         try{
@@ -432,7 +432,7 @@ public class DataValidatorTest {
     
     @Test
     public void artifactQueryWithMissingChecksum() throws IOException{
-        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", 0 , "file.jar", null, "ServicePack");
+        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", 0 , "file.jar", null, "ServicePack", "");
         WebApplicationException exception = null;
 
         try{
@@ -446,7 +446,7 @@ public class DataValidatorTest {
     
     @Test
     public void artifactQueryWithMissingFilename() throws IOException{
-        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", 0 , null, "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "ServicePack");
+        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", 0 , null, "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "ServicePack", "");
         WebApplicationException exception = null;
 
         try{
@@ -460,7 +460,7 @@ public class DataValidatorTest {
     
     @Test
     public void artifactQueryWithInvalidChecksum() throws IOException{
-        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", 0 , "file.jar", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821Y", "ServicePack");
+        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", 0 , "file.jar", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821Y", "ServicePack", "");
         WebApplicationException exception = null;
 
         try{
@@ -474,7 +474,7 @@ public class DataValidatorTest {
     
     @Test
     public void artifactQueryWithMissingFiletype() throws IOException{
-        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", 0 , "file.jar", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", null);
+        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", 0 , "file.jar", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", null, "");
         WebApplicationException exception = null;
 
         try{
