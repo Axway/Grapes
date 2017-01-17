@@ -250,7 +250,9 @@ public class ArtifactResource extends AbstractResource {
             String message = getServiceHandler().getErrorMessage(DbArtifact.VALIDATION_TYPE_NOT_SUPPORTED_KEY);
             return Response.ok(String.format(message, allValidationTypes.toString())).status(HttpStatus.UNPROCESSABLE_ENTITY_422).build();
         }
-        
+
+        // Todo: use another thread for email notification, not have the client wait until email is sent.
+
         // Configuring email notification
         String[] toMail = getConfig().getArtifactNotificationRecipients();
         String[] ccMail = { };        
@@ -262,9 +264,11 @@ public class ArtifactResource extends AbstractResource {
         if(dbArtifact == null){
         	
             // for publish stage = 0 and 1 for upload
-        	final String returnMessage = (stage == 0) ? getServiceHandler().getErrorMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_UPLOAD_KEY): getServiceHandler().getErrorMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_PUBLISH_KEY);
+        	final String returnMessage = (stage == 0) ?
+                    getServiceHandler().getErrorMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_UPLOAD_KEY) :
+                    getServiceHandler().getErrorMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_PUBLISH_KEY);
             final String jiraLink = "https://techweb.axway.com/jira";
-        	
+
             // Sending notification email
             final String subject = String.format(messageSubject, filename);
             final String messageBody = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY_KEY, DbArtifact.DEFAULT_ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY);
@@ -272,8 +276,12 @@ public class ArtifactResource extends AbstractResource {
             final String message = String.format(messageBody, user, filename, sha256, fileLocation);            
             String emailStatus = getServiceHandler().sendEmail(toMail, ccMail, subject, message);
             LOG.info(emailStatus);
-            
-            return Response.ok(String.format(returnMessage, filename, sha256, jiraLink)).status(HttpStatus.NOT_FOUND_404).build();
+
+
+            String finalReply = String.format(returnMessage, filename, sha256, jiraLink);
+            LOG.info("Final reply: " + finalReply);
+
+            return Response.ok(finalReply).status(HttpStatus.NOT_FOUND_404).build();
         }
 
         ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
