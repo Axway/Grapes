@@ -26,18 +26,28 @@ private File messageFile;
 		if(allMessages == null){
 			loadMessagesFromFile();
 		}
+
+		if(!allMessages.containsKey(key)) {
+			LOG.warn("Could not find message key " + key + ". Returning default message.");
+		}
+
 		return allMessages.getProperty(key, DEFAULT_ERROR_MESSAGE);
 	}
 	
 	private void loadMessagesFromFile(){
 		allMessages = new Properties();
-		try {		
-		InputStream input = new FileInputStream(messageFile.getAbsolutePath());
-		// load a properties file
-		allMessages.load(input);
-		input.close();
+		try {
+			LOG.debug("Loading configuration messages from " + messageFile.getAbsolutePath());
+			InputStream input = new FileInputStream(messageFile.getAbsolutePath());
+
+			// load a properties file
+			allMessages.load(input);
+			input.close();
+			LOG.debug("Message bundle contains " + allMessages.size() + " elements");
+			LOG.debug("Available keys: " + allMessages.keySet().toString());
 		} catch (IOException e) {
 			LOG.error("Message file is not loaded properly. For all errors, service would return only default messages", e);
+			e.printStackTrace();
 		}	
 	}
 }
