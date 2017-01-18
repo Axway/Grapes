@@ -1,7 +1,9 @@
 package org.axway.grapes.commons.datamodel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Delivery {
 
@@ -10,6 +12,7 @@ public class Delivery {
 	private String version;
 	private String jenkinsBuildUrl;
 	private String releaseDate;
+	private String moduleName;
 	private List<String> dependencies = new ArrayList<String>();
 
 	public Delivery() {
@@ -67,5 +70,11 @@ public class Delivery {
 	public void addDependency(String dependency)
 	{
 		this.dependencies.add(dependency);
+	}
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
 	}
 }

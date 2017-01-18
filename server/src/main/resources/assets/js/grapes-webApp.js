@@ -800,6 +800,18 @@ function getProductDeliveryOverview(delivery, product){
                 html += "</table>\n";
             }
             
+            if(delivery.moduleName != null){
+            	 var moduleName = delivery.moduleName;
+            	 html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
+                 html += "<thead><tr><th>Module Link</th></tr></thead>\n";
+                 html += "<tbody>\n";
+                 html += "<tr><td>";
+                 html += "<a href=\"" + getModuleLink(moduleName) + "\" target=\"_blank\">";
+                 html += moduleName + "</a></td></tr>";
+                 html += "</tbody>\n";
+                 html += "</table>\n";
+            }
+            
             html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
             html += "<thead><tr><th>Dependencies</th></tr></thead>\n";
             html += "<tbody>\n";
@@ -815,6 +827,13 @@ function getProductDeliveryOverview(delivery, product){
             $("#results").empty().append(html);
         }
     })
+}
+
+function getModuleLink(moduleName){
+	var lastIndexKey = moduleName.lastIndexOf(':');
+	var name = moduleName.substring(0, lastIndexKey);
+	var version = moduleName.substring(lastIndexKey + 1);	
+	return "/webapp?moduleName=" + name + "&moduleVersion=" + version;
 }
 
 function getBuildFromJenkinsURL(jenkinsBuildUrl){
