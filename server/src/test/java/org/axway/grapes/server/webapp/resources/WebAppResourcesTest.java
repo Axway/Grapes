@@ -35,8 +35,8 @@ public class WebAppResourcesTest extends ResourceTest {
     @Override
     protected void setUpResources() throws Exception {
         repositoryHandler = mock(RepositoryHandler.class);
-        serviceHandler = GrapesTestUtils.getServiceHandlerMock();
-        WebAppResource resource = new WebAppResource(repositoryHandler, serviceHandler, mock(GrapesServerConfig.class));
+//        serviceHandler = GrapesTestUtils.getServiceHandlerMock();
+        WebAppResource resource = new WebAppResource(repositoryHandler, mock(GrapesServerConfig.class));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);
     }
@@ -59,7 +59,7 @@ public class WebAppResourcesTest extends ResourceTest {
         final GrapesServerConfig config = mock(GrapesServerConfig.class);
         when(config.getCommunityConfiguration()).thenReturn(communityConfiguration);
         final RepositoryHandler repoHandler = mock(RepositoryHandler.class);
-        final WebAppResource resource = new WebAppResource(repoHandler, serviceHandler, config);
+        final WebAppResource resource = new WebAppResource(repoHandler, config);
 
         assertEquals("issueTracker", resource.getIssueTrackerUrl());
         assertEquals("onlineHelp", resource.getOnlineDocumentation());
@@ -69,7 +69,7 @@ public class WebAppResourcesTest extends ResourceTest {
     public void checkEmptyConfiguration(){
         final GrapesServerConfig config = mock(GrapesServerConfig.class);
         final RepositoryHandler repoHandler = mock(RepositoryHandler.class);
-        final WebAppResource resource = new WebAppResource(repoHandler, serviceHandler, config);
+        final WebAppResource resource = new WebAppResource(repoHandler, config);
 
         assertNull(resource.getIssueTrackerUrl());
         assertNull(resource.getOnlineDocumentation());

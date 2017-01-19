@@ -39,8 +39,8 @@ public class LicenseResource extends AbstractResource{
     
     private static final Logger LOG = LoggerFactory.getLogger(LicenseResource.class);
     
-    public LicenseResource(final RepositoryHandler repoHandler, final ServiceHandler serviceHandler, final GrapesServerConfig dmConfig){
-        super(repoHandler, serviceHandler, "LicenseResourceDocumentation.ftl", dmConfig);
+    public LicenseResource(final RepositoryHandler repoHandler, final GrapesServerConfig dmConfig){
+        super(repoHandler, "LicenseResourceDocumentation.ftl", dmConfig);
     }
     
     /**

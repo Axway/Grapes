@@ -46,10 +46,10 @@ public class ModuleResourceTest extends ResourceTest {
     @Override
     protected void setUpResources() throws Exception {
         repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
-        serviceHandler = GrapesTestUtils.getServiceHandlerMock();
+//        serviceHandler = GrapesTestUtils.getServiceHandlerMock();
         final GrapesServerConfig config =mock(GrapesServerConfig.class);
         
-        final ModuleResource resource = new ModuleResource(repositoryHandler, serviceHandler, config);
+        final ModuleResource resource = new ModuleResource(repositoryHandler, config);
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repositoryHandler), "test auth"));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);

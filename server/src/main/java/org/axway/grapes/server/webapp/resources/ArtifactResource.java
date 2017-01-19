@@ -10,14 +10,19 @@ import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.commons.datamodel.Organization;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.ArtifactHandler;
-import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
+import org.axway.grapes.server.core.services.email.GrapesEmailSender;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.axway.grapes.server.webapp.DataValidator;
 import org.axway.grapes.server.webapp.views.*;
+
+import static org.axway.grapes.server.config.Messages.*;
+import static org.axway.grapes.server.core.services.email.MessageKey.*;
+import static org.axway.grapes.server.core.services.email.TemplateReplacer.*;
+
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +35,7 @@ import javax.ws.rs.core.UriInfo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Artifact Resource
@@ -43,9 +49,11 @@ import java.util.List;
 public class ArtifactResource extends AbstractResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArtifactResource.class);
+    private GrapesEmailSender sender;
 
-    public ArtifactResource(final RepositoryHandler repoHandler, final ServiceHandler serviceHandler, final GrapesServerConfig dmConfig) {
-        super(repoHandler, serviceHandler, "ArtifactResourceDocumentation.ftl", dmConfig);
+    public ArtifactResource(final RepositoryHandler repoHandler, final GrapesServerConfig dmConfig) {
+        super(repoHandler, "ArtifactResourceDocumentation.ftl", dmConfig);
+        this.initGrapesSender(dmConfig.getGrapesEmailConfig().getProperties());
     }
 
     /**
@@ -226,88 +234,74 @@ public class ArtifactResource extends AbstractResource {
      * Return promotion status of an Artifact regarding artifactQuery from third party.
      * This method is call via POST <grapes_url>/artifact/isPromoted
      *
-     *
-     * @param artifactQuery ArtifactQuery
-     * @return Response An ArtifactPromotionStatus in JSON
+     * @param user The user name in the external system
+     * @param stage An integer value depending on the stage in the external system
+     * @param filename The name of the file needing validation
+     * @param sha256 The file checksum value
+     * @param type The type of the file as defined in the external system
+     * @param location The location of the binary file
+     * @return Response A response message in case the request is invalid or
+     * or an object containing the promotional status and additional message providing
+     * human readable information
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/isPromoted")
-    public Response isPromoted(@QueryParam("user") final String user, @QueryParam("stage") final int stage, @QueryParam("name") final String filename, @QueryParam("sha256") final String sha256, @QueryParam("type") final String type, @QueryParam("location") final String location){
-    	LOG.info("Got a get artifact promotion request");
+    public Response isPromoted(@QueryParam("user") final String user,
+                               @QueryParam("stage") final int stage,
+                               @QueryParam("name") final String filename,
+                               @QueryParam("sha256") final String sha256,
+                               @QueryParam("type") final String type,
+                               @QueryParam("location") final String location) {
+
+        LOG.info("Got a get artifact promotion request");
     	
     	// Validating request
-        final ArtifactQuery artifactQuery = new ArtifactQuery(user, stage, filename, sha256, type, location); 
-        DataValidator.validate(artifactQuery);
+        final ArtifactQuery query = new ArtifactQuery(user, stage, filename, sha256, type, location);
+        DataValidator.validate(query);
 
         // Logging request
-        LOG.info(String.format("Request is from user \"%s\" for file name \"%s\" and SHA256 \"%s\" ", user, filename, sha256));
+        LOG.info(String.format("Artifact validation request. Details \"%s\"", query.toString()));
         
         // Validating type of request file
-        List<String> allValidationTypes = getArtifactValidationTypes();
-        
-        if(!allValidationTypes.contains(type)){           
-            String message = getServiceHandler().getErrorMessage(DbArtifact.VALIDATION_TYPE_NOT_SUPPORTED_KEY);
-            return Response.ok(String.format(message, allValidationTypes.toString())).status(HttpStatus.UNPROCESSABLE_ENTITY_422).build();
+        GrapesServerConfig cfg = getConfig();
+        List<String> validatedTypes = cfg.getExternalValidatedTypes();
+
+        if(!validatedTypes.contains(type)) {
+            return Response.ok(buildArtifactNotSupportedResponse(validatedTypes)).status(HttpStatus.UNPROCESSABLE_ENTITY_422).build();
         }
 
-        // Todo: use another thread for email notification, not have the client wait until email is sent.
+        DbArtifact dbArtifact = getArtifactHandler().getArtifactUsingSHA256(sha256);
 
-        // Configuring email notification
-        String[] toMail = getConfig().getArtifactNotificationRecipients();
-        String[] ccMail = { };        
-        final String messageSubject = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOTIFICATION_EMAIL_SUBJECT_KEY, DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_SUBJECT);
+        final String jiraLink = "https://techweb.axway.com/jira";
+        //
+        // No such artifact was identified in the underlying data structure
+        //
+        if(dbArtifact == null) {
+            sender.send(cfg.getArtifactNotificationRecipients(),
+                    buildArtifactValidationSubject(filename),
+                    buildArtifactValidationBody(query, "N/A"));  // No Jenkins job if not artifact
 
-        DbArtifact dbArtifact = getArtifactHandler().getArtifactUsingSHA256(sha256);        
-        
-        // If no artifact found
-        if(dbArtifact == null){
-        	
-            // for publish stage = 0 and 1 for upload
-        	final String returnMessage = (stage == 0) ?
-                    getServiceHandler().getErrorMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_UPLOAD_KEY) :
-                    getServiceHandler().getErrorMessage(DbArtifact.QUERYING_NON_PUBLISHED_ARTIFACTS_ERROR_STAGE_PUBLISH_KEY);
-            final String jiraLink = "https://techweb.axway.com/jira";
-
-            // Sending notification email
-            final String subject = String.format(messageSubject, filename);
-            final String messageBody = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY_KEY, DbArtifact.DEFAULT_ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY);
-            final String fileLocation = (location != null && !location.isEmpty())? String.format("<br>Binary File location: %s", location): "";
-            final String message = String.format(messageBody, user, filename, sha256, fileLocation);            
-            String emailStatus = getServiceHandler().sendEmail(toMail, ccMail, subject, message);
-            LOG.info(emailStatus);
-
-
-            String finalReply = String.format(returnMessage, filename, sha256, jiraLink);
-            LOG.info("Final reply: " + finalReply);
-
-            return Response.ok(finalReply).status(HttpStatus.NOT_FOUND_404).build();
+            return Response.ok(buildArtifactNotPromotedResponse(query, jiraLink)).status(HttpStatus.NOT_FOUND_404).build();
         }
 
         ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
-        
+        promotionStatus.setPromoted(dbArtifact.isPromoted());
+
         // If artifact is promoted
         if(dbArtifact.isPromoted()){
-        	promotionStatus.setPromoted(true);
-            promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_IS_PROMOTED_MESSAGE_KEY, DbArtifact.DEFAULT_ARTIFACT_IS_PROMOTED_MESSAGE));
+            promotionStatus.setMessage(getMessage(ARTIFACT_IS_PROMOTED));
             return Response.ok(promotionStatus).build();
+        } else {
+            promotionStatus.setMessage(buildArtifactNotPromotedResponse(query, jiraLink));
+
+            String jenkinsJobInfo = getArtifactHandler().getModuleJenkinsJobInfo(dbArtifact);
+            sender.send(cfg.getArtifactNotificationRecipients(),
+                    buildArtifactValidationSubject(filename),
+                    buildArtifactValidationBody(query, jenkinsJobInfo.isEmpty() ? "N/A" : jenkinsJobInfo));
         }
 
-        // If artifact is not promoted
-        promotionStatus.setPromoted(false);
-        promotionStatus.setMessage(getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOT_PROMOTED_ERROR_MESSAGE_KEY));
-    	
-        String jenkinsJobInfo = getArtifactHandler().getModuleJenkinsJobInfo(dbArtifact);
-        jenkinsJobInfo = jenkinsJobInfo.isEmpty() ? "" : String.format("<br>Build job URL: %s", jenkinsJobInfo);
-        
-        // Sending notification email
-        final String subject = String.format(messageSubject, filename);
-        final String messageBody = getServiceHandler().getErrorMessage(DbArtifact.ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY_KEY, DbArtifact.DEFAULT_ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY);
-        final String message = String.format(messageBody, user, filename, sha256, jenkinsJobInfo);
-        String emailStatus = getServiceHandler().sendEmail(toMail, ccMail, subject , message);
-        LOG.info(emailStatus);
-    	   
-        return Response.ok(promotionStatus).build();       
+        return Response.ok(promotionStatus).build();
     }
 
     /**
@@ -454,7 +448,7 @@ public class ArtifactResource extends AbstractResource {
      * Returns the list of licenses used by an artifact.
      * This method is call via GET <grapes_url>/artifact/{gavc}/licenses
      *
-     * @param gavc
+     * @param gavc The artifact gavc identification
      * @return Response A list of dependencies in HTML or JSON
      */
     @GET
@@ -604,5 +598,14 @@ public class ArtifactResource extends AbstractResource {
         }
 
         return Response.ok(artifacts).build();
+    }
+
+    private void initGrapesSender(Properties properties) {
+        try {
+            this.sender = new GrapesEmailSender(properties);
+        } catch(Exception e) {
+            LOG.warn("Could not initialize the email sender. Details: " + e.getMessage(), e);
+            LOG.warn("No email notifications will be sent for artifact validation");
+        }
     }
 }

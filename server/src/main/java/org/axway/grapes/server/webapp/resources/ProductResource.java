@@ -36,8 +36,8 @@ public class ProductResource extends AbstractResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductResource.class);
 
-    public ProductResource(final RepositoryHandler repositoryHandler, final ServiceHandler serviceHandler, final GrapesServerConfig configuration) {
-        super(repositoryHandler, serviceHandler, "ProductResourceDocumentation.ftl", configuration);
+    public ProductResource(final RepositoryHandler repositoryHandler, final GrapesServerConfig configuration) {
+        super(repositoryHandler, "ProductResourceDocumentation.ftl", configuration);
     }
 
     /**

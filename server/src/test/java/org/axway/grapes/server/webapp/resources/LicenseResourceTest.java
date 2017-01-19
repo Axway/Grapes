@@ -43,9 +43,9 @@ public class LicenseResourceTest extends ResourceTest {
 		repositoryHandler = mock(RepositoryHandler.class);
 
         final RepositoryHandler repoHandler = GrapesTestUtils.getRepoHandlerMock();
-        final ServiceHandler serviceHandler = GrapesTestUtils.getServiceHandlerMock();
+//        final ServiceHandler serviceHandler = GrapesTestUtils.getServiceHandlerMock();
         
-        LicenseResource resource = new LicenseResource(repositoryHandler,serviceHandler , mock(GrapesServerConfig.class));
+        LicenseResource resource = new LicenseResource(repositoryHandler, mock(GrapesServerConfig.class));
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repoHandler), "test auth"));
 		addProvider(ViewMessageBodyWriter.class);
 		addResource(resource);	

@@ -13,9 +13,12 @@ import com.yammer.dropwizard.views.ViewMessageBodyWriter;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.GrapesTestUtils;
+import org.axway.grapes.server.config.GrapesEmailConfig;
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.config.Messages;
 import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
+import org.axway.grapes.server.core.services.email.MessageKey;
 import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.*;
@@ -23,8 +26,6 @@ import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -32,6 +33,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -42,14 +44,13 @@ import static org.mockito.Mockito.*;
 public class ArtifactResourceTest extends ResourceTest {
 
     private RepositoryHandler repositoryHandler;
-    private ServiceHandler serviceHandler;
+    private final String templatePath = GrapesTestUtils.class.getResource("all-messages-pretty-print.txt").getPath();
 
     @Override
     protected void setUpResources() throws Exception {
         repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
-        serviceHandler = GrapesTestUtils.getServiceHandlerMock();
-        
-        ArtifactResource resource = new ArtifactResource(repositoryHandler, serviceHandler, getGrapesConfig());
+
+        ArtifactResource resource = new ArtifactResource(repositoryHandler, getGrapesConfig());
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repositoryHandler), "test auth"));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);
@@ -57,11 +58,24 @@ public class ArtifactResourceTest extends ResourceTest {
     
     private GrapesServerConfig getGrapesConfig(){
         GrapesServerConfig config = mock(GrapesServerConfig.class);
-        List<String> validationTypes = new ArrayList<String>();
-        validationTypes.add("filetype1");
-        validationTypes.add("filetype2");
-        when(config.getArtifactValidationType()).thenReturn(validationTypes);
-        
+        List<String> validatedTypes = new ArrayList<String>();
+        validatedTypes.add("filetype1");
+        validatedTypes.add("filetype2");
+        when(config.getExternalValidatedTypes()).thenReturn(validatedTypes);
+        when(config.getArtifactNotificationRecipients()).thenReturn(new String[] {"toto@axway.com"});
+
+        GrapesEmailConfig emailCfgMock = mock(GrapesEmailConfig.class);
+        when(config.getGrapesEmailConfig()).thenReturn(emailCfgMock);
+
+        Properties p = new Properties();
+        p.setProperty("mail.smtp.host", "1");
+        p.setProperty("mail.smtp.user", "2");
+        p.setProperty("mail.smtp.password", "3");
+        p.setProperty("mail.smtp.ssl.trust", "4");
+        p.setProperty("mail.smtp.from", "5");
+
+        when(emailCfgMock.getProperties()).thenReturn(p);
+
         return config;
     }
 
@@ -203,10 +217,11 @@ public class ArtifactResourceTest extends ResourceTest {
 
         MultivaluedMap<String, String> params = makeParams(artifactQuery);
 
+        Messages.init(templatePath);
+
     	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
-        
         final ArtifactPromotionStatus promotionStatus = response.getEntity(ArtifactPromotionStatus.class);
         
         assertNotNull(response);
@@ -251,7 +266,7 @@ public class ArtifactResourceTest extends ResourceTest {
     }
 
     @Test
-    public void isPromotedTestNonPromotedArtifact(){
+    public void nonPromotedPublishTime(){
     	final DbArtifact artifact = new DbArtifact();
         artifact.setGroupId("groupId");
         artifact.setArtifactId("artifactId");
@@ -263,6 +278,7 @@ public class ArtifactResourceTest extends ResourceTest {
         ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1", "");
 
         MultivaluedMap<String, String> params = makeParams(artifactQuery);
+        Messages.init(templatePath);
 
     	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -271,11 +287,11 @@ public class ArtifactResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
         assertFalse(promotionStatus.isPromoted());
-        assertEquals("Artifact is not promoted", promotionStatus.getMessage());
+        assertEquals(Messages.getMessage(MessageKey.ARTIFACT_VALIDATION_NOT_PROMOTED), promotionStatus.getMessage());
     }
     
     @Test
-    public void isPromotedArtifactNotExistingStageUpload(){
+    public void notPromotedUploadTest(){
     	final String sha256 = "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c";
         when(repositoryHandler.getArtifactUsingSHA256(sha256)).thenReturn(null);
         
@@ -283,6 +299,8 @@ public class ArtifactResourceTest extends ResourceTest {
 
         MultivaluedMap<String, String> params = makeParams(artifactQuery);
 
+        Messages.init(templatePath);
+
     	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
@@ -290,86 +308,24 @@ public class ArtifactResourceTest extends ResourceTest {
         
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
-        assertEquals("You are uploading a non-published artefact.", returnMessage);
+        assertEquals(Messages.getMessage(MessageKey.ARTIFACT_VALIDATION_NOT_PROMOTED), returnMessage);
     }
-    
+
     @Test
-    public void isPromotedArtifactNotExistingStagePublish(){
-    	final String sha256 = "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c";
-        when(repositoryHandler.getArtifactUsingSHA256(sha256)).thenReturn(null);
+    public void artifactNotPromotedPublishTest() {
+    	// Returning the message for unpublished artifact at promote time
+        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(null);
         
-       
-        ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", sha256, "filetype1", "");
+        ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1", "");
 
         MultivaluedMap<String, String> params = makeParams(artifactQuery);
-
-    	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
+        Messages.init(templatePath);
+        WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-        final String returnMessage = response.getEntity(String.class);
-        
-        assertNotNull(response);
-        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
-        assertEquals("You are publishing a non-published artefact.", returnMessage);
-    }
-    
-    @Test
-    public void emailSubjectTest(){
-    	// mocking sending of mail. Returning as an Exception with message used for sending email. 2 is for Email Subject
-    	mockingSendingEmailToReturnArg(2);
 
-        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(null);
-        
-        ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1", "");
+        assertEquals(ClientResponse.Status.NOT_FOUND, response.getClientResponseStatus());
+        assertEquals(Messages.getMessage(MessageKey.ARTIFACT_VALIDATION_NOT_PROMOTED) , response.getEntity(String.class));
 
-    	Exception exception = null;
-    	
-    	try{
-            MultivaluedMap<String, String> params = makeParams(artifactQuery);
-
-        	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
-            ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            final String returnMessage = response.getEntity(String.class);
-        
-    	}catch(Exception e){
-    		exception = e;
-    	}
-    	
-    	StringBuilder expectedException = new StringBuilder("java.lang.Exception: ");
-    	expectedException.append(String.format(DbArtifact.DEFAULT_ARTIFACT_NOTIFICATION_EMAIL_SUBJECT, "File1"));
-    	
-    	assertNotNull(exception);
-    	// verifying message
-    	assertEquals(expectedException.toString(), exception.getMessage());        
-    }
-    
-    @Test
-    public void emailBodyTestForArtifactNotKnown(){
-    	// mocking sending of mail. Returning as an Exception with message used for sending email. 3 is for Email body
-    	mockingSendingEmailToReturnArg(3);
-
-        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(null);
-        
-        ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1", "");
-
-    	Exception exception = null;
-    	
-    	try{
-            MultivaluedMap<String, String> params = makeParams(artifactQuery);
-
-        	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
-            ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            final String returnMessage = response.getEntity(String.class);
-        
-    	}catch(Exception e){
-    		exception = e;
-    	}
-    	
-    	StringBuilder expectedException = new StringBuilder("java.lang.Exception: ");
-    	expectedException.append(String.format(DbArtifact.DEFAULT_ARTIFACT_NOT_KNOWN_NOTIFICATION_EMAIL_BODY, "User", "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", ""));
-    	
-    	assertNotNull(exception);
-    	// verifying message
-    	assertEquals(expectedException.toString(), exception.getMessage());        
     }
 
     private MultivaluedMap<String, String> makeParams(ArtifactQuery artifactQuery) {
@@ -384,56 +340,9 @@ public class ArtifactResourceTest extends ResourceTest {
 
 
     @Test
-    public void emailBodyTestForArtifactNotPromoted(){
-    	// mocking sending of mail. Returning as an Exception with message used for sending email. 3 is for Email body
-    	mockingSendingEmailToReturnArg(3);
-    	
-    	final DbArtifact artifact = new DbArtifact();
-        artifact.setGroupId("groupId");
-        artifact.setArtifactId("artifactId");
-        artifact.setVersion("version");
-        artifact.setClassifier("classifier");
-        artifact.setPromoted(false);
-        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(artifact);
-        
-        ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1", "");
-
-    	Exception exception = null;
-    	
-    	try{
-
-            MultivaluedMap<String, String> params = makeParams(artifactQuery);
-
-        	WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
-            ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-
-            final String returnMessage = response.getEntity(String.class);
-        
-    	}catch(Exception e){
-    		exception = e;
-    	}
-    	
-    	StringBuilder expectedException = new StringBuilder("java.lang.Exception: ");
-    	expectedException.append(String.format(DbArtifact.DEFAULT_ARTIFACT_NOT_PROMOTED_NOTIFICATION_EMAIL_BODY, "User", "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", ""));
-    	
-    	assertNotNull(exception);
-    	// verifying message
-    	assertEquals(expectedException.toString(), exception.getMessage());        
-    }
-    
-    private void mockingSendingEmailToReturnArg(final int index){
-        when(serviceHandler.sendEmail(any(String[].class), any(String[].class), any(String.class), any(String.class))).thenAnswer(new Answer() {
-        	   public Object answer(InvocationOnMock invocation) throws Throwable  {
-        		     Object[] args = invocation.getArguments();        		     
-        		     throw new Exception((String)args[index]);
-        		   }
-        		});
-    }
-    
-    @Test
     public void getValidationType(){
 
-        final List<String> results = getGrapesConfig().getArtifactValidationType();;
+        final List<String> results = getGrapesConfig().getExternalValidatedTypes();;
         
         assertFalse(results.isEmpty());
         assertFalse(!results.contains("filetype1"));
@@ -444,7 +353,7 @@ public class ArtifactResourceTest extends ResourceTest {
     public void checkDefaultValidationTypes(){
     	GrapesServerConfig config = new GrapesServerConfig();
     	
-    	List<String> allValidationTypes = config.getArtifactValidationType();
+    	List<String> allValidationTypes = config.getExternalValidatedTypes();
     	
     	assertNotNull(allValidationTypes);
     	assertEquals(8, allValidationTypes.size());

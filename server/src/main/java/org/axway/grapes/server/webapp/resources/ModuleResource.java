@@ -45,8 +45,8 @@ public class ModuleResource extends AbstractResource{
     private static final Logger LOG = LoggerFactory.getLogger(ModuleResource.class);
 
 
-    public ModuleResource(final RepositoryHandler repoHandler, final ServiceHandler serviceHandler, final GrapesServerConfig dmConfig) {
-        super(repoHandler, serviceHandler, "ModuleResourceDocumentation.ftl", dmConfig);
+    public ModuleResource(final RepositoryHandler repoHandler, final GrapesServerConfig dmConfig) {
+        super(repoHandler, "ModuleResourceDocumentation.ftl", dmConfig);
     }
 
     /**

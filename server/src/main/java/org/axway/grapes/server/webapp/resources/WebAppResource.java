@@ -17,7 +17,7 @@ import javax.ws.rs.Path;
 @Path(ServerAPI.WEBAPP_RESOURCE)
 public class WebAppResource extends AbstractResource{
 
-    public WebAppResource(final RepositoryHandler repoHandler, final ServiceHandler serviceHandler, final GrapesServerConfig config) {
-        super(repoHandler, serviceHandler, "WebApp.ftl", config);
+    public WebAppResource(final RepositoryHandler repoHandler, final GrapesServerConfig config) {
+        super(repoHandler, "WebApp.ftl", config);
     }
 }

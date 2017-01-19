@@ -33,8 +33,8 @@ public class OrganizationResource extends AbstractResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(OrganizationResource.class);
 
-    public OrganizationResource(final RepositoryHandler repositoryHandler, final ServiceHandler serviceHandler, final GrapesServerConfig configuration) {
-        super(repositoryHandler, serviceHandler, "OrganizationResourceDocumentation.ftl", configuration);
+    public OrganizationResource(final RepositoryHandler repositoryHandler, final GrapesServerConfig configuration) {
+        super(repositoryHandler, "OrganizationResourceDocumentation.ftl", configuration);
     }
 
 

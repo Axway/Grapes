@@ -28,8 +28,8 @@ public class RootResourceTest extends ResourceTest {
     @Override
     protected void setUpResources() throws Exception {
         repositoryHandler = mock(RepositoryHandler.class);
-        serviceHandler = GrapesTestUtils.getServiceHandlerMock();
-        RootResource resource = new RootResource(repositoryHandler, serviceHandler, mock(GrapesServerConfig.class));
+//        serviceHandler = GrapesTestUtils.getServiceHandlerMock();
+        RootResource resource = new RootResource(repositoryHandler, mock(GrapesServerConfig.class));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);
     }

@@ -9,8 +9,8 @@ import javax.ws.rs.Path;
 @Path("")
 public class RootResource extends AbstractResource {
 
-    public RootResource(final RepositoryHandler repoHandler, final ServiceHandler serviceHandler, final GrapesServerConfig config) {
-        super(repoHandler, serviceHandler, "RootResource.ftl", config);
+    public RootResource(final RepositoryHandler repoHandler, final GrapesServerConfig config) {
+        super(repoHandler, "RootResource.ftl", config);
     }
 
 }

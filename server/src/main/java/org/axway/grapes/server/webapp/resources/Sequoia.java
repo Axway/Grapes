@@ -32,9 +32,9 @@ public class Sequoia extends AbstractResource{
     private static final Logger LOG = LoggerFactory.getLogger(Sequoia.class);
 
 
-    public Sequoia(final RepositoryHandler repoHandler, final ServiceHandler serviceHandler, final GrapesServerConfig dmConfig) {
+    public Sequoia(final RepositoryHandler repoHandler, final GrapesServerConfig dmConfig) {
     	
-        super(repoHandler, serviceHandler, "Sequoia.ftl",dmConfig);
+        super(repoHandler, "Sequoia.ftl",dmConfig);
 
     }
 
