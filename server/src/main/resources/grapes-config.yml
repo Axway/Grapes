@@ -27,10 +27,12 @@ community:
   onlineHelp: https://github.com/Axway/Grapes/wiki
 
 # file containing important messages
-messageFile: messages.properties
+messagesBundle: ./messages.properties
 
 # user intended to receive notification from Grapes
 artifactNotificationRecipients: [user@axway.com]
+
+externalValidatedTypes: [program, installer, patch, servicepack, upgradepack, install, axwayjre, JREUpdateTool]
 
 mailing:
    host: smtp_host(mail.ptx.axway.int)

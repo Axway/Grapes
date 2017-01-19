@@ -1,0 +1,18 @@
+package org.axway.grapes.server.core.services.email;
+
+/**
+ * These are keys for messages
+ */
+public enum MessageKey {
+
+    //
+    // Responses to client response
+    //
+    ARTIFACT_VALIDATION_TYPE_NOT_SUPPORTED,
+    ARTIFACT_VALIDATION_NOT_PROMOTED,
+    ARTIFACT_IS_PROMOTED,
+
+    // Email notifications to support team
+    ARTIFACT_VALIDATION_EMAIL_SUBJECT,
+    ARTIFACT_VALIDATION_EMAIL_BODY
+}
