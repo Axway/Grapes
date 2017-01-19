@@ -4,7 +4,6 @@ import com.yammer.dropwizard.auth.Auth;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.Organization;
 import org.axway.grapes.server.config.GrapesServerConfig;
-import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbOrganization;

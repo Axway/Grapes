@@ -8,7 +8,6 @@ import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.ArtifactHandler;
-import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.core.options.filters.CorporateFilter;
 import org.axway.grapes.server.core.reports.DependencyReport;

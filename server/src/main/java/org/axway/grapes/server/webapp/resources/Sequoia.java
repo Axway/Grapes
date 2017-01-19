@@ -2,7 +2,6 @@ package org.axway.grapes.server.webapp.resources;
 
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.server.config.GrapesServerConfig;
-import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.graphs.AbstractGraph;
 import org.axway.grapes.server.core.graphs.TreeNode;
 import org.axway.grapes.server.core.options.FiltersHolder;

@@ -5,7 +5,6 @@ import com.yammer.dropwizard.jersey.params.BooleanParam;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.server.config.GrapesServerConfig;
-import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;

@@ -273,7 +273,9 @@ public class ArtifactResource extends AbstractResource {
 
         DbArtifact dbArtifact = getArtifactHandler().getArtifactUsingSHA256(sha256);
 
-        final String jiraLink = "https://techweb.axway.com/jira";
+
+        final String jiraLink = buildArtifactNotificationJiraLink(query);
+
         //
         // No such artifact was identified in the underlying data structure
         //
