@@ -12,23 +12,20 @@ public class ErrorMessages {
 
 private File messageFile;
 	
-	private Properties allMessages;
-	
-	public static final String DEFAULT_ERROR_MESSAGE = "Some Error Occured";
+    private Properties allMessages;
     private static final Logger LOG = LoggerFactory.getLogger(ErrorMessages.class);
+
+
+	public static final String DEFAULT_ERROR_MESSAGE = "Some Error Occurred";
 
 	public ErrorMessages(File messageFile){
 		this.messageFile = messageFile;
 		loadMessagesFromFile();
 	}
 	
-	public String get(final String key){
-		if(allMessages == null){
-			loadMessagesFromFile();
-		}
-
+	public String get(final String key) {
 		if(!allMessages.containsKey(key)) {
-			LOG.warn("Could not find message key " + key + ". Returning default message.");
+			LOG.warn("Could not find message for [" + key + "]. Returning default message.");
 		}
 
 		return allMessages.getProperty(key, DEFAULT_ERROR_MESSAGE);

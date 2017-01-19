@@ -5,7 +5,7 @@ import java.util.Properties;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.axway.grapes.server.core.services.GrapesEmail;
+import org.axway.grapes.server.core.services.email.GrapesEmailSender;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yammer.dropwizard.config.Configuration;
@@ -52,13 +52,13 @@ public class GrapesEmailConfig extends Configuration {
         }
 
         mailProperties = new Properties();
-        mailProperties.put(GrapesEmail.MAIL_SMTP_HOST, host);
-        mailProperties.put(GrapesEmail.MAIL_SMTP_PORT, port);
-        mailProperties.put(GrapesEmail.MAIL_SMTP_USER, user);
-        mailProperties.put(GrapesEmail.MAIL_SMTP_PASSWORD, pwd);
-        mailProperties.put(GrapesEmail.MAIL_SMTP_SSL_TRUST, sslTrust);
-        mailProperties.put(GrapesEmail.MAIL_SMTP_FROM, smtpFrom);
-        mailProperties.put(GrapesEmail.MAIL_DEBUG, debug);
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_HOST, host);
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_PORT, port);
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_USER, user);
+        mailProperties.put(GrapesEmailSender.MAIL_SPECIAL_FIELD, pwd);
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_SSL_TRUST, sslTrust);
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_FROM, smtpFrom);
+        mailProperties.put(GrapesEmailSender.MAIL_DEBUG, debug);
 
         return mailProperties;
     }

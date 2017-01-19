@@ -3,10 +3,8 @@ package org.axway.grapes.server.config;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yammer.dropwizard.config.Configuration;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -40,15 +38,15 @@ public class GrapesServerConfig extends Configuration{
     @NotNull
     @JsonProperty
     private final GrapesEmailConfig mailing = new GrapesEmailConfig();
-    
-    @Valid
+
+	@Valid
     @NotNull
     @JsonProperty
-    private File messageFile;
+    private String messagesBundle;
     
     @Valid
     @JsonProperty
-    private ArrayList<String> artifactValidationType;    
+    private ArrayList<String> externalValidatedTypes;
     
     @Valid
     @NotNull
@@ -69,23 +67,23 @@ public class GrapesServerConfig extends Configuration{
         return mailing;
     }
 	
-	public File getMessageFile(){
-		return messageFile;
+	public String getMsgBundle(){
+		return messagesBundle;
 	}
 
-	public List<String> getArtifactValidationType() {
-		if(artifactValidationType == null){
-			artifactValidationType = new ArrayList<String>();
-			artifactValidationType.add("program");
-			artifactValidationType.add("installer");
-			artifactValidationType.add("patch");
-			artifactValidationType.add("servicepack");
-			artifactValidationType.add("upgradepack");
-			artifactValidationType.add("install");
-			artifactValidationType.add("axwayjre");
-			artifactValidationType.add("JREUpdateTool");
+	public List<String> getExternalValidatedTypes() {
+		if(externalValidatedTypes == null){
+			externalValidatedTypes = new ArrayList<String>();
+			externalValidatedTypes.add("program");
+			externalValidatedTypes.add("installer");
+			externalValidatedTypes.add("patch");
+			externalValidatedTypes.add("servicepack");
+			externalValidatedTypes.add("upgradepack");
+			externalValidatedTypes.add("install");
+			externalValidatedTypes.add("axwayjre");
+			externalValidatedTypes.add("JREUpdateTool");
 		}
-		return artifactValidationType;
+		return externalValidatedTypes;
 	}	
 	
 	public String[] getArtifactNotificationRecipients() {
