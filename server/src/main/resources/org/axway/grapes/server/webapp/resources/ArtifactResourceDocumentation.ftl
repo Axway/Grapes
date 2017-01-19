@@ -209,8 +209,8 @@
                                     <tr>
                                         <td>stage</td>
                                         <td>integer (0 | 1)</td>
-                                        <td>Yes</td>
-                                        <td>The stage of processing in external system (0 - upload, 1 - publish to GA)</td>
+                                        <td>No</td>
+                                        <td>The stage of processing in external system (0 - upload, 1 - publish to GA). Default is 0.</td>
                                     </tr>
                                     <tr>
                                         <td>sha256</td>
@@ -229,7 +229,7 @@
                                         <td>String</td>
                                         <td>Yes</td>
                                         <td>Type of file. Supported types are : [ 
-                                						<#list getArtifactValidationTypes() as type>
+                                						<#list externalValidatedTypes() as type>
 						                                ${type}<#if type_has_next>, </#if>
 						                                </#list> ]
                                 		</td>

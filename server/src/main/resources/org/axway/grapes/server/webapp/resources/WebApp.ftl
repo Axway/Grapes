@@ -166,7 +166,7 @@
                     <div class="controls">
                         <input class="input-large" type="text" id="inputArtifactId" placeholder="artifact-name">
                     </div>
-                    <!-- add e.g. -->
+                    <!-- add buildArtifactValidationBody.g. -->
                     <label class="control-label" for="inputDownloadUrl">File Checksum*</label>
                     <div class="controls">
                     	<textarea class="input-large" rows="2" id="inputArtifactSHA" placeholder="SHA-256 code" spellcheck="false"></textarea>
