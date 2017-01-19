@@ -6,10 +6,8 @@ import com.sun.jersey.api.client.WebResource;
 import com.yammer.dropwizard.testing.ResourceTest;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
 import org.axway.grapes.commons.api.ServerAPI;
-import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.CommunityConfig;
 import org.axway.grapes.server.config.GrapesServerConfig;
-import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbModule;
 import org.eclipse.jetty.http.HttpStatus;
@@ -29,13 +27,10 @@ import static org.mockito.Mockito.when;
 public class WebAppResourcesTest extends ResourceTest {
 
     private RepositoryHandler repositoryHandler;
-    private ServiceHandler serviceHandler;
-
 
     @Override
     protected void setUpResources() throws Exception {
         repositoryHandler = mock(RepositoryHandler.class);
-//        serviceHandler = GrapesTestUtils.getServiceHandlerMock();
         WebAppResource resource = new WebAppResource(repositoryHandler, mock(GrapesServerConfig.class));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);

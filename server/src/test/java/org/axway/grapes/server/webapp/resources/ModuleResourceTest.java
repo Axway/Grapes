@@ -13,7 +13,6 @@ import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
-import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
@@ -41,12 +40,10 @@ import static org.mockito.Mockito.*;
 public class ModuleResourceTest extends ResourceTest {
 
     private RepositoryHandler repositoryHandler;
-    private ServiceHandler serviceHandler;
 
     @Override
     protected void setUpResources() throws Exception {
         repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
-//        serviceHandler = GrapesTestUtils.getServiceHandlerMock();
         final GrapesServerConfig config =mock(GrapesServerConfig.class);
         
         final ModuleResource resource = new ModuleResource(repositoryHandler, config);

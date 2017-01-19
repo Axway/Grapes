@@ -16,7 +16,6 @@ import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesEmailConfig;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.config.Messages;
-import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.core.services.email.MessageKey;
 import org.axway.grapes.server.db.ModelMapper;
@@ -36,7 +35,6 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;

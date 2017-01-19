@@ -11,7 +11,6 @@ import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.Delivery;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
-import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbProduct;
@@ -40,7 +39,6 @@ public class ProductResourceDeliveryTest extends ResourceTest {
 	private String jenkinsBuildUrl;
 	private boolean isOnlyPost = true;
     private RepositoryHandler repositoryHandler;
-    private ServiceHandler serviceHandler;
 
     @Override
     protected void setUpResources() throws Exception {
