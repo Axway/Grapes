@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.jira.create.JiraLinkGenerator;
+import org.axway.grapes.server.webapp.links.JiraLinkGenerator;
 
 public class JiraLinkGeneratorTest {
     @Test
