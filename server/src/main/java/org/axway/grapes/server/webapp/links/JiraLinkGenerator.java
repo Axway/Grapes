@@ -6,7 +6,17 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class JiraLinkGenerator {
-    public static final String JIRA_LINK = "https://techweb.axway.com/jira/secure/CreateIssueDetails!init.jspa?";
+
+    private String rootLink;
+
+    public JiraLinkGenerator(final String link) {
+        this.rootLink = link;
+
+        if(!link.endsWith("&")) {
+            this.rootLink += "&";
+        }
+
+    }
 
     private String urlEncodeUTF8(String s) {
         try {
@@ -18,7 +28,6 @@ public class JiraLinkGenerator {
 
     public String generateLink(final String issueSummary, final String issueDescription, final String issueReporter) {
         Map<String, Object> map = new LinkedHashMap<String, Object>();
-        map.putAll(getFixedFields());
         map.put("summary", issueSummary);
         map.put("description", issueDescription);
         map.put("reporter", issueReporter);
@@ -30,14 +39,14 @@ public class JiraLinkGenerator {
             sb.append(String.format("%s=%s", urlEncodeUTF8(entry.getKey()
                     .toString()), urlEncodeUTF8(entry.getValue().toString())));
         }
-        return String.format("%s%s", JIRA_LINK,sb.toString());
+        return String.format("%s%s", rootLink,sb.toString());
     }
     
-    public Map<String, Object> getFixedFields(){
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
-        map.put("pid", 13820);
-        map.put("issuetype", 3);
-        map.put("priority", 3);
-        return map;
-    }
+//    public Map<String, Object> getFixedFields(){
+//        Map<String, Object> map = new LinkedHashMap<String, Object>();
+//        map.put("pid", 13425);
+//        map.put("issuetype", 3);
+//        map.put("priority", 3);
+//        return map;
+//    }
 }

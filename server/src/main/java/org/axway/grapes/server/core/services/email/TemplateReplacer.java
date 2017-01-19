@@ -1,8 +1,11 @@
 package org.axway.grapes.server.core.services.email;
 
+import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.ArtifactQuery;
 import org.axway.grapes.server.config.Messages;
+import org.axway.grapes.server.webapp.links.JiraLinkGenerator;
 
+import static org.axway.grapes.server.config.Messages.getMessage;
 import static org.axway.grapes.server.core.services.email.MessageKey.*;
 
 import java.util.List;
@@ -44,5 +47,25 @@ public class TemplateReplacer {
                 q.getSha256(),
                 q.getLocation(),
                 jenkinsJobLink);
+    }
+
+    public static String buildArtifactNotificationJiraLink(final ArtifactQuery q) {
+
+        String jiraRoot = Messages.getMessage(ARTIFACT_VALIDATION_JIRA_ROOT);
+
+        if(jiraRoot.equals(ARTIFACT_VALIDATION_JIRA_ROOT.toString())) {
+            jiraRoot = "https://techweb.axway.com/jira/";
+        }
+
+        JiraLinkGenerator gen = new JiraLinkGenerator(jiraRoot);
+        return gen.generateLink(
+                String.format(getMessage(ARTIFACT_VALIDATION_TICKET_SUMMARY), q.getName()),
+                String.format(getMessage(ARTIFACT_VALIDATION_TICKET_BODY),
+                        q.getName(),
+                        q.getType(),
+                        q.getSha256(),
+                        q.getLocation()),
+                q.getUser());
+
     }
 }
