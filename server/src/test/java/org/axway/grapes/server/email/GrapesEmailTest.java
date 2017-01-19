@@ -2,75 +2,72 @@ package org.axway.grapes.server.email;
 
 import static org.junit.Assert.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
-import org.axway.grapes.server.core.services.GrapesEmail;
+import org.axway.grapes.server.core.services.email.GrapesEmailSender;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class GrapesEmailTest {
 
-    @Test
-    public void validPropertiesTest() {
-        Properties mailProperties = new Properties();
-        mailProperties.put(GrapesEmail.MAIL_SMTP_HOST, "a host");
-        mailProperties.put(GrapesEmail.MAIL_SMTP_PORT, "a port");
-        mailProperties.put(GrapesEmail.MAIL_SMTP_USER, "foo@email.com");
-        mailProperties.put(GrapesEmail.MAIL_SMTP_PASSWORD, "***");
-        mailProperties.put(GrapesEmail.MAIL_SMTP_SSL_TRUST, "a host");
-        mailProperties.put(GrapesEmail.MAIL_SMTP_FROM, "foo@email.com");
-        mailProperties.put(GrapesEmail.MAIL_DEBUG, true);
+    @Rule
+    public ExpectedException exc = ExpectedException.none();
 
-        Throwable e = null;
-        GrapesEmail grapesEmail = new GrapesEmail();
-        try {
-            grapesEmail.setup(mailProperties);
-        } catch (Throwable ex) {
-            e = ex;
-        }
-        Properties defaultProps = grapesEmail.getSmtpProperties();
+    @Test
+    public void validPropertiesTest() throws UnsupportedEncodingException {
+        Properties mailProperties = new Properties();
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_HOST, "a host");
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_PORT, "a port");
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_USER, "foo@email.com");
+        mailProperties.put(GrapesEmailSender.MAIL_SPECIAL_FIELD, "***");
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_SSL_TRUST, "a host");
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_FROM, "foo@email.com");
+        mailProperties.put(GrapesEmailSender.MAIL_DEBUG, true);
+
+        GrapesEmailSender grapesEmailSender = new GrapesEmailSender(mailProperties);
+
+        Properties defaultProps = grapesEmailSender.getSmtpProperties();
 
         // Checking if all default values are existing
-        assertTrue(defaultProps.containsKey(GrapesEmail.MAIL_SMTP_STARTTLS_ENABLE));
-        assertTrue(defaultProps.containsKey(GrapesEmail.MAIL_SMTP_AUTH));
-        assertTrue(defaultProps.containsKey(GrapesEmail.MAIL_SMTP_PORT));
-        assertTrue(defaultProps.containsKey(GrapesEmail.MAIL_SMTP_SSL_TRUST));
+        assertTrue(defaultProps.containsKey(GrapesEmailSender.MAIL_SMTP_STARTTLS_ENABLE));
+        assertTrue(defaultProps.containsKey(GrapesEmailSender.MAIL_SMTP_AUTH));
+        assertTrue(defaultProps.containsKey(GrapesEmailSender.MAIL_SMTP_PORT));
+        assertTrue(defaultProps.containsKey(GrapesEmailSender.MAIL_SMTP_SSL_TRUST));
+    }
 
-        // No exception should be thrown as user values are provided
-        assertNull(e);
+
+    @Test
+    public void incompleteSetupThrowsIllegalArgumentException() throws UnsupportedEncodingException {
+        Properties mailProperties = new Properties();
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_HOST, "a host");
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_PORT, "a port");
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_USER, "foo@email.com");
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_SSL_TRUST, "a host");
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_FROM, "foo@email.com");
+        mailProperties.put(GrapesEmailSender.MAIL_DEBUG, true);
+
+        exc.expect(IllegalArgumentException.class);
+        new GrapesEmailSender(mailProperties);
 
     }
 
     @Test
-    public void invalidPropertiesTest() {
+    public void testConfiguredValueOverridesDefault() throws UnsupportedEncodingException {
         Properties mailProperties = new Properties();
-        mailProperties.put(GrapesEmail.MAIL_SMTP_HOST, "a host");
-        mailProperties.put(GrapesEmail.MAIL_SMTP_PORT, "a port");
-        mailProperties.put(GrapesEmail.MAIL_SMTP_USER, "foo@email.com");
-        mailProperties.put(GrapesEmail.MAIL_SMTP_SSL_TRUST, "a host");
-        mailProperties.put(GrapesEmail.MAIL_SMTP_FROM, "foo@email.com");
-        mailProperties.put(GrapesEmail.MAIL_DEBUG, true);
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_HOST, "a host");
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_PORT, "8025");
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_USER, "foo@email.com");
+        mailProperties.put(GrapesEmailSender.MAIL_SPECIAL_FIELD, "***");
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_SSL_TRUST, "a host");
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_FROM, "foo@email.com");
+        mailProperties.put(GrapesEmailSender.MAIL_DEBUG, true);
 
-        GrapesEmail grapesEmail = new GrapesEmail();
-        assertFalse(grapesEmail.setup(mailProperties));
-    }
+        GrapesEmailSender grapesEmailSender = new GrapesEmailSender(mailProperties);
 
-    @Test
-    public void testConfiguredValueOverridesDefault() {
-        Properties mailProperties = new Properties();
-        mailProperties.put(GrapesEmail.MAIL_SMTP_HOST, "a host");
-        mailProperties.put(GrapesEmail.MAIL_SMTP_PORT, "8025");
-        mailProperties.put(GrapesEmail.MAIL_SMTP_USER, "foo@email.com");
-        mailProperties.put(GrapesEmail.MAIL_SMTP_PASSWORD, "***");
-        mailProperties.put(GrapesEmail.MAIL_SMTP_SSL_TRUST, "a host");
-        mailProperties.put(GrapesEmail.MAIL_SMTP_FROM, "foo@email.com");
-        mailProperties.put(GrapesEmail.MAIL_DEBUG, true);
-
-        GrapesEmail grapesEmail = new GrapesEmail();
-        assertTrue(grapesEmail.setup(mailProperties));
-
-        Properties properties = grapesEmail.getProperties();
-
+        Properties properties = grapesEmailSender.getProperties();
         assertNotNull(properties);
-        assertEquals("8025", properties.get(GrapesEmail.MAIL_SMTP_PORT));
+        assertEquals("8025", properties.get(GrapesEmailSender.MAIL_SMTP_PORT));
     }
 }

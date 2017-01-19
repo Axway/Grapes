@@ -1,5 +1,8 @@
 package org.axway.grapes.server.core.services.email;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Properties;
@@ -10,22 +13,20 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class GrapesEmailSender {
     private Properties properties;
     private InternetAddress from;
     private Session session;
 
-    static String NOT_ALL_PROPERTIES_ERROR = "Not all properties were provided";
-    static Logger logger = Logger.getLogger(GrapesEmailSender.class.getName());
+    static final String NOT_ALL_PROPERTIES_ERROR = "Not all properties were provided";
+    private static final Logger LOG = LoggerFactory.getLogger(GrapesEmailSender.class);
 
     public static final String MAIL_SMTP_HOST = "mail.smtp.host";
     public static final String MAIL_SMTP_PORT = "mail.smtp.port";
     public static final String MAIL_SMTP_SSL_TRUST = "mail.smtp.ssl.trust";
     public static final String MAIL_SMTP_USER = "mail.smtp.user";
-    public static final String MAIL_SMTP_PASSWORD = "mail.smtp.password";
+    public static final String MAIL_SPECIAL_FIELD = "mail.smtp.password";
     public static final String MAIL_SMTP_FROM = "mail.smtp.from";
     public static final String MAIL_DEBUG = "mail.debug";
     public static final String MAIL_SMTP_STARTTLS_ENABLE = "mail.smtp.starttls.enable";
@@ -37,7 +38,7 @@ public class GrapesEmailSender {
 
     private void setup(final Properties props) throws UnsupportedEncodingException {
         if (!isValid(props)) {
-            logger.log(Level.SEVERE, NOT_ALL_PROPERTIES_ERROR);
+            LOG.warn(NOT_ALL_PROPERTIES_ERROR);
             throw new IllegalArgumentException("Not all the mandatory fields were found. Mandatory: " + Arrays.toString(getRequiredPropertyNames()));
         }
 
@@ -45,23 +46,17 @@ public class GrapesEmailSender {
         this.properties.putAll(getSmtpProperties());
         this.properties.putAll(props);
 
-        logger.info("Setting up Grapes Email server.....");
+        LOG.info("Setting up Grapes Email server.....");
 
         // Get the default Session object.
         session = Session.getDefaultInstance(properties);
-        session.setDebug(Boolean.parseBoolean(properties.get(MAIL_DEBUG)
-                .toString()));
+
+        String debugStr = properties.getProperty(MAIL_DEBUG, "false");
+        session.setDebug(Boolean.parseBoolean(debugStr));
 
         from = new InternetAddress(
-                    properties.getProperty(MAIL_SMTP_USER),
-                    properties.getProperty(MAIL_SMTP_FROM));
-    }
-
-    public boolean isSetup() {
-        if (from == null) {
-            return false;
-        }
-        return true;
+                properties.getProperty(MAIL_SMTP_USER),
+                properties.getProperty(MAIL_SMTP_FROM));
     }
 
     private boolean isValid(final Properties properties) {
@@ -77,13 +72,27 @@ public class GrapesEmailSender {
     }
 
     private String[] getRequiredPropertyNames() {
-        return new String[] { MAIL_SMTP_HOST, MAIL_SMTP_USER,
-                MAIL_SMTP_PASSWORD, MAIL_SMTP_SSL_TRUST, MAIL_SMTP_FROM };
-
+        return new String[]{MAIL_SMTP_HOST, MAIL_SMTP_USER,
+                MAIL_SPECIAL_FIELD, MAIL_SMTP_SSL_TRUST, MAIL_SMTP_FROM};
     }
 
-    public void send(final String[] recipients, final String[] ccRecipients,
-                     final String subject, final String message, final String contentType) {
+    public void send(final String[] recipients, final String subject, final String message) {
+        send(recipients, subject, message, "text/html");
+    }
+
+    public void send(final String[] recipients,
+                     final String subject,
+                     final String message,
+                     final String contentType) {
+
+        if (null == recipients) {
+            throw new IllegalArgumentException("Cannot use null recipients");
+        }
+
+        if (!areThereRecipients(recipients)) {
+            LOG.warn("No address specified on neither recipients nor cc. No email was sent.");
+            return;
+        }
 
         Thread senderThread = new Thread(new Runnable() {
 
@@ -95,30 +104,31 @@ public class GrapesEmailSender {
                     msg.setFrom(from);
 
                     InternetAddress[] toAddresses = new InternetAddress[recipients.length];
+
                     for (int i = 0; i < recipients.length; i++) {
                         toAddresses[i] = new InternetAddress(recipients[i]);
                     }
+
                     msg.setRecipients(Message.RecipientType.TO, toAddresses);
-                    InternetAddress[] bccAddresses = new InternetAddress[ccRecipients.length];
-                    for (int j = 0; j < ccRecipients.length; j++) {
-                        bccAddresses[j] = new InternetAddress(ccRecipients[j]);
-                    }
-                    msg.setRecipients(Message.RecipientType.BCC, bccAddresses);
+
                     msg.setSubject(subject);
                     msg.setContent(message, contentType);
 
-                    logger.info("Sending mail.....");
+                    LOG.debug("Sending mail.....");
+
                     // Send message
                     Transport transport = session.getTransport("smtp");
                     transport.connect(properties.getProperty(MAIL_SMTP_HOST),
                             properties.getProperty(MAIL_SMTP_USER),
-                            properties.getProperty(MAIL_SMTP_PASSWORD));
+                            properties.getProperty(MAIL_SPECIAL_FIELD));
 
                     transport.sendMessage(msg, msg.getAllRecipients());
                     transport.close();
+
+                    LOG.info("Successfully notified " + getDestinationAddresses(recipients));
+
                 } catch (MessagingException ex) {
-                    logger.log(Level.SEVERE,
-                            "Exception while sending mail :" + ex.getMessage() + ex);
+                    LOG.warn("Exception while sending mail :" + ex.getMessage(), ex);
                 }
             }
         });
@@ -134,6 +144,14 @@ public class GrapesEmailSender {
         smtpProperties.put(MAIL_SMTP_PORT, "25");
         smtpProperties.put(MAIL_SMTP_SSL_TRUST, "mail.axway.int");
         return smtpProperties;
+    }
+
+    private boolean areThereRecipients(String[] recipients) {
+        return recipients.length > 0;
+    }
+
+    private String getDestinationAddresses(String[] recipients) {
+        return Arrays.toString(recipients);
     }
 
     public Properties getProperties() {
