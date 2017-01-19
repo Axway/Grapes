@@ -2,9 +2,7 @@ package org.axway.grapes.server;
 
 import com.google.common.collect.Lists;
 
-import org.axway.grapes.server.core.ServiceHandler;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.axway.grapes.server.db.datamodel.DbOrganization;
@@ -13,7 +11,6 @@ import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import static org.mockito.Matchers.any;
 
 public class GrapesTestUtils {
 
