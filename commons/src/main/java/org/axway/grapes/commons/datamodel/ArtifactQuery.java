@@ -8,14 +8,31 @@ public class ArtifactQuery {
 	private String sha256;
 	private String type;
 	private String location;
-	
+
+	@Override
+	public String toString() {
+		return "ArtifactQuery{" +
+				"user='" + user + '\'' +
+				", stage=" + stage +
+				", name='" + name + '\'' +
+				", sha256='" + sha256 + '\'' +
+				", type='" + type + '\'' +
+				", location='" + location + '\'' +
+				'}';
+	}
+
 	public ArtifactQuery(String user, int stage, String name, String sha256, String type, String location) {
 		this.user = user;
 		this.stage = stage;
 		this.name = name;
 		this.sha256 = sha256;
 		this.type = type;
+
 		this.location = location;
+
+		if(this.location == null || location.trim().isEmpty()) {
+			this.location = "N/A";
+		}
 	}
 	public String getUser() {
 		return user;
