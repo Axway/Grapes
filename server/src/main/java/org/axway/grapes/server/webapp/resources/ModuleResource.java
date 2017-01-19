@@ -466,7 +466,7 @@ public class ModuleResource extends AbstractResource{
 
             getModuleHandler().store(dbModule);
         } catch(Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception while posting a build information", e);
         }
         return Response.ok().status(Response.Status.CREATED).build();
     }

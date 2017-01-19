@@ -2,9 +2,10 @@ package org.axway.grapes.server.webapp.tasks;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.yammer.dropwizard.tasks.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.IllegalFormatCodePointException;
 
 /**
  * Get the content of the log file to the authorized user
@@ -18,6 +19,8 @@ import java.util.IllegalFormatCodePointException;
 public class LoggingTask extends Task {
 
 	private String filePath;
+    private static final Logger LOG = LoggerFactory.getLogger(LoggingTask.class);
+
 
 	public LoggingTask(final String filePath) {
 		super("getLogs");
@@ -35,6 +38,7 @@ public class LoggingTask extends Task {
         try {
             validate(filePath);
         } catch(IllegalArgumentException e) {
+            LOG.warn("Exception while executing logging task", e);
             printWriter.println(e.getMessage());
             return;
         }
@@ -54,7 +58,7 @@ public class LoggingTask extends Task {
 
 		} catch (FileNotFoundException e) {
 			printWriter.println("Cannot find the log file");
-			e.printStackTrace();
+            LOG.warn("File not found", e);
 		}
         finally {
             if(br != null) {
@@ -67,7 +71,7 @@ public class LoggingTask extends Task {
         }
     }
 
-    private void validate(String filePath) throws IllegalArgumentException {
+    private void validate(String filePath) {
         if(filePath == null)
             throw new IllegalArgumentException("Log file path cannot be null");
 

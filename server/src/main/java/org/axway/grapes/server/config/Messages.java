@@ -38,15 +38,24 @@ public class Messages {
 
     private static void loadFile(String filePath) {
         File f = new File(filePath);
+        FileInputStream stream = null;
 
         try {
+            stream = new FileInputStream(f);
             data.clear();
-            data.load(new FileInputStream(f));
+            data.load(stream);
         } catch(FileNotFoundException e) {
-            LOG.warn("File not found " + f.getAbsolutePath());
-        } catch(IOException ioExc) {
-            LOG.warn(ioExc.getMessage());
-            LOG.warn("Exception while loading " + f.getAbsolutePath());
+            LOG.warn("File not found " + f.getAbsolutePath(), e);
+        } catch(IOException e1) {
+            LOG.warn("Exception while loading " + f.getAbsolutePath(), e1);
+        } finally {
+            try {
+                if(stream != null) {
+                    stream.close();
+                }
+            } catch (IOException ioExc) {
+                LOG.warn("Exception while closing message bundle stream", ioExc);
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 package org.axway.grapes.server.core.services.email;
 
-import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.ArtifactQuery;
 import org.axway.grapes.server.config.Messages;
 import org.axway.grapes.server.webapp.links.JiraLinkGenerator;
@@ -16,7 +15,7 @@ import java.util.List;
  */
 public class TemplateReplacer {
 
-    private TemplateReplacer() {};
+    private TemplateReplacer() {}
 
     public static String buildArtifactNotSupportedResponse(final List<String> supported) {
         return String.format(Messages.getMessage(ARTIFACT_VALIDATION_TYPE_NOT_SUPPORTED),
