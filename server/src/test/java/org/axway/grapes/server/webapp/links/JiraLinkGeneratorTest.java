@@ -12,7 +12,7 @@ public class JiraLinkGeneratorTest {
     @Test
     public void validEncodedDataTest() {
         JiraLinkGenerator jiraLink=new JiraLinkGenerator();
-        String expectedString = "pid=13820&issuetype=3&priority=3&summary=Summary&description=Description&reporter=Toto";
+        String expectedString = JiraLinkGenerator.JIRA_LINK + "pid=13820&issuetype=3&priority=3&summary=Summary&description=Description&reporter=Toto";
         String generatedLink = jiraLink.generateLink("Summary", "Description", "Toto");
             assertEquals(expectedString,generatedLink);
     }
@@ -20,9 +20,9 @@ public class JiraLinkGeneratorTest {
     @Test
     public void validEncodedDataTestWithSpace() {
         JiraLinkGenerator jiraLink=new JiraLinkGenerator();
-        String expectedString = "pid=13820&issuetype=3&priority=3&summary=This+is+the+Summary&description=This+is+the+Description&reporter=Toto";
+        String expectedString = JiraLinkGenerator.JIRA_LINK + "pid=13820&issuetype=3&priority=3&summary=This+is+the+Summary&description=This+is+the+Description&reporter=Toto";
         String generatedLink = jiraLink.generateLink("This is the Summary", "This is the Description", "Toto");
-            assertEquals(expectedString,generatedLink);
+        assertEquals(expectedString,generatedLink);
     }
     
     @Test

@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class JiraLinkGenerator {
-    public static String jiraLink = "https://techweb.axway.com/jira/secure/CreateIssueDetails!init.jspa?";
+    public static final String JIRA_LINK = "https://techweb.axway.com/jira/secure/CreateIssueDetails!init.jspa?";
 
     private String urlEncodeUTF8(String s) {
         try {
@@ -30,7 +30,7 @@ public class JiraLinkGenerator {
             sb.append(String.format("%s=%s", urlEncodeUTF8(entry.getKey()
                     .toString()), urlEncodeUTF8(entry.getValue().toString())));
         }
-        return sb.toString();
+        return String.format("%s%s", JIRA_LINK,sb.toString());
     }
     
     public Map<String, Object> getFixedFields(){
