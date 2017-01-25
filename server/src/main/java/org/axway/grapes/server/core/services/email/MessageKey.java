@@ -10,6 +10,7 @@ public enum MessageKey {
     //
     ARTIFACT_VALIDATION_TYPE_NOT_SUPPORTED,
     ARTIFACT_VALIDATION_NOT_PROMOTED,
+    ARTIFACT_NOT_PROMOTED,
     ARTIFACT_IS_PROMOTED,
 
     // Email notifications to support team

@@ -272,8 +272,7 @@ public class ArtifactResource extends AbstractResource {
         }
 
         DbArtifact dbArtifact = getArtifactHandler().getArtifactUsingSHA256(sha256);
-
-
+                
         final String jiraLink = buildArtifactNotificationJiraLink(query);
 
         //
@@ -284,7 +283,7 @@ public class ArtifactResource extends AbstractResource {
                     buildArtifactValidationSubject(filename),
                     buildArtifactValidationBody(query, "N/A"));  // No Jenkins job if not artifact
 
-            return Response.ok(buildArtifactNotPromotedResponse(query, jiraLink)).status(HttpStatus.NOT_FOUND_404).build();
+            return Response.ok(buildArtifactNotFoundResponse(query, jiraLink)).status(HttpStatus.NOT_FOUND_404).build();
         }
 
         ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
@@ -295,9 +294,11 @@ public class ArtifactResource extends AbstractResource {
             promotionStatus.setMessage(getMessage(ARTIFACT_IS_PROMOTED));
             return Response.ok(promotionStatus).build();
         } else {
-            promotionStatus.setMessage(buildArtifactNotPromotedResponse(query, jiraLink));
 
             String jenkinsJobInfo = getArtifactHandler().getModuleJenkinsJobInfo(dbArtifact);
+            
+            promotionStatus.setMessage(buildArtifactNotPromotedResponse(query, jenkinsJobInfo.isEmpty() ? "<i>(Link to Jenkins job not found)</i>" : jenkinsJobInfo));
+
             sender.send(cfg.getArtifactNotificationRecipients(),
                     buildArtifactValidationSubject(filename),
                     buildArtifactValidationBody(query, jenkinsJobInfo.isEmpty() ? "N/A" : jenkinsJobInfo));

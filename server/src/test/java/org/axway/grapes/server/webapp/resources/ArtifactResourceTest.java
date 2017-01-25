@@ -285,7 +285,7 @@ public class ArtifactResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
         assertFalse(promotionStatus.isPromoted());
-        assertEquals(Messages.getMessage(MessageKey.ARTIFACT_VALIDATION_NOT_PROMOTED), promotionStatus.getMessage());
+        assertEquals(Messages.getMessage(MessageKey.ARTIFACT_NOT_PROMOTED), promotionStatus.getMessage());
     }
     
     @Test
