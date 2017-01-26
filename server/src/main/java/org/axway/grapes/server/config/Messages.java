@@ -4,10 +4,7 @@ import org.axway.grapes.server.core.services.email.MessageKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
 
 /**
@@ -15,7 +12,7 @@ import java.util.Properties;
  */
 public class Messages {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Messages.class);
+    private static final Logger log = LoggerFactory.getLogger(Messages.class);
     private static Properties data = new Properties();
 
     private Messages() {
@@ -32,7 +29,7 @@ public class Messages {
      * @return The associated value in case the key is found in the message bundle file. If
      * no such key is defined, the returned value would be the key itself.
      */
-    public static String getMessage(MessageKey key) {
+    public static String get(MessageKey key) {
         return data.getProperty(key.toString(), key.toString());
     }
 
@@ -45,16 +42,16 @@ public class Messages {
             data.clear();
             data.load(stream);
         } catch(FileNotFoundException e) {
-            LOG.warn("File not found " + f.getAbsolutePath(), e);
+            log.warn("File not found " + f.getAbsolutePath(), e);
         } catch(IOException e1) {
-            LOG.warn("Exception while loading " + f.getAbsolutePath(), e1);
+            log.warn("Exception while loading " + f.getAbsolutePath(), e1);
         } finally {
             try {
                 if(stream != null) {
                     stream.close();
                 }
             } catch (IOException ioExc) {
-                LOG.warn("Exception while closing message bundle stream", ioExc);
+                log.warn("Exception while closing message bundle stream", ioExc);
             }
         }
     }

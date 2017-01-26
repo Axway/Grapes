@@ -9,6 +9,8 @@ import org.axway.grapes.commons.datamodel.ArtifactQuery;
 import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.commons.datamodel.Organization;
 import org.axway.grapes.server.config.GrapesServerConfig;
+
+import org.axway.grapes.server.config.Messages;
 import org.axway.grapes.server.core.ArtifactHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.core.services.email.GrapesEmailSender;
@@ -19,7 +21,6 @@ import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.axway.grapes.server.webapp.DataValidator;
 import org.axway.grapes.server.webapp.views.*;
 
-import static org.axway.grapes.server.config.Messages.*;
 import static org.axway.grapes.server.core.services.email.MessageKey.*;
 import static org.axway.grapes.server.core.services.email.TemplateReplacer.*;
 
@@ -283,7 +284,7 @@ public class ArtifactResource extends AbstractResource {
                     buildArtifactValidationSubject(filename),
                     buildArtifactValidationBody(query, "N/A"));  // No Jenkins job if not artifact
 
-            return Response.ok(buildArtifactNotFoundResponse(query, jiraLink)).status(HttpStatus.NOT_FOUND_404).build();
+            return Response.ok(buildArtifactNotPromotedResponse(query, jiraLink)).status(HttpStatus.NOT_FOUND_404).build();
         }
 
         ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
@@ -291,7 +292,7 @@ public class ArtifactResource extends AbstractResource {
 
         // If artifact is promoted
         if(dbArtifact.isPromoted()){
-            promotionStatus.setMessage(getMessage(ARTIFACT_IS_PROMOTED));
+            promotionStatus.setMessage(Messages.get(ARTIFACT_IS_PROMOTED));
             return Response.ok(promotionStatus).build();
         } else {
 

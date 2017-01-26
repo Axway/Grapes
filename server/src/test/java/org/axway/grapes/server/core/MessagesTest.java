@@ -13,13 +13,13 @@ public class MessagesTest {
 	public void simpleMessageTest() {
 		final String templatePath = GrapesTestUtils.class.getResource("all-messages.txt").getPath();
 		init(templatePath);
-		assertEquals("msg_4", getMessage(ARTIFACT_IS_PROMOTED));
+		assertEquals("msg_4", get(ARTIFACT_IS_PROMOTED));
 	}
 
 	@Test
 	public void keyNotFoundTest() {
 		final String templatePath = GrapesTestUtils.class.getResource("messages-missing-subject.txt").getPath();
 		init(templatePath);
-		assertEquals(ARTIFACT_VALIDATION_EMAIL_SUBJECT.toString(), getMessage(ARTIFACT_VALIDATION_EMAIL_SUBJECT));
+		assertEquals(ARTIFACT_VALIDATION_EMAIL_SUBJECT.toString(), get(ARTIFACT_VALIDATION_EMAIL_SUBJECT));
 	}
 }

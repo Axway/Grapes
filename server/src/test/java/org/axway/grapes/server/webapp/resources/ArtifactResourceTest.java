@@ -285,7 +285,8 @@ public class ArtifactResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
         assertFalse(promotionStatus.isPromoted());
-        assertEquals(Messages.getMessage(MessageKey.ARTIFACT_NOT_PROMOTED), promotionStatus.getMessage());
+
+        assertEquals(Messages.get(MessageKey.ARTIFACT_NOT_PROMOTED), promotionStatus.getMessage());
     }
     
     @Test
@@ -306,7 +307,7 @@ public class ArtifactResourceTest extends ResourceTest {
         
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
-        assertEquals(Messages.getMessage(MessageKey.ARTIFACT_VALIDATION_NOT_PROMOTED), returnMessage);
+        assertEquals(Messages.get(MessageKey.ARTIFACT_NOT_PROMOTED), returnMessage);
     }
 
     @Test
@@ -322,7 +323,7 @@ public class ArtifactResourceTest extends ResourceTest {
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         assertEquals(ClientResponse.Status.NOT_FOUND, response.getClientResponseStatus());
-        assertEquals(Messages.getMessage(MessageKey.ARTIFACT_VALIDATION_NOT_PROMOTED) , response.getEntity(String.class));
+        assertEquals(Messages.get(MessageKey.ARTIFACT_NOT_PROMOTED) , response.getEntity(String.class));
 
     }
 
