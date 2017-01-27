@@ -45,12 +45,18 @@ public class ArtifactHandler {
     /**
      * If the Artifact does not exist, it will add it to the database. Nothing if it already exit.
      *
-     * @param dbArtifact DbArtifact
+     * @param fromClient DbArtifact
      */
-    public void storeIfNew(final DbArtifact dbArtifact) {
-        final DbArtifact currentDbArtifact = repositoryHandler.getArtifact(dbArtifact.getGavc());
-        if(currentDbArtifact == null || currentDbArtifact.takeUpdatesFrom(dbArtifact)){
-	        store(dbArtifact);
+    public void storeIfNew(final DbArtifact fromClient) {
+        final DbArtifact existing = repositoryHandler.getArtifact(fromClient.getGavc());
+
+        if(existing != null){
+            existing.setLicenses(fromClient.getLicenses());
+            store(existing);
+        }
+
+        if(existing == null){
+	        store(fromClient);
         }
     }
 

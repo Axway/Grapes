@@ -8,6 +8,7 @@ import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.axway.grapes.server.db.datamodel.DbModule;
 import org.axway.grapes.server.db.datamodel.DbOrganization;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
@@ -47,21 +49,6 @@ public class ArtifactHandlerTest {
         handler.storeIfNew(artifact);
 
         verify(repositoryHandler, times(1)).store(artifact);
-    }
-
-    @Test
-    public void checkStoreIfNewWithExistingArtifact(){
-        final DbArtifact artifact = new DbArtifact();
-        artifact.setArtifactId("test");
-        artifact.setVersion("1.0.0-SNAPSHOT");
-
-        final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
-
-        handler.storeIfNew(artifact);
-
-        verify(repositoryHandler, never()).store(artifact);
     }
 
     @Test
@@ -691,5 +678,53 @@ public class ArtifactHandlerTest {
         
         assertEquals("http://localhost:8080/test", jenkinsJobInfo);       
     }
+
+    @Test
+    public void licensesAreUpdatedToOriginalArtifact() {
+        final DbArtifact original = new DbArtifact();
+        original.setGroupId("toto");
+        original.setArtifactId("test-utils");
+        original.setVersion("1.0.0-SNAPSHOT");
+        original.setDoNotUse(true);
+        original.setPromoted(true);
+
+        // The new artifact has information related to licenses
+        final DbArtifact fromClient = new DbArtifact();
+        fromClient.setGroupId("toto");
+        fromClient.setArtifactId("test-utils");
+        fromClient.setVersion("1.0.0-SNAPSHOT");
+        fromClient.setLicenses(toList("a", "b"));
+        fromClient.setDoNotUse(false);
+        fromClient.setPromoted(false);
+
+        final RepositoryHandler repoHandlerMock = mock(RepositoryHandler.class);
+        when(repoHandlerMock.getArtifact(any(String.class))).thenReturn(original);
+
+        final ArtifactHandler sut = new ArtifactHandler(repoHandlerMock);
+
+        ArgumentCaptor<DbArtifact> captor = ArgumentCaptor.forClass(DbArtifact.class);
+        sut.storeIfNew(fromClient);
+
+        verify(repoHandlerMock).store(captor.capture());
+
+        final DbArtifact stored = captor.getValue();
+        assertTrue(stored.getDoNotUse());
+        assertTrue(stored.isPromoted());
+        assertEquals(2, stored.getLicenses().size());
+        assertTrue(stored.getLicenses().contains("a"));
+        assertTrue(stored.getLicenses().contains("b"));
+    }
+
+
+
+
+    private List<String> toList(String... args) {
+        List<String> result = new ArrayList<String>();
+        for(String item : args) {
+            result.add(item);
+        }
+        return result;
+    }
+
 
 }
