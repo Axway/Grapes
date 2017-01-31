@@ -273,18 +273,18 @@ public class ArtifactResource extends AbstractResource {
         }
 
         DbArtifact dbArtifact = getArtifactHandler().getArtifactUsingSHA256(sha256);
-                
-        final String jiraLink = buildArtifactNotificationJiraLink(query);
 
         //
         // No such artifact was identified in the underlying data structure
         //
         if(dbArtifact == null) {
+            final String jiraLink = buildArtifactNotificationJiraLink(query);
+
             sender.send(cfg.getArtifactNotificationRecipients(),
                     buildArtifactValidationSubject(filename),
                     buildArtifactValidationBody(query, "N/A"));  // No Jenkins job if not artifact
 
-            return Response.ok(buildArtifactNotPromotedResponse(query, jiraLink)).status(HttpStatus.NOT_FOUND_404).build();
+            return Response.ok(buildArtifactNotKnown(query, jiraLink)).status(HttpStatus.NOT_FOUND_404).build();
         }
 
         ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
@@ -292,17 +292,15 @@ public class ArtifactResource extends AbstractResource {
 
         // If artifact is promoted
         if(dbArtifact.isPromoted()){
-            promotionStatus.setMessage(Messages.get(ARTIFACT_IS_PROMOTED));
+            promotionStatus.setMessage(Messages.get(ARTIFACT_VALIDATION_IS_PROMOTED));
             return Response.ok(promotionStatus).build();
         } else {
 
             String jenkinsJobInfo = getArtifactHandler().getModuleJenkinsJobInfo(dbArtifact);
             
-            promotionStatus.setMessage(buildArtifactNotPromotedResponse(query, jenkinsJobInfo.isEmpty() ? "<i>(Link to Jenkins job not found)</i>" : jenkinsJobInfo));
+            promotionStatus.setMessage(buildArtifactNotPromotedYetResponse(query, jenkinsJobInfo.isEmpty() ? "<i>(Link to Jenkins job not found)</i>" : jenkinsJobInfo));
 
-            sender.send(cfg.getArtifactNotificationRecipients(),
-                    buildArtifactValidationSubject(filename),
-                    buildArtifactValidationBody(query, jenkinsJobInfo.isEmpty() ? "N/A" : jenkinsJobInfo));
+            // If someone just did not promote the artifact, don't spam the support with more emails
         }
 
         return Response.ok(promotionStatus).build();

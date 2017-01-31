@@ -13,7 +13,7 @@ public class MessagesTest {
 	public void simpleMessageTest() {
 		final String templatePath = GrapesTestUtils.class.getResource("all-messages.txt").getPath();
 		init(templatePath);
-		assertEquals("msg_4", get(ARTIFACT_IS_PROMOTED));
+		assertEquals("msg_4", get(ARTIFACT_VALIDATION_IS_PROMOTED));
 	}
 
 	@Test

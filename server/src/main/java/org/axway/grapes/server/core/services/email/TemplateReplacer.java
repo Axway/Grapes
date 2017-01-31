@@ -22,8 +22,20 @@ public class TemplateReplacer {
                 supported.toString());
     }
 
-    public static String buildArtifactNotPromotedResponse(final ArtifactQuery q, final String jenkinsJobInfo) {
-        String msg = Messages.get(ARTIFACT_NOT_PROMOTED);
+    public static String buildArtifactNotKnown(final ArtifactQuery q, final String jiraLink) {
+        String msg = Messages.get(ARTIFACT_VALIDATION_NOT_KNOWN);
+
+        return String.format(msg,
+                q.getStage() == 0 ? "uploading" : "promoting",
+                q.getName(),
+                q.getSha256(),
+                jiraLink);
+    }
+
+
+
+    public static String buildArtifactNotPromotedYetResponse(final ArtifactQuery q, final String jenkinsJobInfo) {
+        String msg = Messages.get(ARTIFACT_VALIDATION_NOT_PROMOTED_YET);
 
         return String.format(msg,
                 q.getStage() == 0 ? "uploading" : "promoting",

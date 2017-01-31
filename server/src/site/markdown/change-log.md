@@ -1,3 +1,7 @@
+1.5.0
+-------------
+* [ECDDEV-434](https://techweb.axway.com/jira/browse/ECDDEV-434) Allow external systems to check if an arbitrary artifact is promoted.
+
 1.4.4
 -------------
 * [ECDDEV-391](https://techweb.axway.com/jira/browse/ECDDEV-391) Allow module page to directly display details of a module

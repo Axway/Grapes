@@ -39,6 +39,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
+
 public class ArtifactResourceTest extends ResourceTest {
 
     private RepositoryHandler repositoryHandler;
@@ -286,11 +287,11 @@ public class ArtifactResourceTest extends ResourceTest {
         assertEquals(HttpStatus.OK_200, response.getStatus());
         assertFalse(promotionStatus.isPromoted());
 
-        assertEquals(Messages.get(MessageKey.ARTIFACT_NOT_PROMOTED), promotionStatus.getMessage());
+        assertEquals(Messages.get(MessageKey.ARTIFACT_VALIDATION_NOT_PROMOTED_YET), promotionStatus.getMessage());
     }
     
     @Test
-    public void notPromotedUploadTest(){
+    public void artifactNotKnownUploadTest(){
     	final String sha256 = "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c";
         when(repositoryHandler.getArtifactUsingSHA256(sha256)).thenReturn(null);
         
@@ -307,13 +308,17 @@ public class ArtifactResourceTest extends ResourceTest {
         
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
-        assertEquals(Messages.get(MessageKey.ARTIFACT_NOT_PROMOTED), returnMessage);
+        assertEquals(Messages.get(MessageKey.ARTIFACT_VALIDATION_NOT_KNOWN), returnMessage);
     }
 
     @Test
-    public void artifactNotPromotedPublishTest() {
+    public void artifactKnownButNotPromotedTest() {
     	// Returning the message for unpublished artifact at promote time
-        when(repositoryHandler.getArtifactUsingSHA256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c")).thenReturn(null);
+        DbArtifact a = new DbArtifact();
+        a.setPromoted(false);
+        a.setGroupId("com.axway.toto");
+        a.setSha256("6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c");
+        when(repositoryHandler.getArtifactUsingSHA256(a.getSha256())).thenReturn(a);
         
         ArtifactQuery artifactQuery = new ArtifactQuery("User", 1, "File1", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "filetype1", "");
 
@@ -322,8 +327,10 @@ public class ArtifactResourceTest extends ResourceTest {
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/isPromoted");
         ClientResponse response = resource.queryParams(params).type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
-        assertEquals(ClientResponse.Status.NOT_FOUND, response.getClientResponseStatus());
-        assertEquals(Messages.get(MessageKey.ARTIFACT_NOT_PROMOTED) , response.getEntity(String.class));
+        assertEquals(ClientResponse.Status.OK, response.getClientResponseStatus());
+
+        String entity = response.getEntity(String.class);
+        assertTrue(entity.contains(Messages.get(MessageKey.ARTIFACT_VALIDATION_NOT_PROMOTED_YET)));
 
     }
 
