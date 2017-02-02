@@ -29,7 +29,7 @@ public class DbArtifactTest {
         artifact.setVersion("1.0.0-SNAPSHOT");
         artifact.setClassifier("win");
         artifact.setType("jar");
-        assertEquals("GroupId: com.axway.test, ArtifactId: UidTest, Version: 1.0.0-SNAPSHOT", artifact.toString());
+        assertEquals("groupId: com.axway.test, artifactId: UidTest, version: 1.0.0-SNAPSHOT", artifact.toString());
 
     }
 

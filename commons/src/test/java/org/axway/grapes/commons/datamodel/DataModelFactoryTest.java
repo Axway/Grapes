@@ -1,11 +1,16 @@
 package org.axway.grapes.commons.datamodel;
 
 import org.axway.grapes.commons.exceptions.UnsupportedScopeException;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
 
 public class DataModelFactoryTest {
+
+    @Rule
+    public ExpectedException exc = ExpectedException.none();
 
     @Test
     public void checkModuleGeneration(){
@@ -54,17 +59,19 @@ public class DataModelFactoryTest {
 
 
     @Test
-    public void checkUnsuportedScope(){
+    public void checkUnsupportedScope() throws UnsupportedScopeException {
         Artifact artifact = DataModelFactory.createArtifact("com.my.company", "artifact", "1.0.0-SNAPSHOT", "win32", "jar", "jar");
 
-        Exception exception = null;
-
-        try {
-            DataModelFactory.createDependency(artifact, "wrongScope");
-        } catch (Exception e) {
-            exception = e;
-        }
-        assertNotNull(exception);
+        exc.expect(UnsupportedScopeException.class);
+        DataModelFactory.createDependency(artifact, "wrongScope");
+//        Exception exception = null;
+//
+//        try {
+//            DataModelFactory.createDependency(artifact, "wrongScope");
+//        } catch (Exception e) {
+//            exception = e;
+//        }
+//        assertNotNull(exception);
 
     }
 

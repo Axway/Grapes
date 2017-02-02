@@ -5,7 +5,6 @@ import org.axway.grapes.commons.datamodel.Artifact;
 import org.jongo.marshall.jackson.oid.Id;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -68,7 +67,7 @@ public class DbArtifact {
 	private String description = "";
 
     public static final String PROVIDER = "provider";
-    private String provider = "";
+    private String theProvider = "";
 
 	public void setDataModelVersion(final String newVersion){
         this.datamodelVersion = newVersion;
@@ -213,82 +212,24 @@ public class DbArtifact {
 	}
 
 	public String getProvider() {
-		return provider;
+		return theProvider;
 	}
 
 	public void setProvider(final String provider) {
-		this.provider = provider;
+		this.theProvider = provider;
 	}
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder();
-
-		sb.append("GroupId: ");
-		sb.append(groupId);
-		sb.append(", ArtifactId: ");
-		sb.append(artifactId);
-		sb.append(", Version: ");
-		sb.append(version);
-
-		return sb.toString();
+		return String.format("groupId: %s, artifactId: %s, version: %s", groupId, artifactId, version);
 	}
 
 	public static String generateGAVC(final String groupId, final String artifactId, final String version, final String classifier, final String extension) {
-		return new StringBuilder()
-				.append(groupId)
-				.append(":")
-				.append(artifactId)
-				.append(":")
-				.append(version)
-				.append(":")
-				.append(classifier)
-				.append(":")
-				.append(extension)
-				.toString();
+		return String.format("%s:%s:%s:%s:%s", groupId, artifactId, version, classifier, extension);
 	}
 
 	public static String generateGAVC(final Artifact artifact) {
 		return generateGAVC(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact.getClassifier(), artifact.getExtension());
-	}
-
-	/**
-	 *
-	 * Verifies if the db artifact can be updated
-	 *
-	 * @param dbArtifact
-	 * @return
-	 */
-	public boolean takeUpdatesFrom(final DbArtifact dbArtifact) {
-		return this.equals(dbArtifact) &&
-				// verify if they have the same type
-				!(StringUtils.equals(
-						StringUtils.trimToEmpty(this.getType()),
-						StringUtils.trimToEmpty(dbArtifact.getType()))
-						// verify if they have the same extension
-						&& StringUtils.equals(
-						StringUtils.trimToEmpty(this.getExtension()),
-						StringUtils.trimToEmpty(dbArtifact.getExtension()))
-						// verify if they have the same origin
-						&& StringUtils.equals(
-						StringUtils.trimToEmpty(this.getOrigin()),
-						StringUtils.trimToEmpty(dbArtifact.getOrigin()))
-						// verify if they have the same Download Url
-						&& StringUtils.equals(
-						StringUtils.trimToEmpty(this.getDownloadUrl()),
-						StringUtils.trimToEmpty(dbArtifact.getDownloadUrl()))
-						// verify if they have the same size
-						&& StringUtils.equals(
-						StringUtils.trimToEmpty(this.getSize()),
-						StringUtils.trimToEmpty(dbArtifact.getSize()))
-						// verify if they have the same provider
-						&& StringUtils.equals(
-						StringUtils.trimToEmpty(this.getProvider()),
-						StringUtils.trimToEmpty(dbArtifact.getProvider()))
-						// verify if they have the same Licenses
-						&& (this.getLicenses() != null && Arrays.equals(
-						this.getLicenses().toArray(),
-						dbArtifact.getLicenses().toArray())));
 	}
 
 	@Override

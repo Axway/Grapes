@@ -44,8 +44,7 @@ private File messageFile;
 			LOG.debug("Available keys: " + allMessages.keySet().toString());
 		} catch (IOException e) {
 			LOG.error("Message file is not loaded properly. For all errors, service would return only default messages", e);
-			e.printStackTrace();
-		}	
+		}
 	}
 }
 

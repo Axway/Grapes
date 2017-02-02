@@ -1,8 +1,9 @@
 package org.axway.grapes.commons.datamodel;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.axway.grapes.commons.exceptions.UnsupportedScopeException;
 
@@ -16,6 +17,7 @@ import org.axway.grapes.commons.exceptions.UnsupportedScopeException;
  */
 public final class DataModelFactory {
 
+	private static final Logger LOG = Logger.getLogger(DataModelFactory.class.getName());
 
 	// Utility class, though no constructor
 	private DataModelFactory() {}
@@ -159,6 +161,7 @@ public final class DataModelFactory {
             return createDependency(artifact, depScope);
         }
         catch(IllegalArgumentException e){
+			LOG.log(Level.SEVERE, String.format("Cannot identify scope for string %s. Details: %s", scope, e.getMessage()), e);
             throw new UnsupportedScopeException();
         }
 	}
