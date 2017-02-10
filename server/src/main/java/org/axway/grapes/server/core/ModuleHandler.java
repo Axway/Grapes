@@ -94,7 +94,7 @@ public class ModuleHandler {
         final DbModule module = getModule(moduleId);
         repositoryHandler.deleteModule(module.getId());
 
-        for(String gavc: DataUtils.getAllArtifacts(module)){
+        for(final String gavc: DataUtils.getAllArtifacts(module)){
             repositoryHandler.deleteArtifact(gavc);
         }
     }
@@ -112,7 +112,7 @@ public class ModuleHandler {
         final FiltersHolder filters = new FiltersHolder();
         final ArtifactHandler artifactHandler = new ArtifactHandler(repositoryHandler);
 
-        for(String gavc: DataUtils.getAllArtifacts(module)){
+        for(final String gavc: DataUtils.getAllArtifacts(module)){
             licenses.addAll(artifactHandler.getArtifactLicenses(gavc, filters));
         }
 
@@ -127,7 +127,7 @@ public class ModuleHandler {
     public void promoteModule(final String moduleId) {
         final DbModule module = getModule(moduleId);
 
-        for(String gavc: DataUtils.getAllArtifacts(module)){
+        for(final String gavc: DataUtils.getAllArtifacts(module)){
             final DbArtifact artifact = repositoryHandler.getArtifact(gavc);
             artifact.setPromoted(true);
             repositoryHandler.store(artifact);
@@ -159,7 +159,7 @@ public class ModuleHandler {
             filters.addFilter(new CorporateFilter(organization));
 
             // Checks if each dependency module has been promoted
-            for (Dependency dependency : depHandler.getModuleDependencies(moduleId, filters)) {
+            for (final Dependency dependency : depHandler.getModuleDependencies(moduleId, filters)) {
                 final DbModule depModule = repositoryHandler.getRootModuleOf(dependency.getTarget().getGavc());
                 if (depModule != null && !depModule.getId().equals(moduleId)) {
                     if (!depModule.isPromoted()) {
@@ -171,7 +171,7 @@ public class ModuleHandler {
 
             // Checks if the module has dependencies that shouldn't be used
             final List<String> treatedArtifacts = new ArrayList<String>();
-            for (DbDependency dependency : DataUtils.getAllDbDependencies(module)) {
+            for (final DbDependency dependency : DataUtils.getAllDbDependencies(module)) {
                 final DbArtifact artifactDep = repositoryHandler.getArtifact(dependency.getTarget());
 
                 if (artifactDep == null) {

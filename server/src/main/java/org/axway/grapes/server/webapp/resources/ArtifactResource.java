@@ -110,7 +110,7 @@ public class ArtifactResource extends AbstractResource {
         artifactHandler.store(dbArtifact);
 
         // Add the licenses
-        for(String license: artifact.getLicenses()){
+        for(final String license: artifact.getLicenses()){
             artifactHandler.addLicense(dbArtifact.getGavc(), license);
         }
 
@@ -265,14 +265,14 @@ public class ArtifactResource extends AbstractResource {
         LOG.info(String.format("Artifact validation request. Details \"%s\"", query.toString()));
         
         // Validating type of request file
-        GrapesServerConfig cfg = getConfig();
-        List<String> validatedTypes = cfg.getExternalValidatedTypes();
+        final GrapesServerConfig cfg = getConfig();
+        final List<String> validatedTypes = cfg.getExternalValidatedTypes();
 
         if(!validatedTypes.contains(type)) {
             return Response.ok(buildArtifactNotSupportedResponse(validatedTypes)).status(HttpStatus.UNPROCESSABLE_ENTITY_422).build();
         }
 
-        DbArtifact dbArtifact = getArtifactHandler().getArtifactUsingSHA256(sha256);
+        final DbArtifact dbArtifact = getArtifactHandler().getArtifactUsingSHA256(sha256);
 
         //
         // No such artifact was identified in the underlying data structure
@@ -287,7 +287,7 @@ public class ArtifactResource extends AbstractResource {
             return Response.ok(buildArtifactNotKnown(query, jiraLink)).status(HttpStatus.NOT_FOUND_404).build();
         }
 
-        ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
+        final ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
         promotionStatus.setPromoted(dbArtifact.isPromoted());
 
         // If artifact is promoted
@@ -296,7 +296,7 @@ public class ArtifactResource extends AbstractResource {
             return Response.ok(promotionStatus).build();
         } else {
 
-            String jenkinsJobInfo = getArtifactHandler().getModuleJenkinsJobInfo(dbArtifact);
+            final String jenkinsJobInfo = getArtifactHandler().getModuleJenkinsJobInfo(dbArtifact);
             
             promotionStatus.setMessage(buildArtifactNotPromotedYetResponse(query, jenkinsJobInfo.isEmpty() ? "<i>(Link to Jenkins job not found)</i>" : jenkinsJobInfo));
 
@@ -438,7 +438,7 @@ public class ArtifactResource extends AbstractResource {
         final List<DbModule> dbAncestors = getArtifactHandler().getAncestors(gavc, filters);
         final Artifact artifact = DataUtils.createArtifact(gavc);
 
-        for(DbModule dbAncestor : dbAncestors){
+        for(final DbModule dbAncestor : dbAncestors){
             final Module ancestor = getModelMapper().getModule(dbAncestor);
             view.addAncestor(ancestor, artifact);
         }
@@ -464,7 +464,7 @@ public class ArtifactResource extends AbstractResource {
         filters.init(uriInfo.getQueryParameters());
 
         final List<DbLicense> dbLicenses = getArtifactHandler().getArtifactLicenses(gavc,filters);
-        for(DbLicense license: dbLicenses){
+        for(final DbLicense license: dbLicenses){
             view.add(getModelMapper().getLicense(license));
         }
 
@@ -595,7 +595,7 @@ public class ArtifactResource extends AbstractResource {
         final List<Artifact> artifacts = new ArrayList<Artifact>();
 
         final List<DbArtifact> dbArtifacts = getArtifactHandler().getArtifacts(filters);
-        for(DbArtifact dbArtifact: dbArtifacts){
+        for(final DbArtifact dbArtifact: dbArtifacts){
             artifacts.add(getModelMapper().getArtifact(dbArtifact));
         }
 

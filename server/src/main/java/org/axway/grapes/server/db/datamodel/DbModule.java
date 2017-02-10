@@ -122,7 +122,7 @@ public class DbModule {
 	}
 
 	public void addArtifacts(final List<DbArtifact> artifacts) {
-		for(DbArtifact artifact: artifacts){
+		for(final DbArtifact artifact: artifacts){
 			addArtifact(artifact);
 		}
 	}	
@@ -222,7 +222,7 @@ public class DbModule {
         has.clear();
         uses.clear();
 
-        for(DbModule submodule: submodules){
+        for(final DbModule submodule: submodules){
             submodule.updateHasAndUse();
             has.addAll(submodule.has);
             uses.addAll(submodule.uses);
@@ -230,7 +230,7 @@ public class DbModule {
 
         has.addAll(artifacts);
 
-        for(DbDependency dependency: dependencies){
+        for(final DbDependency dependency: dependencies){
             uses.add(dependency.getTarget());
         }
 

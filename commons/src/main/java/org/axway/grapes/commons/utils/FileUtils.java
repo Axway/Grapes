@@ -68,7 +68,9 @@ public final class FileUtils {
         } catch (IOException e) {
             throw new IOException("Failed to read file: " + file.getAbsolutePath(), e);
         } finally {
-            if (br != null){br.close();}
+            if (br != null) {
+                br.close();
+            }
         }
 
         return sb.toString();
@@ -110,13 +112,13 @@ public final class FileUtils {
             doneFOS = new FileOutputStream(touchedFile);
         }
         catch (FileNotFoundException e) {
-            // Handle error
+            throw new FileNotFoundException("Failed to the find file." + e);
         }
         finally {
             if(doneFOS != null){
                 doneFOS.close();
             }
-        }  
+        }
     }
 
 	public static String getFileChecksumSHA256(final File artifactFile) throws IOException{
@@ -127,9 +129,9 @@ public final class FileUtils {
 			throw new IOException(e);
 		}
 		
-    	FileInputStream fis = new FileInputStream(artifactFile);
+    	final FileInputStream fis = new FileInputStream(artifactFile);
 	    
-	    byte[] byteArray = new byte[1024];
+	    final byte[] byteArray = new byte[1024];
 	    int bytesCount = 0; 
 	    
 	    while ((bytesCount = fis.read(byteArray)) != -1) {
@@ -138,8 +140,8 @@ public final class FileUtils {
 	    
 	    fis.close();
 	   
-	    byte[] bytes = digest.digest();
-	    StringBuilder sb = new StringBuilder();
+	    final byte[] bytes = digest.digest();
+	    final StringBuilder sb = new StringBuilder();
 	    for(int countr=0; countr< bytes.length ;countr++){
 	        sb.append(Integer.toString((bytes[countr] & 0xff) + 0x100, 16).substring(1));
 	    }

@@ -136,12 +136,12 @@ public final class DataValidator {
         }
 
         // Check artifacts
-        for(Artifact artifact: DataUtils.getAllArtifacts(module)){
+        for(final Artifact artifact: DataUtils.getAllArtifacts(module)){
             validate(artifact);
         }
 
         // Check dependencies
-        for(Dependency dependency: DataUtils.getAllDependencies(module)){
+        for(final Dependency dependency: DataUtils.getAllDependencies(module)){
             validate(dependency.getTarget());
         }
     }
@@ -168,7 +168,7 @@ public final class DataValidator {
      * @throws WebApplicationException if the data is corrupted
      */
     public static void validate(final ArtifactQuery artifactQuery) {
-        Pattern invalidChars = Pattern.compile("[^A-Fa-f0-9]");
+        final Pattern invalidChars = Pattern.compile("[^A-Fa-f0-9]");
         if(artifactQuery.getUser() == null ||
         		artifactQuery.getUser().isEmpty()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)

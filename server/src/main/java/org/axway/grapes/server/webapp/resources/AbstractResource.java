@@ -252,11 +252,11 @@ public abstract class AbstractResource extends View {
      */
      public String getScopes() {
         final StringBuilder sb = new StringBuilder();
-        for (Scope scope : Scope.values()) {
+        for (final Scope scope : Scope.values()) {
             sb.append(scope);
             sb.append(", ");
         }
-        String scopes = sb.toString().trim();
+        final String scopes = sb.toString().trim();
         return scopes.substring(0, scopes.length() - 1);
     }
      /**

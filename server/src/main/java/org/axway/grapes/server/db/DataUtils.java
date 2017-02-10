@@ -32,7 +32,7 @@ public final class DataUtils {
     public static List<String> getAllArtifacts(final DbModule module) {
         final List<String> gavcs = module.getArtifacts();
 
-        for(DbModule submodule: module.getSubmodules()){
+        for(final DbModule submodule: module.getSubmodules()){
             gavcs.addAll(getAllArtifacts(submodule));
         }
 
@@ -49,7 +49,7 @@ public final class DataUtils {
         final Set<Artifact> artifacts = new HashSet<Artifact>();
         artifacts.addAll(module.getArtifacts());
 
-        for(Module submodule: module.getSubmodules()){
+        for(final Module submodule: module.getSubmodules()){
             artifacts.addAll(getAllArtifacts(submodule));
         }
 
@@ -66,7 +66,7 @@ public final class DataUtils {
         final Set<Dependency> dependencies = new HashSet<Dependency>();
         dependencies.addAll(module.getDependencies());
 
-        for(Module submodule: module.getSubmodules()){
+        for(final Module submodule: module.getSubmodules()){
             dependencies.addAll(getAllDependencies(submodule));
         }
 
@@ -83,7 +83,7 @@ public final class DataUtils {
         final List<DbDependency> dependencies = new ArrayList<DbDependency>();
         dependencies.addAll(module.getDependencies());
 
-        for(DbModule submodule: module.getSubmodules()){
+        for(final DbModule submodule: module.getSubmodules()){
             dependencies.addAll(getAllDbDependencies(submodule));
         }
 
@@ -217,7 +217,7 @@ public final class DataUtils {
         final List<DbModule> submodules = new ArrayList<DbModule>();
         submodules.addAll(module.getSubmodules());
 
-        for(DbModule submodule: module.getSubmodules()){
+        for(final DbModule submodule: module.getSubmodules()){
             submodules.addAll(getAllSubmodules(submodule));
         }
 

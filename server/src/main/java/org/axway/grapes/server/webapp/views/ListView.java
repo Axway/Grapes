@@ -33,7 +33,7 @@ public class ListView extends View{
 	}
 
 	public void addAll(final List<String> list) {
-        for(String element: list){
+        for(final String element: list){
             add(element);
         }
 	}

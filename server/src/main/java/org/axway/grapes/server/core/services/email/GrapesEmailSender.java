@@ -51,7 +51,7 @@ public class GrapesEmailSender {
         // Get the default Session object.
         session = Session.getDefaultInstance(properties);
 
-        String debugStr = properties.getProperty(MAIL_DEBUG, "false");
+        final String debugStr = properties.getProperty(MAIL_DEBUG, "false");
         session.setDebug(Boolean.parseBoolean(debugStr));
 
         from = new InternetAddress(
@@ -60,9 +60,9 @@ public class GrapesEmailSender {
     }
 
     private boolean isValid(final Properties properties) {
-        String[] requiredProperties = getRequiredPropertyNames();
+        final String[] requiredProperties = getRequiredPropertyNames();
 
-        for (String prop : requiredProperties) {
+        for (final String prop : requiredProperties) {
             if (!properties.containsKey(prop)) {
                 return false;
             }
@@ -138,7 +138,7 @@ public class GrapesEmailSender {
 
     // default values
     public Properties getSmtpProperties() {
-        Properties smtpProperties = new Properties();
+        final Properties smtpProperties = new Properties();
         smtpProperties.put(MAIL_SMTP_STARTTLS_ENABLE, "true");
         smtpProperties.put(MAIL_SMTP_AUTH, true);
         smtpProperties.put(MAIL_SMTP_PORT, "25");

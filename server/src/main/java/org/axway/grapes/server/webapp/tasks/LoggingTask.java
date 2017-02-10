@@ -72,17 +72,19 @@ public class LoggingTask extends Task {
     }
 
     private void validate(String filePath) {
-        if(filePath == null)
+        if(filePath == null){
             throw new IllegalArgumentException("Log file path cannot be null");
+        }
 
-        File f = new File(filePath);
+        final File f = new File(filePath);
 
         if(!f.exists()) {
             throw new IllegalArgumentException("Cannot find the log file");
         }
 
-        if(!f.canRead())
+        if(!f.canRead()){
             throw new IllegalArgumentException("Log file cannot be read");
+        }
     }
 
 }

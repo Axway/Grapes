@@ -70,7 +70,7 @@ public class GraphsHandler {
         graph.addElement(moduleElementId, module.getVersion(), depth == 0);
 
         if (filters.getDepthHandler().shouldGoDeeper(depth)) {
-            for (DbDependency dep : DataUtils.getAllDbDependencies(module)) {
+            for (final DbDependency dep : DataUtils.getAllDbDependencies(module)) {
                 if(filters.shouldBeInReport(dep)){
                     addDependencyToGraph(dep, graph, depth + 1, moduleElementId);
                 }
@@ -140,7 +140,7 @@ public class GraphsHandler {
         tree.setName(module.getName());
 
         // Add submodules
-        for (DbModule submodule : module.getSubmodules()) {
+        for (final DbModule submodule : module.getSubmodules()) {
             addModuleToTree(submodule, tree);
         }
 
@@ -159,7 +159,7 @@ public class GraphsHandler {
         tree.addChild(subTree);
 
         // Add SubsubModules
-        for (DbModule subsubmodule : module.getSubmodules()) {
+        for (final DbModule subsubmodule : module.getSubmodules()) {
             addModuleToTree(subsubmodule, subTree);
         }
     }

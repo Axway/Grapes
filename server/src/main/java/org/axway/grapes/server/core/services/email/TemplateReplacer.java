@@ -13,7 +13,7 @@ import java.util.List;
  * Utility class for creating strings out of configuration entries containing
  * string placeholders merged with actual values
  */
-public class TemplateReplacer {
+public final class TemplateReplacer {
 
     private TemplateReplacer() {}
 
@@ -23,7 +23,7 @@ public class TemplateReplacer {
     }
 
     public static String buildArtifactNotKnown(final ArtifactQuery q, final String jiraLink) {
-        String msg = Messages.get(ARTIFACT_VALIDATION_NOT_KNOWN);
+        final String msg = Messages.get(ARTIFACT_VALIDATION_NOT_KNOWN);
 
         return String.format(msg,
                 q.getStage() == 0 ? "uploading" : "promoting",
@@ -35,7 +35,7 @@ public class TemplateReplacer {
 
 
     public static String buildArtifactNotPromotedYetResponse(final ArtifactQuery q, final String jenkinsJobInfo) {
-        String msg = Messages.get(ARTIFACT_VALIDATION_NOT_PROMOTED_YET);
+        final String msg = Messages.get(ARTIFACT_VALIDATION_NOT_PROMOTED_YET);
 
         return String.format(msg,
                 q.getStage() == 0 ? "uploading" : "promoting",
@@ -68,7 +68,7 @@ public class TemplateReplacer {
             jiraRoot = "https://techweb.axway.com/jira/";
         }
 
-        JiraLinkGenerator gen = new JiraLinkGenerator(jiraRoot);
+        final JiraLinkGenerator gen = new JiraLinkGenerator(jiraRoot);
         return gen.generateLink(
                 String.format(get(ARTIFACT_VALIDATION_TICKET_SUMMARY), q.getName()),
                 String.format(get(ARTIFACT_VALIDATION_TICKET_BODY),

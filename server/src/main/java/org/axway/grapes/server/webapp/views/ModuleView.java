@@ -25,7 +25,7 @@ public class ModuleView  extends View{
         this.module = module;
         submodules = new HashMap<Module, Integer>();
 
-        for (Module submodule : module.getSubmodules()) {
+        for (final Module submodule : module.getSubmodules()) {
             addSubmodules(submodule, 1);
         }
 
@@ -33,7 +33,7 @@ public class ModuleView  extends View{
 
     private void addSubmodules(final Module submodule, final Integer depth) {
         submodules.put(submodule, depth);
-        for(Module subsubmodule: submodule.getSubmodules()){
+        for(final Module subsubmodule: submodule.getSubmodules()){
             addSubmodules(subsubmodule, depth + 1);
         }
     }

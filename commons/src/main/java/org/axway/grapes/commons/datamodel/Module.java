@@ -82,11 +82,11 @@ public class Module {
     public void setPromoted(final boolean promoted) {
         this.promoted = promoted;
 
-        for (Artifact artifact : artifacts) {
+        for (final Artifact artifact : artifacts) {
             artifact.setPromoted(promoted);
         }
 
-        for (Module suModule : submodules) {
+        for (final Module suModule : submodules) {
             suModule.setPromoted(promoted);
         }
     }
@@ -149,7 +149,7 @@ public class Module {
      * @param artifacts Listof Artifact
      */
     public void addAllArtifacts(final List<Artifact> artifacts) {
-        for (Artifact artifact : artifacts) {
+        for (final Artifact artifact : artifacts) {
             addArtifact(artifact);
         }
     }

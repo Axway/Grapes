@@ -128,7 +128,7 @@ public class OrganizationHandler {
             return getOrganization(dbModule.getOrganization());
         }
 
-        for(DbOrganization organization: repositoryHandler.getAllOrganizations()){
+        for(final DbOrganization organization: repositoryHandler.getAllOrganizations()){
             final CorporateFilter corporateFilter = new CorporateFilter(organization);
             if(corporateFilter.matches(dbModule)){
                 return organization;

@@ -50,7 +50,7 @@ public class FiltersHolder {
     public void addFilter(final Filter newFilter) {
         Filter toRemove = null;
 
-        for(Filter filter: filters){
+        for(final Filter filter: filters){
             if(filter.getClass().equals(newFilter.getClass())){
                 toRemove = filter;
             }
@@ -150,7 +150,7 @@ public class FiltersHolder {
 	}
 
     public boolean shouldBeInReport(final DbLicense license) {
-        for(Filter filter: filters){
+        for(final Filter filter: filters){
             if(!filter.filter(license)){
                 return false;
             }
@@ -197,7 +197,7 @@ public class FiltersHolder {
 	public Map<String, Object> getArtifactFieldsFilters() {
 		final Map<String, Object> params = new HashMap<String, Object>();
 
-        for(Filter filter: filters){
+        for(final Filter filter: filters){
             params.putAll(filter.artifactFilterFields());
         }
 
@@ -212,7 +212,7 @@ public class FiltersHolder {
     public Map<String, Object> getModuleFieldsFilters() {
         final Map<String, Object> params = new HashMap<String, Object>();
 
-        for(Filter filter: filters){
+        for(final Filter filter: filters){
             params.putAll(filter.moduleFilterFields());
         }
 

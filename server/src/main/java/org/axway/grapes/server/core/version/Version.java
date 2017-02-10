@@ -23,7 +23,7 @@ public class Version {
 		}
 		
 		try {
-			for(String digit: getDigits().split("\\.")){
+			for(final String digit: getDigits().split("\\.")){
 				Integer.parseInt(digit);
 			}
 			

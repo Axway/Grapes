@@ -100,7 +100,7 @@ public class DependencyListView extends View {
      * @param dependencies List<Dependency>
      */
     public void addAll(final List<Dependency> dependencies) {
-        for(Dependency dependency: dependencies){
+        for(final Dependency dependency: dependencies){
             addDependency(dependency);
         }
     }
@@ -123,12 +123,12 @@ public class DependencyListView extends View {
         final Table table = new Table(getHeaders());
 
         // Create row(s) per dependency
-        for(Dependency dependency: dependencies){
+        for(final Dependency dependency: dependencies){
             final List<String> licenseIds = dependency.getTarget().getLicenses();
 
             // A dependency can have many rows if it has many licenses
             if(!licenseIds.isEmpty()){
-                for(String licenseId: dependency.getTarget().getLicenses()){
+                for(final String licenseId: dependency.getTarget().getLicenses()){
                     final License license = getLicense(licenseId);
                     table.addRow(getDependencyCells(dependency, license));
                 }
@@ -264,7 +264,7 @@ public class DependencyListView extends View {
 
     private void setLicenses(final List<License> licenses) {
         licenseDictionary.clear();
-        for(License license: licenses){
+        for(final License license: licenses){
             licenseDictionary.put(license.getName(), license);
         }
     }

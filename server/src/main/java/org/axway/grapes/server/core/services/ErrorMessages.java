@@ -35,7 +35,7 @@ private File messageFile;
 		allMessages = new Properties();
 		try {
 			LOG.debug("Loading configuration messages from " + messageFile.getAbsolutePath());
-			InputStream input = new FileInputStream(messageFile.getAbsolutePath());
+			final InputStream input = new FileInputStream(messageFile.getAbsolutePath());
 
 			// load a properties file
 			allMessages.load(input);

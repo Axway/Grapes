@@ -55,7 +55,7 @@ public class DependencyReport extends View {
         final List<Artifact> targets = new ArrayList<Artifact>();
         final List<String> gavcs = new ArrayList<String>();
 
-        for(Dependency dependency: dependencies){
+        for(final Dependency dependency: dependencies){
             final String depGavc = DbArtifact.generateGAVC(dependency.getTarget());
             if(!gavcs.contains(depGavc)){
                 targets.add(dependency.getTarget());
@@ -71,7 +71,7 @@ public class DependencyReport extends View {
     public List<String> getVersions(final Artifact target){
         final List<String> versions = new ArrayList<String>();
 
-        for(Dependency dependency: dependencies){
+        for(final Dependency dependency: dependencies){
             final String depGavc = DbArtifact.generateGAVC(dependency.getTarget());
             if(depGavc.equals(DbArtifact.generateGAVC(target))
                     && !versions.contains(dependency.getTarget().getVersion())){
@@ -98,7 +98,7 @@ public class DependencyReport extends View {
 
         final List<String> versions = getVersions(artifact);
 
-        for(String version: versions){
+        for(final String version: versions){
 			nbEntries += getDependencies(artifact, version).size();
         }
 
@@ -109,7 +109,7 @@ public class DependencyReport extends View {
     public List<Dependency> getDependencies(final Artifact target, final String version) {
         final List<Dependency> sources = new ArrayList<Dependency>();
 
-        for(Dependency dependency: dependencies){
+        for(final Dependency dependency: dependencies){
             if(target.getGavc().equals(dependency.getTarget().getGavc()) &&
                     version.equals(dependency.getTarget().getVersion())){
                 sources.add(dependency);

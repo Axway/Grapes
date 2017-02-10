@@ -137,7 +137,7 @@ public final class Migration220 {
 
         newModule.setArtifacts(module.getArtifacts());
         newModule.setDependencies(module.getDependencies());
-        for(DbModule subModule: module.getSubmodules()){
+        for(final DbModule subModule: module.getSubmodules()){
             newModule.addSubmodule(copyModule(subModule));
         }
 
@@ -147,7 +147,7 @@ public final class Migration220 {
     private static List<String> getSubmoduleArtifacts(final DbModule newModule) {
         final List<String> submoduleArtifacts = new ArrayList<String>();
 
-        for(DbModule submodule: DataUtils.getAllSubmodules(newModule)){
+        for(final DbModule submodule: DataUtils.getAllSubmodules(newModule)){
             submoduleArtifacts.addAll(submodule.getArtifacts());
         }
 

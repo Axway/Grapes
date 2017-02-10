@@ -143,7 +143,7 @@ public class ModelMapper {
         artifact.setDownloadUrl(dbArtifact.getDownloadUrl());
         artifact.setProvider(dbArtifact.getProvider());
 
-        for(String licenseId: dbArtifact.getLicenses()){
+        for(final String licenseId: dbArtifact.getLicenses()){
             artifact.addLicense(licenseId);
         }
 
@@ -165,19 +165,19 @@ public class ModelMapper {
         dbModule.setSubmodule(module.isSubmodule());
 
         // Artifact
-        for(Artifact artifact: module.getArtifacts()){
+        for(final Artifact artifact: module.getArtifacts()){
             final DbArtifact dbArtifact = getDbArtifact(artifact);
             dbModule.addArtifact(dbArtifact);
         }
 
         // Dependencies
-        for(Dependency dependency : module.getDependencies()){
+        for(final Dependency dependency : module.getDependencies()){
             dbModule.addDependency(dependency.getTarget().getGavc(), dependency.getScope());
         }
 
         //SubModules
         final StringBuilder sb = new StringBuilder();
-        for(Module submodule: module.getSubmodules()){
+        for(final Module submodule: module.getSubmodules()){
             final DbModule dbSubmodule = getDbModule(submodule);
             dbModule.addSubmodule(dbSubmodule);
             sb.setLength(0);
@@ -198,14 +198,14 @@ public class ModelMapper {
         module.setSubmodule(dbModule.isSubmodule());
 
         //Artifacts
-        for(String gavc: dbModule.getArtifacts()){
+        for(final String gavc: dbModule.getArtifacts()){
             final DbArtifact dbArtifact = repositoryHandler.getArtifact(gavc);
             final Artifact artifact = getArtifact(dbArtifact);
             module.addArtifact(artifact);
         }
 
         //Dependencies
-        for(DbDependency dbDependency: dbModule.getDependencies()){
+        for(final DbDependency dbDependency: dbModule.getDependencies()){
             final Dependency dependency = getDependency(dbDependency, module.getName(), module.getVersion());
             dependency.setSourceName(module.getName());
             dependency.setSourceVersion(module.getVersion());
@@ -213,7 +213,7 @@ public class ModelMapper {
         }
 
         //Submodules
-        for(DbModule dbSubmodule: dbModule.getSubmodules()){
+        for(final DbModule dbSubmodule: dbModule.getSubmodules()){
             module.addSubmodule(getModule(dbSubmodule));
         }
 

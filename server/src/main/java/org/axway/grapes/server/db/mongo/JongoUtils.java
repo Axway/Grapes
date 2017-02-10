@@ -30,7 +30,7 @@ public final class JongoUtils {
 		boolean newEntry = false;
 		
 		sb.append("{");
-		for(Entry<String,Object> param: params.entrySet()){
+		for(final Entry<String,Object> param: params.entrySet()){
 			if(newEntry){
 				sb.append(", ");
 				newEntry = false;

@@ -41,7 +41,7 @@ public class LicenseListView extends View {
     }
 
     public void addAll(final List<License> licenses) {
-        for(License license: licenses){
+        for(final License license: licenses){
             add(license);
         }
     }
@@ -59,7 +59,7 @@ public class LicenseListView extends View {
         final Table table = new Table("Name", "Long Name", "URL", "Comment");
 
         // Create row(s) per dependency
-        for(License license: licenses){
+        for(final License license: licenses){
             table.addRow(license.getName(), license.getLongName(), license.getUrl(), license.getComments());
         }
 

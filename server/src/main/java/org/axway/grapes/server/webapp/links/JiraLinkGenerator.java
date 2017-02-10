@@ -27,12 +27,12 @@ public class JiraLinkGenerator {
     }
 
     public String generateLink(final String issueSummary, final String issueDescription, final String issueReporter) {
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        final Map<String, Object> map = new LinkedHashMap<String, Object>();
         map.put("summary", issueSummary);
         map.put("description", issueDescription);
         map.put("reporter", issueReporter);
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<?, ?> entry : map.entrySet()) {
+        final StringBuilder sb = new StringBuilder();
+        for (final Map.Entry<?, ?> entry : map.entrySet()) {
             if (sb.length() > 0) {
                 sb.append("&");
             }
@@ -41,12 +41,4 @@ public class JiraLinkGenerator {
         }
         return String.format("%s%s", rootLink,sb.toString());
     }
-    
-//    public Map<String, Object> getFixedFields(){
-//        Map<String, Object> map = new LinkedHashMap<String, Object>();
-//        map.put("pid", 13425);
-//        map.put("issuetype", 3);
-//        map.put("priority", 3);
-//        return map;
-//    }
 }

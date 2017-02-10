@@ -45,7 +45,7 @@ public class LicenseHandler {
     private void init(final List<DbLicense> licenses){
         licensesRegexp.clear();
 
-        for(DbLicense license: licenses){
+        for(final DbLicense license: licenses){
             if(license.getRegexp() == null ||
                     license.getRegexp().isEmpty()){
                 licensesRegexp.put(license.getName(), license);
@@ -106,7 +106,7 @@ public class LicenseHandler {
         final LicenseIdFilter licenseIdFilter = new LicenseIdFilter(name);
         filters.addFilter(licenseIdFilter);
 
-        for(DbArtifact artifact: repoHandler.getArtifacts(filters)){
+        for(final DbArtifact artifact: repoHandler.getArtifacts(filters)){
             repoHandler.removeLicenseFromArtifact(artifact, name);
         }
 
@@ -133,14 +133,14 @@ public class LicenseHandler {
      */
     public DbLicense resolve(final String licenseId){
 
-        for(String regexp : licensesRegexp.keySet()){
+        for(final String regexp : licensesRegexp.keySet()){
             try{
                 if(licenseId.matches(regexp)){
                     return licensesRegexp.get(regexp);
                 }
             }
             catch (PatternSyntaxException e){
-                LOG.error("Wrong pattern for the following license " + licensesRegexp.get(regexp).getName());
+                LOG.error("Wrong pattern for the following license " + licensesRegexp.get(regexp).getName(), e);
                 continue;
             }
         }
@@ -159,7 +159,7 @@ public class LicenseHandler {
     public List<License> getLicenses(){
         final ModelMapper modelMapper = new ModelMapper(repoHandler);
         final List<License> licenses = new ArrayList<License>();
-        for(DbLicense dbLicense: licensesRegexp.values()){
+        for(final DbLicense dbLicense: licensesRegexp.values()){
             licenses.add(modelMapper.getLicense(dbLicense));
         }
 

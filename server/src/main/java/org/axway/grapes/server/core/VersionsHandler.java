@@ -41,12 +41,11 @@ public class VersionsHandler {
             return currentVersion.equals(lastDevVersion) || currentVersion.equals(lastReleaseVersion);
         }
         catch (Exception e){
-            for(String version: versions){
+            for(final String version: versions){
                 if(version.compareTo(currentVersion) > 0){
                     return false;
                 }
             }
-
             return true;
         }
 
@@ -64,7 +63,7 @@ public class VersionsHandler {
     public String getLastRelease(final Collection<String> versions) throws NotHandledVersionException, IncomparableException {
         Version lastRelease = null;
 
-        for(String version: versions){
+        for(final String version: versions){
             final Version testedVersion = new Version(version);
 
             if(testedVersion.isRelease()){
@@ -96,7 +95,7 @@ public class VersionsHandler {
     public String getLastVersion(final Collection<String> versions) throws NotHandledVersionException, IncomparableException {
         Version lastVersion = null;
 
-        for(String version: versions){
+        for(final String version: versions){
             final Version testedVersion = new Version(version);
 
             if(lastVersion == null){

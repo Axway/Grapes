@@ -257,7 +257,7 @@ public class ArtifactHandler {
         final DbArtifact artifact = getArtifact(gavc);
         final List<DbLicense> licenses = new ArrayList<DbLicense>();
 
-        for(String name: artifact.getLicenses()){
+        for(final String name: artifact.getLicenses()){
             final DbLicense dbLicense = repositoryHandler.getLicense(name);
 
             // Here is a license to identify

@@ -66,7 +66,7 @@ public class DependencyHandler {
         }
 
         final List<Dependency> dependencies = new ArrayList<Dependency>();
-        for(DbDependency dbDependency: DataUtils.getAllDbDependencies(module)){
+        for(final DbDependency dbDependency: DataUtils.getAllDbDependencies(module)){
             if(filters.shouldBeInReport(dbDependency)){
                 final Dependency dependency = modelMapper.getDependency(dbDependency, module.getName(), module.getVersion());
                 dependencies.add(dependency);
@@ -95,7 +95,7 @@ public class DependencyHandler {
 
         final DependencyReport report = new DependencyReport(moduleId);
         final List<String> done = new ArrayList<String>();
-        for(DbModule submodule: DataUtils.getAllSubmodules(module)){
+        for(final DbModule submodule: DataUtils.getAllSubmodules(module)){
             done.add(submodule.getId());
         }
 
@@ -109,7 +109,7 @@ public class DependencyHandler {
             return;
         }
         done.add(module.getId());
-        for(DbDependency dependency: DataUtils.getAllDbDependencies(module)){
+        for(final DbDependency dependency: DataUtils.getAllDbDependencies(module)){
             addDependenciesToReport(report, dependency, filters, done, depth);
         }
     }
@@ -133,7 +133,7 @@ public class DependencyHandler {
             try{
                 lastRelease = versionHandler.getLastRelease(repositoryHandler.getArtifactVersions(artifact));
             }catch (Exception e){
-                LOG.info("Failed to find the latest artifact release version: " + artifact.getVersion());
+                LOG.info("Failed to find the latest artifact release version: " + artifact.getVersion(), e);
             }
 
             final Dependency dependency = DataModelFactory.createDependency(modelMapper.getArtifact(artifact), dbDependency.getScope());

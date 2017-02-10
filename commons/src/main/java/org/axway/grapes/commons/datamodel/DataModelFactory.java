@@ -219,7 +219,7 @@ public final class DataModelFactory {
 	}
 	public static ArtifactPromotionStatus createArtifactPromotionStatus(final Boolean promoted, final String message) throws IOException{
 		try{
-			ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
+			final ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();
 			promotionStatus.setPromoted(promoted);
 			promotionStatus.setMessage(message);
 			return promotionStatus;

@@ -77,7 +77,7 @@ public class PromotionReportView extends View {
             reports.add(this);
         }
 
-        for(PromotionReportView report: dependencyReports.values()){
+        for(final PromotionReportView report: dependencyReports.values()){
             if(!report.getDoNotUseArtifacts().isEmpty()){
                 reports.add(report);
             }
@@ -113,9 +113,9 @@ public class PromotionReportView extends View {
 
         /* Identify the mismatch versions */
         // Collect all the modules names and versions
-        for(PromotionReportView promotionReport: getAllDependencyReport()){
+        for(final PromotionReportView promotionReport: getAllDependencyReport()){
             final Module module = promotionReport.getRootModule();
-            List<String> versions = mismatchVersions.get(module.getName());
+            final List<String> versions = mismatchVersions.get(module.getName());
 
             if(versions == null){
                 mismatchVersions.put(module.getName(), Lists.newArrayList(module.getVersion()));
@@ -138,7 +138,7 @@ public class PromotionReportView extends View {
 
     private List<PromotionReportView> getAllDependencyReport() {
         final List<PromotionReportView> reports = new ArrayList<PromotionReportView>();
-        for(PromotionReportView report: dependencyReports.values()){
+        for(final PromotionReportView report: dependencyReports.values()){
             reports.addAll(report.getAllDependencyReport());
         }
         reports.add(this);

@@ -26,9 +26,9 @@ public class ProductView extends View{
     }
 
     public List<String> getDeliveriesVersions() {
-    	List<String> deliveryVersion = new ArrayList<String>();
+    	final List<String> deliveryVersion = new ArrayList<String>();
     	
-    	for(Delivery delivery : getDeliveries()){
+    	for(final Delivery delivery : getDeliveries()){
     		deliveryVersion.add(delivery.getCommercialName() + " " + delivery.getCommercialVersion());
     	}
         return deliveryVersion;

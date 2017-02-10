@@ -4,9 +4,7 @@ import org.axway.grapes.commons.datamodel.Delivery;
 import org.jongo.marshall.jackson.oid.Id;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Database Product
@@ -73,7 +71,7 @@ public class DbProduct {
     }
 
     public Delivery getDelivery(String commercialName, String commercialVersion) {
-    	for(Delivery delivery : this.deliveries){
+    	for(final Delivery delivery : this.deliveries){
     		if(delivery.getCommercialName().equals(commercialName) && delivery.getCommercialVersion().equals(commercialVersion)){
     			return delivery;
     		}
