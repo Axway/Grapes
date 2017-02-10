@@ -161,11 +161,9 @@ public class ModuleHandler {
             // Checks if each dependency module has been promoted
             for (final Dependency dependency : depHandler.getModuleDependencies(moduleId, filters)) {
                 final DbModule depModule = repositoryHandler.getRootModuleOf(dependency.getTarget().getGavc());
-                if (depModule != null && !depModule.getId().equals(moduleId)) {
-                    if (!depModule.isPromoted()) {
+                if (depModule != null && !depModule.getId().equals(moduleId) && !depModule.isPromoted()) {
                         report.addUnPromotedDependency(depModule.getId());
                         report.addDependencyPromotionReport(depModule.getId(), getPromotionReport(depModule.getId()));
-                    }
                 }
             }
 

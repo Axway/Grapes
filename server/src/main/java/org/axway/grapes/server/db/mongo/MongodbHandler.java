@@ -154,7 +154,7 @@ public class MongodbHandler implements RepositoryHandler {
                 .find().as(DbLicense.class);
 
         final List<String> licenseNames = new ArrayList<String>();
-        for(DbLicense dbLicense: dbLicenses){
+        for(final DbLicense dbLicense: dbLicenses){
             if(filters.shouldBeInReport(dbLicense)){
                 licenseNames.add(dbLicense.getName());
             }
@@ -203,7 +203,7 @@ public class MongodbHandler implements RepositoryHandler {
                 .find(JongoUtils.generateQuery(filters.getArtifactFieldsFilters()))
                 .as(DbArtifact.class);
 
-        for(DbArtifact dbArtifact: dbArtifacts){
+        for(final DbArtifact dbArtifact: dbArtifacts){
             artifacts.add(dbArtifact);
         }
         return artifacts;
@@ -255,7 +255,7 @@ public class MongodbHandler implements RepositoryHandler {
             // Important: merge existing license and new ones :
             //    * because an existing license could have been manually enforce by a user
             //    * because all Grapes clients are not to send license information
-            for(String license: dbArtifact.getLicenses()){
+            for(final String license: dbArtifact.getLicenses()){
                 artifact.addLicense(license);
             }
 
@@ -357,7 +357,7 @@ public class MongodbHandler implements RepositoryHandler {
                 .as(DbModule.class);
 
         final List<DbModule> ancestors = new ArrayList<DbModule>();
-        for(DbModule ancestor: results){
+        for(final DbModule ancestor: results){
             ancestors.add(ancestor);
         }
 
@@ -423,7 +423,7 @@ public class MongodbHandler implements RepositoryHandler {
                 .find(JongoUtils.generateQuery(filters.getModuleFieldsFilters()))
                 .as(DbModule.class);
 
-        for(DbModule dbModule: dbModules){
+        for(final DbModule dbModule: dbModules){
             modules.add(dbModule);
         }
         return modules;
@@ -467,7 +467,7 @@ public class MongodbHandler implements RepositoryHandler {
 
         // It may be a submodule...
         if(module != null && !module.getArtifacts().contains(gavc)){
-            for(DbModule submodule: DataUtils.getAllSubmodules(module)){
+            for(final DbModule submodule: DataUtils.getAllSubmodules(module)){
                 if(submodule.getArtifacts().contains(gavc)){
                     return submodule;
                 }

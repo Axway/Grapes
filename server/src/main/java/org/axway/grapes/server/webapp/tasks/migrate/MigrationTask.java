@@ -6,12 +6,14 @@ import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 import com.yammer.dropwizard.tasks.Task;
+
 import org.axway.grapes.server.config.DataBaseConfig;
 import org.axway.grapes.server.db.datamodel.DbCollections;
 import org.axway.grapes.server.db.datamodel.DbGrapesInfo;
 import org.jongo.Jongo;
 
 import java.io.PrintWriter;
+import java.net.UnknownHostException;
 
 public class MigrationTask extends Task{
 
@@ -41,7 +43,7 @@ public class MigrationTask extends Task{
     }
 
 
-    private Jongo initDBConnection() throws Exception {
+    private Jongo initDBConnection() throws UnknownHostException  {
         final ServerAddress address = new ServerAddress(config.getHost() , config.getPort());
         mongo = new MongoClient(address);
         final DB db = mongo.getDB(config.getDatastore());

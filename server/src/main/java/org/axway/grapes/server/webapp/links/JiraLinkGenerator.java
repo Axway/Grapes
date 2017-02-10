@@ -17,7 +17,7 @@ public class JiraLinkGenerator {
         }
 
     }
-
+    
     private String urlEncodeUTF8(String s) {
         try {
             return URLEncoder.encode(s, "UTF-8");
@@ -41,4 +41,5 @@ public class JiraLinkGenerator {
         }
         return String.format("%s%s", rootLink,sb.toString());
     }
+
 }

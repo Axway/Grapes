@@ -12,10 +12,12 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.PatternSyntaxException;
 
 /**
@@ -133,23 +135,20 @@ public class LicenseHandler {
      */
     public DbLicense resolve(final String licenseId){
 
-        for(final String regexp : licensesRegexp.keySet()){
+        for(final Entry<String, DbLicense> regexp  : licensesRegexp.entrySet()){
             try{
-                if(licenseId.matches(regexp)){
-                    return licensesRegexp.get(regexp);
+                if(licenseId.matches(regexp.getKey())){
+                    return regexp.getValue();
                 }
             }
             catch (PatternSyntaxException e){
-                LOG.error("Wrong pattern for the following license " + licensesRegexp.get(regexp).getName(), e);
+                LOG.error("Wrong pattern for the following license " + regexp.getValue().getName(), e);
                 continue;
             }
         }
-
         LOG.warn("No matching pattern for license " + licenseId);
         return null;
-
     }
-
 
     /**
      * Returns all the available license in client/server data model

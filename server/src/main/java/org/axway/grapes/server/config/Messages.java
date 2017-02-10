@@ -10,9 +10,9 @@ import java.util.Properties;
 /**
  * Utility class to retrieve properties in the configuration files.
  */
-public class Messages {
+public final class Messages {
 
-    private static final Logger log = LoggerFactory.getLogger(Messages.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Messages.class);
     private static Properties data = new Properties();
 
     private Messages() {
@@ -34,7 +34,7 @@ public class Messages {
     }
 
     private static void loadFile(String filePath) {
-        File f = new File(filePath);
+        final File f = new File(filePath);
         FileInputStream stream = null;
 
         try {
@@ -42,16 +42,16 @@ public class Messages {
             data.clear();
             data.load(stream);
         } catch(FileNotFoundException e) {
-            log.warn("File not found " + f.getAbsolutePath(), e);
+            LOG.warn("File not found " + f.getAbsolutePath(), e);
         } catch(IOException e1) {
-            log.warn("Exception while loading " + f.getAbsolutePath(), e1);
+            LOG.warn("Exception while loading " + f.getAbsolutePath(), e1);
         } finally {
             try {
                 if(stream != null) {
                     stream.close();
                 }
             } catch (IOException ioExc) {
-                log.warn("Exception while closing message bundle stream", ioExc);
+                LOG.warn("Exception while closing message bundle stream", ioExc);
             }
         }
     }

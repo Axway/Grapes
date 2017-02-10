@@ -333,12 +333,12 @@ public class ArtifactHandler {
      * @return List<DbArtifact>
      */
 	public String getModuleJenkinsJobInfo(final DbArtifact dbArtifact) {
-		DbModule module = getModule(dbArtifact);
+		final DbModule module = getModule(dbArtifact);
 		if(module == null){
 			return "";
 		}
 		
-		String jenkinsJobUrl = module.getBuildInfo().get("jenkins-job-url");
+		final String jenkinsJobUrl = module.getBuildInfo().get("jenkins-job-url");
 		
 		if(jenkinsJobUrl == null){
 			return "";			
