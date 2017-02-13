@@ -42,12 +42,12 @@ public final class Migration220 {
             while(oldModule != null){
                 final DbModule newModule = getNewModule(oldModule, printer);
 
-                if(newModule != null ){
-                    db.getCollection(DbCollections.DB_MODULES).update("{ _id : \""+oldModule.getId()+"\"}").with(newModule);
-                    migrated ++;
+                if(newModule == null ){
+                    printer.println("ERROR: migration error detected on module: " + oldModule.getId());
                 }
                 else{
-                    printer.println("ERROR: migration error detected on module: " + oldModule.getId());
+                    db.getCollection(DbCollections.DB_MODULES).update("{ _id : \""+oldModule.getId()+"\"}").with(newModule);
+                    migrated ++;
                 }
                 oldModule = query.as(DbModule.class);
             }

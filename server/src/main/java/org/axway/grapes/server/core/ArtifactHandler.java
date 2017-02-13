@@ -120,7 +120,7 @@ public class ArtifactHandler {
     }
 
     /**
-     * Returns a the last available version of an artifact
+     * Returns the last available version of an artifact
      *
      * @param gavc String
      * @return String
@@ -134,6 +134,7 @@ public class ArtifactHandler {
         } catch (Exception e) {
             // These versions cannot be compared
             // Let's use the Collection.max() method by default
+            LOG.info("The versions cannot be compared ", e);
             return Collections.max(versions);
         }
     }

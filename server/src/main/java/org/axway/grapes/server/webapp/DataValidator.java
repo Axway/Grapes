@@ -109,7 +109,7 @@ public final class DataValidator {
             }
             catch (PatternSyntaxException e){
                 throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                        .entity("License regexp does not compile!").build());
+                        .entity("License regexp does not compile! " + e).build());
             }
         }
     }

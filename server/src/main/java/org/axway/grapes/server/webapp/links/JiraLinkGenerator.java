@@ -18,7 +18,7 @@ public class JiraLinkGenerator {
 
     }
     
-    private String urlEncodeUTF8(String s) {
+    public String urlEncodeUTF8(String s) {
         try {
             return URLEncoder.encode(s, "UTF-8");
         } catch (UnsupportedEncodingException e) {

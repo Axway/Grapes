@@ -127,14 +127,14 @@ public class DependencyListView extends View {
             final List<String> licenseIds = dependency.getTarget().getLicenses();
 
             // A dependency can have many rows if it has many licenses
-            if(!licenseIds.isEmpty()){
+            if(licenseIds.isEmpty()){
+                table.addRow(getDependencyCells(dependency, DataModelFactory.createLicense("","","","","")));
+            }
+            else{
                 for(final String licenseId: dependency.getTarget().getLicenses()){
                     final License license = getLicense(licenseId);
                     table.addRow(getDependencyCells(dependency, license));
                 }
-            }
-            else{
-                table.addRow(getDependencyCells(dependency, DataModelFactory.createLicense("","","","","")));
             }
         }
 

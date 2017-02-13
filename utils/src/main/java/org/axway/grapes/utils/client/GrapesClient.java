@@ -234,7 +234,7 @@ public class GrapesClient {
     public List<Module> getModules(final Map<String, String> filters) throws GrapesCommunicationException {
         final Client client = getClient();
         WebResource resource = client.resource(serverURL).path(RequestUtils.getAllModulesPath());
-        for(Map.Entry<String,String> queryParam: filters.entrySet()){
+        for(final Map.Entry<String,String> queryParam: filters.entrySet()){
             resource = resource.queryParam(queryParam.getKey(), queryParam.getValue());
         }
 

@@ -5,6 +5,8 @@ import org.axway.grapes.server.core.version.NotHandledVersionException;
 import org.axway.grapes.server.core.version.Version;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.List;
 public class VersionsHandler {
 
     private final RepositoryHandler repoHandler;
+    private static final Logger LOG = LoggerFactory.getLogger(VersionsHandler.class);
 
     public VersionsHandler(final RepositoryHandler repoHandler) {
         this.repoHandler = repoHandler;
@@ -41,6 +44,7 @@ public class VersionsHandler {
             return currentVersion.equals(lastDevVersion) || currentVersion.equals(lastReleaseVersion);
         }
         catch (Exception e){
+            LOG.info("Some problem occured while fetching the Last version or Last release version" , e);
             for(final String version: versions){
                 if(version.compareTo(currentVersion) > 0){
                     return false;
