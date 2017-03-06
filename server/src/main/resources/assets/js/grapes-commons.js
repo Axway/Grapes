@@ -107,7 +107,7 @@ function loadModuleVersions(moduleName, moduleVersionSelect){
 		accept: {
 			json: 'application/json'
 		},
-		url: "/module/" + moduleName + "/versions",
+		url: "/module/" + encodeURIComponent(moduleName) + "/versions",
 		data: {},
 		dataType: "json",
 		success: function(data, textStatus) {
@@ -156,7 +156,7 @@ function loadArtifactVersions(artifactGroupId, artifactVersionSelectId){
 		accept: {
 			json: 'application/json'
 		},
-		url: "/artifact/all?groupId=" + artifactGroupId,
+		url: "/artifact/all?groupId=" + encodeURIComponent(artifactGroupId),
 		data: {},
 		dataType: "json",
 		success: function(data, textStatus) {
@@ -184,13 +184,13 @@ function loadArtifactVersions(artifactGroupId, artifactVersionSelectId){
 }
 
 function loadArtifactArtifactId(artifactGroupId, artifactVersion, artifactArtifactIdSelectId){
-    var treatedArtifactIds = "/"
+    var treatedArtifactIds = "/";
 	return $.ajax({
 		type: "GET",
 		accept: {
 			json: 'application/json'
 		},
-		url: "/artifact/all?groupId=" + artifactGroupId +"&version=" + artifactVersion,
+		url: "/artifact/all?groupId=" + encodeURIComponent(artifactGroupId) +"&version=" + artifactVersion,
 		data: {},
 		dataType: "json",
 		success: function(data, textStatus) {

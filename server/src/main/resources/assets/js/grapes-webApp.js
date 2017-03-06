@@ -857,7 +857,7 @@ function addDeliveryModuleAction(delivery, product){
             $.each(data, function(i, moduleNames) {
                 $.ajax({
                     type: "GET",
-                    url: "/module/all?name=" + moduleNames,
+                    url: "/module/all?name=" + encodeURIComponent(moduleNames),
                     data: {},
                     dataType: "json",
                     success: function(data, textStatus) {
@@ -1024,7 +1024,7 @@ function getModuleOverview(){
 
 	$.ajax({
             type: "GET",
-            url: "/module/"+ moduleName + "/" + moduleVersion ,
+            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -1051,7 +1051,7 @@ function getModuleDependencies(){
 
 	$.ajax({
             type: "GET",
-            url: "/module/"+ moduleName + "/" + moduleVersion + "/dependencies?scopeTest=true&scopeRuntime=true&showSources=false" ,
+            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/dependencies?scopeTest=true&scopeRuntime=true&showSources=false" ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -1078,7 +1078,7 @@ function getModuleThirdParty(){
 
 	$.ajax({
             type: "GET",
-            url: "/module/"+ moduleName + "/" + moduleVersion + "/dependencies?scopeTest=true&scopeRuntime=true&showThirdparty=true&showCorporate=false&showSources=false&showLicenses=true" ,
+            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/dependencies?scopeTest=true&scopeRuntime=true&showThirdparty=true&showCorporate=false&showSources=false&showLicenses=true" ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -1105,7 +1105,7 @@ function getModuleAncestors(){
 
 	$.ajax({
             type: "GET",
-            url: "/module/"+ moduleName + "/" + moduleVersion + "/ancestors" ,
+            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/ancestors" ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -1137,7 +1137,7 @@ function getModuleLicenses(){
 
 	$.ajax({
             type: "GET",
-            url: "/module/"+ moduleName + "/" + moduleVersion + "/dependencies?" + queryParams ,
+            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/dependencies?" + queryParams ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -1164,7 +1164,7 @@ function getModulePromotionReport(){
 
 	$.ajax({
             type: "GET",
-            url: "/module/"+ moduleName + "/" + moduleVersion + "/promotion/report?fullRecursive=true" ,
+            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/promotion/report?fullRecursive=true" ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -1183,7 +1183,7 @@ function getArtifactOverview(){
 
 	$.ajax({
             type: "GET",
-            url: "/artifact/"+ gavc,
+            url: "/artifact/" + encodeURIComponent(gavc),
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -1198,7 +1198,7 @@ function changeArtifactAction(){
 
 	$.ajax({
             type: "GET",
-            url: "/artifact/"+ gavc,
+            url: "/artifact/" + encodeURIComponent(gavc),
             data: {},
             dataType: "json",
             success: function(data, textStatus) {
@@ -1219,7 +1219,7 @@ function updateArtifact(){
     var downloadUrl = $('#artifactEdition').find('#inputDownloadUrl').val();
 	$.ajax({
             type: "POST",
-            url: "/artifact/"+ gavc + "/downloadurl?url="+ downloadUrl,
+            url: "/artifact/" + encodeURIComponent(gavc) + "/downloadurl?url="+ downloadUrl,
             data: {},
             dataType: "html",
             error: function(xhr, error){
@@ -1231,7 +1231,7 @@ function updateArtifact(){
     var provider = $('#artifactEdition').find('#inputProvider').val();
 	$.ajax({
             type: "POST",
-            url: "/artifact/"+ gavc + "/provider?provider="+ provider,
+            url: "/artifact/" + encodeURIComponent(gavc) + "/provider?provider="+ provider,
             data: {},
             dataType: "html",
             error: function(xhr, error){
@@ -1252,7 +1252,7 @@ function getArtifactAncestors(){
 
 	$.ajax({
             type: "GET",
-            url: "/artifact/"+ gavc + "/ancestors",
+            url: "/artifact/" + encodeURIComponent(gavc) + "/ancestors",
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -1273,7 +1273,7 @@ function doNotUseArtifact(){
 
 	$.ajax({
             type: "GET",
-            url: "/artifact/"+ gavc + "/donotuse",
+            url: "/artifact/" + encodeURIComponent(gavc) + "/donotuse",
             data: {},
             dataType: "html",
             success: function(donotUse, textStatus) {
@@ -1294,7 +1294,7 @@ function postDoNotUse(){
     var doNotUse = $("#doNotUseArtifactModal-text").text().indexOf("you want to flag") >= 0;
     $.ajax({
             type: "POST",
-            url: "/artifact/"+ gavc + "/donotuse?doNotUse=" + doNotUse,
+            url: "/artifact/" + encodeURIComponent(gavc) + "/donotuse?doNotUse=" + doNotUse,
             data: {},
             dataType: "html",
             error: function(xhr, error){
@@ -1319,7 +1319,7 @@ function getArtifactLicenses(){
     
 	$.ajax({
             type: "GET",
-            url: "/artifact/"+ gavc + "/licenses",
+            url: "/artifact/" + encodeURIComponent(gavc) + "/licenses",
             data: {},
             dataType: "json",
             success: function(data, textStatus) {
@@ -1398,7 +1398,7 @@ function addLicense(){
 
     $.ajax({
             type: "POST",
-            url: "/artifact/" + gavc + "/licenses?licenseId=" + licenseId ,
+            url: "/artifact/" + encodeURIComponent(gavc) + "/licenses?licenseId=" + licenseId ,
             data: {},
             dataType: "html",
             error: function(xhr, error){
@@ -1412,7 +1412,7 @@ function removeLicense(licenseId){
 
     $.ajax({
             type: "DELETE",
-            url: "/artifact/" + gavc + "/licenses?licenseId=" + licenseId ,
+            url: "/artifact/" + encodeURIComponent(gavc) + "/licenses?licenseId=" + licenseId ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -1756,7 +1756,7 @@ function loadTargetedModuleVersion(moduleName, mVersion){
 		accept: {
 				json: 'application/json'
 		},
-		url: "/module/" + moduleName + "/versions",
+		url: "/module/" + encodeURIComponent(moduleName) + "/versions",
 		data: {},
 		dataType: "json",
 		success: function(data, textStatus) {
