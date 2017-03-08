@@ -6,7 +6,9 @@ import org.axway.grapes.server.db.datamodel.*;
 /**
  * Model Mapper
  *
- * <p>Model mapper maps the client/server model and the database model.</p>
+ * <p>
+ * Model mapper maps the client/server model and the database model.
+ * </p>
  *
  * @author jdcoffre
  */
@@ -62,7 +64,6 @@ public class ModelMapper {
         return dbLicense;
     }
 
-
     /**
      * Transform a license from database model to client/server model
      *
@@ -70,20 +71,15 @@ public class ModelMapper {
      * @return License return a license in database model
      */
     public License getLicense(final DbLicense dbLicense) {
-        final License license = DataModelFactory.createLicense(dbLicense.getName(),
-                dbLicense.getLongName(),
-                  dbLicense.getComments(),
-                    dbLicense.getRegexp(),
-                dbLicense.getUrl());
+        final License license = DataModelFactory.createLicense(dbLicense.getName(), dbLicense.getLongName(),
+            dbLicense.getComments(), dbLicense.getRegexp(), dbLicense.getUrl());
 
-        if(dbLicense.isApproved() != null){
+        if (dbLicense.isApproved() != null) {
             license.setApproved(dbLicense.isApproved());
         }
 
-        if(license.getLongName().isEmpty() &&
-             license.getComments().isEmpty() &&
-               license.getUrl().isEmpty() &&
-                 license.getRegexp().isEmpty()){
+        if (license.getLongName().isEmpty() && license.getComments().isEmpty() && license.getUrl().isEmpty()
+            && license.getRegexp().isEmpty()) {
             license.setUnknown(true);
         }
 
@@ -126,15 +122,8 @@ public class ModelMapper {
      * @return Artifact return a license in database model
      */
     public Artifact getArtifact(final DbArtifact dbArtifact) {
-        final Artifact artifact = DataModelFactory.createArtifact(
-                dbArtifact.getGroupId(),
-                dbArtifact.getArtifactId(),
-                dbArtifact.getVersion(),
-                dbArtifact.getClassifier(),
-                dbArtifact.getType(),
-                dbArtifact.getExtension(),
-		        dbArtifact.getOrigin()
-        );
+        final Artifact artifact = DataModelFactory.createArtifact(dbArtifact.getGroupId(), dbArtifact.getArtifactId(),
+            dbArtifact.getVersion(), dbArtifact.getClassifier(), dbArtifact.getType(), dbArtifact.getExtension());
 
         artifact.setSha256(dbArtifact.getSha256());
         artifact.setDescription(dbArtifact.getDescription());
@@ -143,7 +132,7 @@ public class ModelMapper {
         artifact.setDownloadUrl(dbArtifact.getDownloadUrl());
         artifact.setProvider(dbArtifact.getProvider());
 
-        for(final String licenseId: dbArtifact.getLicenses()){
+        for (final String licenseId : dbArtifact.getLicenses()) {
             artifact.addLicense(licenseId);
         }
 
@@ -165,19 +154,19 @@ public class ModelMapper {
         dbModule.setSubmodule(module.isSubmodule());
 
         // Artifact
-        for(final Artifact artifact: module.getArtifacts()){
+        for (final Artifact artifact : module.getArtifacts()) {
             final DbArtifact dbArtifact = getDbArtifact(artifact);
             dbModule.addArtifact(dbArtifact);
         }
 
         // Dependencies
-        for(final Dependency dependency : module.getDependencies()){
+        for (final Dependency dependency : module.getDependencies()) {
             dbModule.addDependency(dependency.getTarget().getGavc(), dependency.getScope());
         }
 
-        //SubModules
+        // SubModules
         final StringBuilder sb = new StringBuilder();
-        for(final Module submodule: module.getSubmodules()){
+        for (final Module submodule : module.getSubmodules()) {
             final DbModule dbSubmodule = getDbModule(submodule);
             dbModule.addSubmodule(dbSubmodule);
             sb.setLength(0);
@@ -193,33 +182,36 @@ public class ModelMapper {
      * @return Module
      */
     public Module getModule(final DbModule dbModule) {
-        final Module module =DataModelFactory.createModule(dbModule.getName(), dbModule.getVersion());
+        final Module module = DataModelFactory.createModule(dbModule.getName(), dbModule.getVersion());
         module.setPromoted(dbModule.isPromoted());
         module.setSubmodule(dbModule.isSubmodule());
 
-        //Artifacts
-        for(final String gavc: dbModule.getArtifacts()){
+        // Artifacts
+        for (final String gavc : dbModule.getArtifacts()) {
+            // Artifacts
             final DbArtifact dbArtifact = repositoryHandler.getArtifact(gavc);
-            final Artifact artifact = getArtifact(dbArtifact);
-            module.addArtifact(artifact);
+            if (null != dbArtifact) {
+                final Artifact artifact = getArtifact(dbArtifact);
+                module.addArtifact(artifact);
+            }
         }
 
-        //Dependencies
-        for(final DbDependency dbDependency: dbModule.getDependencies()){
+        // Dependencies
+        for (final DbDependency dbDependency : dbModule.getDependencies()) {
+            // Dependencies
             final Dependency dependency = getDependency(dbDependency, module.getName(), module.getVersion());
             dependency.setSourceName(module.getName());
             dependency.setSourceVersion(module.getVersion());
             module.addDependency(dependency);
         }
 
-        //Submodules
-        for(final DbModule dbSubmodule: dbModule.getSubmodules()){
+        // Submodules
+        for (final DbModule dbSubmodule : dbModule.getSubmodules()) {
             module.addSubmodule(getModule(dbSubmodule));
         }
 
         return module;
     }
-
 
     /**
      * Transform a dependency from database model to client/server model
@@ -231,7 +223,7 @@ public class ModelMapper {
         final DbArtifact dbArtifact = repositoryHandler.getArtifact(dbDependency.getTarget());
         final Artifact artifact;
 
-        if(dbArtifact == null){
+        if (dbArtifact == null) {
             artifact = DataUtils.createArtifact(dbDependency.getTarget());
         } else {
             artifact = getArtifact(dbArtifact);
