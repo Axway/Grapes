@@ -131,6 +131,7 @@ public class ModelMapper {
         artifact.setSize(dbArtifact.getSize());
         artifact.setDownloadUrl(dbArtifact.getDownloadUrl());
         artifact.setProvider(dbArtifact.getProvider());
+        artifact.setOrigin(dbArtifact.getOrigin());
 
         for (final String licenseId : dbArtifact.getLicenses()) {
             artifact.addLicense(licenseId);
