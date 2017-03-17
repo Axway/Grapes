@@ -32,7 +32,7 @@ messagesBundle: ./messages.properties
 # user intended to receive notification from Grapes
 artifactNotificationRecipients: [user@axway.com]
 
-externalValidatedTypes: [program, installer, patch, servicepack, upgradepack, install, axwayjre, JREUpdateTool]
+externalValidatedTypes: [Program, Installer, Patch, ServicePack, UpgradePack, Installer, AxwayJRE, JREUpdateTool]
 
 mailing:
    host: smtp_host(mail.ptx.axway.int)
