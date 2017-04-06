@@ -193,7 +193,7 @@ public class ArtifactResource extends AbstractResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{gavc}" + ServerAPI.GET_LAST_VERSION)
     public Response getLastVersion(@PathParam("gavc") final String gavc){
-        LOG.info("Got a get artifact last version request.");
+        LOG.info(String.format("Got a get artifact last version request. [%s]", gavc));
 
         final String lastVersion = getArtifactHandler().getArtifactLastVersion(gavc);
 

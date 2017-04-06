@@ -38,20 +38,48 @@ public class VersionsHandler {
         final List<String> versions = repoHandler.getArtifactVersions(artifact);
         final String currentVersion = artifact.getVersion();
 
-        try{
-            final String lastDevVersion = getLastVersion(versions);
-            final String lastReleaseVersion = getLastRelease(versions);
-            return currentVersion.equals(lastDevVersion) || currentVersion.equals(lastReleaseVersion);
-        }
-        catch (Exception e){
-            LOG.info("Some problem occured while fetching the Last version or Last release version" , e);
+//        try{
+//            final String lastDevVersion = getLastVersion(versions);
+//            final String lastReleaseVersion = getLastRelease(versions);
+//            return currentVersion.equals(lastDevVersion) || currentVersion.equals(lastReleaseVersion);
+//        }
+//        catch (Exception e){
+//            LOG.info("Some problem occured while fetching the Last version or Last release version" , e);
+//            for(final String version: versions){
+//                if(version.compareTo(currentVersion) > 0){
+//                    return false;
+//                }
+//            }
+//            return true;
+//        }
+
+
+        final String lastDevVersion = getLastVersion(versions);
+        final String lastReleaseVersion = getLastRelease(versions);
+
+        if(lastDevVersion == null || lastReleaseVersion == null) {
+            // Plain Text comparison against version "strings"
             for(final String version: versions){
                 if(version.compareTo(currentVersion) > 0){
                     return false;
                 }
             }
             return true;
+        } else {
+            return currentVersion.equals(lastDevVersion) || currentVersion.equals(lastReleaseVersion);
         }
+
+
+//        catch (Exception e){
+//            LOG.info("Some problem occurred while fetching the Last version or Last release version" , e);
+//            for(final String version: versions){
+//                if(version.compareTo(currentVersion) > 0){
+//                    return false;
+//                }
+//            }
+//            return true;
+//        }
+
 
     }
 
@@ -64,21 +92,28 @@ public class VersionsHandler {
      * @throws NotHandledVersionException
      * @throws IncomparableException
      */
-    public String getLastRelease(final Collection<String> versions) throws NotHandledVersionException, IncomparableException {
+    public String getLastRelease(final Collection<String> versions) {
         Version lastRelease = null;
 
         for(final String version: versions){
-            final Version testedVersion = new Version(version);
+            if(versionIsAcceptable(version)) {
+                try {
+                    final Version testedVersion = new Version(version);
 
-            if(testedVersion.isRelease()){
-                if(lastRelease == null){
-                    lastRelease = testedVersion;
+                    if (testedVersion.isRelease()) {
+                        if (lastRelease == null) {
+                            lastRelease = testedVersion;
+                        } else if (lastRelease.compare(testedVersion) < 0) {
+                            lastRelease = testedVersion;
+                        }
+                    }
+                } catch(final NotHandledVersionException e) {
+                    LOG.error("Protection should have been in place", e);
+                } catch(final IncomparableException ie) {
+                    LOG.error(String.format("Cannot compare latest release [%s]", lastRelease));
                 }
-                else if(lastRelease.compare(testedVersion) < 0){
-                    lastRelease = testedVersion;
-                }
+
             }
-
         }
 
         if(lastRelease == null){
@@ -96,19 +131,26 @@ public class VersionsHandler {
      * @throws NotHandledVersionException
      * @throws IncomparableException
      */
-    public String getLastVersion(final Collection<String> versions) throws NotHandledVersionException, IncomparableException {
+    public String getLastVersion(final Collection<String> versions) {
         Version lastVersion = null;
 
         for(final String version: versions){
-            final Version testedVersion = new Version(version);
+            if(versionIsAcceptable(version)) {
 
-            if(lastVersion == null){
-                lastVersion = testedVersion;
-            }
-            else if(lastVersion.compare(testedVersion) < 0){
-                lastVersion = testedVersion;
-            }
+                try {
+                    final Version testedVersion = new Version(version);
 
+                    if (lastVersion == null) {
+                        lastVersion = testedVersion;
+                    } else if (lastVersion.compare(testedVersion) < 0) {
+                        lastVersion = testedVersion;
+                    }
+                } catch(final NotHandledVersionException e) {
+                    LOG.error("Protection should have been in place", e);
+                } catch(final IncomparableException ie) {
+                    LOG.error(String.format("Cannot compare latest version [%s]", lastVersion));
+                }
+            }
         }
 
         if(lastVersion == null){
@@ -116,5 +158,20 @@ public class VersionsHandler {
         }
 
         return lastVersion.toString();
+    }
+
+    private boolean versionIsAcceptable(String version) {
+        if(version == null) {
+            return false;
+        }
+
+        try {
+            new Version(version);
+        } catch (NotHandledVersionException e) {
+            LOG.warn(String.format("Unsupported version [%s] %s", version, e.getMessage() == null ? "" : e.getMessage() ));
+            return false;
+        }
+
+        return true;
     }
 }

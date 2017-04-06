@@ -128,15 +128,21 @@ public class ArtifactHandler {
     public String getArtifactLastVersion(final String gavc) {
         final List<String> versions = getArtifactVersions(gavc);
 
-        try{
-            final VersionsHandler versionHandler = new VersionsHandler(repositoryHandler);
-            return versionHandler.getLastVersion(versions);
-        } catch (Exception e) {
-            // These versions cannot be compared
-            // Let's use the Collection.max() method by default
-            LOG.info("The versions cannot be compared ", e);
-            return Collections.max(versions);
+        final VersionsHandler versionHandler = new VersionsHandler(repositoryHandler);
+        final String viaCompare = versionHandler.getLastVersion(versions);
+
+        if (viaCompare != null) {
+            return viaCompare;
         }
+
+        //
+        // These versions cannot be compared
+        // Let's use the Collection.max() method by default, so goingo for a fallback
+        // mechanism.
+        //
+        LOG.info("The versions cannot be compared");
+        return Collections.max(versions);
+
     }
 
     /**

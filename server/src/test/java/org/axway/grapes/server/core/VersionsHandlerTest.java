@@ -44,6 +44,26 @@ public class VersionsHandlerTest {
     }
 
     @Test
+    public void testInvalidVersionDoesNotCauseStackTrace1() throws IncomparableException, NotHandledVersionException {
+        final List<String> versions = new ArrayList<String>();
+        versions.add("1.0.0-aisstudio-4-SNAPSHOT");
+        versions.add("1.2.0");
+
+        assertEquals("1.2.0", versionsHandler.getLastVersion(versions));
+    }
+
+    @Test
+    public void testInvalidVersionDoesNotCauseStackTrace2() throws IncomparableException, NotHandledVersionException {
+        final List<String> versions = new ArrayList<String>();
+        versions.add(null);
+        versions.add("1.2.0");
+
+        assertEquals("1.2.0", versionsHandler.getLastVersion(versions));
+    }
+
+
+
+    @Test
     public void getTheLastReleaseOfRegularVersions() throws IncomparableException, NotHandledVersionException {
         final List<String> versions = new ArrayList<String>();
         versions.add("0.1.0-1");
