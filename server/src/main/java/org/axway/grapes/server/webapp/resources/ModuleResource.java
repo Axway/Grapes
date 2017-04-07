@@ -200,8 +200,10 @@ public class ModuleResource extends AbstractResource{
         if(!credential.getRoles().contains(AvailableRoles.DATA_DELETER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a delete module request [%s %s]", name, version));
+        }
 
-        LOG.info("Got a delete module request.");
         final String moduleId = DbModule.generateID(name, version);
         getModuleHandler().deleteModule(moduleId);
 
@@ -220,7 +222,7 @@ public class ModuleResource extends AbstractResource{
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}"+ ServerAPI.GET_ORGANIZATION)
     public Response getOrganization(@PathParam("name") final String name, @PathParam("version") final String version){
-        LOG.info("Got a get module's organization request.");
+        LOG.info("Got a get module's organization request");
         final String moduleId = DbModule.generateID(name, version);
         final DbModule dbModule = getModuleHandler().getModule(moduleId);
         final DbOrganization organization = getModuleHandler().getOrganization(dbModule);
@@ -245,7 +247,11 @@ public class ModuleResource extends AbstractResource{
     public Response getAncestors(@PathParam("name") final String name,
                                    @PathParam("version") final String version,
                                      @Context final UriInfo uriInfo){
-        LOG.info("Got a get module ancestors request.");
+
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get module ancestors request [%s %s]", name, version));
+        }
+
         final String moduleId = DbModule.generateID(name, version);
         final DbModule dbModule = getModuleHandler().getModule(moduleId);
         final DbOrganization dbOrganization = getModuleHandler().getOrganization(dbModule);
@@ -289,7 +295,10 @@ public class ModuleResource extends AbstractResource{
                                     @PathParam("version") final String version,
                                     @Context final UriInfo uriInfo){
 
-        LOG.info("Got a get module dependencies request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get module dependencies request [%s %s]", name, version));
+        }
+
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
@@ -317,7 +326,10 @@ public class ModuleResource extends AbstractResource{
                                     @PathParam("version") final String version,
                                     @Context final UriInfo uriInfo){
 
-        LOG.info("Got a get dependency report request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get dependency report request [%s %s]", name, version));
+        }
+
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
@@ -339,7 +351,9 @@ public class ModuleResource extends AbstractResource{
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}" + ServerAPI.GET_LICENSES)
     public Response getLicenses(@PathParam("name") final String name, @PathParam("version") final String version){
-        LOG.info("Got a get module licenses request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get module licenses request [%s %s]", name, version));
+        }
 
         if(name == null || version == null){
             return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
@@ -373,7 +387,9 @@ public class ModuleResource extends AbstractResource{
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
-        LOG.info("Got a get promote module request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get promote module request [%s, %s]", name, version));
+        }
         final String moduleId = DbModule.generateID(name, version);
         getModuleHandler().promoteModule(moduleId);
 
@@ -392,7 +408,10 @@ public class ModuleResource extends AbstractResource{
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{name}/{version}" + ServerAPI.PROMOTION + ServerAPI.GET_FEASIBLE)
     public Response canBePromoted(@PathParam("name") final String name, @PathParam("version") final String version){
-        LOG.info("Got a is the module promotable request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a is the module promotable request [%s, %s]", name, version));
+        }
+
         final String moduleId = DbModule.generateID(name,version);
         final PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
 
@@ -408,7 +427,10 @@ public class ModuleResource extends AbstractResource{
     @Produces({MediaType.TEXT_HTML,MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}" + ServerAPI.PROMOTION + ServerAPI.GET_REPORT)
     public Response getPromotionStatusReport(@PathParam("name") final String name, @PathParam("version") final String version){
-        LOG.info("Got a get promotion report request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get promotion report request [%s %s]", name, version));
+        }
+
         final String moduleId = DbModule.generateID(name, version);
         final PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
 
@@ -425,7 +447,11 @@ public class ModuleResource extends AbstractResource{
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{name}/{version}" + ServerAPI.PROMOTION)
     public Response isPromoted(@PathParam("name") final String name, @PathParam("version") final String version){
-        LOG.info("Got a get promotion status request.");
+
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get promotion status request [%s %s]", name, version));
+        }
+
         final String moduleId = DbModule.generateID(name,version);
         final DbModule module = getModuleHandler().getModule(moduleId);
         final Boolean promoted = module.isPromoted();
@@ -442,7 +468,12 @@ public class ModuleResource extends AbstractResource{
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{name}/{version}" + ServerAPI.GET_BUILD_INFO)
     public Response getBuildInfo(@PathParam("name") final String name, @PathParam("version") final String version){
-        LOG.info("Got a get buildInfo request.");
+
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get buildInfo request [%s %s]", name, version));
+        }
+
+
         final String moduleId = DbModule.generateID(name, version);
         final DbModule dbModule = getModuleHandler().getModule(moduleId);
 
@@ -457,7 +488,10 @@ public class ModuleResource extends AbstractResource{
     @POST
     @Path("/{name}/{version}" + ServerAPI.GET_BUILD_INFO)
     public Response updateBuildInfo(@PathParam("name") final String name, @PathParam("version") final String version, final Map<String,String> buildInfo){
-        LOG.info("Got a post buildInfo report request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a post buildInfo report request [%s %s]", name, version));
+        }
+
         final String moduleId = DbModule.generateID(name,version);
         final DbModule dbModule = getModuleHandler().getModule(moduleId);
 

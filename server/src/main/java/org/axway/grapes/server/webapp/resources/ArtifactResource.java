@@ -70,14 +70,13 @@ public class ArtifactResource extends AbstractResource {
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
         
-        LOG.info("Got a post Artifact request.");
+        LOG.info("Got a post Artifact request [" + artifact.getGavc() + "]");
         
         // setting default origin to maven
         if(artifact.getOrigin() == null || artifact.getOrigin().isEmpty()){
         	artifact.setOrigin("maven");
         }
         
-        LOG.info("Validating Artifact request..");
         // Checks if the data is corrupted
         DataValidator.validatePostArtifact(artifact);
 
@@ -127,7 +126,7 @@ public class ArtifactResource extends AbstractResource {
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path(ServerAPI.GET_GAVCS)
     public Response getGavcs(@Context final UriInfo uriInfo){
-        LOG.info("Got a get gavc request.");
+        LOG.info("Got a get GAVCs request");
         final ListView view = new ListView("GAVCS view", "gavc");
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
@@ -149,7 +148,7 @@ public class ArtifactResource extends AbstractResource {
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path(ServerAPI.GET_GROUPIDS)
     public Response getGroupIds(@Context final UriInfo uriInfo){
-        LOG.info("Got a get groupIds request.");
+        LOG.info("Got a get groupIds request [" + uriInfo.getPath() + "]");
         final ListView view = new ListView("GroupIds view", "groupId");
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
@@ -172,7 +171,10 @@ public class ArtifactResource extends AbstractResource {
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{gavc}" + ServerAPI.GET_VERSIONS)
     public Response getVersions(@PathParam("gavc") final String gavc){
-        LOG.info("Got a get artifact versions request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get artifact versions request [%s]", gavc));
+        }
+
         final ListView view = new ListView("Versions View", "version");
 
         final List<String> versions = getArtifactHandler().getArtifactVersions(gavc);
@@ -193,7 +195,9 @@ public class ArtifactResource extends AbstractResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{gavc}" + ServerAPI.GET_LAST_VERSION)
     public Response getLastVersion(@PathParam("gavc") final String gavc){
-        LOG.info(String.format("Got a get artifact last version request. [%s]", gavc));
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get artifact last version request. [%s]", gavc));
+        }
 
         final String lastVersion = getArtifactHandler().getArtifactLastVersion(gavc);
 
@@ -212,7 +216,10 @@ public class ArtifactResource extends AbstractResource {
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{gavc}")
     public Response get(@PathParam("gavc") final String gavc){
-        LOG.info("Got a get artifact request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get artifact request [%s]", gavc));
+        }
+
         final ArtifactView view = new ArtifactView();
 
         final DbArtifact dbArtifact = getArtifactHandler().getArtifact(gavc);
@@ -261,8 +268,9 @@ public class ArtifactResource extends AbstractResource {
         final ArtifactQuery query = new ArtifactQuery(user, stage, filename, sha256, type, location);
         DataValidator.validate(query);
 
-        // Logging request
-        LOG.info(String.format("Artifact validation request. Details \"%s\"", query.toString()));
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Artifact validation request. Details [%s]", query.toString()));
+        }
         
         // Validating type of request file
         final GrapesServerConfig cfg = getConfig();
@@ -322,7 +330,9 @@ public class ArtifactResource extends AbstractResource {
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
-        LOG.info("Got an update downloadUrl request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got an update downloadUrl request [%s] [%s]", gavc, downLoadUrl));
+        }
 
         if(gavc == null || downLoadUrl == null){
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
@@ -345,7 +355,9 @@ public class ArtifactResource extends AbstractResource {
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
-        LOG.info("Got an update downloadUrl request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got an update downloadUrl request [%s] [%s]", gavc, provider));
+        }
 
         if(gavc == null || provider == null){
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
@@ -371,7 +383,10 @@ public class ArtifactResource extends AbstractResource {
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
-        LOG.info("Got a delete artifact request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a delete artifact request [%s]", gavc));
+        }
+
         getArtifactHandler().deleteArtifact(gavc);
 
         return Response.ok().build();
@@ -392,7 +407,9 @@ public class ArtifactResource extends AbstractResource {
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
-        LOG.info("Got a add \"DO_NOT_USE\" request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a add \"DO_NOT_USE\" request [%s]", gavc));
+        }
         getArtifactHandler().updateDoNotUse(gavc, doNotUse.get());
 
         return Response.ok("done").build();
@@ -409,7 +426,10 @@ public class ArtifactResource extends AbstractResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{gavc}" + ServerAPI.SET_DO_NOT_USE)
     public Response getDoNotUse(@PathParam("gavc") final String gavc){
-        LOG.info("Got a get doNotUse artifact request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get doNotUse artifact request [%s]", gavc));
+        }
+
         final DbArtifact artifact = getArtifactHandler().getArtifact(gavc);
 
         return Response.ok(artifact.getDoNotUse()).build();
@@ -427,7 +447,9 @@ public class ArtifactResource extends AbstractResource {
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{gavc}" + ServerAPI.GET_ANCESTORS)
     public Response getAncestors(@PathParam("gavc") final String gavc, @Context final UriInfo uriInfo){
-        LOG.info("Got a get artifact request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get artifact request [%s]", gavc));
+        }
 
         final FiltersHolder filters = new FiltersHolder();
         filters.getDecorator().setShowLicenses(false);
@@ -457,7 +479,10 @@ public class ArtifactResource extends AbstractResource {
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{gavc}" + ServerAPI.GET_LICENSES)
     public Response getLicenses(@PathParam("gavc") final String gavc, @Context final UriInfo uriInfo){
-        LOG.info("Got a get artifact licenses request.");
+
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get artifact licenses request [%s]", gavc));
+        }
         final LicenseListView view = new LicenseListView("Licenses of " + gavc);
 
         final FiltersHolder filters = new FiltersHolder();
@@ -487,7 +512,9 @@ public class ArtifactResource extends AbstractResource {
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
-        LOG.info("Got a add license request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a add license request [%s]", gavc));
+        }
 
         if(licenseId == null){
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
@@ -513,7 +540,9 @@ public class ArtifactResource extends AbstractResource {
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
-        LOG.info("Got a delete license request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a delete license request [%s, %s]", gavc, licenseId));
+        }
 
         if(licenseId == null){
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
@@ -535,7 +564,10 @@ public class ArtifactResource extends AbstractResource {
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{gavc}" + ServerAPI.GET_MODULE)
     public Response getModule(@PathParam("gavc") final String gavc, @Context final UriInfo uriInfo){
-        LOG.info("Got a get artifact's module request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get artifact's module request [%s]", gavc));
+        }
+
         final ArtifactHandler artifactHandler = getArtifactHandler();
         final DbArtifact artifact = artifactHandler.getArtifact(gavc);
         final DbModule module = artifactHandler.getModule(artifact);
@@ -562,11 +594,15 @@ public class ArtifactResource extends AbstractResource {
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{gavc}" + ServerAPI.GET_ORGANIZATION)
     public Response getOrganization(@PathParam("gavc") final String gavc, @Context final UriInfo uriInfo){
-        LOG.info("Got a get artifact's organization request.");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get artifact's organization request [%s]", gavc));
+        }
+
         final ArtifactHandler artifactHandler = getArtifactHandler();
         final DbArtifact artifact = artifactHandler.getArtifact(gavc);
         final DbModule module = artifactHandler.getModule(artifact);
-        if(module == null || module.getOrganization().isEmpty()){
+
+        if(module == null || module.getOrganization().isEmpty()) {
             return Response.noContent().build();
         }
 
@@ -587,7 +623,8 @@ public class ArtifactResource extends AbstractResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path(ServerAPI.GET_ALL)
     public Response getAll(@Context final UriInfo uriInfo){
-        LOG.info("Got a get all artifact request.");
+
+        LOG.info(String.format("Got a get all artifact request [%s]", uriInfo.getPath()));
 
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
