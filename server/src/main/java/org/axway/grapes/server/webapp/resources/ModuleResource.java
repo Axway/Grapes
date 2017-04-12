@@ -339,6 +339,72 @@ public class ModuleResource extends AbstractResource{
         return Response.ok(report).build();
     }
 
+
+    /**
+     * Return a promotion report 2
+     *
+     * @return Response A promotion report
+     */
+    @GET
+    @Produces({MediaType.TEXT_HTML,MediaType.APPLICATION_JSON})
+    @Path("/{name}/{version}" + ServerAPI.PROMOTION + ServerAPI.GET_REPORT2)
+    public Response getPromotionStatusReport2(@PathParam("name") final String name, @PathParam("version") final String version){
+        LOG.info("Got a get promotion report request.");
+        final String moduleId = DbModule.generateID(name, version);
+        final PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
+        
+        Map<String, Object> promotionReport = new HashMap<String, Object>();
+        promotionReport.put("canBePromoted", promotionReportView.canBePromoted());
+        
+        if(promotionReportView.canBePromoted()){
+            promotionReport.put("errors", Collections.emptyList());        	
+        }
+        
+        List<String> error = new ArrayList<String>();
+        
+        if(promotionReportView.isSnapshot()){
+        	error.add("Version is SNAPSHOT");        	
+        }
+
+        // do not use dependency
+        if(!promotionReportView.getDoNotUseArtifacts().isEmpty()){
+        	StringBuilder doNotUseArtifacts = new StringBuilder();
+        	boolean isFirstElement = true;
+        	
+        	for(Artifact artifact : promotionReportView.getDoNotUseArtifacts()){
+        		if(!isFirstElement){
+        			doNotUseArtifacts.append(", ");
+        		}
+        		doNotUseArtifacts.append(artifact.getGavc());
+        		
+        		isFirstElement = false;
+        	}
+        	
+        	error.add(String.format("DO_NOT_USE marked dependencies detected: %s", doNotUseArtifacts.toString()));
+        }
+        
+        // unpromoted dependency
+        if(!promotionReportView.getUnPromotedDependencies().isEmpty()){
+        	StringBuilder unPromotedDependency = new StringBuilder();
+        	boolean isFirstElement = true;
+        	
+        	for(String dependencies : promotionReportView.getUnPromotedDependencies()){
+        		if(!isFirstElement){
+        			unPromotedDependency.append(", ");
+        		}
+        		unPromotedDependency.append(dependencies);
+        		
+        		isFirstElement = false;
+        	}
+        	
+        	error.add(String.format("Un promoted dependencies detected: %s", unPromotedDependency.toString()));
+        }
+        
+        promotionReport.put("errors", error);
+        
+        return Response.ok(promotionReport).build();
+    }
+
     /**
      * Return license list of a module.
      * This method is call via GET <dm_url>/module/<name>/<version>/licenses

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import javax.naming.AuthenticationException;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -361,6 +362,33 @@ public class GrapesClient {
         }
 
         return response.getEntity(PromotionDetails.class);
+    }
+    
+    /**
+     * Check if a module can be promoted in the Grapes server (new validation Promotion Status Report 2)
+     *
+     * @param name
+     * @param version
+     * @return a boolean which is true only if the module can be promoted
+     * @throws GrapesCommunicationException
+     */
+    public Map<String, Object> modulePromotionNewReport(final String name, final String version) throws GrapesCommunicationException {
+        final Client client = getClient();
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.promoteModuleNewReportPath(name, version));
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.OK.getStatusCode() == response.getStatus()){
+        	return response.getEntity(HashMap.class);
+        }
+        
+        if(ClientResponse.Status.NOT_FOUND.getStatusCode() == response.getStatus()){
+        	return null;
+        }
+
+        final String message = "Failed to get the promotion status of module " + name + " in version " + version;
+        LOG.error(message + ". Http status: " + response.getStatus());
+        throw new GrapesCommunicationException(message, response.getStatus());
     }
 
     /**

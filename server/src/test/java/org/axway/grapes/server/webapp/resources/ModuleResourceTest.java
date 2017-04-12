@@ -407,6 +407,53 @@ public class ModuleResourceTest extends ResourceTest {
         
     }
 
+
+    @Test
+    public void getPromotionStatusReport2(){
+        final DbModule dbModule  = new DbModule();
+        dbModule.setName("moduleTest");
+        dbModule.setVersion("1.0.0-SNAPSHOT");
+        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
+
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.PROMOTION + ServerAPI.GET_REPORT2);
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        
+        Map<String, Object> results = response.getEntity(HashMap.class);
+        assertNotNull(results);
+        
+        assertFalse((Boolean) results.get("canBePromoted"));        
+        assertFalse(((List)results.get("errors")).isEmpty());
+        
+    }
+    
+    @Test
+    public void getPromotionStatusReport2ForSnapshot(){
+        final DbModule dbModule  = new DbModule();
+        dbModule.setName("moduleTest");
+        dbModule.setVersion("1.0.0-SNAPSHOT");
+        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
+
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.PROMOTION + ServerAPI.GET_REPORT2);
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        
+        Map<String, Object> results = response.getEntity(HashMap.class);
+        assertNotNull(results);
+        
+        List<String> errors = (List)results.get("errors");
+        
+        assertFalse((Boolean) results.get("canBePromoted"));        
+        assertFalse(errors.isEmpty());
+        
+        assertEquals(errors.get(0), "Version is SNAPSHOT");
+        
+    }
+
     @Test
     public void getModuleOrganization(){
         final DbModule dbModule  = new DbModule();
