@@ -1,5 +1,8 @@
 package org.axway.grapes.server.core;
 
+import org.apache.commons.jcs.JCS;
+import org.apache.commons.jcs.access.CacheAccess;
+import org.apache.commons.jcs.access.exception.CacheException;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.server.core.options.FiltersHolder;
@@ -13,8 +16,11 @@ import org.axway.grapes.server.webapp.views.PromotionReportView;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
+import org.eclipse.jetty.util.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Module Handler
@@ -25,10 +31,27 @@ import java.util.List;
  */
 public class ModuleHandler {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ModuleHandler.class);
+
     private final RepositoryHandler repositoryHandler;
+
+    private CacheAccess<String, PromotionReportView> cache = null;
+
 
     public ModuleHandler(final RepositoryHandler repositoryHandler) {
         this.repositoryHandler = repositoryHandler;
+        initCache();
+    }
+
+    private void initCache() {
+        try
+        {
+            cache = JCS.getInstance( "default" );
+        }
+        catch ( CacheException e )
+        {
+            LOG.warn(String.format( "Problem initializing cache: %s %s", e.getMessage(), e ) );
+        }
     }
 
     /**
@@ -143,6 +166,15 @@ public class ModuleHandler {
      * @return PromotionReportView
      */
     public PromotionReportView getPromotionReport(final String moduleId) {
+        if(LOG.isDebugEnabled()) {
+            LOG.debug(String.format(":: Starting promo report %s", moduleId));
+        }
+
+        final PromotionReportView fromCache = cache.get(moduleId);
+        if(null != fromCache) {
+            return fromCache;
+        }
+
         final DependencyHandler depHandler = new DependencyHandler(repositoryHandler);
         final ModelMapper modelMapper = new ModelMapper(repositoryHandler);
         final DbModule module = getModule(moduleId);
@@ -159,11 +191,15 @@ public class ModuleHandler {
             filters.addFilter(new CorporateFilter(organization));
 
             // Checks if each dependency module has been promoted
-            for (final Dependency dependency : depHandler.getModuleDependencies(moduleId, filters)) {
+            final List<Dependency> deps = depHandler.getModuleDependencies(moduleId, filters);
+            removeDuplicates(deps);
+            // printDeps(moduleId, deps);
+
+            for (final Dependency dependency : deps) {
                 final DbModule depModule = repositoryHandler.getRootModuleOf(dependency.getTarget().getGavc());
                 if (depModule != null && !depModule.getId().equals(moduleId) && !depModule.isPromoted()) {
-                        report.addUnPromotedDependency(depModule.getId());
-                        report.addDependencyPromotionReport(depModule.getId(), getPromotionReport(depModule.getId()));
+                    report.addUnPromotedDependency(depModule.getId());
+                    report.addDependencyPromotionReport(depModule.getId(), getPromotionReport(depModule.getId()));
                 }
             }
 
@@ -184,8 +220,26 @@ public class ModuleHandler {
         }
 
         report.compute();
+        if(LOG.isDebugEnabled()) {
+            LOG.debug(String.format(":: Done promo report %s", moduleId));
+        }
 
+        cache.put(moduleId, report);
         return report;
+    }
+
+    private void removeDuplicates(List<Dependency> deps) {
+        Map<String, Dependency> left = new HashMap<String, Dependency>();
+
+        for(Dependency d : deps) {
+            String key = d.getTarget().getGavc();
+            if(!left.containsKey(key)) {
+                left.put(key, d);
+            }
+        }
+
+        deps.clear();
+        deps.addAll(left.values());
     }
 
     public DbOrganization getOrganization(final DbModule module) {
