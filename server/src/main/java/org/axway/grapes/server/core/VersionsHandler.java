@@ -110,7 +110,7 @@ public class VersionsHandler {
                 } catch(final NotHandledVersionException e) {
                     LOG.error("Protection should have been in place", e);
                 } catch(final IncomparableException ie) {
-                    LOG.error(String.format("Cannot compare latest release [%s]", lastRelease));
+                    LOG.error(String.format("Cannot compare latest release [%s]. Details %s", lastRelease, ie));
                 }
 
             }
@@ -148,7 +148,7 @@ public class VersionsHandler {
                 } catch(final NotHandledVersionException e) {
                     LOG.error("Protection should have been in place", e);
                 } catch(final IncomparableException ie) {
-                    LOG.error(String.format("Cannot compare latest version [%s]", lastVersion));
+                    LOG.error(String.format("Cannot compare latest version [%s]. Details %s", lastVersion, ie));
                 }
             }
         }
@@ -169,6 +169,7 @@ public class VersionsHandler {
             new Version(version);
         } catch (NotHandledVersionException e) {
             LOG.warn(String.format("Unsupported version [%s] %s", version, e.getMessage() == null ? "" : e.getMessage() ));
+            LOG.debug(e);
             return false;
         }
 
