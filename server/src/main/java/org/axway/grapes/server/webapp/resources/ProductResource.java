@@ -17,6 +17,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -31,6 +32,7 @@ import java.util.List;
 public class ProductResource extends AbstractResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductResource.class);
+    private static final String DELIVERY_MSG_TEMPLATE = "Delivery [%s %s] %s [%s]";  // name, version, details, product name
 
     public ProductResource(final RepositoryHandler repositoryHandler, final GrapesServerConfig configuration) {
         super(repositoryHandler, "ProductResourceDocumentation.ftl", configuration);
@@ -128,7 +130,9 @@ public class ProductResource extends AbstractResource {
     @Path("/{name}" + ServerAPI.GET_MODULES)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getModuleNames(@PathParam("name") final String name){
-        LOG.info("Got a get module names for organization " + name +".");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get module names for organization %s", name));
+        }
         final DbProduct dbProduct = getProductHandler().getProduct(name);
 
         return Response.ok(dbProduct.getModules()).build();
@@ -149,7 +153,10 @@ public class ProductResource extends AbstractResource {
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
-        LOG.info("Got a set module names request for product " + name +".");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a set module names request for product %s", name));
+        }
+
         if(moduleNames == null){
             throw new WebApplicationException(Response.serverError().status(HttpStatus.BAD_REQUEST_400)
                     .entity("Query content should contains a list of module names.").build());
@@ -170,10 +177,18 @@ public class ProductResource extends AbstractResource {
     @Path("/{name}" + ServerAPI.GET_DELIVERIES)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDeliveries(@PathParam("name") final String name){
-        LOG.info("Got a get deliveries request for product " + name +".");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get deliveries request for product %s", name));
+        }
 
         final DbProduct dbProduct = getProductHandler().getProduct(name);
         final List<Delivery> delivery = dbProduct.getDeliveries();
+        Collections.sort(delivery, new Comparator<Delivery>() {
+            @Override
+            public int compare(Delivery d1, Delivery d2) {
+                return d1.getCommercialName().compareTo(d2.getCommercialName());
+            }
+        });
 
         return Response.ok(delivery).build();
     }
@@ -183,7 +198,7 @@ public class ProductResource extends AbstractResource {
      *
      * @param credential DbCredential
      * @param name String product name
-     * @param deliveryName String
+     * @param delivery The product delivery
      * @return Response
      */
     @POST
@@ -193,7 +208,10 @@ public class ProductResource extends AbstractResource {
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
-        LOG.info("Got a create delivery request for product " + name +".");
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a create delivery request for product [%s]", name));
+        }
+
         if(delivery == null){
             throw new WebApplicationException(Response.serverError().status(HttpStatus.BAD_REQUEST_400)
                     .entity("Query content should contains the name of the new delivery.").build());
@@ -204,8 +222,10 @@ public class ProductResource extends AbstractResource {
         final Delivery alreadyExistdelivery = dbProduct.getDelivery(delivery.getCommercialName(), delivery.getCommercialVersion());
 
         if(alreadyExistdelivery != null){
+//            throw new WebApplicationException(Response.serverError().status(HttpStatus.CONFLICT_409)
+//                    .entity("Delivery " + delivery.getCommercialName() + " " + delivery.getCommercialVersion() + " already exist for product " + name).build());
             throw new WebApplicationException(Response.serverError().status(HttpStatus.CONFLICT_409)
-                    .entity("Delivery " + delivery.getCommercialName() + " " + delivery.getCommercialVersion() + " already exist for product "+ name + ".").build());
+                    .entity(String.format(DELIVERY_MSG_TEMPLATE, delivery.getCommercialName(), delivery.getCommercialVersion(), " already exists for ", name)).build());
         }
 
         dbProduct.getDeliveries().add(delivery);
@@ -224,15 +244,19 @@ public class ProductResource extends AbstractResource {
     @GET
     @Path("/{name}" + ServerAPI.GET_DELIVERIES+"/{commercialName}"+"/{commercialVersion}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDelivery(@PathParam("name") final String name, @PathParam("commercialName") final String commercialName, @PathParam("commercialVersion") final String commercialVersion){
-        LOG.info("Got a get delivery request for product " + name +".");
+    public Response getDelivery(@PathParam("name") final String name, @PathParam("commercialName") final String commercialName, @PathParam("commercialVersion") final String commercialVersion) {
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get delivery request for product [%s] [%s]", name, commercialName));
+        }
 
         final DbProduct dbProduct = getProductHandler().getProduct(name);
 
         final Delivery delivery = dbProduct.getDelivery(commercialName, commercialVersion);
-        if(delivery == null){
+        if (delivery == null) {
+//            throw new WebApplicationException(Response.serverError().status(HttpStatus.NOT_FOUND_404)
+//                    .entity("Delivery " + commercialName + " - " + commercialVersion + " does not exist for product " + name + ".").build());
             throw new WebApplicationException(Response.serverError().status(HttpStatus.NOT_FOUND_404)
-                    .entity("Delivery " + commercialName + " - " + commercialVersion + " does not exist for product "+ name + ".").build());
+                    .entity(String.format(DELIVERY_MSG_TEMPLATE, commercialName, commercialVersion, " does not exist for product ", name)).build());
         }
 
         return Response.ok(delivery).build();
@@ -253,15 +277,20 @@ public class ProductResource extends AbstractResource {
         if(!credential.getRoles().contains(DbCredential.AvailableRoles.DATA_DELETER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
-        LOG.info("Got a delete delivery request for product " + name +".");
+
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a delete delivery request for product [%s]", name));
+        }
 
         final DbProduct dbProduct = getProductHandler().getProduct(name);
 
         final Delivery delivery = dbProduct.getDelivery(commercialName, commercialVersion);
         
         if(! dbProduct.getDeliveries().contains(delivery)){
+//            throw new WebApplicationException(Response.serverError().status(HttpStatus.NOT_FOUND_404)
+//                    .entity("Delivery " + commercialName + " - " + commercialVersion + " does not exist for product "+ name + ".").build());
             throw new WebApplicationException(Response.serverError().status(HttpStatus.NOT_FOUND_404)
-                    .entity("Delivery " + commercialName + " - " + commercialVersion + " does not exist for product "+ name + ".").build());
+                    .entity(String.format(DELIVERY_MSG_TEMPLATE, commercialName, commercialVersion, " does not exist for ", name)).build());
         }
 
         dbProduct.getDeliveries().remove(delivery);
@@ -275,26 +304,36 @@ public class ProductResource extends AbstractResource {
      *
      * @param credential DbCredential
      * @param name String product name
-     * @param delivery String delivery name
-     * @param modules List<String> list of modules Ids
+     * @param commercialName The commercial name of the product
+     * @param commercialVersion The commercial version of the product
+     * @param dependencies The commercial version dependencies
      * @return Response
      */
     @POST
     @Path("/{name}" + ServerAPI.GET_DELIVERIES+"/{commercialName}"+"/{commercialVersion}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response setDeliveryDependency(@Auth final DbCredential credential, @PathParam("name") final String name, @PathParam("commercialName") final String commercialName, @PathParam("commercialVersion") final String commercialVersion, List<String> dependencies){
+    public Response setDeliveryDependency(@Auth final DbCredential credential,
+                                          @PathParam("name") final String name,
+                                          @PathParam("commercialName") final String commercialName,
+                                          @PathParam("commercialVersion") final String commercialVersion,
+                                          List<String> dependencies){
         if(!credential.getRoles().contains(DbCredential.AvailableRoles.DATA_UPDATER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
-        LOG.info("Got a set delivery modules request for product " + name +".");
+
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a set delivery modules request for product [%s]", name));
+        }
 
         final DbProduct dbProduct = getProductHandler().getProduct(name);
         
         final Delivery delivery = dbProduct.getDelivery(commercialName, commercialVersion);
 
         if(! dbProduct.getDeliveries().contains(delivery)){
+//            throw new WebApplicationException(Response.serverError().status(HttpStatus.NOT_FOUND_404)
+//                    .entity("Delivery " + commercialName + " - " + commercialVersion + " does not exist for product "+ name + ".").build());
             throw new WebApplicationException(Response.serverError().status(HttpStatus.NOT_FOUND_404)
-                    .entity("Delivery " + commercialName + " - " + commercialVersion + " does not exist for product "+ name + ".").build());
+                    .entity(String.format(DELIVERY_MSG_TEMPLATE, commercialName, commercialVersion, " does not exist for product ", name)).build());
         }
 
         Collections.sort(dependencies);
