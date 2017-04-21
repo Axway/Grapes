@@ -169,7 +169,7 @@ public class VersionsHandler {
             new Version(version);
         } catch (NotHandledVersionException e) {
             LOG.warn(String.format("Unsupported version [%s] %s", version, e.getMessage() == null ? "" : e.getMessage() ));
-            LOG.debug(e);
+            LOG.debug("Exception while building version", e);
             return false;
         }
 
