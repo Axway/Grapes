@@ -9,6 +9,7 @@ import org.axway.grapes.server.materials.cases.DependencyCase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository Handler
@@ -315,6 +316,11 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     @Override
     public void deleteProduct(String name) {
 
+    }
+
+    @Override
+    public <T> Optional<T> getOneByQuery(String collectionName, String query, Class<T> c) {
+        return Optional.empty();
     }
 
     @Override

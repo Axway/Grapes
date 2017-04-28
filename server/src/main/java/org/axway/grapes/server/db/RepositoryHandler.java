@@ -5,6 +5,7 @@ import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository Handler Interface
@@ -362,4 +363,8 @@ public interface RepositoryHandler {
      * @param name String
      */
     public void deleteProduct(final String name);
+
+    public <T> Optional<T> getOneByQuery(final String collectionName, final String query, final Class<T> c);
+
+    // public <T> List<T> getListByQuery(final String query);
 }

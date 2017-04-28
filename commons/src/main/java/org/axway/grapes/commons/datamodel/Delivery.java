@@ -75,4 +75,17 @@ public class Delivery {
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
 	}
+
+	@Override
+	public String toString() {
+		return "Delivery{" +
+				"commercialName='" + commercialName + '\'' +
+				", commercialVersion='" + commercialVersion + '\'' +
+				", version='" + version + '\'' +
+				", jenkinsBuildUrl='" + jenkinsBuildUrl + '\'' +
+				", releaseDate='" + releaseDate + '\'' +
+				", moduleName='" + moduleName + '\'' +
+				", dependencies=" + dependencies +
+				'}';
+	}
 }
