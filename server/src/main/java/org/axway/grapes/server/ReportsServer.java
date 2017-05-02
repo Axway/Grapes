@@ -5,6 +5,7 @@ import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.tmp.CsvReportWriter;
 import org.axway.grapes.server.tmp.Playground;
 import org.axway.grapes.server.tmp.ReportResource;
 import org.axway.grapes.server.webapp.healthcheck.DataModelVersionCheck;
@@ -24,6 +25,7 @@ public class ReportsServer extends Service<GrapesServerConfig> {
     @Override
     public void run(GrapesServerConfig config, Environment env) throws Exception {
         env.setJerseyProperty("com.sun.jersey.api.json.POJOMappingFeature", true);
+        env.scanPackagesForResourcesAndProviders(CsvReportWriter.class);
 
         repoHandler = DbResolver.getNewRepoHandler(config.getDataBaseConfig());
         env.addHealthCheck(new DataModelVersionCheck(config.getDataBaseConfig()));

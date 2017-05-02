@@ -34,6 +34,18 @@
 			<artifactId>logback-core</artifactId>
 			<version>1.0.13</version>
 		</dependency>
+
+		<dependency>
+            <groupId>com.fasterxml.jackson</groupId>
+            <artifactId>jackson-dataformat-csv</artifactId>
+		</dependency>
+
+<!--
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-csv</artifactId>
+        </dependency>
+-->
 		<dependency>
 		    <groupId>com.fasterxml.jackson.jaxrs</groupId>
 		    <artifactId>jackson-jaxrs-json-provider</artifactId>
@@ -53,6 +65,7 @@
             <version>1.6</version>
         </dependency>
 		<!-- DropWizard -->
+
 		<dependency>
 			<groupId>com.yammer.dropwizard</groupId>
 			<artifactId>dropwizard-core</artifactId>
@@ -68,6 +81,8 @@
 			<artifactId>dropwizard-auth</artifactId>
 			<version>${dropwizzard.version}</version>
 		</dependency>
+
+
 		<!-- Mongo DB database -->
 		<dependency>
 			<groupId>org.jongo</groupId>
@@ -90,6 +105,7 @@
 			<version>${dropwizzard.version}</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
