@@ -15,6 +15,7 @@ import org.axway.grapes.server.core.*;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.tmp.ReportsHandler;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
@@ -119,6 +120,10 @@ public abstract class AbstractResource extends View {
      */
     protected GraphsHandler getGraphsHandler(final FiltersHolder filtersHolder){
         return new GraphsHandler(repositoryHandler,filtersHolder);
+    }
+
+    protected ReportsHandler getReportsHandler() {
+        return new ReportsHandler(repositoryHandler);
     }
 
     /**
