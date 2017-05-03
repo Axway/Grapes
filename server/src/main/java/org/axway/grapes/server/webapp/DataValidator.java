@@ -121,6 +121,11 @@ public final class DataValidator {
      * @throws WebApplicationException if the data is corrupted
      */
     public static void validate(final Module module) {
+        if (null == module) {
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                .entity("Module cannot be null!")
+                .build());
+        }
         if(module.getName() == null ||
                 module.getName().isEmpty()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
