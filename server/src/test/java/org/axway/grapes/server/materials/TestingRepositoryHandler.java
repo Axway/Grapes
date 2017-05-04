@@ -8,6 +8,7 @@ import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.materials.cases.DependencyCase;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -321,6 +322,11 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     @Override
     public <T> Optional<T> getOneByQuery(String collectionName, String query, Class<T> c) {
         return Optional.empty();
+    }
+
+    @Override
+    public <T> List<T> getListByQuery(String collectionName, String query, Class<T> c) {
+        return Collections.emptyList();
     }
 
     @Override

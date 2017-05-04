@@ -594,4 +594,22 @@ public class MongodbHandler implements RepositoryHandler {
 
         return it.hasNext() ? Optional.of(it.next()) : Optional.empty();
     }
+
+    public <T> List<T> getListByQuery(final String collection,
+                                      final String query,
+                                      final Class<T> c) {
+        final Jongo ds = getJongoDataStore();
+        final Iterator<T> it = ds.getCollection(collection).find(query).as(c).iterator();
+
+        if(!it.hasNext()) {
+            return Collections.emptyList();
+        }
+
+        List<T> results = new ArrayList<>();
+        while(it.hasNext()) {
+            results.add(it.next());
+        }
+
+        return results;
+    }
 }

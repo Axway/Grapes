@@ -366,5 +366,5 @@ public interface RepositoryHandler {
 
     public <T> Optional<T> getOneByQuery(final String collectionName, final String query, final Class<T> c);
 
-    // public <T> List<T> getListByQuery(final String query);
+    public <T> List<T> getListByQuery(final String collectionName, final String query, final Class<T> c);
 }
