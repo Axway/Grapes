@@ -34,12 +34,6 @@
 			<artifactId>logback-core</artifactId>
 			<version>1.0.13</version>
 		</dependency>
-
-		<dependency>
-            <groupId>com.fasterxml.jackson</groupId>
-            <artifactId>jackson-dataformat-csv</artifactId>
-		</dependency>
-
 		<dependency>
 		    <groupId>com.fasterxml.jackson.jaxrs</groupId>
 		    <artifactId>jackson-jaxrs-json-provider</artifactId>
