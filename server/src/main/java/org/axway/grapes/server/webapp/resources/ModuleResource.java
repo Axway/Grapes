@@ -62,7 +62,7 @@ public class ModuleResource extends AbstractResource{
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
-        LOG.info("Got a post Module request.");
+        LOG.info(String.format("Got a post Module request [%s]", module == null ? "NULL" : module.getName()));
 
         // Checks if the data is corrupted
         DataValidator.validate(module);
