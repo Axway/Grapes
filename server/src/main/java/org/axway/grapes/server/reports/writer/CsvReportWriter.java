@@ -1,4 +1,6 @@
-package org.axway.grapes.server.reports.impl;
+package org.axway.grapes.server.reports.writer;
+
+import org.axway.grapes.server.reports.impl.ReportExecution;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
