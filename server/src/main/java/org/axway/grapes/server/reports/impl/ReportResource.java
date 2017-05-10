@@ -16,6 +16,14 @@ public class ReportResource extends AbstractResource {
         super(repoHandler, "No template.ftl", dmConfig);
     }
 
+
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/")
+    public Set<Report> listReports() {
+        return ReportsRegistry.allReports();
+    }
+
     @POST
     @Produces({"text/csv", MediaType.APPLICATION_JSON})
     @Path("/execution")
@@ -24,7 +32,7 @@ public class ReportResource extends AbstractResource {
         //
         // Is there any such report registered
         //
-        final Optional<Report> reportOp = ReportsLoader.findById(req.getReportId());
+        final Optional<Report> reportOp = ReportsRegistry.findById(req.getReportId());
 
         if(!reportOp.isPresent()) {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)

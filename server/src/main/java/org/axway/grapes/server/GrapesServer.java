@@ -13,6 +13,9 @@ import org.axway.grapes.server.config.Messages;
 import org.axway.grapes.server.db.DBException;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
+import org.axway.grapes.server.reports.impl.ReportResource;
+import org.axway.grapes.server.reports.impl.ReportsRegistry;
+import org.axway.grapes.server.reports.writer.CsvReportWriter;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.axway.grapes.server.webapp.healthcheck.DataBaseCheck;
 import org.axway.grapes.server.webapp.healthcheck.DataModelVersionCheck;
@@ -76,6 +79,10 @@ public class GrapesServer extends Service<GrapesServerConfig> {
         final RepositoryHandler repoHandler = getRepositoryHandler(config);
         
         Messages.init(config.getMsgBundle());
+
+        env.scanPackagesForResourcesAndProviders(CsvReportWriter.class);
+        ReportsRegistry.init();
+
         
         // Add credential management
         final GrapesAuthenticator grapesAuthenticator = new GrapesAuthenticator(repoHandler);
@@ -106,6 +113,7 @@ public class GrapesServer extends Service<GrapesServerConfig> {
         env.addResource(new Sequoia(repoHandler, config));
         env.addResource(new WebAppResource(repoHandler, config));
         env.addResource(new RootResource(repoHandler, config));
+        env.addResource(new ReportResource(repoHandler, config));
 
 	}
 
