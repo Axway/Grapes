@@ -18,6 +18,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Creates a report of dependencies and licenses for a certain commercial version
+ */
 public class LicenseReport implements Report {
 
     private static final Logger LOG = LoggerFactory.getLogger(LicenseReport.class);
@@ -95,12 +98,10 @@ public class LicenseReport implements Report {
 
         final Delivery delivery = filtered.get(0);
 
-        // final ReportExecution r1 = computeResult1(repoHandler, request, delivery);
-        final ReportExecution r2 = computeResult2(repoHandler, request, delivery);
-        return r2;
+        return computeResult(repoHandler, request, delivery);
     }
 
-    private ReportExecution computeResult2(final RepositoryHandler repoHandler, final ReportRequest request, final Delivery delivery) {
+    private ReportExecution computeResult(final RepositoryHandler repoHandler, final ReportRequest request, final Delivery delivery) {
         ReportExecution result = new ReportExecution(request, getColumnNames());
 
         DependencyHandler dependencyHandler = new DependencyHandler(repoHandler);

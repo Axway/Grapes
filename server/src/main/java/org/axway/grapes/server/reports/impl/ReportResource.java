@@ -1,5 +1,6 @@
 package org.axway.grapes.server.reports.impl;
 
+import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.webapp.resources.AbstractResource;
@@ -12,8 +13,13 @@ import java.util.*;
 /**
  * This class represents the entry point for serving requests related to the reporting engine
  */
-@Path("reports")
+@Path(ServerAPI.GET_REPORTS)
 public class ReportResource extends AbstractResource {
+
+    static {
+        ReportsRegistry.init();
+    }
+
     public ReportResource(RepositoryHandler repoHandler, GrapesServerConfig dmConfig) {
         super(repoHandler, "No template.ftl", dmConfig);
     }
@@ -30,6 +36,12 @@ public class ReportResource extends AbstractResource {
     @Produces({"text/csv", MediaType.APPLICATION_JSON})
     @Path("/execution")
     public ReportExecution execute(ReportRequest req) {
+
+        if(req == null) {
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Report execution payload expected")
+                    .build());
+        }
 
         final Optional<Report> reportOp = ReportsRegistry.findById(req.getReportId());
 
