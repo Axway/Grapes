@@ -14,7 +14,6 @@ import org.axway.grapes.server.db.DBException;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.reports.impl.ReportResource;
-import org.axway.grapes.server.reports.impl.ReportsRegistry;
 import org.axway.grapes.server.reports.writer.CsvReportWriter;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.axway.grapes.server.webapp.healthcheck.DataBaseCheck;
@@ -79,11 +78,8 @@ public class GrapesServer extends Service<GrapesServerConfig> {
         final RepositoryHandler repoHandler = getRepositoryHandler(config);
         
         Messages.init(config.getMsgBundle());
-
         env.scanPackagesForResourcesAndProviders(CsvReportWriter.class);
-        ReportsRegistry.init();
 
-        
         // Add credential management
         final GrapesAuthenticator grapesAuthenticator = new GrapesAuthenticator(repoHandler);
         final BasicAuthProvider authProvider = new BasicAuthProvider<DbCredential>(grapesAuthenticator, "Grapes Authenticator Provider");
