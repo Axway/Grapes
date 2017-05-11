@@ -1,7 +1,7 @@
 package org.axway.grapes.server.reports;
 
 /**
- * Created by mganuci on 5/2/17.
+ * Enumeration created for type safety of the report id identification
  */
 public enum ReportId {
     LICENSES_PER_PRODUCT_RELEASE(1);
