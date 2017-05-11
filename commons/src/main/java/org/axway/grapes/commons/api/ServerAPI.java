@@ -94,6 +94,9 @@ public interface ServerAPI {
     /** Value - {@value}, GET methods that returns the organization of an Artifact or a Module.*/
     public static final String GET_ORGANIZATION = "/organization";
 
+    /** Value - {@value}, GET methods that returns the list of available reports.*/
+    public static final String GET_REPORTS = "/reports";
+
     /** Value - {@value}, POST/GET flag "DO_NOT_USE" for the targeted artifact. Usually used as /<ARTIFACT_RESOURCE>/{gavc}/<SET_DO_NOT_USE>?<DO_NOT_USE>=<Boolean></></>.*/
     public static final String SET_DO_NOT_USE = "/donotuse";
 
