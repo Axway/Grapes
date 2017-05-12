@@ -359,5 +359,9 @@
  		<!-- Handle CSV exports -->
         <script src="/assets/js/export-csv.js"></script>
 
+        <!-- All reports executions -->
+        <script src="/assets/js/FileSaver.js"></script>
+        <script src="/assets/js/reports.js"></script>
+
 	</body>
 </html>

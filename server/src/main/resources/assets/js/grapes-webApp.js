@@ -822,7 +822,15 @@ function getProductDeliveryOverview(delivery, product){
 
             html += "</tbody>\n";
             html += "</table>\n";
-            
+
+            var arguments = [product, delivery.commercialName, delivery.commercialVersion]
+                    .map(function(e) {
+                        return "'" + e + "'";
+                    })
+                    .join(',');
+            html += "<div id='exportLicensesDiv'> <a href=\"javascript:commercialDeliveriesReport(" + arguments+ ")\">Export All Licenses</a> </div>";
+
+
             html += "<div id=\"moduleAddDiv\"/>\n";
             $("#results").empty().append(html);
         }
