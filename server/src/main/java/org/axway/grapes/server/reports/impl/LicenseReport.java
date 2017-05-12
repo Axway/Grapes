@@ -52,7 +52,7 @@ public class LicenseReport implements Report {
 
     @Override
     public String[] getColumnNames() {
-        return new String[] {"artifact", "license name"};
+        return new String[] {"Group Id", "Artifact Id", "Classifier", "Version" , "Artifact Marked (Do Not Use)", "License Name"};
     }
 
     @Override
@@ -110,27 +110,18 @@ public class LicenseReport implements Report {
         filters.getDecorator().setShowCorporate(Boolean.FALSE);
         filters.getDecorator().setShowThirdparty(Boolean.TRUE);
 
-        List<String> directDeps = new ArrayList<>();
+        Set<String> deps = new HashSet<>();
 
         delivery.getDependencies().forEach(d -> {
             final DbModule module = repoHandler.getModule(d);
             if (module != null) {
                 final List<Dependency> allDependencies = dependencyHandler.getModuleDependencies(module.getId(), filters);
 
-                System.out.println(":: " + d + " found. Deps: " + allDependencies.size());
-
                 allDependencies.forEach(dep -> {
-                    // System.out.println(dep.getTarget().getGavc() + "  " + dep.getTarget().getLicenses());
-                    final Artifact target = dep.getTarget();
-                    final List<String> licenses = target.getLicenses();
-
-                    licenses.forEach(lic -> {
-                        result.addResultRow(new String[] {target.getGavc(), lic});
-                    });
+                    deps.add(dep.getTarget().getGavc());
                 });
             } else {
-                System.out.println(":: " + d + ", module NOT found (added for further processing)");
-                directDeps.add(d);
+                deps.add(d);
             }
         });
 
@@ -139,140 +130,44 @@ public class LicenseReport implements Report {
                 DbCollections.DB_ARTIFACTS,
                 1,
                 this::makeBatchQuery,
-                directDeps,
+                deps,
                 DbArtifact.class,
-                artifact -> {
-                    artifact.getLicenses()
+                a -> {
+                    a.getLicenses()
                             .stream()
                             .filter(lic -> !lic.contains("Axway Software"))
-                            .forEach(lic -> result.addResultRow(new String[] {artifact.getGavc(), lic}));
+                            .forEach(lic -> result.addResultRow(makeResultsRow(a, lic)));
                 });
 
         // If the dependency is referred without classifier then a regexp matching needs to be performed
-        processBatch(repoHandler,
-                DbCollections.DB_ARTIFACTS,
-                1,
-                this::makeBatchQueryRegEx,
-                directDeps,
-                DbArtifact.class,
-                artifact -> {
-                    artifact.getLicenses()
-                            .stream()
-                            .filter(lic -> !lic.contains("Axway Software"))
-                            .forEach(lic -> result.addResultRow(new String[] {artifact.getGavc(), lic}));
-                });
-
-
-        System.out.println("============= End module dep");
-
+//        processBatch(repoHandler,
+//                DbCollections.DB_ARTIFACTS,
+//                1,
+//                this::makeBatchQueryRegEx,
+//                deps,
+//                DbArtifact.class,
+//                artifact -> {
+//                    artifact.getLicenses()
+//                            .stream()
+//                            .filter(lic -> !lic.contains("Axway Software"))
+//                            .forEach(lic -> result.addResultRow(makeResultsRow(artifact, lic)));
+//                });
 
         return result;
     }
-
-
-
-//    private ReportExecution computeResult1(final RepositoryHandler repoHandler, final ReportRequest request, final Delivery delivery) {
-//        ReportExecution result = new ReportExecution(request, getColumnNames());
-//
-//        long start = System.currentTimeMillis();
-//
-//        // final int batch = Integer.parseInt(params.get("batch"));
-//        final int batch = 1;
-//
-//        Set<String> allModules = new TreeSet<>();
-//        loadSubmodulesTree(repoHandler, delivery.getDependencies(), 2, allModules);
-//        long modulesLoaded = System.currentTimeMillis();
-//
-//        System.out.println("=========== modules");
-//        allModules.forEach(System.out::println);
-//
-//
-//        Set<String> dependencies = new TreeSet<>();
-//        dependencies.addAll(delivery.getDependencies()); // for artifacts which are delivery own third party dependencies
-//        processBatch(repoHandler,
-//                DbCollections.DB_MODULES,
-//                1,
-//                this::makeBatchQuery,
-//                new ArrayList<>(allModules),
-//                DbModule.class,
-//                module -> {
-//                    module.getUses()
-//                            .stream()
-//                            .forEach(dependencies::add);
-//                    module.getDependencies()
-//                            .stream()
-//                            .map(DbDependency::getTarget)
-//                            .forEach(dependencies::add);
-//                });
-//        long dependenciesLoaded = System.currentTimeMillis();
-//
-//        System.out.println("=========== dependencies");
-//        dependencies.forEach(System.out::println);
-//
-//        Map<String, String> licenses = new TreeMap<>();
-//        processBatch(repoHandler,
-//                DbCollections.DB_ARTIFACTS,
-//                1,
-//                this::makeBatchQuery,
-//                new ArrayList<>(dependencies),
-//                DbArtifact.class,
-//                artifact -> {
-//                    artifact.getLicenses()
-//                            .stream()
-//                            .filter(lic -> !lic.contains("Axway Software"))
-//                            .forEach(lic -> licenses.put(artifact.getGavc(), lic));
-//                });
-//
-//        processBatch(repoHandler,
-//                DbCollections.DB_ARTIFACTS,
-//                batch,
-//                this::makeBatchQueryRegEx,
-//                delivery.getDependencies(),
-//                DbArtifact.class,
-//                artifact -> {
-//                    artifact.getLicenses()
-//                            .stream()
-//                            .filter(lic -> !lic.contains("Axway Software"))
-//                            .forEach(lic -> licenses.put(artifact.getGavc(), lic));
-//                });
-//
-//        // printDependenciesViaDepHandler(repoHandler, delivery);
-//
-//
-//        System.out.println("=========== licenses");
-//        licenses.forEach((key, value) -> System.out.println(String.format("%s -> %s", key, value)));
-//
-//
-//
-//        long licensesLoaded = System.currentTimeMillis();
-//
-//        addToResult(result, licenses);
-//
-//
-//        LOG.debug(String.format("Loading modules: %s", (modulesLoaded - start)));
-//        LOG.debug(String.format("Loading deps: %s", (dependenciesLoaded - modulesLoaded)));
-//        LOG.debug(String.format("Loading licenses: %s", (licensesLoaded - dependenciesLoaded)));
-//
-//        return result;
-//    }
-
-
-//    private void addToResult(final ReportExecution result, Map<String, String> licenses) {
-//        licenses.entrySet()
-//                .stream()
-////              .filter(entry -> !entry.getValue().contains("Axway Software") )   // internal Axway modules
-//                .forEach(entry -> result.addResultRow(new String[] {entry.getKey(), entry.getValue()}) );
-//    }
 
     private <T> void processBatch(final RepositoryHandler repoHandler,
                                   final String collectionName,
                                   final int batchSize,
                                   final Function<List<String>, String> batchQueryFn,
-                                  final List<String> entries,
+                                  final Set<String> entries,
                                   final Class<T> tClass,
                                   final Consumer<T> consumer) {
 
-        final List<List<String>> batches = splitList(batchSize, entries);
+        List<String> asList = new ArrayList<>();
+        asList.addAll(entries);
+
+        final List<List<String>> batches = splitList(batchSize, asList);
 
         batches.forEach(batch -> {
             final List<T> dbEntry = repoHandler.getListByQuery(collectionName,
@@ -381,4 +276,7 @@ public class LicenseReport implements Report {
         return batches;
     }
 
+    private String[] makeResultsRow(final DbArtifact a, final String lic) {
+        return new String[] {a.getGroupId(), a.getArtifactId(), a.getClassifier(), a.getVersion(), a.getDoNotUse().toString(), lic};
+    }
 }

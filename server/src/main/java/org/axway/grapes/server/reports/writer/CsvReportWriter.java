@@ -63,11 +63,11 @@ public class CsvReportWriter implements MessageBodyWriter<ReportExecution> {
 
     private String computeReport(final ReportExecution reportExecution) throws IOException {
         StringBuilder buffer = new StringBuilder(getHeader(reportExecution));
-        int i = 0;
+        int i;
         final List<String[]> dataList = reportExecution.getData();
         for(String[] row : dataList) {
             for(i = 0; i < row.length; i++) {
-                buffer.append(row[i]);
+                buffer.append(row[i].replaceAll(",", " "));
 
                 if (i < row.length - 1) {
                     buffer.append(COMMA);
