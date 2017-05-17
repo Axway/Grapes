@@ -16,6 +16,8 @@ import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -35,6 +37,8 @@ public class MongodbHandler implements RepositoryHandler {
     private LoadingCache<String, DbCredential> credentialCache;
     // DB connection
     private final DB db;
+
+    private static final Logger LOG = LoggerFactory.getLogger(MongodbHandler.class);
 
     public MongodbHandler(final DataBaseConfig config) throws UnknownHostException {
         final ServerAddress address = new ServerAddress(config.getHost() , config.getPort());
@@ -598,6 +602,7 @@ public class MongodbHandler implements RepositoryHandler {
     public <T> List<T> getListByQuery(final String collection,
                                       final String query,
                                       final Class<T> c) {
+        LOG.info(query);
         final Jongo ds = getJongoDataStore();
         final Iterator<T> it = ds.getCollection(collection).find(query).as(c).iterator();
 
@@ -611,5 +616,11 @@ public class MongodbHandler implements RepositoryHandler {
         }
 
         return results;
+    }
+
+    public long getResultCount(final String collectionName, final String query) {
+        LOG.info(query);
+        final Jongo ds = getJongoDataStore();
+        return ds.getCollection(collectionName).count(query);
     }
 }

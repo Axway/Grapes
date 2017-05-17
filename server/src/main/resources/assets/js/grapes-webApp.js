@@ -25,11 +25,11 @@ function displayProductOptions(){
     $("#targets").empty();
     cleanAction();
     var productIds = "<div class=\"control-group\">\n";
-    productIds += "   <label class=\"control-label\" for=\"productName\" style=\"width: auto;\">Product Logical Name: </label>\n";
+    productIds += "   <label class=\"control-label\" for=\"productName\" style=\"width: auto;\">Product Name: </label>\n";
     productIds += "      <div class=\"controls\"  style=\"margin-left: 165px;\"><select id=\"productName\"></select></div>\n";
     productIds += "</div>\n";
     productIds += "<div class=\"control-group\">\n";
-    productIds += "   <label class=\"control-label\" for=\"productDelivery\" style=\"width: auto;\">Commercial Delivery: </label>\n";
+    productIds += "   <label class=\"control-label\" for=\"productDelivery\" style=\"width: auto;\">Commercial Releases: </label>\n";
     productIds += "      <div class=\"controls\"  style=\"margin-left: 165px;\"><select id=\"productDelivery\"></select></div>\n";
     productIds += "</div>\n";
     $("#ids").empty().append(productIds);
@@ -811,7 +811,17 @@ function getProductDeliveryOverview(delivery, product){
                  html += "</tbody>\n";
                  html += "</table>\n";
             }
-            
+
+
+            if(delivery.dependencies.length > 0) {
+                var arguments = [product, delivery.commercialName, delivery.commercialVersion]
+                    .map(function (e) {
+                        return "'" + e + "'";
+                    })
+                    .join(',');
+                html += "<div id='exportLicensesDiv'> <a href=\"javascript:commercialDeliveriesReport(" + arguments + ")\">Export All Licenses</a> </div>";
+            }
+
             html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
             html += "<thead><tr><th>Dependencies</th></tr></thead>\n";
             html += "<tbody>\n";
@@ -822,14 +832,6 @@ function getProductDeliveryOverview(delivery, product){
 
             html += "</tbody>\n";
             html += "</table>\n";
-
-            var arguments = [product, delivery.commercialName, delivery.commercialVersion]
-                    .map(function(e) {
-                        return "'" + e + "'";
-                    })
-                    .join(',');
-            html += "<div id='exportLicensesDiv'> <a href=\"javascript:commercialDeliveriesReport(" + arguments+ ")\">Export All Licenses</a> </div>";
-
 
             html += "<div id=\"moduleAddDiv\"/>\n";
             $("#results").empty().append(html);

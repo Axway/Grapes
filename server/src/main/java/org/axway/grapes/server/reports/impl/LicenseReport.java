@@ -259,10 +259,15 @@ public class LicenseReport implements Report {
         }
 
         BasicDBObject query = new BasicDBObject();
-        query.append("deliveries.commercialName", new BasicDBObject("$eq", name));
-        query.append("deliveries.commercialVersion", new BasicDBObject("$eq", version));
+        // MongoDb 2.4 does not support $eq for comparison
+        // query.append("deliveries.commercialName", new BasicDBObject("$eq", name));
+        // query.append("deliveries.commercialVersion", new BasicDBObject("$eq", version));
 
-        // LOG.debug(query.toString());
+        // TODO: Switch to using $eq when MongoDb 2.6 available on the host machine
+        query.append("deliveries.commercialName", new BasicDBObject("$in", new String[] {name}));
+        query.append("deliveries.commercialVersion", new BasicDBObject("$in", new String[] {version}));
+
+        //LOG.debug(query.toString());
         return query;
     }
 

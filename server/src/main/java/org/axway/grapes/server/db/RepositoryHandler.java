@@ -367,4 +367,12 @@ public interface RepositoryHandler {
     public <T> Optional<T> getOneByQuery(final String collectionName, final String query, final Class<T> c);
 
     public <T> List<T> getListByQuery(final String collectionName, final String query, final Class<T> c);
+
+    /**
+     * Gets the count of the query results
+     * @param collectionName The collection name to query against
+     * @param query The query part
+     * @return Number of results
+     */
+    public long getResultCount(final String collectionName, final String query);
 }

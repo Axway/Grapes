@@ -330,6 +330,11 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
+    public long getResultCount(String collectionName, String query) {
+        return 0;
+    }
+
+    @Override
     public List<String> getLicenseNames(final FiltersHolder filters) {
         final List<String> names = new ArrayList<String>();
 

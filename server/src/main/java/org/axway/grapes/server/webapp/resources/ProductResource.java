@@ -178,7 +178,7 @@ public class ProductResource extends AbstractResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDeliveries(@PathParam("name") final String name){
         if(LOG.isInfoEnabled()) {
-            LOG.info(String.format("Got a get deliveries request for product %s", name));
+            LOG.info(String.format("Got a get deliveries request for product [%s]", name));
         }
 
         final DbProduct dbProduct = getProductHandler().getProduct(name);
