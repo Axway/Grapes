@@ -86,9 +86,10 @@
                     <#else>
                         <#if isSnapshot()>
                             <div id="promotion_ko"><strong>Snapshot module cannot be promoted!!!</strong><br/></div>
-                        <#else>
-                            <div id="promotion_ko"><strong>The module cannot be promoted!!!</strong><br/></div>
+                            <#else>
+                                <div id="promotion_ko"><strong>The module cannot be promoted!!!</strong><br/></div>
                         </#if>
+
 
                         <#if getMisMatchModules()?has_content >
                             <h3>Warning: some dependencies occurs in different versions</h3>
@@ -139,7 +140,7 @@
                             <table class="table table-bordered table-hover" id="has_to_be_promoted">
                                 <thead>
                                 <tr>
-                                    <td><span><strong>Ordered dependencies to promote</strong></td>
+                                    <td><span><strong>Ordered dependencies to promote</strong></span></td>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -151,8 +152,20 @@
                                 </tbody>
                             </table>
                         </#if>
-                    </#if>
 
+                        <#if getMissingThirdPartyDependencyLicenses()?has_content >
+                            <h3>ThirdParty dependency that has missing license</h3>
+                            <div id="license_missing">
+                                <table class="table table-bordered">
+                                    <#list getMissingThirdPartyDependencyLicenses() as dependendyReport>
+                                        <tbody>
+                                            <td>${dependendyReport.getGavc()}</td>
+                                        </tbody>
+                                    </#list>
+                                </table>
+                            </div>
+                        </#if>
+                    </#if>
                 </div>
             </div>
 		</div>

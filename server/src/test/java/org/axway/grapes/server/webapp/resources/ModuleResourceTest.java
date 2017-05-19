@@ -9,16 +9,14 @@ import com.yammer.dropwizard.auth.AuthenticationException;
 import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.testing.ResourceTest;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
+import org.apache.log4j.Logger;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.DbArtifact;
-import org.axway.grapes.server.db.datamodel.DbCredential;
-import org.axway.grapes.server.db.datamodel.DbLicense;
-import org.axway.grapes.server.db.datamodel.DbModule;
+import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
@@ -44,8 +42,8 @@ public class ModuleResourceTest extends ResourceTest {
     @Override
     protected void setUpResources() throws Exception {
         repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
-        final GrapesServerConfig config =mock(GrapesServerConfig.class);
-        
+        final GrapesServerConfig config = mock(GrapesServerConfig.class);
+
         final ModuleResource resource = new ModuleResource(repositoryHandler, config);
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repositoryHandler), "test auth"));
         addProvider(ViewMessageBodyWriter.class);
@@ -53,7 +51,7 @@ public class ModuleResourceTest extends ResourceTest {
     }
 
     @Test
-    public void getDocumentation(){
+    public void getDocumentation() {
         final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE);
         final ClientResponse response = resource.type(MediaType.TEXT_HTML).get(ClientResponse.class);
 
@@ -103,7 +101,7 @@ public class ModuleResourceTest extends ResourceTest {
     }
 
     @Test
-    public void getAllModuleNames() throws UnknownHostException{
+    public void getAllModuleNames() throws UnknownHostException {
         when(repositoryHandler.getModuleNames((FiltersHolder) anyObject())).thenReturn(Lists.newArrayList("module1"));
 
         final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + ServerAPI.GET_NAMES);
@@ -111,32 +109,34 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        final List<String> results = response.getEntity(new GenericType<List<String>>(){});
+        final List<String> results = response.getEntity(new GenericType<List<String>>() {
+        });
         assertNotNull(results);
         assertEquals(1, results.size());
         assertEquals("module1", results.get(0));
     }
 
     @Test
-    public void getModuleVersions() throws UnknownHostException{
+    public void getModuleVersions() throws UnknownHostException {
         final String moduleName = "moduleTest";
         final String moduleVersion = "1.2.3-4";
         when(repositoryHandler.getModuleVersions(eq(moduleName), (FiltersHolder) anyObject())).thenReturn(Lists.newArrayList(moduleVersion));
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/"+ moduleName + ServerAPI.GET_VERSIONS);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + moduleName + ServerAPI.GET_VERSIONS);
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        final List<String> results = response.getEntity(new GenericType<List<String>>(){});
+        final List<String> results = response.getEntity(new GenericType<List<String>>() {
+        });
         assertNotNull(results);
         assertEquals(1, results.size());
         assertEquals(moduleVersion, results.get(0));
     }
 
     @Test
-    public void getModule(){
-        final DbModule dbModule  = new DbModule();
+    public void getModule() {
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
@@ -153,8 +153,8 @@ public class ModuleResourceTest extends ResourceTest {
     }
 
     @Test
-    public void getAllModules(){
-        final DbModule dbModule  = new DbModule();
+    public void getAllModules() {
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         when(repositoryHandler.getModules((FiltersHolder) anyObject())).thenReturn(Collections.singletonList(dbModule));
@@ -172,7 +172,7 @@ public class ModuleResourceTest extends ResourceTest {
 
     @Test
     public void deleteModule() throws AuthenticationException, UnknownHostException {
-        final DbModule dbModule  = new DbModule();
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
@@ -196,7 +196,7 @@ public class ModuleResourceTest extends ResourceTest {
 
     @Test
     public void promoteModule() throws AuthenticationException, UnknownHostException {
-        final DbModule dbModule  = new DbModule();
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
@@ -212,7 +212,7 @@ public class ModuleResourceTest extends ResourceTest {
     @Test
     public void promoteModuleWithWrongCredentials() throws AuthenticationException, UnknownHostException {
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.WRONG_USER_4TEST, GrapesTestUtils.WRONG_PASSWORD_4TEST));
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/what/ever"+ ServerAPI.PROMOTION);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/what/ever" + ServerAPI.PROMOTION);
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
@@ -220,7 +220,7 @@ public class ModuleResourceTest extends ResourceTest {
 
     @Test
     public void getModuleAncestors() throws UnknownHostException {
-        final DbModule dbModule  = new DbModule();
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         dbModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
@@ -238,12 +238,13 @@ public class ModuleResourceTest extends ResourceTest {
         ancestor.addDependency(dbArtifact.getGavc(), Scope.PROVIDED);
         when(repositoryHandler.getAncestors(eq(dbArtifact), (FiltersHolder) anyObject())).thenReturn(Collections.singletonList(ancestor));
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.GET_ANCESTORS);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.GET_ANCESTORS);
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        final List<Dependency> results = response.getEntity(new GenericType<List<Dependency>>(){});
+        final List<Dependency> results = response.getEntity(new GenericType<List<Dependency>>() {
+        });
         assertNotNull(results);
         assertEquals(1, results.size());
         assertEquals(dbArtifact.getGavc(), results.get(0).getTarget().getGavc());
@@ -253,8 +254,8 @@ public class ModuleResourceTest extends ResourceTest {
     }
 
     @Test
-    public void getModuleDependencies(){
-        final DbModule dbModule  = new DbModule();
+    public void getModuleDependencies() {
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         final DbArtifact dbArtifact = new DbArtifact();
@@ -265,7 +266,7 @@ public class ModuleResourceTest extends ResourceTest {
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
         when(repositoryHandler.getArtifact(dbArtifact.getGavc())).thenReturn(dbArtifact);
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.GET_DEPENDENCIES);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.GET_DEPENDENCIES);
         final ClientResponse response = resource.queryParam(ServerAPI.SCOPE_COMPILE_PARAM, "true")
                 .queryParam(ServerAPI.SHOW_THIRPARTY_PARAM, "true")
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -283,13 +284,13 @@ public class ModuleResourceTest extends ResourceTest {
     }
 
     @Test
-    public void getModuleDependencyReport(){
-        final DbModule dbModule  = new DbModule();
+    public void getModuleDependencyReport() {
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.GET_DEPENDENCIES + ServerAPI.GET_REPORT);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.GET_DEPENDENCIES + ServerAPI.GET_REPORT);
         final ClientResponse response = resource
                 .queryParam(ServerAPI.SCOPE_COMPILE_PARAM, "true")
                 .queryParam(ServerAPI.SHOW_THIRPARTY_PARAM, "true")
@@ -299,8 +300,8 @@ public class ModuleResourceTest extends ResourceTest {
     }
 
     @Test
-    public void getLicenses(){
-        final DbModule dbModule  = new DbModule();
+    public void getLicenses() {
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         final DbArtifact dbArtifact = new DbArtifact();
@@ -320,7 +321,8 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        final List<License> results = response.getEntity(new GenericType<List<License>>(){});
+        final List<License> results = response.getEntity(new GenericType<List<License>>() {
+        });
         assertNotNull(results);
         assertEquals(1, results.size());
         assertEquals(dbLicense.getName(), results.get(0).getName());
@@ -328,12 +330,12 @@ public class ModuleResourceTest extends ResourceTest {
 
     @Test
     public void isPromoted() throws UnknownHostException {
-        final DbModule dbModule  = new DbModule();
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.PROMOTION);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION);
         ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
@@ -352,12 +354,12 @@ public class ModuleResourceTest extends ResourceTest {
 
     @Test
     public void canBePromoted() throws UnknownHostException {
-        final DbModule dbModule  = new DbModule();
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.PROMOTION + ServerAPI.GET_FEASIBLE);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_FEASIBLE);
         ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
@@ -368,95 +370,135 @@ public class ModuleResourceTest extends ResourceTest {
     }
 
     @Test
-    public void getPromotionStatusReport(){
-        final DbModule dbModule  = new DbModule();
+    public void getPromotionStatusReport() {
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
         final ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
-        
+
         PromotionDetails results = response.getEntity(PromotionDetails.class);
         assertNotNull(results);
         assertTrue(results.canBePromoted);
-        
+
     }
-    
+
     @Test
-    public void getPromotionStatusReportForSnapshotVersion(){
-        final DbModule dbModule  = new DbModule();
+    public void getPromotionStatusReportForSnapshotVersion() {
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0-SNAPSHOT");
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
         final ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
-        
+
         PromotionDetails results = response.getEntity(PromotionDetails.class);
         assertNotNull(results);
-        
-        assertFalse(results.canBePromoted);        
+
+        assertFalse(results.canBePromoted);
         assertTrue(results.isSnapshot);
-        
+
     }
 
 
     @Test
-    public void getPromotionStatusReport2(){
-        final DbModule dbModule  = new DbModule();
+    public void getPromotionStatusReport2() {
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0-SNAPSHOT");
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.PROMOTION + ServerAPI.GET_REPORT2);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT2);
         final ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
-        
+
         Map<String, Object> results = response.getEntity(HashMap.class);
         assertNotNull(results);
-        
-        assertFalse((Boolean) results.get("canBePromoted"));        
-        assertFalse(((List)results.get("errors")).isEmpty());
-        
+
+        assertFalse((Boolean) results.get("canBePromoted"));
+        assertFalse(((List) results.get("errors")).isEmpty());
+
     }
-    
+
     @Test
-    public void getPromotionStatusReport2ForSnapshot(){
-        final DbModule dbModule  = new DbModule();
+    public void getPromotionStatusReport2ForSnapshot() {
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0-SNAPSHOT");
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion()+ ServerAPI.PROMOTION + ServerAPI.GET_REPORT2);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT2);
         final ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
-        
+
         Map<String, Object> results = response.getEntity(HashMap.class);
         assertNotNull(results);
-        
-        List<String> errors = (List)results.get("errors");
-        
-        assertFalse((Boolean) results.get("canBePromoted"));        
+
+        List<String> errors = (List) results.get("errors");
+
+        assertFalse((Boolean) results.get("canBePromoted"));
         assertFalse(errors.isEmpty());
-        
+
         assertEquals(errors.get(0), "Version is SNAPSHOT");
-        
+
     }
 
     @Test
-    public void getModuleOrganization(){
-        final DbModule dbModule  = new DbModule();
+    public void getPromotionStatusReport2ThirdPartyLicenseError() {
+        final DbModule dbModule = new DbModule();
+        dbModule.setName("moduleTest");
+        dbModule.setVersion("1.1.0");
+
+        final DbArtifact dbArtifact = new DbArtifact();
+        dbArtifact.setGroupId(GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST);
+        dbArtifact.setArtifactId(GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST);
+        dbArtifact.setVersion(GrapesTestUtils.ARTIFACT_VERSION_4TEST);
+        dbArtifact.setClassifier(GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST);
+        dbArtifact.setExtension(GrapesTestUtils.ARTIFACT_EXTENSION_4TEST);
+        // Setting empty license list to simulate missing license
+        dbArtifact.setLicenses(Collections.<String>emptyList());
+
+        dbModule.addArtifact(dbArtifact);
+        dbModule.addDependency(dbArtifact.getGavc(), Scope.COMPILE);
+
+        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
+        // get the module dependency
+        when(repositoryHandler.getArtifact(dbModule.getDependencies().get(0).getTarget())).thenReturn(dbArtifact);
+
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT2);
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+
+        Map<String, Object> results = response.getEntity(HashMap.class);
+        assertNotNull(results);
+
+        List<String> errors = (List) results.get("errors");
+
+        assertFalse((Boolean) results.get("canBePromoted"));
+        assertFalse(errors.isEmpty());
+        assertEquals(errors.get(0), GrapesTestUtils.MISSING_LICENSE_MESSAGE_4TEST + GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST + GrapesTestUtils.COLON
+                + GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_VERSION_4TEST + GrapesTestUtils.COLON
+                + GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_EXTENSION_4TEST);
+    }
+
+    @Test
+    public void getModuleOrganization() {
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         dbModule.setOrganization(GrapesTestUtils.ORGANIZATION_NAME_4TEST);
@@ -472,7 +514,7 @@ public class ModuleResourceTest extends ResourceTest {
     }
 
     @Test
-    public void checkRedirectionOnGetModuleWithoutVersion(){
+    public void checkRedirectionOnGetModuleWithoutVersion() {
         final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/moduleName");
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
@@ -480,8 +522,8 @@ public class ModuleResourceTest extends ResourceTest {
     }
 
     @Test
-    public void getBuildInfo(){
-        final DbModule dbModule  = new DbModule();
+    public void getBuildInfo() {
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         dbModule.getBuildInfo().put("test", "what a test!");
@@ -492,23 +534,24 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        final Map<String, String> getBuildInfo = response.getEntity(new GenericType<Map<String, String>>(){});
+        final Map<String, String> getBuildInfo = response.getEntity(new GenericType<Map<String, String>>() {
+        });
         assertNotNull(getBuildInfo);
         assertEquals(1, getBuildInfo.size());
         assertEquals("what a test!", getBuildInfo.get("test"));
     }
 
     @Test
-    public void getBuildInfoOnModuleThatDoesNotExist(){
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/doesNotExist/doesNotExist"  + ServerAPI.GET_BUILD_INFO);
+    public void getBuildInfoOnModuleThatDoesNotExist() {
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/doesNotExist/doesNotExist" + ServerAPI.GET_BUILD_INFO);
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
     }
 
     @Test
-    public void postBuildInfo(){
-        final DbModule dbModule  = new DbModule();
+    public void postBuildInfo() {
+        final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
@@ -530,7 +573,7 @@ public class ModuleResourceTest extends ResourceTest {
     }
 
     @Test
-    public void postBuildInfoOnModuleThatDoesNotExist(){
+    public void postBuildInfoOnModuleThatDoesNotExist() {
         final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/doesNotExist/doesNotExist" + ServerAPI.GET_BUILD_INFO);
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);

@@ -26,6 +26,7 @@ public class PromotionReportView extends View {
     private List<Artifact> doNotUseArtifacts = new ArrayList<Artifact>();
     private Map<String , List<String>> mismatchVersions = new HashMap<String, List<String>>();
     private PromotionDetails promotionDetails=new PromotionDetails();
+    private List<Artifact> missingThirdPartyDependencyLicenses = new ArrayList<Artifact>();
 
     public PromotionReportView() {
         super("PromotionReportView.ftl");
@@ -91,7 +92,7 @@ public class PromotionReportView extends View {
             return false;
         }
         return unPromotedDependencies.isEmpty() &&
-                doNotUseArtifacts.isEmpty();
+                doNotUseArtifacts.isEmpty() && missingThirdPartyDependencyLicenses.isEmpty();
     }
 
     public boolean isSnapshot() {
@@ -156,8 +157,19 @@ public class PromotionReportView extends View {
     	promotionDetails.isSnapshot=isSnapshot();
     	promotionDetails.setDoNotUseArtifacts(doNotUseArtifacts);
     	promotionDetails.setUnPromotedDependencies(unPromotedDependencies);
+    	promotionDetails.setMissingThirdPartyDependencyLicenses(missingThirdPartyDependencyLicenses);
     	
     	return promotionDetails;
+    }
+
+    public List<Artifact> getMissingThirdPartyDependencyLicenses() {
+        return missingThirdPartyDependencyLicenses;
+    }
+
+    public void addMissingThirdPartyDependencyLicenses(final Artifact dependency){
+        if(!missingThirdPartyDependencyLicenses.contains(dependency)){
+            missingThirdPartyDependencyLicenses.add(dependency);
+        }
     }
 
 

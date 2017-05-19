@@ -25,6 +25,14 @@ public class GrapesTestUtils {
     public final static String WRONG_USER_4TEST = "wrongUser";
     public final static String WRONG_PASSWORD_4TEST = "wrongPassword";
 
+    public final static String MISSING_LICENSE_GROUPID_4TEST = "org.missing.license";
+    public final static String MISSING_LICENSE_MESSAGE_4TEST = "The module you are trying to promote has dependencies that miss the license information: ";
+    public final static String MISSING_LICENSE_ARTIFACTID_4TEST = "MissingLicense";
+    public static final String ARTIFACT_VERSION_4TEST = "1.2.3";
+    public static final String COLON = ":";
+    public static final String ARTIFACT_CLASSIFIER_4TEST = "classifier";
+    public static final String ARTIFACT_EXTENSION_4TEST = "extension";
+
     public static RepositoryHandler getRepoHandlerMock() {
         try{
             final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);

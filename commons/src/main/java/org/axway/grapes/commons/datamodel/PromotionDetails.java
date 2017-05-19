@@ -16,6 +16,7 @@ public class PromotionDetails {
     public Boolean isSnapshot;
     private List<String> unPromotedDependencies = new ArrayList<String>();
     private List<Artifact> doNotUseArtifacts = new ArrayList<Artifact>();
+    private List<Artifact> missingThirdPartyDependencyLicenses = new ArrayList<Artifact>();
     
     public List<String> getUnPromotedDependencies() {
 		return unPromotedDependencies;
@@ -32,5 +33,12 @@ public class PromotionDetails {
     public List<Artifact> getDoNotUseArtifacts() {
         return doNotUseArtifacts;
     }
-  
+
+    public List<Artifact> getMissingThirdPartyDependencyLicenses() {
+        return missingThirdPartyDependencyLicenses;
+    }
+
+    public void setMissingThirdPartyDependencyLicenses(List<Artifact> missingThirdPartyDependencyLicenses) {
+        this.missingThirdPartyDependencyLicenses = missingThirdPartyDependencyLicenses;
+    }
 }

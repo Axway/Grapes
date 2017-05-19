@@ -18,7 +18,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.*;
 
-import org.eclipse.jetty.util.log.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -215,6 +214,12 @@ public class ModuleHandler {
                 if (artifactDep.getDoNotUse() && !treatedArtifacts.contains(artifactDep.getGavc())) {
                     report.addDoNotUseArtifact(modelMapper.getArtifact(artifactDep));
                     treatedArtifacts.add(artifactDep.getGavc());
+                }
+
+                // Checks if the module has third party dependency license missing
+                // filter the corporate dependencies and check the third party
+                if (!filters.getCorporateFilter().filter(dependency) && artifactDep.getLicenses().isEmpty()){
+                    report.addMissingThirdPartyDependencyLicenses(modelMapper.getArtifact(artifactDep));
                 }
             }
         }
