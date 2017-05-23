@@ -593,6 +593,7 @@ public class MongodbHandler implements RepositoryHandler {
     public <T> Optional<T> getOneByQuery(final String collection,
                                          final String query,
                                          final Class<T> c) {
+        LOG.info(query);
         final Jongo ds = getJongoDataStore();
         final Iterator<T> it = ds.getCollection(collection).find(query).as(c).iterator();
 

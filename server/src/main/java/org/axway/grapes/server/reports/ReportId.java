@@ -4,7 +4,8 @@ package org.axway.grapes.server.reports;
  * Enumeration created for type safety of the report id identification
  */
 public enum ReportId {
-    LICENSES_PER_PRODUCT_RELEASE(1);
+    LICENSES_PER_PRODUCT_RELEASE(1),
+    DIFFS_PER_PRODUCT_RELEASE(2);
 
     private int id;
     ReportId(int reportId) {
