@@ -1,6 +1,8 @@
 package org.axway.grapes.server.reports.writer;
 
+import org.axway.grapes.server.reports.impl.Report;
 import org.axway.grapes.server.reports.impl.ReportExecution;
+import org.axway.grapes.server.reports.impl.ReportsRegistry;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -14,6 +16,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Provider
 @Produces("text/csv")
@@ -82,6 +85,13 @@ public class CsvReportWriter implements MessageBodyWriter<ReportExecution> {
 
     private String getHeader(ReportExecution e) {
         final StringBuilder b = new StringBuilder("Report Execution");
+        final Optional<Report> byId = ReportsRegistry.findById(e.getRequest().getReportId());
+        if(byId.isPresent()) {
+            b.append(LINE_SEP);
+            b.append(byId.get().getName());
+            b.append(LINE_SEP);
+            b.append(byId.get().getDescription());
+        }
         b.append(LINE_SEP);
         b.append("Parameters: ");
         b.append(LINE_SEP);
