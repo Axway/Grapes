@@ -13,7 +13,6 @@ import org.axway.grapes.server.reports.utils.DataFetchingUtils;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.*;
-import java.util.function.Function;
 
 /**
  * Report showing evolution of licenses between two commercial releases of a product
@@ -27,11 +26,12 @@ public class DiffsLicenseReport implements Report {
     private static final String BATCH_TEMPLATE_REGEX = "{ \"_id\" : { \"$regex\" : \"%s\"}}";
 
     static {
-        parameters.add(new ParameterDefinition("name", "Commercial Name"));
-        parameters.add(new ParameterDefinition("version1", "Commercial Version 1"));
-        parameters.add(new ParameterDefinition("version2", "Commercial Version 2"));
-    }
+        parameters.add(new ParameterDefinition("name1", "Commercial Release Name"));
+        parameters.add(new ParameterDefinition("version1", "Commercial Version"));
 
+        parameters.add(new ParameterDefinition("name2", "Commercial Release Name"));
+        parameters.add(new ParameterDefinition("version2", "Commercial Version"));
+    }
 
     @Override
     public String getName() {
@@ -62,16 +62,17 @@ public class DiffsLicenseReport implements Report {
     public ReportExecution execute(RepositoryHandler repoHandler, ReportRequest request) {
 
         final Map<String, String> params = request.getParamValues();
-        final String name = params.get("name");
+        final String name1 = params.get("name1");
         final String version1 = params.get("version1");
+
+        final Optional<Delivery> cd1 = utils.getCommercialDelivery(repoHandler, name1, version1);
+        check(cd1, name1, version1);
+
+        final String name2 = params.get("name2");
         final String version2 = params.get("version2");
 
-
-        final Optional<Delivery> cd1 = utils.getCommercialDelivery(repoHandler, name, version1);
-        check(cd1, name, version1);
-
-        final Optional<Delivery> cd2 = utils.getCommercialDelivery(repoHandler, name, version2);
-        check(cd2, name, version2);
+        final Optional<Delivery> cd2 = utils.getCommercialDelivery(repoHandler, name2, version2);
+        check(cd2, name2, version2);
 
         // Deps are in the following form: group-id:artifact-id:version
         Set<String> deps1 = utils.getDeliveryDependencies(repoHandler, cd1.get());

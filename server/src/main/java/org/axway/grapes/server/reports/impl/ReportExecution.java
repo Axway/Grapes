@@ -21,7 +21,7 @@ public class ReportExecution {
     private String[] resultColumnNames;
     private List<String[]> tabularData;
 
-    public ReportExecution(ReportRequest request, String[] colNames) {
+    public ReportExecution(final ReportRequest request, final String[] colNames) {
         this.request = request;
         this.resultColumnNames = colNames;
 
