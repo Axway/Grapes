@@ -37,6 +37,7 @@ function displayProductOptions(){
     var productActions = "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
     productActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='createProduct();'>New Product</button>\n";
     productActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='getProductOverview();'>Overview</button>\n";
+    productActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='compareLicenses();'>Compare Licenses</button>\n";
     productActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='deleteProduct();'>Delete</button>\n";
     productActions += "</div>\n";
     $("#action").empty().append(productActions);
@@ -72,7 +73,7 @@ function displayModuleOptions(){
 	moduleActions += "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
 	moduleActions += "   <div id=\"moduleActions\" class=\"row-fluid\">\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleOverview();' id=\"overviewButton\">Overview</button>\n";
-	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleDependencies();'>Dependencies</button>\n";
+	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleDependencies();'>Internal Dependencies</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleThirdParty();'>Third Party</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleAncestors();'>Ancestors</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModulePromotionReport();'>Promotion Report</button>\n";
@@ -592,6 +593,76 @@ function deleteOrganization(organizationId){
 
      cleanCreateArtifact();
  }
+
+ function compareLicenses() {
+     if($('input:checked', '#targets').size() == 0){
+         $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
+         $("#anyAlert").show();
+         return;
+     }
+
+     var html = "<h3>License Comparison Between Commercial Releases</h3>";
+
+     var deliveries = $("#productDelivery")[0];
+     var count = deliveries.children.length;
+
+     //
+     // The first entry is empty, so it must be at least couple of different commercial releases
+     // for the comparison to make sense
+     //
+     if(count < 3) {
+         html = "You need at least two commercial release to perform the comparison";
+     } else {
+         html += "Compare with: ";
+         html += "<select id='version2'>";
+
+         var target = $('input:checked', '#targets').val();
+
+         for(var i = 0; i < count; i++) {
+            var option = deliveries.childNodes[i];
+
+            if(option.innerText !== '' && option.value !== target) {
+                html += "<option value='";
+                html += option.value;
+                html += "'>";
+                html += option.innerText;
+                html += "</option>";
+            }
+         }
+
+         html += "</select>";
+
+         html +="<button type='button' class='btn' id='execute-report' style='margin-left:10px; margin-bottom: 12px;' onclick='getLicensesComparisonsReport()'>Compare Licenses</button>";
+     }
+
+     $("#results").empty().append(html);
+ }
+
+ function getLicensesComparisonsReport() {
+     var target = $('input:checked', '#targets').val();
+
+     var cn1 = getCommercialName(target);
+     var cv1 = getCommercialVersion(target);
+
+     target = $('#version2').val();
+     var cn2 = getCommercialName(target);
+     var cv2 = getCommercialVersion(target);
+
+     $('#execute-report').prop("disabled", "disabled");
+     runComparisonReport(cn1, cv1, cn2, cv2, function(result) {
+         var html = '';
+         if(result instanceof Error) {
+            html = "<div style='color:red'>";
+            html += result;
+            html += "</div>";
+         } else {
+            html = reportJSONToUI('License Comparison Between Commercial Releases', result);
+         }
+
+         $("#results").empty().append(html);
+     });
+ }
+
 function getProductOverview(){
     var target = $('input:checked', '#targets').val();
     if(target == null){
