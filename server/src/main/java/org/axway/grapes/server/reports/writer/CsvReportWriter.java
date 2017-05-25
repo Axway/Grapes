@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,10 +22,18 @@ import java.util.Optional;
 @Provider
 @Produces("text/csv")
 public class CsvReportWriter implements MessageBodyWriter<ReportExecution> {
-     private static final String LINE_SEP = System.getProperty("line.separator");
-     private static final String COMMA = ",";
+    private static final String LINE_SEP = System.getProperty("line.separator");
+    private static final String COMMA = ",";
 
-     private String report = "N/A";
+    private String report = "N/A";
+
+    // The serialization framework invokes the methods in the following sequence:
+    // getSize and writeTo. To provide a meaningful response to getSize, the actual
+    // serialized form of the report execution needs to be produced. The writeTo
+    // should only retrieve this already computed form and write it to the output
+    // stream. For avoiding the reserialization, csvReports collection is used.
+    //
+    private Map<ReportExecution, String> csvReports = new HashMap<>();
 
     @Override
     public boolean isWriteable(Class<?> aClass,
@@ -41,9 +50,9 @@ public class CsvReportWriter implements MessageBodyWriter<ReportExecution> {
                         Annotation[] annotations,
                         MediaType mediaType) {
 
-        // TODO: cache it uniquely
         try {
             report = this.computeReport(reportExecution);
+            csvReports.put(reportExecution, report);
             return report.length();
         } catch (IOException e) {
             report = "N/A";
@@ -59,17 +68,21 @@ public class CsvReportWriter implements MessageBodyWriter<ReportExecution> {
                         MediaType mediaType,
                         MultivaluedMap<String, Object> multivaluedMap,
                         OutputStream outputStream)
-            throws IOException, WebApplicationException {
+            throws IOException {
 
-        outputStream.write(report.getBytes("UTF-8"));
+        if (csvReports.containsKey(reportExecution)) {
+            outputStream.write(csvReports.get(reportExecution).getBytes("UTF-8"));
+        } else {
+            outputStream.write("Report execution not available".getBytes("UTF-8"));
+        }
     }
 
     private String computeReport(final ReportExecution reportExecution) throws IOException {
         StringBuilder buffer = new StringBuilder(getHeader(reportExecution));
         int i;
         final List<String[]> dataList = reportExecution.getData();
-        for(String[] row : dataList) {
-            for(i = 0; i < row.length; i++) {
+        for (String[] row : dataList) {
+            for (i = 0; i < row.length; i++) {
                 buffer.append(row[i].replaceAll(",", " "));
 
                 if (i < row.length - 1) {
@@ -78,7 +91,8 @@ public class CsvReportWriter implements MessageBodyWriter<ReportExecution> {
             }
 
             buffer.append(LINE_SEP);
-        };
+        }
+        ;
 
         return buffer.toString();
     }
@@ -86,7 +100,7 @@ public class CsvReportWriter implements MessageBodyWriter<ReportExecution> {
     private String getHeader(ReportExecution e) {
         final StringBuilder b = new StringBuilder("Report Execution");
         final Optional<Report> byId = ReportsRegistry.findById(e.getRequest().getReportId());
-        if(byId.isPresent()) {
+        if (byId.isPresent()) {
             b.append(LINE_SEP);
             b.append(byId.get().getName());
             b.append(LINE_SEP);
@@ -97,7 +111,7 @@ public class CsvReportWriter implements MessageBodyWriter<ReportExecution> {
         b.append(LINE_SEP);
         final Map<String, String> paramValues = e.getRequest().getParamValues();
 
-        for(String key : paramValues.keySet()) {
+        for (String key : paramValues.keySet()) {
             b.append(key);
             b.append(COMMA);
             b.append(paramValues.get(key));
@@ -107,7 +121,7 @@ public class CsvReportWriter implements MessageBodyWriter<ReportExecution> {
         b.append(LINE_SEP);
         b.append(LINE_SEP);
 
-        for(String col : e.getResultColumnNames()) {
+        for (String col : e.getResultColumnNames()) {
             b.append(col);
             b.append(COMMA);
         }

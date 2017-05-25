@@ -28,4 +28,12 @@ public class ReportRequest {
     public void setParamValues(Map<String, String> paramValues) {
         this.paramValues = paramValues;
     }
+
+    @Override
+    public String toString() {
+        return "ReportRequest{" +
+                "reportId=" + reportId +
+                ", paramValues=" + paramValues +
+                '}';
+    }
 }
