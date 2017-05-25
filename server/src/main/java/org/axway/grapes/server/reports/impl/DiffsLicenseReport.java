@@ -7,7 +7,11 @@ import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbCollections;
 import org.axway.grapes.server.db.mongo.BatchProcessingUtils;
+import org.axway.grapes.server.reports.Report;
 import org.axway.grapes.server.reports.ReportId;
+import org.axway.grapes.server.reports.models.ParameterDefinition;
+import org.axway.grapes.server.reports.models.ReportExecution;
+import org.axway.grapes.server.reports.models.ReportRequest;
 import org.axway.grapes.server.reports.utils.DataFetchingUtils;
 
 import javax.ws.rs.WebApplicationException;

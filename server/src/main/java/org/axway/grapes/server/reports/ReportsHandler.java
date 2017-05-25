@@ -1,9 +1,11 @@
-package org.axway.grapes.server.reports.impl;
+package org.axway.grapes.server.reports;
 
 import org.apache.commons.jcs.JCS;
 import org.apache.commons.jcs.access.CacheAccess;
 import org.apache.commons.jcs.access.exception.CacheException;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.reports.models.ReportExecution;
+import org.axway.grapes.server.reports.models.ReportRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,8 +1,13 @@
-package org.axway.grapes.server.reports.impl;
+package org.axway.grapes.server.webapp.resources;
 
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.reports.Report;
+import org.axway.grapes.server.reports.ReportsRegistry;
+import org.axway.grapes.server.reports.models.ParameterDefinition;
+import org.axway.grapes.server.reports.models.ReportExecution;
+import org.axway.grapes.server.reports.models.ReportRequest;
 import org.axway.grapes.server.webapp.resources.AbstractResource;
 
 import javax.ws.rs.*;

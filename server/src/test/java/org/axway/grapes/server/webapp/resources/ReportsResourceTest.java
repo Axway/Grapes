@@ -2,44 +2,23 @@ package org.axway.grapes.server.webapp.resources;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.yammer.dropwizard.auth.AuthenticationException;
-import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.testing.ResourceTest;
-import com.yammer.dropwizard.views.ViewMessageBodyWriter;
 import org.axway.grapes.commons.api.ServerAPI;
-import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.Delivery;
-import org.axway.grapes.commons.datamodel.License;
-import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
-import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.DbArtifact;
-import org.axway.grapes.server.db.datamodel.DbCredential;
-import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.axway.grapes.server.db.datamodel.DbProduct;
-import org.axway.grapes.server.reports.ReportId;
-import org.axway.grapes.server.reports.impl.ReportRequest;
-import org.axway.grapes.server.reports.impl.ReportResource;
+import org.axway.grapes.server.reports.models.ReportRequest;
 import org.axway.grapes.server.reports.writer.CsvReportWriter;
-import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.mockito.ArgumentCaptor;
 
-import javax.mail.search.RecipientStringTerm;
-import javax.swing.text.html.Option;
 import javax.ws.rs.core.MediaType;
-import java.net.UnknownHostException;
 import java.util.*;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 

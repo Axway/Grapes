@@ -1,4 +1,4 @@
-package org.axway.grapes.server.reports.impl;
+package org.axway.grapes.server.reports.models;
 
 public class ParameterDefinition {
     private String name;

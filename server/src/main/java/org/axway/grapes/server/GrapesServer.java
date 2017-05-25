@@ -13,7 +13,7 @@ import org.axway.grapes.server.config.Messages;
 import org.axway.grapes.server.db.DBException;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
-import org.axway.grapes.server.reports.impl.ReportResource;
+import org.axway.grapes.server.webapp.resources.ReportResource;
 import org.axway.grapes.server.reports.writer.CsvReportWriter;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.axway.grapes.server.webapp.healthcheck.DataBaseCheck;

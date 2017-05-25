@@ -1,4 +1,4 @@
-package org.axway.grapes.server.reports.impl;
+package org.axway.grapes.server.reports.models;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

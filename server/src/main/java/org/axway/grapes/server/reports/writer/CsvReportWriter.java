@@ -1,11 +1,10 @@
 package org.axway.grapes.server.reports.writer;
 
-import org.axway.grapes.server.reports.impl.Report;
-import org.axway.grapes.server.reports.impl.ReportExecution;
-import org.axway.grapes.server.reports.impl.ReportsRegistry;
+import org.axway.grapes.server.reports.Report;
+import org.axway.grapes.server.reports.models.ReportExecution;
+import org.axway.grapes.server.reports.ReportsRegistry;
 
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;

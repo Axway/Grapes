@@ -6,8 +6,8 @@ import com.yammer.dropwizard.config.Environment;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.reports.writer.CsvReportWriter;
-import org.axway.grapes.server.reports.impl.ReportResource;
-import org.axway.grapes.server.reports.impl.ReportsRegistry;
+import org.axway.grapes.server.webapp.resources.ReportResource;
+import org.axway.grapes.server.reports.ReportsRegistry;
 import org.axway.grapes.server.webapp.healthcheck.DataModelVersionCheck;
 
 /**
