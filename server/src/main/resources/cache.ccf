@@ -11,3 +11,16 @@ jcs.default.cacheattributes.ShrinkerIntervalSeconds=60
 jcs.default.cacheattributes.MaxSpoolPerRun=500
 jcs.default.elementattributes=org.apache.commons.jcs.engine.ElementAttributes
 jcs.default.elementattributes.IsEternal=false
+
+
+jcs.reports=
+jcs.reports.cacheattributes=org.apache.commons.jcs.engine.CompositeCacheAttributes
+jcs.reports.cacheattributes.MaxObjects=100
+jcs.reports.cacheattributes.MemoryCacheName=org.apache.commons.jcs.engine.memory.lru.LRUMemoryCache
+
+jcs.reports.cacheattributes.UseMemoryShrinker=true
+jcs.reports.cacheattributes.MaxMemoryIdleTimeSeconds=3600
+jcs.reports.cacheattributes.ShrinkerIntervalSeconds=300
+jcs.reports.cacheattributes.MaxSpoolPerRun=300
+jcs.reports.elementattributes=org.apache.commons.jcs.engine.ElementAttributes
+jcs.reports.elementattributes.IsEternal=false
