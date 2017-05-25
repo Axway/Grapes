@@ -593,7 +593,7 @@ public class MongodbHandler implements RepositoryHandler {
     public <T> Optional<T> getOneByQuery(final String collection,
                                          final String query,
                                          final Class<T> c) {
-        LOG.info(query);
+        LOG.debug(query);
         final Jongo ds = getJongoDataStore();
         final Iterator<T> it = ds.getCollection(collection).find(query).as(c).iterator();
 
@@ -603,7 +603,7 @@ public class MongodbHandler implements RepositoryHandler {
     public <T> List<T> getListByQuery(final String collection,
                                       final String query,
                                       final Class<T> c) {
-        LOG.info(query);
+        LOG.debug(query);
         final Jongo ds = getJongoDataStore();
         final Iterator<T> it = ds.getCollection(collection).find(query).as(c).iterator();
 
@@ -620,7 +620,7 @@ public class MongodbHandler implements RepositoryHandler {
     }
 
     public long getResultCount(final String collectionName, final String query) {
-        LOG.info(query);
+        LOG.debug(query);
         final Jongo ds = getJongoDataStore();
         return ds.getCollection(collectionName).count(query);
     }
