@@ -159,6 +159,7 @@ function displayLicenseOptions(){
 	var licenseActions = "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='createLicense();'>New</button>\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='getLicenseOverview();'>Overview</button>\n";
+	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='getLicenseUsage();'>Used in Products</button>\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='approveLicense();'>Approve</button>\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='rejectLicense();'>Reject</button>\n";
 	licenseActions += "</div>\n";
@@ -885,7 +886,7 @@ function getProductDeliveryOverview(delivery, product){
 
 
             if(delivery.dependencies.length > 0) {
-                var arguments = [product, delivery.commercialName, delivery.commercialVersion]
+                var arguments = [delivery.commercialName, delivery.commercialVersion]
                     .map(function (e) {
                         return "'" + e + "'";
                     })
@@ -1550,6 +1551,24 @@ function getLicenseOverview(){
     $("#extra-action").empty().append("<button type=\"button\" class=\"btn btn-danger\" style=\"margin:2px;\" onclick=\"deleteLicense('"+licenseId+"');\">Delete</button>\n");
     $("#extra-action").append("<button type=\"button\" class=\"btn\" style=\"margin:2px;\" onclick=\"editLicense('"+licenseId+"');\">Edit</button>\n");
 }
+
+function getLicenseUsage() {
+    $("#extra-action").empty();
+    $("#results").empty().append('<img src="/assets/img/spinner.gif" alt="" id="loader-indicator" />');
+
+
+    if($('input[name=licenseId]:checked', '#targets').size() == 0){
+        $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
+        $("#anyAlert").show();
+        return;
+    }
+    var licenseId = $('input[name=licenseId]:checked', '#targets').val();
+
+    runLicenseUsageReport(licenseId, function(results) {
+        $("#results").empty().append(reportJSONToUI("Products using " + licenseId, results));
+    });
+}
+
 
 function deleteLicense(licenseId){
     $("#toDelete").text(licenseId);
