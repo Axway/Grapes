@@ -1,4 +1,4 @@
-package org.axway.grapes.server.db.mongo;
+package org.axway.grapes.server.db.datamodel;
 
 import org.axway.grapes.server.db.DataUtils;
 import org.junit.Rule;

@@ -36,10 +36,11 @@ public class ReportsHandler {
     public ReportExecution execute(final Report def, final ReportRequest request) {
         final ReportExecution cachedExecution = cache.get(request.toString());
 
-        if (cachedExecution != null) {
-            LOG.info("Returning cached report execution");
-            return cachedExecution;
-        }
+        // TODO: Enable cache after testing
+//        if (cachedExecution != null) {
+//            LOG.info("Returning cached report execution");
+//            return cachedExecution;
+//        }
 
         LOG.debug(String.format("Execution report [%s]", request.getReportId()));
         final ReportExecution execution = def.execute(repositoryHandler, request);

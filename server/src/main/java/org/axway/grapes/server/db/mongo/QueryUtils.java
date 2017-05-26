@@ -47,4 +47,8 @@ public class QueryUtils {
         return query.toString();
     }
 
+    public static String makeQueryAllDeliveries() {
+        return "{'deliveries.0' : {$exists: true}}";
+    }
+
 }

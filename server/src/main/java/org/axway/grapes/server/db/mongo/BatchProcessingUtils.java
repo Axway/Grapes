@@ -11,9 +11,10 @@ import java.util.function.Function;
  */
 public class BatchProcessingUtils {
 
+    private int batchSize = 1;
+
     public <T> void processBatch(final RepositoryHandler repoHandler,
                                  final String collectionName,
-                                 final int batchSize,
                                  final Function<List<String>, String> batchQueryFn,
                                  final Collection<String> entries,
                                  final Class<T> resultClass,
@@ -22,7 +23,7 @@ public class BatchProcessingUtils {
         List<String> asList = new ArrayList<>();
         asList.addAll(entries);
 
-        final List<List<String>> batches = splitList(batchSize, asList);
+        final List<List<String>> batches = splitList(this.batchSize, asList);
 
         batches.forEach(batch -> {
             final List<T> dbEntry = repoHandler.getListByQuery(collectionName,
@@ -35,6 +36,10 @@ public class BatchProcessingUtils {
             dbEntry.forEach(consumer);
         });
 
+    }
+
+    public void setBatchSize(int value) {
+        this.batchSize = value;
     }
 
     private <T> List<List<T>> splitList(final int batchSize, List<T> list) {

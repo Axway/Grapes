@@ -5,7 +5,8 @@ package org.axway.grapes.server.reports;
  */
 public enum ReportId {
     LICENSES_PER_PRODUCT_RELEASE(1),
-    DIFFS_PER_PRODUCT_RELEASE(2);
+    DIFFS_PER_PRODUCT_RELEASE(2),
+    LICENSE_ON_PRODUCT_RELEASES(3);
 
     private int id;
     ReportId(int reportId) {

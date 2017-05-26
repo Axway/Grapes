@@ -92,7 +92,6 @@ public class LicenseReport implements Report {
         // If the dependency is referred with classifier, so it's fairly easy to query by exact match against id
         batchUtils.processBatch(repoHandler,
                 DbCollections.DB_ARTIFACTS,
-                1,
                 batch -> QueryUtils.quoteIds(batch, BATCH_TEMPLATE),
                 deps,
                 DbArtifact.class,
@@ -147,33 +146,6 @@ public class LicenseReport implements Report {
 //
 //    }
 
-//    private String makeBatchQuery(final List<String> ids) {
-//        if(ids == null) {
-//            throw new IllegalArgumentException("Ids must not be null");
-//        }
-//
-//        StringBuilder b = new StringBuilder();
-//
-//        ids.forEach(entry -> {
-//            b.append("'");
-//            b.append(entry);
-//            b.append("',");
-//        });
-//        b.setLength(b.length() - 1);
-//
-//        String result = String.format(BATCH_TEMPLATE, b.toString());
-//        // LOG.debug(result);
-//        return result;
-//    }
-
-
-//    private <T> List<List<T>> splitList(final int batchSize, List<T> list) {
-//        List<List<T>> batches = new LinkedList<>();
-//        for (int i = 0; i < list.size(); i += batchSize) {
-//            batches.add(list.subList(i, Math.min(i + batchSize, list.size())));
-//        }
-//        return batches;
-//    }
 
     private String[] makeResultsRow(final DbArtifact a, final String lic) {
         return new String[] {a.getGroupId(), a.getArtifactId(), a.getClassifier(), a.getVersion(), a.getDoNotUse().toString(), lic};

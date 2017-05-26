@@ -1,14 +1,18 @@
 package org.axway.grapes.server.reports.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.axway.grapes.commons.datamodel.Delivery;
 import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.server.core.DependencyHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbCollections;
 import org.axway.grapes.server.db.datamodel.DbModule;
 import org.axway.grapes.server.db.datamodel.DbProduct;
-import org.axway.grapes.server.db.mongo.QueryUtils;
+import org.axway.grapes.server.db.mongo.BatchProcessingUtils;
+import org.axway.grapes.server.reports.TriConsumer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +20,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import java.util.stream.Collectors;
+
+import static org.axway.grapes.server.db.mongo.QueryUtils.*;
+import static org.axway.grapes.server.db.DataUtils.*;
 
 /**
  * Class for retrieving commonly used objects
@@ -24,13 +32,14 @@ import java.util.stream.Collectors;
 public class DataFetchingUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataFetchingUtils.class);
+    private BatchProcessingUtils batchUtils = new BatchProcessingUtils();
 
     public Optional<Delivery> getCommercialDelivery(final RepositoryHandler repoHandler,
                                                     final String name,
                                                     final String version) {
 
         final Optional<DbProduct> productOptional = repoHandler.getOneByQuery(DbCollections.DB_PRODUCT,
-                QueryUtils.makeQuery(name, version),
+                makeQuery(name, version),
                 DbProduct.class);
 
         if(!productOptional.isPresent()) {
@@ -58,7 +67,9 @@ public class DataFetchingUtils {
         return Optional.of(filtered.get(0));
     }
 
-    public Set<String> getDeliveryDependencies(final RepositoryHandler repoHandler, final Delivery delivery) {
+    public Set<String> getDeliveryDependencies(final RepositoryHandler repoHandler,
+                                               final Delivery delivery) {
+
         DependencyHandler dependencyHandler = new DependencyHandler(repoHandler);
 
         final FiltersHolder filters = new FiltersHolder();
@@ -76,10 +87,53 @@ public class DataFetchingUtils {
                     deps.add(dep.getTarget().getGavc());
                 });
             } else {
-                deps.add(d);
+                //
+                // This stripping occurs because the dep.getTarget().getGavc() returns the
+                // "short form" of the artifact group_id:artifact_id:version
+                //
+                if(isFullGAVC(d)) {
+                    deps.add(strip(d, 2));
+                } else {
+                    deps.add(d);
+                }
             }
         });
 
         return deps;
     }
+
+
+    /**
+     *
+     * @param repoHandler
+     * @param deliveries
+     * @param consumer Consumer for
+     */
+    public void processDeliveryLicenses(final RepositoryHandler repoHandler,
+                                        final Set<Delivery> deliveries,
+                                        final TriConsumer<String> consumer) {
+        // dependency, license name
+        deliveries.forEach(del -> {
+            LOG.debug(String.format("Processing delivery [%s %s]", del.getCommercialName(), del.getCommercialVersion()));
+            final Set<String> deliveryDependencies = getDeliveryDependencies(repoHandler, del);
+
+            batchUtils.processBatch(repoHandler,
+                    DbCollections.DB_ARTIFACTS,
+                    batch -> String.format("{ \"_id\" : { \"$regex\" : \"%s\"}}", StringUtils.join(batch, ',')),
+                    deliveryDependencies,
+                    DbArtifact.class,
+                    a -> {
+                        a.getLicenses()
+                                .stream()
+                                .filter(lic -> !lic.contains("Axway Software"))
+                                .forEach(lic -> {
+                                    consumer.accept(String.format("%s %s", del.getCommercialName(), del.getCommercialVersion()),
+                                            a.getGavc(),
+                                            lic);
+                                });
+                    });
+        });
+    }
+
+
 }

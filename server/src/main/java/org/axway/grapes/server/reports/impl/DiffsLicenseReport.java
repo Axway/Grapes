@@ -16,6 +16,7 @@ import org.axway.grapes.server.reports.utils.DataFetchingUtils;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.xml.crypto.Data;
 import java.util.*;
 
 /**
@@ -89,7 +90,6 @@ public class DiffsLicenseReport implements Report {
 
         batchProcessingUtils.processBatch(repoHandler,
                                         DbCollections.DB_ARTIFACTS,
-                               1,
                                         batch -> String.format(BATCH_TEMPLATE_REGEX, StringUtils.join(batch, ',')),
                                         all,
                                         DbArtifact.class,
@@ -118,9 +118,16 @@ public class DiffsLicenseReport implements Report {
                           final Map<String, String> map,
                           final Set<String> entries,
                           final String label) {
+
+
         entries.forEach(entry -> {
-            if (map.containsKey(entry)) {
-                result.addResultRow(new String[]{map.get(entry), label});
+            String key = entry;
+            if(DataUtils.isFullGAVC(entry)) {
+                key = DataUtils.strip(entry, 2);
+            }
+
+            if (map.containsKey(key)) {
+                result.addResultRow(new String[]{map.get(key), label});
             }
         });
 

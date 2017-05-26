@@ -2,9 +2,12 @@ package org.axway.grapes.server.db.datamodel;
 
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
+import org.axway.grapes.server.db.DataUtils;
 import org.junit.Test;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class DbArtifactTest {
 
@@ -56,4 +59,15 @@ public class DbArtifactTest {
         assertEquals(dbArtifact.getGavc(), DbArtifact.generateGAVC(dbArtifact.getGroupId(), dbArtifact.getArtifactId(), dbArtifact.getVersion(), dbArtifact.getClassifier(), dbArtifact.getExtension()));
 
     }
+
+    @Test
+    public void testNonFullGAVC() {
+        assertFalse(DataUtils.isFullGAVC("com.axway.webtrader:webtrader-userservices-installer:2.1.0-2"));
+    }
+
+    @Test
+    public void testFullGAVC() {
+        assertTrue(DataUtils.isFullGAVC("org.antlr:gunit:3.4::jar"));
+    }
+
 }

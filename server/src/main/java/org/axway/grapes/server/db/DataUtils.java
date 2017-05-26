@@ -226,6 +226,10 @@ public final class DataUtils {
         return submodules;
     }
 
+    public static boolean isFullGAVC(final String entry) {
+        return entry.split(":").length > 3;
+    }
+
     public static String strip(final String gavc, final int stripCount) {
         if(gavc == null) {
             throw new IllegalArgumentException("Input must not be null");
