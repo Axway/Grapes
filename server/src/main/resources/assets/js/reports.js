@@ -1,12 +1,12 @@
 // Executes reports against the server
 
-function executeReportAsCSV(id, title) {
-    var payloadStr = document.getElementById(id).innerText;
+function executeAndCSVExport(payload, title) {
+    var payloadData = ("string" === typeof payload) ? payload : JSON.stringify(payload);
 
     $.ajax({
         type: "POST",
         url: "/reports/execution",
-        data: payloadStr,
+        data: payloadData,
         contentType: "application/json",
         headers: {
             'Accept' : 'text/csv'
@@ -21,45 +21,49 @@ function executeReportAsCSV(id, title) {
         }
     });
 }
+function executeJSON(payload, cb) {
+    var payloadData = ("string" === typeof payload) ? payload : JSON.stringify(payload);
 
-function runComparisonReport(n1, v1, n2, v2, resultsCb) {
     $.ajax({
         type: "POST",
         url: "/reports/execution",
-        data: JSON.stringify(getReportRequestPayload(2, ['name1=' + n1, 'version1=' + v1, 'name2=' + n2, 'version2=' + v2])),
+        data: payloadData,
         contentType: "application/json",
         headers: {
             'Accept' : 'application/json'
         },
         success: function (data) {
-            resultsCb(data);
+            cb(data);
         },
         error: function (xhr, ajaxOptions, thrownError) {
-            resultsCb(new Error(thrownError.message + ' ' + xhr.responseText));
+            cb(new Error(thrownError.message + ' ' + xhr.responseText));
         }
     });
 }
 
 
+function runLicenseUsageReport(licenseName, resultsCb) {
+    executeJSON(getReportRequestPayload(3, ['license=' + licenseName]), resultsCb);
+}
 
 
-function commercialDeliveriesReport(product, commercialName, commercialVersion) {
-    $.ajax({
-        type: "POST",
-        url: "/reports/execution",
-        data: JSON.stringify(getPayload(commercialName, commercialVersion)),
-        contentType: "application/json",
-        headers: {
-            'Accept' : 'text/csv'
-        },
-        success: function (data) {
-            var blob = new Blob([data], {type: "text/csv;charset=utf-8"});
-            saveAs(blob, commercialName + " " + commercialVersion + " - Third Party Licenses.csv");
-        },
-        error: function (xhr, ajaxOptions, thrownError) {
-            console.error('Error executing report ' + thrownError);
-        }
-    });
+function runComparisonReport(n1, v1, n2, v2, resultsCb) {
+    executeJSON(
+        getReportRequestPayload(2, ['name1=' + n1, 'version1=' + v1, 'name2=' + n2, 'version2=' + v2]),
+        resultsCb);
+}
+
+
+function commercialDeliveriesReport(commercialName, commercialVersion) {
+    executeAndCSVExport(
+        getReportRequestPayload(1, ['name=' + commercialName, 'version=' + commercialVersion]),
+        commercialName + " " + commercialVersion + " - Third Party Licenses.csv"
+    );
+}
+
+function executeCSVExportFromId(id, title) {
+    var payloadStr = document.getElementById(id).innerText;
+    return executeAndCSVExport(payloadStr, title);
 }
 
 function getReportRequestPayload(id, paramNameValues) {
@@ -73,16 +77,6 @@ function getReportRequestPayload(id, paramNameValues) {
     });
 
     return result;
-}
-
-function getPayload(name, version) {
-    return {
-        'reportId' : 1,
-        'paramValues': {
-           'name': name,
-           'version': version
-        }
-    };
 }
 
 // Product Name / 1.2.4 -> Product Name
@@ -104,7 +98,7 @@ function getIndex(entry, sep, pos) {
 }
 
 function reportJSONToUI(desc, response) {
-    var html = "<a href='#' onclick='executeReportAsCSV(\"request\",\"" + desc + ".csv\")'>Export Report as CSV</a>";
+    var html = "<a href='#' onclick='executeCSVExportFromId(\"request\",\"" + desc + ".csv\")'>Export Report as CSV</a>";
 
     // Store it for later being able to execute the request once again.
     html += "<div id='request' style='display:none'>";
