@@ -12,21 +12,22 @@ import java.util.*;
 
 /**
  * Promotion Report View
- *
+ * <p>
  * <p>This view handle the promotion report. It contains the dependencies that are not promoted.</p>
- *
  */
 
-@JsonSerialize(using= PromotionReportSerializer.class)
+@JsonSerialize(using = PromotionReportSerializer.class)
 public class PromotionReportView extends View {
 
     private Module rootModule;
     private List<String> unPromotedDependencies = new ArrayList<String>();
     private Map<String, PromotionReportView> dependencyReports = new HashMap<String, PromotionReportView>();
     private List<Artifact> doNotUseArtifacts = new ArrayList<Artifact>();
-    private Map<String , List<String>> mismatchVersions = new HashMap<String, List<String>>();
-    private PromotionDetails promotionDetails=new PromotionDetails();
+    private Map<String, List<String>> mismatchVersions = new HashMap<String, List<String>>();
+    private PromotionDetails promotionDetails = new PromotionDetails();
     private List<Artifact> missingThirdPartyDependencyLicenses = new ArrayList<Artifact>();
+    // Errors to be displayed when a module dependency problem is detected
+    private List<String> dependencyProblems = new ArrayList<String>();
 
     public PromotionReportView() {
         super("PromotionReportView.ftl");
@@ -41,7 +42,7 @@ public class PromotionReportView extends View {
     }
 
     public void addUnPromotedDependency(final String dependencyId) {
-        if(!unPromotedDependencies.contains(dependencyId)){
+        if (!unPromotedDependencies.contains(dependencyId)) {
             unPromotedDependencies.add(dependencyId);
         }
     }
@@ -51,7 +52,7 @@ public class PromotionReportView extends View {
     }
 
     public void addDependencyPromotionReport(final String moduleId, final PromotionReportView report) {
-        if(moduleId != null && report != null){
+        if (moduleId != null && report != null) {
             dependencyReports.put(moduleId, report);
 
             // Add children reports
@@ -74,12 +75,12 @@ public class PromotionReportView extends View {
     public List<PromotionReportView> getReportsWithDoNotUseArtifacts() {
         final List<PromotionReportView> reports = new ArrayList<PromotionReportView>();
 
-        if(!getDoNotUseArtifacts().isEmpty()){
+        if (!getDoNotUseArtifacts().isEmpty()) {
             reports.add(this);
         }
 
-        for(final PromotionReportView report: dependencyReports.values()){
-            if(!report.getDoNotUseArtifacts().isEmpty()){
+        for (final PromotionReportView report : dependencyReports.values()) {
+            if (!report.getDoNotUseArtifacts().isEmpty()) {
                 reports.add(report);
             }
         }
@@ -88,7 +89,7 @@ public class PromotionReportView extends View {
     }
 
     public Boolean canBePromoted() {
-        if(isSnapshot()){
+        if (isSnapshot()) {
             return false;
         }
         return unPromotedDependencies.isEmpty() &&
@@ -99,39 +100,38 @@ public class PromotionReportView extends View {
         return getRootModule().getVersion().contains("SNAPSHOT");
     }
 
-    public Set<String> getMisMatchModules(){
+    public Set<String> getMisMatchModules() {
         return mismatchVersions.keySet();
     }
 
-    public List<String> getMisMatchVersions(final String moduleName){
+    public List<String> getMisMatchVersions(final String moduleName) {
         return mismatchVersions.get(moduleName);
     }
 
     public void compute() {
         /* Order the module to promote */
-         final Comparator<String> promotionPlanComparator = new PromotionPlanComparator(dependencyReports);
+        final Comparator<String> promotionPlanComparator = new PromotionPlanComparator(dependencyReports);
         Collections.sort(unPromotedDependencies, promotionPlanComparator);
 
         /* Identify the mismatch versions */
         // Collect all the modules names and versions
-        for(final PromotionReportView promotionReport: getAllDependencyReport()){
+        for (final PromotionReportView promotionReport : getAllDependencyReport()) {
             final Module module = promotionReport.getRootModule();
             final List<String> versions = mismatchVersions.get(module.getName());
 
-            if(versions == null){
+            if (versions == null) {
                 mismatchVersions.put(module.getName(), Lists.newArrayList(module.getVersion()));
-            }
-            else if(!versions.contains(module.getVersion())){
+            } else if (!versions.contains(module.getVersion())) {
                 versions.add(module.getVersion());
             }
         }
 
         // Remove the modules that appears in only one version
         final Iterator<String> moduleNames = mismatchVersions.keySet().iterator();
-        while (moduleNames.hasNext()){
+        while (moduleNames.hasNext()) {
             final String moduleName = moduleNames.next();
             final List<String> versions = mismatchVersions.get(moduleName);
-            if(versions.size() == 1 ){
+            if (versions.size() == 1) {
                 moduleNames.remove();
             }
         }
@@ -139,7 +139,7 @@ public class PromotionReportView extends View {
 
     private List<PromotionReportView> getAllDependencyReport() {
         final List<PromotionReportView> reports = new ArrayList<PromotionReportView>();
-        for(final PromotionReportView report: dependencyReports.values()){
+        for (final PromotionReportView report : dependencyReports.values()) {
             reports.addAll(report.getAllDependencyReport());
         }
         reports.add(this);
@@ -147,29 +147,33 @@ public class PromotionReportView extends View {
         return reports;
     }
 
-    public List<String> getPromotionPlan(){
+    public List<String> getPromotionPlan() {
         return unPromotedDependencies;
     }
-    
-    public PromotionDetails promotionDetails()
-    {
-    	promotionDetails.canBePromoted=canBePromoted();
-    	promotionDetails.isSnapshot=isSnapshot();
-    	promotionDetails.setDoNotUseArtifacts(doNotUseArtifacts);
-    	promotionDetails.setUnPromotedDependencies(unPromotedDependencies);
-    	promotionDetails.setMissingThirdPartyDependencyLicenses(missingThirdPartyDependencyLicenses);
-    	
-    	return promotionDetails;
+
+    public PromotionDetails promotionDetails() {
+        promotionDetails.canBePromoted = canBePromoted();
+        promotionDetails.setDependencyProblems(dependencyProblems);
+
+        return promotionDetails;
     }
 
     public List<Artifact> getMissingThirdPartyDependencyLicenses() {
         return missingThirdPartyDependencyLicenses;
     }
 
-    public void addMissingThirdPartyDependencyLicenses(final Artifact dependency){
-        if(!missingThirdPartyDependencyLicenses.contains(dependency)){
+    public void addMissingThirdPartyDependencyLicenses(final Artifact dependency) {
+        if (!missingThirdPartyDependencyLicenses.contains(dependency)) {
             missingThirdPartyDependencyLicenses.add(dependency);
         }
+    }
+
+    public List<String> getDependencyProblems() {
+        return dependencyProblems;
+    }
+
+    public void setDependencyProblems(List<String> dependencyProblems) {
+        this.dependencyProblems = dependencyProblems;
     }
 
 
@@ -186,12 +190,11 @@ public class PromotionReportView extends View {
             final PromotionReportView report1 = dependencyReports.get(module1);
             final PromotionReportView report2 = dependencyReports.get(module2);
 
-            if(report1.canBePromoted() ||
-                    report2.getUnPromotedDependencies().contains(module1)){
+            if (report1.canBePromoted() ||
+                    report2.getUnPromotedDependencies().contains(module1)) {
                 return -1;
-            }
-            else if(report2.canBePromoted() ||
-                    report1.getUnPromotedDependencies().contains(module2)){
+            } else if (report2.canBePromoted() ||
+                    report1.getUnPromotedDependencies().contains(module2)) {
                 return 1;
             }
 

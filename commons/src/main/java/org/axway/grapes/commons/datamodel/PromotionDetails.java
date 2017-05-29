@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Promotion Model Class
- *
+ * <p>
  * <P> Model Objects are used in the communication with the Grapes server. These objects are serialized/un-serialized in JSON objects to be exchanged via http REST calls.
  *
  * @author jdcoffre
@@ -13,32 +13,13 @@ import java.util.List;
 public class PromotionDetails {
 
     public Boolean canBePromoted;
-    public Boolean isSnapshot;
-    private List<String> unPromotedDependencies = new ArrayList<String>();
-    private List<Artifact> doNotUseArtifacts = new ArrayList<Artifact>();
-    private List<Artifact> missingThirdPartyDependencyLicenses = new ArrayList<Artifact>();
-    
-    public List<String> getUnPromotedDependencies() {
-		return unPromotedDependencies;
-	}
+    private List<String> dependencyProblems = new ArrayList<String>();
 
-	public void setUnPromotedDependencies(List<String> unPromotedDependencies) {
-		this.unPromotedDependencies = unPromotedDependencies;
-	}
-
-	public void setDoNotUseArtifacts(List<Artifact> doNotUseArtifacts) {
-		this.doNotUseArtifacts = doNotUseArtifacts;
-	}
-
-    public List<Artifact> getDoNotUseArtifacts() {
-        return doNotUseArtifacts;
+    public List<String> getDependencyProblems() {
+        return dependencyProblems;
     }
 
-    public List<Artifact> getMissingThirdPartyDependencyLicenses() {
-        return missingThirdPartyDependencyLicenses;
-    }
-
-    public void setMissingThirdPartyDependencyLicenses(List<Artifact> missingThirdPartyDependencyLicenses) {
-        this.missingThirdPartyDependencyLicenses = missingThirdPartyDependencyLicenses;
+    public void setDependencyProblems(List<String> dependencyProblems) {
+        this.dependencyProblems = dependencyProblems;
     }
 }

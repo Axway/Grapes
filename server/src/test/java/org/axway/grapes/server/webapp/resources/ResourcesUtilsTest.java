@@ -1,27 +1,20 @@
 package org.axway.grapes.server.webapp.resources;
 
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.yammer.dropwizard.testing.ResourceTest;
-import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.Module;
-import org.axway.grapes.server.db.datamodel.DbModule;
+import org.axway.grapes.commons.datamodel.PromotionDetails;
 import org.axway.grapes.server.webapp.views.PromotionReportView;
-import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import java.util.*;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
 
 
 public class ResourcesUtilsTest {
-
 
 
     @Test
@@ -47,19 +40,22 @@ public class ResourcesUtilsTest {
         promotionViewTest.addUnPromotedDependency(artifactUnpromotedDependency.getGavc());
 
         // pass data to the method
-        Map<String, Object> testResult = ResourcesUtils.checkPromotionErrors(promotionViewTest);
+        PromotionReportView testResult = ResourcesUtils.checkPromotionErrors(promotionViewTest);
 
         // create expected result data
-        Map<String, Object> expectedResult = new HashMap<String, Object>();
-        expectedResult.put("canBePromoted", false);
+        PromotionDetails expectedResult = new PromotionDetails();
+        expectedResult.canBePromoted = false;
+
         List<String> expectedErrorsList = new ArrayList<String>();
         expectedErrorsList.add("DO_NOT_USE marked dependencies detected: CheckPromotion:DoNotUse:version:classifier:extension");
         expectedErrorsList.add("Un promoted dependencies detected: CheckPromotion:UnpromotedDependency:version:classifier:extension");
         expectedErrorsList.add("The module you are trying to promote has dependencies that miss the license information: CheckPromotion:MissingLicense:version:classifier:extension");
-        expectedResult.put("errors", expectedErrorsList);
+
+        expectedResult.setDependencyProblems(expectedErrorsList);
 
         // assert if the output from the method equals to the expected data
-        assertEquals(expectedResult, testResult);
+        assertEquals(expectedResult.canBePromoted, testResult.promotionDetails().canBePromoted);
+        assertEquals(expectedResult.getDependencyProblems(), testResult.getDependencyProblems());
     }
 
     @Test
@@ -76,14 +72,15 @@ public class ResourcesUtilsTest {
         promotionViewTest.setRootModule(module);
 
         // check promotion status
-        Map<String, Object> testResult = ResourcesUtils.checkPromotionErrors(promotionViewTest);
+        PromotionReportView testResult = ResourcesUtils.checkPromotionErrors(promotionViewTest);
 
         // initialize expected result map
-        Map<String, Object> expectedResult = new HashMap<String, Object>();
-        expectedResult.put("canBePromoted", true);
+        PromotionDetails expectedResult = new PromotionDetails();
+        expectedResult.canBePromoted = true;
         List<String> expectedErrorsList = Collections.emptyList();
-        expectedResult.put("errors", expectedErrorsList);
+        expectedResult.setDependencyProblems(expectedErrorsList);
 
-        assertEquals(expectedResult, testResult);
+        assertEquals(expectedResult.canBePromoted, testResult.promotionDetails().canBePromoted);
+        assertEquals(expectedResult.getDependencyProblems(), testResult.getDependencyProblems());
     }
 }

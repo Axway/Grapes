@@ -9,14 +9,16 @@ import com.yammer.dropwizard.auth.AuthenticationException;
 import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.testing.ResourceTest;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
-import org.apache.log4j.Logger;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.*;
+import org.axway.grapes.server.db.datamodel.DbArtifact;
+import org.axway.grapes.server.db.datamodel.DbCredential;
+import org.axway.grapes.server.db.datamodel.DbLicense;
+import org.axway.grapes.server.db.datamodel.DbModule;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
@@ -405,7 +407,7 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(results);
 
         assertFalse(results.canBePromoted);
-        assertTrue(results.isSnapshot);
+        assertTrue(results.getDependencyProblems().get(0).equals("Version is SNAPSHOT"));
 
     }
 
@@ -423,11 +425,11 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        Map<String, Object> results = response.getEntity(HashMap.class);
-        assertNotNull(results);
+        PromotionDetails results = response.getEntity(PromotionDetails.class);
+        assertNotNull(results.getDependencyProblems());
 
-        assertFalse((Boolean) results.get("canBePromoted"));
-        assertFalse(((List) results.get("errors")).isEmpty());
+        assertFalse(results.canBePromoted);
+        assertFalse(results.getDependencyProblems().isEmpty());
 
     }
 
@@ -444,12 +446,12 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        Map<String, Object> results = response.getEntity(HashMap.class);
+        PromotionDetails results = response.getEntity(PromotionDetails.class);
         assertNotNull(results);
 
-        List<String> errors = (List) results.get("errors");
+        List<String> errors = results.getDependencyProblems();
 
-        assertFalse((Boolean) results.get("canBePromoted"));
+        assertFalse(results.canBePromoted);
         assertFalse(errors.isEmpty());
 
         assertEquals(errors.get(0), "Version is SNAPSHOT");
@@ -477,6 +479,7 @@ public class ModuleResourceTest extends ResourceTest {
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
         // get the module dependency
         when(repositoryHandler.getArtifact(dbModule.getDependencies().get(0).getTarget())).thenReturn(dbArtifact);
+        when(repositoryHandler.getRootModuleOf(dbArtifact.getGavc())).thenReturn(dbModule);
 
         final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT2);
         final ClientResponse response = resource
@@ -484,14 +487,13 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        Map<String, Object> results = response.getEntity(HashMap.class);
-        assertNotNull(results);
+        PromotionDetails results = response.getEntity(PromotionDetails.class);
+        List<String> problems = results.getDependencyProblems();
+        assertNotNull(problems);
 
-        List<String> errors = (List) results.get("errors");
-
-        assertFalse((Boolean) results.get("canBePromoted"));
-        assertFalse(errors.isEmpty());
-        assertEquals(errors.get(0), GrapesTestUtils.MISSING_LICENSE_MESSAGE_4TEST + GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST + GrapesTestUtils.COLON
+        assertFalse(results.canBePromoted);
+        assertFalse(problems.isEmpty());
+        assertEquals(problems.get(0), GrapesTestUtils.MISSING_LICENSE_MESSAGE_4TEST + GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST + GrapesTestUtils.COLON
                 + GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_VERSION_4TEST + GrapesTestUtils.COLON
                 + GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_EXTENSION_4TEST);
     }

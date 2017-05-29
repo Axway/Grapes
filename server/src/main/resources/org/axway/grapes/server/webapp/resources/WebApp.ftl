@@ -76,7 +76,7 @@
                                         <button type="button" class="btn btn-inverse" style="margin-left:8px;" id="moduleButton" onclick='displayModuleOptions();'>Modules</button>
                                     </div>
                                     <div class="row-fluid" style="padding:4px">
-                                        <button type="button" class="btn btn-inverse" style="margin-left:8px;" onclick='displayArtifactOptions();'>Artifacts</button>
+                                        <button type="button" id="artifactButton" class="btn btn-inverse" style="margin-left:8px;" onclick='displayArtifactOptions();'>Artifacts</button>
                                     </div>
                                     <div class="row-fluid" style="padding:4px">
                                         <button type="button" class="btn btn-inverse" style="margin-left:8px;" onclick='displayLicenseOptions();'>Licenses</button>

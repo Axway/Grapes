@@ -117,7 +117,7 @@ function displayArtifactOptions(){
 	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='getArtifactOverview();'>Overview</button>\n";
 	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='getArtifactAncestors();'>Ancestors</button>\n";
 	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='doNotUseArtifact();'>Do not use</button>\n";
-	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='getArtifactLicenses();'>Licenses</button>\n";
+	artifactActions += "   <button type=\"button\" id=\"licensesButton\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='getArtifactLicenses();'>Licenses</button>\n";
 	artifactActions += "</div>\n";
 	$("#action").empty().append(artifactActions);
 	$("#action-perform").empty();
@@ -157,7 +157,7 @@ function displayLicenseOptions(){
 	$("#filters").empty().append(licenseFilters);
 	var licenseActions = "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='createLicense();'>New</button>\n";
-	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='getLicenseOverview();'>Overview</button>\n";
+	licenseActions += "   <button type=\"button\" id=\"licenseOverview\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='getLicenseOverview();'>Overview</button>\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='approveLicense();'>Approve</button>\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='rejectLicense();'>Reject</button>\n";
 	licenseActions += "</div>\n";
@@ -836,6 +836,31 @@ function getModuleLink(moduleName){
 	return "/webapp?moduleName=" + name + "&moduleVersion=" + version;
 }
 
+function getArtifactLink(artifact){
+    artifact = artifact.trim();
+	var indexKey = artifact.indexOf(':');
+	var nextIndexKey = artifact.indexOf(':', indexKey + 1);
+	var lastIndexKey =  artifact.lastIndexOf(':');
+	var groupId = artifact.substring(0, indexKey);
+	var artifactId = artifact.substring(indexKey + 1, nextIndexKey);
+	// get the version if there is an extension of the dependency else substring to the end of the string
+	if(lastIndexKey != nextIndexKey) {
+	    var version = artifact.substring(nextIndexKey + 1, lastIndexKey - 1);
+	} else {
+	    var version = artifact.substring(lastIndexKey + 1);
+	}
+
+    jQuery(function(){
+        jQuery('#artifactButton').click();
+    });
+
+	getArtifactTarget(groupId, artifactId, version, 'targets');
+}
+
+function getLicenseLink(licenseId) {
+    getLicenseTarget(licenseId, 'targets');
+}
+
 function getBuildFromJenkinsURL(jenkinsBuildUrl){
 	var urlElements = jenkinsBuildUrl.split("/");
 	return "#" + urlElements[urlElements.length - 2];
@@ -1164,7 +1189,7 @@ function getModulePromotionReport(){
 
 	$.ajax({
             type: "GET",
-            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/promotion/report?fullRecursive=true" ,
+            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/promotion/report2?fullRecursive=true" ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -1681,14 +1706,12 @@ var moduleName=getNameAndVersion('moduleName');
 var moduleVersion=getNameAndVersion('moduleVersion');		
 var str = window.location.href;		
 var strval = str.indexOf(moduleName);
-	if (strval > 0) {
-		jQuery(function(){
+if (strval > 0) {
+	jQuery(function(){
 		jQuery('#moduleButton').click();
-		});
+	});
 
-		getModuleTarget(moduleName,moduleVersion,'false','targets');
-				
-		
+	getModuleTarget(moduleName,moduleVersion,'false','targets');
 }
 
 <!-- gets targeted module name and version from the url -->
@@ -1737,7 +1760,7 @@ function getModuleTarget(moduleNameFieldValue, moduleVersionFieldValue, promoted
 				html += moduleId;
 				html += "</label>"
 			});
-			
+
 			$("#" + targetedFieldValue).append(html);
 		}
     }).done(function(){
@@ -1745,7 +1768,7 @@ function getModuleTarget(moduleNameFieldValue, moduleVersionFieldValue, promoted
             $("input:radio[name=moduleId]:first").attr('checked', true);
             jQuery(function(){
         		jQuery('#overviewButton').click();
-        		});
+        	});
         }, 500);
     });
 }
@@ -1783,4 +1806,110 @@ function loadTargetedModuleVersion(moduleName, mVersion){
 	    $("#" + "moduleVersion").empty();
 	}
 }); 
+}
+
+function getArtifactTarget(artifactGroupIdFieldValue, artifactIdFieldValue, artifactVersionFieldValue, targetedFieldValue){
+	$("#" + targetedFieldValue).empty();
+	$('.alert').hide();
+	cleanAction();
+	var groupId = artifactGroupIdFieldValue;
+	var artifactId = artifactIdFieldValue;
+	var version = artifactVersionFieldValue;
+
+	var queryParams = "";
+	if(groupId != '-' && groupId != null){
+		queryParams += "groupId="+ groupId +"&"
+	}
+	if(artifactId != '-' && artifactId != null){
+		queryParams += "artifactId="+ artifactId +"&"
+	}
+	if(version != '-' && version != null){
+    		queryParams += "version="+ version
+    }
+
+	$.ajax({
+            type: "GET",
+            accept: {
+                json: 'application/json'
+            },
+            url: "/artifact/all?" + queryParams ,
+            data: {},
+            dataType: "json",
+            success: function(data, textStatus) {
+                var html = "";
+                $.each(data, function(i, artifact) {
+                    var gavc = artifact.groupId + ":" + artifact.artifactId + ":" +artifact.version + ":";
+                    if(typeof artifact.classifier!='undefined'){
+                        gavc+= artifact.classifier;
+                    }
+                    gavc+= ":";
+                    if(typeof artifact.extension!='undefined'){
+                        gavc+= artifact.extension;
+                    }
+
+                    html += "<label class=\"radio\">"
+                    html += "<input type=\"radio\" name=\"gavc\" value=\""+ gavc+ "\" onclick=\"cleanAction()\">";
+                    html += gavc;
+                    html += "</label>"
+                });
+
+                $("#" + targetedFieldValue).append(html);
+            }
+    }).done(function(){
+
+            setTimeout(function(){
+                $('#groupId').val(groupId).trigger('change');
+                setTimeout(function(){
+                    $('#version').val(version).trigger('change');
+                     setTimeout(function(){
+                        $('#artifactId').val(artifactId);
+                     }, 300);
+                }, 300);
+                $("input:radio[name=gavc]:first").attr('checked', true);
+                 jQuery(function(){
+                    jQuery('#licensesButton').click();
+                 });
+                }, 500);
+    });
+}
+
+function getLicenseTarget(licenseIdFieldValue, targetedFieldValue){
+	$("#" + targetedFieldValue).empty();
+	$('.alert').hide();
+	cleanAction();
+	var licenseId = licenseIdFieldValue;
+
+	var queryParams = "";
+	if(licenseId != '-' && licenseId != null){
+		queryParams += "licenseId="+ licenseId
+	}
+
+	$.ajax({
+            type: "GET",
+            accept: {
+                json: 'application/json'
+            },
+            url: "/license/names?" + queryParams ,
+            data: {},
+            dataType: "json",
+            success: function(data, textStatus) {
+                var html = "";
+                $.each(data, function(i, licenseName) {
+                    html += "<label class=\"radio\">"
+                    html += "<input type=\"radio\" name=\"licenseId\" value=\""+ licenseName + "\" onclick=\"cleanAction()\">";
+                    html += licenseName;
+                    html += "</label>"
+                });
+
+                $("#" + targetedFieldId).append(html);
+            }
+    }).done(function(){
+        setTimeout(function(){
+              $('#licenseName').val(artifactId);
+              $("input:radio[name=licenseId]:first").attr('checked', true);
+               jQuery(function(){
+                  jQuery('#licenseOverview').click();
+               });
+            }, 500);
+    });
 }

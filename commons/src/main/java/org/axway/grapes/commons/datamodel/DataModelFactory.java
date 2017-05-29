@@ -170,20 +170,16 @@ public final class DataModelFactory {
 	 * Generates a PromotionDetails regarding the parameters.
 	 *
 	 * @param canBePromoted Boolean
-	 * @param isSnapshot Boolean
-	 * @param unPromotedDependencies List<String>
-	 * @param doNotUseArtifacts List<Artifact>
+	 * @param dependencyProblems List<String>
 	 * @return PromotionDetails
 	 * @throws IOException
 	 */
-	public static PromotionDetails createPromotionDetails(final Boolean canBePromoted, final Boolean isSnapshot, final List<String> unPromotedDependencies, final List<Artifact> doNotUseArtifacts) throws IOException{
+	public static PromotionDetails createPromotionDetails(final Boolean canBePromoted, final List<String> dependencyProblems) throws IOException{
         try{
             final PromotionDetails promotionDetails = new PromotionDetails();
 
             promotionDetails.canBePromoted=canBePromoted;
-            promotionDetails.isSnapshot=isSnapshot;
-            promotionDetails.setUnPromotedDependencies(unPromotedDependencies);
-            promotionDetails.setDoNotUseArtifacts(doNotUseArtifacts);
+            promotionDetails.setDependencyProblems(dependencyProblems);
 
             return promotionDetails;
         }

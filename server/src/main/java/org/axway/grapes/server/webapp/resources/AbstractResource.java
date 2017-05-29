@@ -242,7 +242,7 @@ public abstract class AbstractResource extends View {
      * @throws IOException
      */
     public String getPromotionDetailsJsonModel() throws IOException {
-        return JsonUtils.serialize(DataModelFactory.createPromotionDetails(false,false,new ArrayList<String>(),new ArrayList<Artifact>()));
+        return JsonUtils.serialize(DataModelFactory.createPromotionDetails(false, new ArrayList<String>()));
     }
 
     /**
