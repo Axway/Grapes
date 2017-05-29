@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Module Handler
- *
+ * <p>
  * <p>Manages all operation regarding Modules. It can, get/update Modules of the database.</p>
  *
  * @author jdcoffre
@@ -43,13 +43,10 @@ public class ModuleHandler {
     }
 
     private void initCache() {
-        try
-        {
-            cache = JCS.getInstance( "default" );
-        }
-        catch ( CacheException e )
-        {
-            LOG.warn(String.format( "Problem initializing cache: %s %s", e.getMessage(), e ) );
+        try {
+            cache = JCS.getInstance("default");
+        } catch (CacheException e) {
+            LOG.warn(String.format("Problem initializing cache: %s %s", e.getMessage(), e));
         }
     }
 
@@ -58,7 +55,7 @@ public class ModuleHandler {
      *
      * @param dbModule DbModule
      */
-    public void store(final DbModule dbModule){
+    public void store(final DbModule dbModule) {
         repositoryHandler.store(dbModule);
     }
 
@@ -75,14 +72,14 @@ public class ModuleHandler {
     /**
      * Returns the available module names regarding the filters
      *
-     * @param name String
+     * @param name    String
      * @param filters FiltersHolder
      * @return List<String>
      */
     public List<String> getModuleVersions(final String name, final FiltersHolder filters) {
         final List<String> versions = repositoryHandler.getModuleVersions(name, filters);
 
-        if(versions.isEmpty()){
+        if (versions.isEmpty()) {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
                     .entity("Module " + name + " does not exist.").build());
         }
@@ -99,7 +96,7 @@ public class ModuleHandler {
     public DbModule getModule(final String moduleId) {
         final DbModule dbModule = repositoryHandler.getModule(moduleId);
 
-        if(dbModule == null){
+        if (dbModule == null) {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
                     .entity("Module " + moduleId + " does not exist.").build());
         }
@@ -116,7 +113,7 @@ public class ModuleHandler {
         final DbModule module = getModule(moduleId);
         repositoryHandler.deleteModule(module.getId());
 
-        for(final String gavc: DataUtils.getAllArtifacts(module)){
+        for (final String gavc : DataUtils.getAllArtifacts(module)) {
             repositoryHandler.deleteArtifact(gavc);
         }
     }
@@ -134,7 +131,7 @@ public class ModuleHandler {
         final FiltersHolder filters = new FiltersHolder();
         final ArtifactHandler artifactHandler = new ArtifactHandler(repositoryHandler);
 
-        for(final String gavc: DataUtils.getAllArtifacts(module)){
+        for (final String gavc : DataUtils.getAllArtifacts(module)) {
             licenses.addAll(artifactHandler.getArtifactLicenses(gavc, filters));
         }
 
@@ -149,7 +146,7 @@ public class ModuleHandler {
     public void promoteModule(final String moduleId) {
         final DbModule module = getModule(moduleId);
 
-        for(final String gavc: DataUtils.getAllArtifacts(module)){
+        for (final String gavc : DataUtils.getAllArtifacts(module)) {
             final DbArtifact artifact = repositoryHandler.getArtifact(gavc);
             artifact.setPromoted(true);
             repositoryHandler.store(artifact);
@@ -165,12 +162,12 @@ public class ModuleHandler {
      * @return PromotionReportView
      */
     public PromotionReportView getPromotionReport(final String moduleId) {
-        if(LOG.isDebugEnabled()) {
+        if (LOG.isDebugEnabled()) {
             LOG.debug(String.format(":: Starting promo report %s", moduleId));
         }
 
         final PromotionReportView fromCache = cache.get(moduleId);
-        if(null != fromCache) {
+        if (null != fromCache) {
             return fromCache;
         }
 
@@ -183,7 +180,7 @@ public class ModuleHandler {
         final PromotionReportView report = new PromotionReportView();
         report.setRootModule(DataModelFactory.createModule(module.getName(), module.getVersion()));
 
-        if(!report.isSnapshot()) {
+        if (!report.isSnapshot()) {
             // filters initialization
             final FiltersHolder filters = new FiltersHolder();
             filters.addFilter(new PromotedFilter(false));
@@ -218,14 +215,25 @@ public class ModuleHandler {
 
                 // Checks if the module has third party dependency license missing
                 // filter the corporate dependencies and check the third party
-                if (!filters.getCorporateFilter().filter(dependency) && artifactDep.getLicenses().isEmpty()){
-                    report.addMissingThirdPartyDependencyLicenses(modelMapper.getArtifact(artifactDep));
+                List<String> artifactLicenses = artifactDep.getLicenses();
+                if (!filters.getCorporateFilter().filter(dependency)) {
+                    if (artifactLicenses.isEmpty()) {
+                        report.addMissingThirdPartyDependencyLicenses(modelMapper.getArtifact(artifactDep));
+                    } else {
+                        // Check if the existing license name exists in the database
+                        for (String licenseName : artifactLicenses) {
+                            DbLicense currentLicense = repositoryHandler.getLicense(licenseName);
+                            if (currentLicense == null) {
+                                report.addMissingThirdPartyDependencyLicenses(modelMapper.getArtifact(artifactDep));
+                            }
+                        }
+                    }
                 }
             }
         }
 
         report.compute();
-        if(LOG.isDebugEnabled()) {
+        if (LOG.isDebugEnabled()) {
             LOG.debug(String.format(":: Done promo report %s", moduleId));
         }
 
@@ -236,9 +244,9 @@ public class ModuleHandler {
     private void removeDuplicates(List<Dependency> deps) {
         Map<String, Dependency> left = new HashMap<String, Dependency>();
 
-        for(Dependency d : deps) {
+        for (Dependency d : deps) {
             String key = d.getTarget().getGavc();
-            if(!left.containsKey(key)) {
+            if (!left.containsKey(key)) {
                 left.put(key, d);
             }
         }
@@ -248,8 +256,8 @@ public class ModuleHandler {
     }
 
     public DbOrganization getOrganization(final DbModule module) {
-        if(module.getOrganization() == null ||
-                module.getOrganization().isEmpty()){
+        if (module.getOrganization() == null ||
+                module.getOrganization().isEmpty()) {
             final DbOrganization organization = new DbOrganization();
             organization.setName("No organization registered");
             return organization;
