@@ -650,6 +650,8 @@ function deleteOrganization(organizationId){
      var cv2 = getCommercialVersion(target);
 
      $('#execute-report').prop("disabled", "disabled");
+     $("#results").append('<br/><img src="/assets/img/spinner.gif" alt="" id="loader-indicator" />');
+
      runComparisonReport(cn1, cv1, cn2, cv2, function(result) {
          var html = '';
          if(result instanceof Error) {
@@ -1554,8 +1556,6 @@ function getLicenseOverview(){
 
 function getLicenseUsage() {
     $("#extra-action").empty();
-    $("#results").empty().append('<img src="/assets/img/spinner.gif" alt="" id="loader-indicator" />');
-
 
     if($('input[name=licenseId]:checked', '#targets').size() == 0){
         $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
@@ -1564,6 +1564,7 @@ function getLicenseUsage() {
     }
     var licenseId = $('input[name=licenseId]:checked', '#targets').val();
 
+    $("#results").empty().append('<img src="/assets/img/spinner.gif" alt="" id="loader-indicator" />');
     runLicenseUsageReport(licenseId, function(results) {
         $("#results").empty().append(reportJSONToUI("Products using " + licenseId, results));
     });
