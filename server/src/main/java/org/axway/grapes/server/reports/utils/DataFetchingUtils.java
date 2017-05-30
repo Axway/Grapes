@@ -109,41 +109,4 @@ public class DataFetchingUtils {
         return deps;
     }
 
-
-    /**
-     *
-     * @param repoHandler
-     * @param deliveries
-     * @param consumer Consumer for
-     */
-    public void processDeliveryLicenses(final RepositoryHandler repoHandler,
-                                        final Set<Delivery> deliveries,
-                                        final TriConsumer<String> consumer) {
-
-        final BatchProcessor batchProcessor = new BatchProcessor(repoHandler);
-
-        // dependency, license name
-        deliveries.forEach(del -> {
-            LOG.debug(String.format("Processing delivery [%s %s]", del.getCommercialName(), del.getCommercialVersion()));
-            final Set<String> deliveryDependencies = getDeliveryDependencies(repoHandler, del);
-
-            batchProcessor.process(
-                    DbCollections.DB_ARTIFACTS,
-                    batch -> String.format("{ \"_id\" : { \"$regex\" : \"%s\"}}", StringUtils.join(batch, ',')),
-                    deliveryDependencies,
-                    DbArtifact.class,
-                    a -> {
-                        a.getLicenses()
-                                .stream()
-                                .filter(lic -> !lic.contains("Axway Software"))
-                                .forEach(lic -> {
-                                    consumer.accept(String.format("%s %s", del.getCommercialName(), del.getCommercialVersion()),
-                                            a.getGavc(),
-                                            lic);
-                                });
-                    });
-        });
-    }
-
-
 }

@@ -4,8 +4,10 @@ import org.apache.commons.jcs.JCS;
 import org.apache.commons.jcs.access.CacheAccess;
 import org.apache.commons.jcs.access.exception.CacheException;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbProduct;
 import org.axway.grapes.server.reports.models.ReportExecution;
 import org.axway.grapes.server.reports.models.ReportRequest;
+import org.axway.grapes.server.reports.workers.DeliveryArtifactsPicker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +20,7 @@ public class ReportsHandler {
 
     private CacheAccess<String, ReportExecution> cache = null;
     private final RepositoryHandler repositoryHandler;
+    private final DeliveryArtifactsPicker artifactsPicker = new DeliveryArtifactsPicker();
 
     public ReportsHandler(final RepositoryHandler repositoryHandler) {
         this.repositoryHandler = repositoryHandler;
@@ -34,7 +37,7 @@ public class ReportsHandler {
     }
 
     public ReportExecution execute(final Report def, final ReportRequest request) {
-        final boolean useCache = true;
+        final boolean useCache = false;
 
         final ReportExecution cachedExecution = cache.get(request.toString());
 
@@ -52,5 +55,13 @@ public class ReportsHandler {
         cache.put(request.toString(), execution);
 
         return execution;
+    }
+
+    public void refreshDelivery3rdParty(final DbProduct product) {
+        artifactsPicker.work(repositoryHandler, product);
+    }
+
+    public void refreshAllDeliveries3rdParty() {
+        artifactsPicker.work(repositoryHandler);
     }
 }

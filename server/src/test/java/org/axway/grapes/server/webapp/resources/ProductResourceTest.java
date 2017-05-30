@@ -288,7 +288,7 @@ public class ProductResourceTest extends ResourceTest {
         ArgumentCaptor<DbProduct> captor = ArgumentCaptor.forClass(DbProduct.class);
         
         // checks
-        verify(repositoryHandler).store(captor.capture());
+        verify(repositoryHandler, atLeast(1)).store(captor.capture());
         assertEquals(1, captor.getValue().getDeliveries().size());
         assertEquals("delivery1", captor.getValue().getDeliveries().get(0).getCommercialName());
         assertEquals("1.0.0-1", captor.getValue().getDeliveries().get(0).getVersion());

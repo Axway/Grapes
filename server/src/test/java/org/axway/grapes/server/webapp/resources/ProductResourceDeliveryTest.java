@@ -103,7 +103,7 @@ public class ProductResourceDeliveryTest extends ResourceTest {
         ArgumentCaptor<DbProduct> captor = ArgumentCaptor.forClass(DbProduct.class);
         
         // checks
-        verify(repositoryHandler).store(captor.capture());
+        verify(repositoryHandler, atLeast(1)).store(captor.capture());
         assertEquals(1, captor.getValue().getDeliveries().size());
         assertEquals(commercialNameExpected, captor.getValue().getDeliveries().get(0).getCommercialName());
         

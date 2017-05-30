@@ -94,6 +94,7 @@ public class GrapesServer extends Service<GrapesServerConfig> {
         env.addTask(new KillTask());
         env.addTask(new MigrationTask(config.getDataBaseConfig()));
         env.addTask(new LoggingTask(config.getLoggingConfiguration().getFileConfiguration().getCurrentLogFilename()));
+        env.addTask(new RefreshCommercialDeliveriesTask(repoHandler));
 
         
         // Health checks

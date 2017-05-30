@@ -35,7 +35,6 @@ import java.util.List;
 public abstract class AbstractResource extends View {
 
     private final RepositoryHandler repositoryHandler;
-//    private final ServiceHandler serviceHandler;
     private final GrapesServerConfig grapesConfig;
 
     private final ModelMapper modelMapper;
@@ -44,7 +43,6 @@ public abstract class AbstractResource extends View {
 		super(templateName);
         this.grapesConfig = dmConfig;
         this.repositoryHandler = repoHandler;
-//        this.serviceHandler = serviceHandler;
         this.modelMapper = new ModelMapper(repoHandler);
 	}
     
