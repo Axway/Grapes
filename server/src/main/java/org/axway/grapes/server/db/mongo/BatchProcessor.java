@@ -9,19 +9,23 @@ import java.util.function.Function;
 /**
  * Utility class with method used in extracting and processing data from MongoDb
  */
-public class BatchProcessingUtils {
+public class BatchProcessor {
 
+    private final RepositoryHandler repoHandler;
     private int batchSize = 1;
 
-    public <T> void processBatch(final RepositoryHandler repoHandler,
-                                 final String collectionName,
-                                 final Function<List<String>, String> batchQueryFn,
-                                 final Collection<String> entries,
-                                 final Class<T> resultClass,
-                                 final Consumer<T> consumer) {
+    public BatchProcessor(RepositoryHandler handler) {
+        this.repoHandler = handler;
+    }
+
+    public <T> void process(final String collectionName,
+                            final Function<List<String>, String> batchQueryFn,
+                            final Collection<String> primaryEntries,
+                            final Class<T> resultClass,
+                            final Consumer<T> consumer) {
 
         List<String> asList = new ArrayList<>();
-        asList.addAll(entries);
+        asList.addAll(primaryEntries);
 
         final List<List<String>> batches = splitList(this.batchSize, asList);
 
@@ -31,7 +35,7 @@ public class BatchProcessingUtils {
                     resultClass);
 
             //
-            // Apply the same consumer over every element of the retrieved entries
+            // Apply the same consumer over every element of the retrieved primaryEntries
             //
             dbEntry.forEach(consumer);
         });

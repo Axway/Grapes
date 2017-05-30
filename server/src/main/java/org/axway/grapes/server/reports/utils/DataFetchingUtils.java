@@ -10,7 +10,8 @@ import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbCollections;
 import org.axway.grapes.server.db.datamodel.DbModule;
 import org.axway.grapes.server.db.datamodel.DbProduct;
-import org.axway.grapes.server.db.mongo.BatchProcessingUtils;
+import org.axway.grapes.server.db.mongo.BatchProcessor;
+import org.axway.grapes.server.db.mongo.QueryUtils;
 import org.axway.grapes.server.reports.TriConsumer;
 
 import org.slf4j.Logger;
@@ -32,7 +33,13 @@ import static org.axway.grapes.server.db.DataUtils.*;
 public class DataFetchingUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataFetchingUtils.class);
-    private BatchProcessingUtils batchUtils = new BatchProcessingUtils();
+
+    public List<DbProduct> getProductWithCommercialDeliveries(final RepositoryHandler repoHandler) {
+        return repoHandler.getListByQuery(
+                DbCollections.DB_PRODUCT,
+                QueryUtils.makeQueryAllDeliveries(),
+                DbProduct.class);
+    }
 
     public Optional<Delivery> getCommercialDelivery(final RepositoryHandler repoHandler,
                                                     final String name,
@@ -112,12 +119,15 @@ public class DataFetchingUtils {
     public void processDeliveryLicenses(final RepositoryHandler repoHandler,
                                         final Set<Delivery> deliveries,
                                         final TriConsumer<String> consumer) {
+
+        final BatchProcessor batchProcessor = new BatchProcessor(repoHandler);
+
         // dependency, license name
         deliveries.forEach(del -> {
             LOG.debug(String.format("Processing delivery [%s %s]", del.getCommercialName(), del.getCommercialVersion()));
             final Set<String> deliveryDependencies = getDeliveryDependencies(repoHandler, del);
 
-            batchUtils.processBatch(repoHandler,
+            batchProcessor.process(
                     DbCollections.DB_ARTIFACTS,
                     batch -> String.format("{ \"_id\" : { \"$regex\" : \"%s\"}}", StringUtils.join(batch, ',')),
                     deliveryDependencies,
