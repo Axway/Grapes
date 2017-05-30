@@ -1,12 +1,11 @@
 package org.axway.grapes.server.reports.impl;
 
+import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Delivery;
 import org.axway.grapes.server.core.LicenseHandler;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.DbCollections;
 import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.axway.grapes.server.db.datamodel.DbProduct;
-import org.axway.grapes.server.db.mongo.QueryUtils;
 import org.axway.grapes.server.reports.Report;
 import org.axway.grapes.server.reports.ReportId;
 import org.axway.grapes.server.reports.models.ParameterDefinition;
@@ -19,18 +18,18 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.axway.grapes.server.reports.ReportId.LICENSE_ON_PRODUCT_RELEASES;
 
 /**
- *
+ * Collects all the commercial delivery names which are using a particular third party license
  */
 public class LicenseOnProductReleases implements Report {
 
     private List<ParameterDefinition> parameters = new ArrayList<>();
     private String[] columnNames = new String[] {"Commercial Release"};
 
-    private DataFetchingUtils utils = new DataFetchingUtils();
     private static final Logger LOG = LoggerFactory.getLogger(LicenseOnProductReleases.class);
 
 
@@ -65,6 +64,7 @@ public class LicenseOnProductReleases implements Report {
 
     @Override
     public ReportExecution execute(RepositoryHandler repoHandler, ReportRequest request) {
+
         final Map<String, String> params = request.getParamValues();
         final String licenseName = params.get("license");
 
@@ -78,30 +78,35 @@ public class LicenseOnProductReleases implements Report {
                             .build());
         }
 
-        final List<DbProduct> listByQuery = repoHandler.getListByQuery(DbCollections.DB_PRODUCT, QueryUtils.makeQueryAllDeliveries(), DbProduct.class);
 
-        final ReportExecution execution = new ReportExecution(request, getColumnNames());
-        final Set<Delivery> allDeliveries = new HashSet<>();
+        return reportExecution(repoHandler, request, licenseName);
+    }
 
-        listByQuery.forEach(product -> {
-            allDeliveries.addAll(product.getDeliveries());
-        });
+    private ReportExecution reportExecution(final RepositoryHandler repoHandler,
+                                            final ReportRequest request,
+                                            final String license) {
+        ReportExecution result = new ReportExecution(request, getColumnNames());
 
-        Set<String> products = new HashSet<>();
+        DataFetchingUtils x = new DataFetchingUtils();
+        final List<DbProduct> products = x.getProductWithCommercialDeliveries(repoHandler);
 
-        utils.processDeliveryLicenses(repoHandler,
-                allDeliveries,
-                (commercialDelivery, gavc, artifactLic) -> {
-                    LOG.info(String.format("%s : %s : %s", commercialDelivery, gavc, artifactLic));
+        Set<Delivery> allDeliveries = new HashSet<>();
 
-                    if(licenseName.equalsIgnoreCase(artifactLic)) {
-                        products.add(commercialDelivery);
-                    }
-                }
-        );
+        products.forEach(p -> allDeliveries.addAll(p.getDeliveries()));
 
-        products.forEach(product -> execution.addResultRow(new String[] {product}));
+        allDeliveries
+                .stream()
+                .filter(d -> {
+                    final List<Artifact> artifacts = d.getAllArtifactDependencies()
+                            .stream()
+                            .filter(a -> a.getLicenses().contains(license))
+                            .collect(Collectors.toList());
 
-        return execution;
+                    return !artifacts.isEmpty();
+                })
+                .map(d -> d.getCommercialName() + " " + d.getCommercialVersion())
+                .forEach(name -> result.addResultRow(new String[] {name}));
+
+        return result;
     }
 }

@@ -1,23 +1,27 @@
 package org.axway.grapes.server.reports.impl;
 
 import org.apache.commons.lang3.StringUtils;
+import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Delivery;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbCollections;
-import org.axway.grapes.server.db.mongo.BatchProcessingUtils;
+import org.axway.grapes.server.db.mongo.BatchProcessor;
 import org.axway.grapes.server.reports.Report;
 import org.axway.grapes.server.reports.ReportId;
 import org.axway.grapes.server.reports.models.ParameterDefinition;
 import org.axway.grapes.server.reports.models.ReportExecution;
 import org.axway.grapes.server.reports.models.ReportRequest;
 import org.axway.grapes.server.reports.utils.DataFetchingUtils;
+import org.axway.grapes.server.reports.workers.DeliveryArtifactsPicker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import javax.xml.crypto.Data;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Report showing evolution of licenses between two commercial releases of a product
@@ -26,7 +30,8 @@ public class DiffsLicenseReport implements Report {
 
     static List<ParameterDefinition> parameters = new ArrayList<>();
     private DataFetchingUtils utils = new DataFetchingUtils();
-    private BatchProcessingUtils batchProcessingUtils = new BatchProcessingUtils();
+    private static final Logger LOG = LoggerFactory.getLogger(DiffsLicenseReport.class);
+
 
     private static final String BATCH_TEMPLATE_REGEX = "{ \"_id\" : { \"$regex\" : \"%s\"}}";
 
@@ -65,7 +70,6 @@ public class DiffsLicenseReport implements Report {
 
     @Override
     public ReportExecution execute(RepositoryHandler repoHandler, ReportRequest request) {
-
         final Map<String, String> params = request.getParamValues();
         final String name1 = params.get("name1");
         final String version1 = params.get("version1");
@@ -79,59 +83,48 @@ public class DiffsLicenseReport implements Report {
         final Optional<Delivery> cd2 = utils.getCommercialDelivery(repoHandler, name2, version2);
         check(cd2, name2, version2);
 
-        // Deps are in the following form: group-id:artifact-id:version
-        Set<String> deps1 = utils.getDeliveryDependencies(repoHandler, cd1.get());
-        Set<String> deps2 = utils.getDeliveryDependencies(repoHandler, cd2.get());
+        return processReport(request, cd1.get(), cd2.get());
+    }
 
-        Set<String> all = new HashSet<>(deps1);
-        all.addAll(deps2);
-
-        HashMap<String, String> artifactsLicenses = new HashMap<>();
-
-        batchProcessingUtils.processBatch(repoHandler,
-                                        DbCollections.DB_ARTIFACTS,
-                                        batch -> String.format(BATCH_TEMPLATE_REGEX, StringUtils.join(batch, ',')),
-                                        all,
-                                        DbArtifact.class,
-                                        a -> a.getLicenses().forEach(lic -> {
-                                                artifactsLicenses.put(DataUtils.strip(a.getGavc(), 2), lic);
-                                        })
-        );
-
+    private ReportExecution processReport(final ReportRequest request,
+                                          final Delivery d1,
+                                          final Delivery d2) {
         ReportExecution result = new ReportExecution(request, getColumnNames());
+        Set<String> a1 = new HashSet<>();
 
-        // A \ B
-        all.removeAll(deps2);
-        treatSet(result, artifactsLicenses, all, "Missing");
+        d1.getAllArtifactDependencies()
+                .stream()
+                .map(Artifact::getLicenses)
+                .forEach(a1::addAll);
 
-        // A U B
-        all.addAll(deps2);
+        Set<String> a2 = new HashSet<>();
+        d2.getAllArtifactDependencies()
+                .stream()
+                .map(Artifact::getLicenses)
+                .forEach(a2::addAll);
 
-        // B \ A
-        all.removeAll(deps1);
-        treatSet(result, artifactsLicenses, all, "Added");
+        Set<String> all = new HashSet<>();
+        all.addAll(a1);
+        all.addAll(a2);
+
+        all.removeAll(a2);
+
+        all.forEach(entry -> {
+            LOG.debug(String.format("%s is missing", entry));
+            result.addResultRow(new String[]{entry, "Missing"});
+        });
+
+        all.addAll(a2);
+        all.removeAll(a1);
+
+        all.forEach(entry -> {
+            LOG.debug(String.format("%s is added", entry));
+            result.addResultRow(new String[]{entry, "Added"});
+        });
 
         return result;
     }
 
-    private void treatSet(final ReportExecution result,
-                          final Map<String, String> map,
-                          final Set<String> entries,
-                          final String label) {
-
-
-        entries.forEach(entry -> {
-            String key = entry;
-            if(DataUtils.isFullGAVC(entry)) {
-                key = DataUtils.strip(entry, 2);
-            }
-
-            if (map.containsKey(key)) {
-                result.addResultRow(new String[]{map.get(key), label});
-            }
-        });
-
-    }
 
     private void check(final Optional<?> entry, final String name, final String version) {
         if(!entry.isPresent()) {

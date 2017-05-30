@@ -2,9 +2,6 @@ package org.axway.grapes.server.reports.impl;
 
 import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.*;
-import org.axway.grapes.server.db.mongo.BatchProcessingUtils;
-import org.axway.grapes.server.db.mongo.QueryUtils;
 import org.axway.grapes.server.reports.Report;
 import org.axway.grapes.server.reports.models.ParameterDefinition;
 import org.axway.grapes.server.reports.models.ReportExecution;
@@ -31,7 +28,6 @@ public class LicenseReport implements Report {
     static List<ParameterDefinition> parameters = new ArrayList<>();
 
     private DataFetchingUtils utils = new DataFetchingUtils();
-    private BatchProcessingUtils batchUtils = new BatchProcessingUtils();
 
     static {
         parameters.add(new ParameterDefinition("name", "Commercial Name"));
@@ -80,74 +76,49 @@ public class LicenseReport implements Report {
                             .build());
         }
 
-        final Delivery delivery = deliveryOp.get();
-        return computeResult(repoHandler, request, delivery);
+        return computeResult(request, deliveryOp.get());
     }
 
-    private ReportExecution computeResult(final RepositoryHandler repoHandler, final ReportRequest request, final Delivery delivery) {
-        ReportExecution result = new ReportExecution(request, getColumnNames());
+    private ReportExecution computeResult(final ReportRequest request, final Delivery delivery) {
+        final ReportExecution result = new ReportExecution(request, getColumnNames());
 
-        Set<String> deps = utils.getDeliveryDependencies(repoHandler, delivery);
-
-        // If the dependency is referred with classifier, so it's fairly easy to query by exact match against id
-        batchUtils.processBatch(repoHandler,
-                DbCollections.DB_ARTIFACTS,
-                batch -> QueryUtils.quoteIds(batch, BATCH_TEMPLATE),
-                deps,
-                DbArtifact.class,
-                a -> {
-                    a.getLicenses()
-                            .stream()
-                            .filter(lic -> !lic.contains("Axway Software"))
-                            .forEach(lic -> result.addResultRow(makeResultsRow(a, lic)));
-                });
-
+        delivery.getAllArtifactDependencies().forEach(
+            a -> {
+                a.getLicenses()
+                        .stream()
+                        .filter(lic -> !lic.contains("Axway Software"))
+                        .forEach(lic -> result.addResultRow(makeResultsRow(a, lic)));
+            });
         return result;
     }
 
-//    private <T> void processBatch(final RepositoryHandler repoHandler,
-//                                  final String collectionName,
-//                                  final int batchSize,
-//                                  final Function<List<String>, String> batchQueryFn,
-//                                  final Set<String> entries,
-//                                  final Class<T> tClass,
-//                                  final Consumer<T> consumer) {
+//    private ReportExecution computeResult(final RepositoryHandler repoHandler, final ReportRequest request, final Delivery delivery) {
+//        ReportExecution result = new ReportExecution(request, getColumnNames());
 //
-//        List<String> asList = new ArrayList<>();
-//        asList.addAll(entries);
+//        Set<String> deps = utils.getDeliveryDependencies(repoHandler, delivery);
 //
-//        final List<List<String>> batches = splitList(batchSize, asList);
+//        // If the dependency is referred with classifier, so it's fairly easy to query by exact match against id
+//        BatchProcessor batchProcessor = new BatchProcessor(repoHandler);
+//        batchProcessor.process(DbCollections.DB_ARTIFACTS,
+//                batch -> QueryUtils.quoteIds(batch, BATCH_TEMPLATE),
+//                deps,
+//                DbArtifact.class,
+//                a -> {
+//                    a.getLicenses()
+//                            .stream()
+//                            .filter(lic -> !lic.contains("Axway Software"))
+//                            .forEach(lic -> result.addResultRow(makeResultsRow(a, lic)));
+//                });
 //
-//        batches.forEach(batch -> {
-//            final List<T> dbEntry = repoHandler.getListByQuery(collectionName,
-//                    batchQueryFn.apply(batch),
-//                    tClass);
-//
-//            dbEntry.forEach(consumer);
-//        });
-//
-//    }
-
-//    private String makeBatchQueryRegEx(final List<String> ids) {
-//        if(ids == null) {
-//            throw new IllegalArgumentException("Ids must not be null");
-//        }
-//
-//        String result;
-//
-//        if(ids.size() == 1) {
-//            result = String.format(BATCH_TEMPLATE_REGEX, ids.get(0));
-//        } else {
-//            result = String.format(BATCH_TEMPLATE_REGEX, StringUtils.join(ids, '|'));
-//        }
-//
-//        // LOG.debug(result);
 //        return result;
-//
 //    }
 
+//    private String[] makeResultsRow(final DbArtifact a, final String lic) {
+//        return new String[] {a.getGroupId(), a.getArtifactId(), a.getClassifier(), a.getVersion(), a.getDoNotUse().toString(), lic};
+//    }
 
-    private String[] makeResultsRow(final DbArtifact a, final String lic) {
-        return new String[] {a.getGroupId(), a.getArtifactId(), a.getClassifier(), a.getVersion(), a.getDoNotUse().toString(), lic};
+    private String[] makeResultsRow(final Artifact a, final String lic) {
+        return new String[] {a.getGroupId(), a.getArtifactId(), a.getClassifier(), a.getVersion(), Boolean.toString(a.isDoNotUse()), lic};
     }
+
 }
