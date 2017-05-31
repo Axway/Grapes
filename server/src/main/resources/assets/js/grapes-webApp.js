@@ -858,7 +858,16 @@ function getArtifactLink(artifact){
 }
 
 function getLicenseLink(licenseId) {
+    jQuery(function(){
+        jQuery('#licenseButton').click();
+    });
     getLicenseTarget(licenseId, 'targets');
+}
+
+function getLicenseDirectLink(dependencyLicense) {
+    dependencyLicense = dependencyLicense.trim();
+    var licenseName = dependencyLicense.substring(dependencyLicense.indexOf("(") + 1, dependencyLicense.indexOf(")"));
+    getLicenseLink(licenseName);
 }
 
 function getBuildFromJenkinsURL(jenkinsBuildUrl){
@@ -1881,7 +1890,7 @@ function getLicenseTarget(licenseIdFieldValue, targetedFieldValue){
 
 	var queryParams = "";
 	if(licenseId != '-' && licenseId != null){
-		queryParams += "licenseId="+ licenseId
+		queryParams += "licenseId=" + licenseId
 	}
 
 	$.ajax({
@@ -1889,7 +1898,7 @@ function getLicenseTarget(licenseIdFieldValue, targetedFieldValue){
             accept: {
                 json: 'application/json'
             },
-            url: "/license/names?" + queryParams ,
+            url: "/license/names?" + queryParams,
             data: {},
             dataType: "json",
             success: function(data, textStatus) {
@@ -1901,11 +1910,11 @@ function getLicenseTarget(licenseIdFieldValue, targetedFieldValue){
                     html += "</label>"
                 });
 
-                $("#" + targetedFieldId).append(html);
+                $("#" + targetedFieldValue).append(html);
             }
     }).done(function(){
         setTimeout(function(){
-              $('#licenseName').val(artifactId);
+              $('#licenseName').val(licenseId);
               $("input:radio[name=licenseId]:first").attr('checked', true);
                jQuery(function(){
                   jQuery('#licenseOverview').click();

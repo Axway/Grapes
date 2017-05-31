@@ -143,15 +143,20 @@
                                             <tr>
                                                 <#assign errorDesc = module?substring(0, module?index_of(":"))!>
                                                     <#assign depList = module?substring(module?index_of(":") + 1)?split(",")!>
-                                                <#if errorDesc?contains("license")>
+                                                <#if errorDesc?contains("miss")>
                                                     <td>${errorDesc}</td>
                                                     <td><#list depList as dep>
-                                                        <a href="javascript:void(0);" onclick=getArtifactLink(this.text)>${dep}</a>
+                                                        <a href="javascript:void(0);" onclick=getArtifactLink(this.text)>${dep}<#if dep_has_next>,</#if></a>
                                                     </#list></td>
+                                                    <#elseif errorDesc?contains("not accepted")>
+                                                        <td>${errorDesc}</td>
+                                                        <td><#list depList as dep>
+                                                            <a href="javascript:void(0);" onclick=getArtifactLink(this.text)>${dep?substring(0, dep?index_of("("))}</a><a href="javascript:void(0);" class="licenseLink" onclick=getLicenseDirectLink(this.text)>${dep?substring(dep?index_of("("), dep?index_of(")") + 1)}</a><#if dep_has_next>,</#if>
+                                                        </#list></td>
                                                     <#else>
                                                         <td>${errorDesc}</td>
                                                         <td><#list depList as dep>
-                                                            <span>${dep}</span>
+                                                            <span>${dep}<#if dep_has_next>,</#if></span>
                                                         </#list></td>
                                                 </#if>
                                             </tr>

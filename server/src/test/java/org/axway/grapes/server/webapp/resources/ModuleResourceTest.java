@@ -454,7 +454,7 @@ public class ModuleResourceTest extends ResourceTest {
         assertFalse(results.canBePromoted);
         assertFalse(errors.isEmpty());
 
-        assertEquals(errors.get(0), "Version is SNAPSHOT");
+        assertEquals("Version is SNAPSHOT", errors.get(0));
 
     }
 
@@ -493,9 +493,96 @@ public class ModuleResourceTest extends ResourceTest {
 
         assertFalse(results.canBePromoted);
         assertFalse(problems.isEmpty());
-        assertEquals(problems.get(0), GrapesTestUtils.MISSING_LICENSE_MESSAGE_4TEST + GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST + GrapesTestUtils.COLON
+        assertEquals(GrapesTestUtils.MISSING_LICENSE_MESSAGE_4TEST + GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST + GrapesTestUtils.COLON
                 + GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_VERSION_4TEST + GrapesTestUtils.COLON
-                + GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_EXTENSION_4TEST);
+                + GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_EXTENSION_4TEST, problems.get(0));
+    }
+
+    @Test
+    public void getPromotionStatusReport2DBLicenseValidation() {
+        final DbModule dbModule = new DbModule();
+        dbModule.setName("moduleTest");
+        dbModule.setVersion("1.1.0");
+
+        final DbArtifact dbArtifact = new DbArtifact();
+        dbArtifact.setGroupId(GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST);
+        dbArtifact.setArtifactId(GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST);
+        dbArtifact.setVersion(GrapesTestUtils.ARTIFACT_VERSION_4TEST);
+        dbArtifact.setClassifier(GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST);
+        dbArtifact.setExtension(GrapesTestUtils.ARTIFACT_EXTENSION_4TEST);
+        // Setting empty license list to simulate missing license
+        final DbLicense nullLicense = new DbLicense();
+
+        dbArtifact.addLicense(nullLicense);
+
+        dbModule.addArtifact(dbArtifact);
+        dbModule.addDependency(dbArtifact.getGavc(), Scope.COMPILE);
+
+        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
+        // get the module dependency
+        when(repositoryHandler.getArtifact(dbModule.getDependencies().get(0).getTarget())).thenReturn(dbArtifact);
+        when(repositoryHandler.getRootModuleOf(dbArtifact.getGavc())).thenReturn(dbModule);
+        when(repositoryHandler.getLicense(nullLicense.getName())).thenReturn(null);
+
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT2);
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+
+        PromotionDetails results = response.getEntity(PromotionDetails.class);
+        List<String> problems = results.getDependencyProblems();
+        assertNotNull(problems);
+
+        assertFalse(results.canBePromoted);
+        assertFalse(problems.isEmpty());
+        assertEquals("The module you are trying to promote has dependencies that miss the license information: org.missing.license:MissingLicense:1.2.3:classifier:extension", problems.get(0));
+    }
+
+    @Test
+    public void getPromotionStatusReport2LicenseNotApproved() {
+        final DbModule dbModule = new DbModule();
+        dbModule.setName("moduleTest");
+        dbModule.setVersion("1.1.1");
+
+        final DbArtifact dbArtifact = new DbArtifact();
+        dbArtifact.setGroupId(GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST);
+        dbArtifact.setArtifactId(GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST);
+        dbArtifact.setVersion(GrapesTestUtils.ARTIFACT_VERSION_4TEST);
+        dbArtifact.setClassifier(GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST);
+        dbArtifact.setExtension(GrapesTestUtils.ARTIFACT_EXTENSION_4TEST);
+        // Setting empty license list to simulate missing license
+        final DbLicense notApprovedLicense = new DbLicense();
+
+        notApprovedLicense.setName("NotApproved");
+        notApprovedLicense.setApproved(false);
+        notApprovedLicense.setLongName("NotApproved");
+
+
+        dbArtifact.addLicense(notApprovedLicense);
+
+        dbModule.addArtifact(dbArtifact);
+        dbModule.addDependency(dbArtifact.getGavc(), Scope.COMPILE);
+
+        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
+        // get the module dependency
+        when(repositoryHandler.getArtifact(dbModule.getDependencies().get(0).getTarget())).thenReturn(dbArtifact);
+        when(repositoryHandler.getRootModuleOf(dbArtifact.getGavc())).thenReturn(dbModule);
+        when(repositoryHandler.getLicense(notApprovedLicense.getName())).thenReturn(notApprovedLicense);
+
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT2);
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+
+        PromotionDetails results = response.getEntity(PromotionDetails.class);
+        List<String> problems = results.getDependencyProblems();
+        assertNotNull(problems);
+
+        assertFalse(results.canBePromoted);
+        assertFalse(problems.isEmpty());
+        assertEquals("The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: org.missing.license:MissingLicense:1.2.3:classifier:extension (NotApproved)", problems.get(0));
     }
 
     @Test

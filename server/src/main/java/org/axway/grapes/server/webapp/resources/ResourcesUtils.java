@@ -39,6 +39,11 @@ public final class ResourcesUtils {
             String err = addErrors(promotionReportView.getMissingThirdPartyDependencyLicenses(), "The module you are trying to promote has dependencies that miss the license information: %s");
             error.add(err);
         }
+        // third party dependency not accepted licenses
+        if (!promotionReportView.getDependenciesWithNotAcceptedLicenses().isEmpty()) {
+            String err = addErrors(promotionReportView.getDependenciesWithNotAcceptedLicenses(), "The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: %s");
+            error.add(err);
+        }
 
         promotionReportView.setDependencyProblems(error);
         return promotionReportView;

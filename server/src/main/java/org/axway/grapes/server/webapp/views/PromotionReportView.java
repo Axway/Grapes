@@ -3,9 +3,7 @@ package org.axway.grapes.server.webapp.views;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.Lists;
 import com.yammer.dropwizard.views.View;
-import org.axway.grapes.commons.datamodel.Artifact;
-import org.axway.grapes.commons.datamodel.Module;
-import org.axway.grapes.commons.datamodel.PromotionDetails;
+import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.webapp.views.serialization.PromotionReportSerializer;
 
 import java.util.*;
@@ -26,6 +24,7 @@ public class PromotionReportView extends View {
     private Map<String, List<String>> mismatchVersions = new HashMap<String, List<String>>();
     private PromotionDetails promotionDetails = new PromotionDetails();
     private List<Artifact> missingThirdPartyDependencyLicenses = new ArrayList<Artifact>();
+    private List<Pair> dependenciesWithNotAcceptedLicenses = new ArrayList<Pair>();
     // Errors to be displayed when a module dependency problem is detected
     private List<String> dependencyProblems = new ArrayList<String>();
 
@@ -93,7 +92,7 @@ public class PromotionReportView extends View {
             return false;
         }
         return unPromotedDependencies.isEmpty() &&
-                doNotUseArtifacts.isEmpty() && missingThirdPartyDependencyLicenses.isEmpty();
+                doNotUseArtifacts.isEmpty() && missingThirdPartyDependencyLicenses.isEmpty() && dependenciesWithNotAcceptedLicenses.isEmpty();
     }
 
     public boolean isSnapshot() {
@@ -174,6 +173,17 @@ public class PromotionReportView extends View {
 
     public void setDependencyProblems(List<String> dependencyProblems) {
         this.dependencyProblems = dependencyProblems;
+    }
+
+    public List<Pair> getDependenciesWithNotAcceptedLicenses() {
+        return dependenciesWithNotAcceptedLicenses;
+    }
+
+    public void setDependenciesWithNotAcceptedLicenses(Pair<?,?> pair) {
+        if (!dependenciesWithNotAcceptedLicenses.contains(pair)) {
+            dependenciesWithNotAcceptedLicenses.add(pair);
+        }
+
     }
 
 

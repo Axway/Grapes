@@ -3,8 +3,7 @@ package org.axway.grapes.server.core;
 import org.apache.commons.jcs.JCS;
 import org.apache.commons.jcs.access.CacheAccess;
 import org.apache.commons.jcs.access.exception.CacheException;
-import org.axway.grapes.commons.datamodel.DataModelFactory;
-import org.axway.grapes.commons.datamodel.Dependency;
+import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.core.options.filters.CorporateFilter;
 import org.axway.grapes.server.core.options.filters.PromotedFilter;
@@ -225,6 +224,10 @@ public class ModuleHandler {
                             DbLicense currentLicense = repositoryHandler.getLicense(licenseName);
                             if (currentLicense == null) {
                                 report.addMissingThirdPartyDependencyLicenses(modelMapper.getArtifact(artifactDep));
+                            } else if (currentLicense.isApproved() != null && !currentLicense.isApproved()) { // Check if the third party license is approved. If approved == null it is still valid license
+                                // add to a not approved list
+                                Pair<String, String> pair = Pair.create(modelMapper.getArtifact(artifactDep).getGavc(), modelMapper.getLicense(currentLicense).getName());
+                                report.setDependenciesWithNotAcceptedLicenses(pair);
                             }
                         }
                     }

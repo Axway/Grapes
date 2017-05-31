@@ -416,7 +416,7 @@ public class ModuleResource extends AbstractResource {
 
     /**
      * Check if a module can be promoted or not
-     * This method is call via GET <dm_url>/module/<name>/<version>/promotion/check
+     * This method is call via GET <dm_url>/module/<name>/<version>/promotion/doable
      *
      * @param name    String
      * @param version String

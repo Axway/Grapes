@@ -79,7 +79,7 @@
                                         <button type="button" id="artifactButton" class="btn btn-inverse" style="margin-left:8px;" onclick='displayArtifactOptions();'>Artifacts</button>
                                     </div>
                                     <div class="row-fluid" style="padding:4px">
-                                        <button type="button" class="btn btn-inverse" style="margin-left:8px;" onclick='displayLicenseOptions();'>Licenses</button>
+                                        <button type="button" id="licenseButton" class="btn btn-inverse" style="margin-left:8px;" onclick='displayLicenseOptions();'>Licenses</button>
                                     </div>
                                 </div>
                             </div>

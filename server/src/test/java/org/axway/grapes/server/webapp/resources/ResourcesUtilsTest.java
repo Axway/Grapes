@@ -1,9 +1,6 @@
 package org.axway.grapes.server.webapp.resources;
 
-import org.axway.grapes.commons.datamodel.Artifact;
-import org.axway.grapes.commons.datamodel.DataModelFactory;
-import org.axway.grapes.commons.datamodel.Module;
-import org.axway.grapes.commons.datamodel.PromotionDetails;
+import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.webapp.views.PromotionReportView;
 import org.junit.Test;
 
@@ -50,6 +47,41 @@ public class ResourcesUtilsTest {
         expectedErrorsList.add("DO_NOT_USE marked dependencies detected: CheckPromotion:DoNotUse:version:classifier:extension");
         expectedErrorsList.add("Un promoted dependencies detected: CheckPromotion:UnpromotedDependency:version:classifier:extension");
         expectedErrorsList.add("The module you are trying to promote has dependencies that miss the license information: CheckPromotion:MissingLicense:version:classifier:extension");
+
+        expectedResult.setDependencyProblems(expectedErrorsList);
+
+        // assert if the output from the method equals to the expected data
+        assertEquals(expectedResult.canBePromoted, testResult.promotionDetails().canBePromoted);
+        assertEquals(expectedResult.getDependencyProblems(), testResult.getDependencyProblems());
+    }
+
+    @Test
+    public void checkNotApprovedLicensePromotion() {
+        // Create sample promotion report
+        PromotionReportView promotionViewTest = new PromotionReportView();
+
+        // create sample module with artifact
+        final Module module = DataModelFactory.createModule("module", "1.0.0");
+        final Artifact artifactNotApprovedLicense = DataModelFactory.createArtifact("CheckPromotion", "artifactId", "version", "classifier", "type", "extension");
+        final License notApprovedLicense = DataModelFactory.createLicense("NotApproved", "NotApproved", "", "", "");
+
+        module.addArtifact(artifactNotApprovedLicense);
+
+        promotionViewTest.setRootModule(module);
+
+        Pair pair = Pair.create(artifactNotApprovedLicense.getGavc(), notApprovedLicense.getName());
+
+        promotionViewTest.setDependenciesWithNotAcceptedLicenses(pair);
+
+        // pass data to the method
+        PromotionReportView testResult = ResourcesUtils.checkPromotionErrors(promotionViewTest);
+
+        // create expected result data
+        PromotionDetails expectedResult = new PromotionDetails();
+        expectedResult.canBePromoted = false;
+
+        List<String> expectedErrorsList = new ArrayList<String>();
+        expectedErrorsList.add("The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: CheckPromotion:artifactId:version:classifier:extension (NotApproved)");
 
         expectedResult.setDependencyProblems(expectedErrorsList);
 
