@@ -836,8 +836,9 @@ function getModuleLink(moduleName){
 	return "/webapp?moduleName=" + name + "&moduleVersion=" + version;
 }
 
-function getArtifactLink(artifact){
-    artifact = artifact.trim();
+function getArtifactLink(artifactObj){
+
+    var artifact = artifactObj.text.trim();
 	var indexKey = artifact.indexOf(':');
 	var nextIndexKey = artifact.indexOf(':', indexKey + 1);
 	var lastIndexKey =  artifact.lastIndexOf(':');
@@ -854,7 +855,7 @@ function getArtifactLink(artifact){
         jQuery('#artifactButton').click();
     });
 
-	getArtifactTarget(groupId, artifactId, version, 'targets');
+    getArtifactTarget(groupId, artifactId, version, 'targets');
 }
 
 function getLicenseLink(licenseId) {
@@ -1866,20 +1867,29 @@ function getArtifactTarget(artifactGroupIdFieldValue, artifactIdFieldValue, arti
             }
     }).done(function(){
 
-            setTimeout(function(){
-                $('#groupId').val(groupId).trigger('change');
-                setTimeout(function(){
-                    $('#version').val(version).trigger('change');
-                     setTimeout(function(){
-                        $('#artifactId').val(artifactId);
-                     }, 300);
-                }, 300);
-                $("input:radio[name=gavc]:first").attr('checked', true);
-                 jQuery(function(){
-                    jQuery('#licensesButton').click();
-                 });
-                }, 500);
+        asyncDeferred('#groupId', groupId)
+            .then(function() {
+                return asyncDeferred('#version', version);
+            }).then(function() {
+                return asyncDeferred('#artifactId', artifactId);
+        });
+
+        setTimeout(function(){
+            $("input:radio[name=gavc]:first").attr('checked', true);
+            jQuery(function(){
+               jQuery('#licensesButton').click();
+            });
+        }, 100);
     });
+}
+
+function asyncDeferred(elId, elVal) {
+    var deferredObject = $.Deferred();
+	setTimeout(function() {
+	    $(elId).val(elVal).trigger('change');
+ 		deferredObject.resolve();
+ 	}, 400);
+ 	return deferredObject.promise();
 }
 
 function getLicenseTarget(licenseIdFieldValue, targetedFieldValue){
