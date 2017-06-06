@@ -18,7 +18,7 @@ import java.util.*;
 /**
  * This class represents the entry point for serving requests related to the reporting engine
  */
-@Path(ServerAPI.GET_REPORTS)
+@Path(ServerAPI.REPORT_RESOURCE)
 public class ReportResource extends AbstractResource {
 
     static {
@@ -26,7 +26,7 @@ public class ReportResource extends AbstractResource {
     }
 
     public ReportResource(RepositoryHandler repoHandler, GrapesServerConfig dmConfig) {
-        super(repoHandler, "No template.ftl", dmConfig);
+        super(repoHandler, "ReportResourceDocumentation.ftl", dmConfig);
     }
 
 

@@ -27,6 +27,9 @@ public interface ServerAPI {
     /** Value - {@value}, License is a Grapes server resource that handles the information about license.*/
     public static final String LICENSE_RESOURCE = "license";
 
+    /** Value - {@value}, Report is a custom Grapes server report allowing dissemination of the stored information.*/
+    public static final String REPORT_RESOURCE = "report";
+
     /** Value - {@value}, Sequoia is a Grapes server provides graphs.*/
     public static final String SEQUOIA_RESOURCE = "sequoia";
 

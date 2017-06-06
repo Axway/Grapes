@@ -2,10 +2,9 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="author" content="jdcoffre">
-		<meta name="description" content="License Resource Documentation">
+		<meta name="description" content="Report Resource Documentation">
 		
-		<title>License API Documentation</title>
+		<title>Reports API Documentation</title>
 		
 		<!-- Bootstrap -->
 		<link href="/public/twitter-bootstrap-2.3.2/css/bootstrap.css" rel="stylesheet">
@@ -58,7 +57,7 @@
         <header>
             <div class="container" >
                 <div class="row">
-                    <h1>License REST API Documentation</h1>
+                    <h1>Report REST API Documentation</h1>
                 </div>
             </div>
         </header>
@@ -67,37 +66,22 @@
         <div class="row">
         <div class="span4 bs-docs-sidebar">
             <ul class="nav nav-list bs-docs-sidenav" data-spy="affix" data-offset-top="80">
-                <li class=""><a data-toggle="collapse" data-target="#accordion1" href="#license"><i class="icon-chevron-right"></i> Resource documentation</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion1" href="#license"><i class="icon-chevron-right"></i> Add/update a license</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion2" href="#license-names"><i class="icon-chevron-right"></i> Get all license names</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion3" href="#license-target"><i class="icon-chevron-right"></i> Get a license</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion3" href="#license-target"><i class="icon-chevron-right"></i> Remove a license</a></li>
-                <li class=""><a data-toggle="collapse" data-target="#accordion3" href="#artifact-target"><i class="icon-chevron-right"></i> Validate/unvalidate license</a></li>
+                <li class=""><a data-toggle="collapse" data-target="#accordion1" href="#report"><i class="icon-chevron-right"></i> Resource documentation</a></li>
+                <li class=""><a data-toggle="collapse" data-target="#accordion2" href="#execute-report"><i class="icon-chevron-right"></i> Execute report</a></li>
             </ul>
         </div>
         <div class="span8">
         <section id="license">
             <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion1">
-                <h2>@ /license</h2>
+                <h2>@ /report</h2>
             </a>
             <div id="accordion1" class="collapse">
                 <ul>
                     <li>
                         <h3>GET</h3>
                         <ul>
-                            <li>Get License resource documentation</li>
-                            <li>Returns HTML</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <h3>POST</h3>
-                        <ul>
-                            <li>Add/update license</li>
-                            <li>Expects a JSON license in the request content</li>
-                            <li>Return status 201 if ok 400 if the Json does not suits the model</li>
-                            <li>Json License example:
-                                <pre>${getLicenseJsonModel()}</pre>
-                            </li>
+                            <li>Lists all the available reports</li>
+                            <li>Returns JSON</li>
                         </ul>
                     </li>
                 </ul>
@@ -105,75 +89,17 @@
         </section>
         <section id="artifact-names">
             <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion2">
-                <h2>@ /license/names</h2>
+                <h2>@ /reports/execution</h2>
             </a>
             <div id="accordion2" class="collapse">
                 <ul>
                     <li>
-                        <h3>GET</h3>
-                        <ul>
-                            <li>Get all license names</li>
-                            <li>Returns HTML view or a Json list of string</li>
-                            <li>
-                                Optional parameters:
-                                <br/>
-                                <table class="table table-bordered table-hover" style="font-size:90%;margin-top:8px;">
-                                    <thead>
-                                    <tr>
-                                        <td><strong>Parameter</strong></td>
-                                        <td><strong>Default Value</strong></td>
-                                        <td><strong>Description</strong></td>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>approved</td>
-                                        <td>null</td>
-                                        <td>Filter licenses regarding if the "approve" field is true/false</td>
-                                    </tr>
-                                    <tr>
-                                        <td>toBeValidated</td>
-                                        <td>null</td>
-                                        <td>Filter licenses regarding if the "approve" field is null or not</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </section>
-        <section id="license-target">
-            <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion3">
-                <h2>@ /license/{name}</h2>
-            </a>
-            <div id="accordion3" class="collapse">
-                <ul>
-                    <li>
-                        <h3>GET</h3>
-                        <ul>
-                            <li>Get a license</li>
-                            <li>
-                                Returns HTML view or a Json license
-                                <pre>${getLicenseJsonModel()}</pre>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <h3>DELETE</h3>
-                        <ul>
-                            <li>Remove a license</li>
-                            <li>Return status 200 if ok</li>
-                        </ul>
-                    </li>
-                    <li>
                         <h3>POST</h3>
                         <ul>
-                            <li>Validate or un validate a license</li>
-                            <li>Return status 200 if ok</li>
+                            <li>Executes a report on the server</li>
+                            <li>Returns CSV or Json structure</li>
                             <li>
-                                Mandatory parameter:
+                                Parameters:
                                 <br/>
                                 <table class="table table-bordered table-hover" style="font-size:90%;margin-top:8px;">
                                     <thead>
@@ -184,12 +110,23 @@
                                     </thead>
                                     <tbody>
                                     <tr>
-                                        <td>approved</td>
-                                        <td>Boolean to approve or reject the license</td>
+                                        <td>reportId</td>
+                                        <td>Report unique id</td>
+                                    </tr>
+                                    <tr>
+                                        <td>paramValues</td>
+                                        <td>An object containing a variable collection of names and values</td>
                                     </tr>
                                     </tbody>
                                 </table>
                             </li>
+
+                            <strong>Available Reports</strong>
+                            <#list getReportSamples() as sample>
+                                <li>
+                                    <pre>${sample}</pre> <br/>
+                                </li>
+                            </#list>
                         </ul>
                     </li>
                 </ul>

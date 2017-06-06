@@ -4,6 +4,7 @@
  */
 package org.axway.grapes.server.webapp.resources;
 
+import com.mongodb.util.JSON;
 import com.yammer.dropwizard.views.View;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
@@ -15,15 +16,16 @@ import org.axway.grapes.server.core.*;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.reports.ReportsHandler;
+import org.axway.grapes.server.reports.*;
+import org.axway.grapes.server.reports.models.ReportRequest;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Abstract resource
@@ -270,6 +272,46 @@ public abstract class AbstractResource extends View {
       */
      public String getDeliveryJsonModel() throws IOException {
          return JsonUtils.serialize(DataModelFactory.createDelivery("", "", "", new ArrayList<String>()));
+     }
+
+    /**
+     * Displays a model for the report request
+     * @return A string describing the structure of a certain report execution
+     * @throws IOException
+     */
+     public String[] getReportSamples() throws IOException {
+         final Map<String, String> sampleValues = new HashMap<>();
+         sampleValues.put("name1", "Secure Transpiler Mars");
+         sampleValues.put("version1", "4.7.0");
+         sampleValues.put("name2", "Secure Transpiler Bounty");
+         sampleValues.put("version2", "5.0.0");
+         sampleValues.put("license", "CDDL-1.1");
+         sampleValues.put("name", "Secure Pretender");
+         sampleValues.put("version", "2.7.0");
+
+         return ReportsRegistry.allReports()
+                 .stream()
+                 .map(report -> ReportUtils.generateSampleRequest(report, sampleValues))
+                 .map(request -> {
+                     try {
+                         String desc = "";
+                         final Optional<Report> byId = ReportsRegistry.findById(request.getReportId());
+
+                         if(byId.isPresent()) {
+                            desc = byId.get().getDescription() + "<br/><br/>";
+                         }
+
+                         return String.format("%s %s", desc, JsonUtils.serialize(request));
+                     } catch(IOException e) {
+                         return "Error " + e.getMessage();
+                     }
+                 })
+                 .collect(Collectors.toList())
+                 .toArray(new String[] {});
+     }
+
+     public int getAvailableReportsCount() {
+        return ReportsRegistry.allReports().size();
      }
 
     /**
