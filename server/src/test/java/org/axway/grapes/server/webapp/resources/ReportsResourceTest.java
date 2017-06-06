@@ -60,7 +60,7 @@ public class ReportsResourceTest extends ResourceTest {
     
     @Test
 	public void getListOfReportsEnpoint() {
-		WebResource resource = client().resource(ServerAPI.GET_REPORTS);
+		WebResource resource = client().resource(ServerAPI.GET_REPORT);
 		ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON)
                 .type(MediaType.APPLICATION_JSON)
@@ -72,7 +72,7 @@ public class ReportsResourceTest extends ResourceTest {
 
     @Test
     public void noPayloadReturnsBadRequest() {
-        WebResource resource = client().resource(ServerAPI.GET_REPORTS + "/execution");
+        WebResource resource = client().resource(ServerAPI.GET_REPORT + "/execution");
         ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON)
                 .type(MediaType.APPLICATION_JSON)
@@ -84,7 +84,7 @@ public class ReportsResourceTest extends ResourceTest {
 
     @Test
     public void listAvailableReportsReturnsTheCorrectCode() {
-        WebResource resource = client().resource(ServerAPI.GET_REPORTS);
+        WebResource resource = client().resource(ServerAPI.GET_REPORT);
         ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON)
                 .type(MediaType.APPLICATION_JSON)
@@ -96,7 +96,7 @@ public class ReportsResourceTest extends ResourceTest {
 
     @Test
     public void executeInexistentReportShouldReturn_404() {
-        WebResource resource = client().resource(ServerAPI.GET_REPORTS + "/execution");
+        WebResource resource = client().resource(ServerAPI.GET_REPORT + "/execution");
         ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON)
                 .type(MediaType.APPLICATION_JSON)
@@ -110,7 +110,7 @@ public class ReportsResourceTest extends ResourceTest {
 
     @Test
     public void notAllParamsSet_400() {
-        WebResource resource = client().resource(ServerAPI.GET_REPORTS + "/execution");
+        WebResource resource = client().resource(ServerAPI.GET_REPORT + "/execution");
         ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON)
                 .type(MediaType.APPLICATION_JSON)
@@ -123,7 +123,7 @@ public class ReportsResourceTest extends ResourceTest {
 
     @Test
     public void reportExecutionReturnsCSV() {
-        WebResource resource = client().resource(ServerAPI.GET_REPORTS + "/execution");
+        WebResource resource = client().resource(ServerAPI.GET_REPORT + "/execution");
         ClientResponse response = resource
                 .accept("text/csv")
                 .type(MediaType.APPLICATION_JSON)
@@ -137,7 +137,7 @@ public class ReportsResourceTest extends ResourceTest {
 
     @Test
     public void reportExecutionReturnsJSON() {
-        WebResource resource = client().resource(ServerAPI.GET_REPORTS + "/execution");
+        WebResource resource = client().resource(ServerAPI.GET_REPORT + "/execution");
         ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON)
                 .type(MediaType.APPLICATION_JSON)

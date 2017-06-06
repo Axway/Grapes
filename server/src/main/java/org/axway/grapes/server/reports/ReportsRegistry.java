@@ -49,7 +49,7 @@ public class ReportsRegistry {
 
     public static Optional<Report> findById(int id) throws NoSuchElementException {
         for(Report r : reports) {
-            if(r.getId().getId() == id) {
+            if(r.getId() == id) {
                 return Optional.of(r);
             }
         }

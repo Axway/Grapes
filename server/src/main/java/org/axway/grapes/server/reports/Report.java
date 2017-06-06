@@ -17,7 +17,7 @@ public interface Report {
 
     String getDescription();
 
-    ReportId getId();
+    int getId();
 
     /**
      * Returns the list of expected parameters. All the parameter entries are considered mandatory.

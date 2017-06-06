@@ -16,4 +16,9 @@ public enum ReportId {
     public int getId() {
         return this.id;
     }
+
+    @Override
+    public String toString() {
+        return Integer.toString(id);
+    }
 }

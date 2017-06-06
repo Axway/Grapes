@@ -54,8 +54,8 @@ public class DiffsLicenseReport implements Report {
     }
 
     @Override
-    public ReportId getId() {
-        return ReportId.DIFFS_PER_PRODUCT_RELEASE;
+    public int getId() {
+        return ReportId.DIFFS_PER_PRODUCT_RELEASE.getId();
     }
 
     @Override

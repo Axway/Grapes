@@ -48,8 +48,8 @@ public class LicenseOnProductReleases implements Report {
     }
 
     @Override
-    public ReportId getId() {
-        return LICENSE_ON_PRODUCT_RELEASES;
+    public int getId() {
+        return LICENSE_ON_PRODUCT_RELEASES.getId();
     }
 
     @Override

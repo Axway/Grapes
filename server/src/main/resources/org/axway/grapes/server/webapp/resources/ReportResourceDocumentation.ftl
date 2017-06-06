@@ -71,7 +71,7 @@
             </ul>
         </div>
         <div class="span8">
-        <section id="license">
+        <section id="report">
             <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion1">
                 <h2>@ /report</h2>
             </a>
@@ -85,6 +85,9 @@
                         </ul>
                     </li>
                 </ul>
+
+                Reports API Swagger Definition (<a href="/assets/api/reports.json">json</a>,
+                <a href="/assets/api/reports.yaml">yaml</a>)
             </div>
         </section>
         <section id="artifact-names">

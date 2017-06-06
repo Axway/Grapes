@@ -13,7 +13,7 @@ import java.util.Map;
 public class ReportUtils {
     public static ReportRequest generateSampleRequest(Report report, Map<String, String> params) {
         ReportRequest result = new ReportRequest();
-        result.setReportId(report.getId().getId());
+        result.setReportId(report.getId());
 
         Map<String, String> requestParams = new HashMap<>();
 
