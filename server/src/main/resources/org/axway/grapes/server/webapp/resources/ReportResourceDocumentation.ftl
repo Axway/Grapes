@@ -92,7 +92,7 @@
         </section>
         <section id="artifact-names">
             <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion2">
-                <h2>@ /reports/execution</h2>
+                <h2>@ /report/execution</h2>
             </a>
             <div id="accordion2" class="collapse">
                 <ul>

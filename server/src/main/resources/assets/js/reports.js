@@ -5,7 +5,7 @@ function executeAndCSVExport(payload, title) {
 
     $.ajax({
         type: "POST",
-        url: "/reports/execution",
+        url: "/report/execution",
         data: payloadData,
         contentType: "application/json",
         headers: {
@@ -26,7 +26,7 @@ function executeJSON(payload, cb) {
 
     $.ajax({
         type: "POST",
-        url: "/reports/execution",
+        url: "/report/execution",
         data: payloadData,
         contentType: "application/json",
         headers: {
