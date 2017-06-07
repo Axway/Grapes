@@ -407,8 +407,7 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(results);
 
         assertFalse(results.canBePromoted);
-        assertTrue(results.getDependencyProblems().get(0).equals("Version is SNAPSHOT"));
-
+        assertTrue(results.isSnapshot);
     }
 
 
@@ -425,12 +424,11 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        PromotionDetails results = response.getEntity(PromotionDetails.class);
-        assertNotNull(results.getDependencyProblems());
+        Map<String, Object> results = response.getEntity(HashMap.class);
+        assertNotNull(results);
 
-        assertFalse(results.canBePromoted);
-        assertFalse(results.getDependencyProblems().isEmpty());
-
+        assertFalse((Boolean)results.get("canBePromoted"));
+        assertFalse(((List)results.get("errors")).isEmpty());
     }
 
     @Test
@@ -446,16 +444,15 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        PromotionDetails results = response.getEntity(PromotionDetails.class);
+        Map<String, Object> results = response.getEntity(HashMap.class);
         assertNotNull(results);
 
-        List<String> errors = results.getDependencyProblems();
+        List<String> errors = (List)results.get("errors");
 
-        assertFalse(results.canBePromoted);
+        assertFalse((Boolean) results.get("canBePromoted"));
         assertFalse(errors.isEmpty());
 
-        assertEquals("Version is SNAPSHOT", errors.get(0));
-
+        assertEquals(errors.get(0), "Version is SNAPSHOT");
     }
 
     @Test
@@ -487,11 +484,11 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        PromotionDetails results = response.getEntity(PromotionDetails.class);
-        List<String> problems = results.getDependencyProblems();
+        Map<String, Object> results = response.getEntity(HashMap.class);
+        List<String> problems = (List)results.get("errors");
         assertNotNull(problems);
 
-        assertFalse(results.canBePromoted);
+        assertFalse((Boolean) results.get("canBePromoted"));
         assertFalse(problems.isEmpty());
         assertEquals(GrapesTestUtils.MISSING_LICENSE_MESSAGE_4TEST + GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST + GrapesTestUtils.COLON
                 + GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_VERSION_4TEST + GrapesTestUtils.COLON
@@ -530,11 +527,11 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        PromotionDetails results = response.getEntity(PromotionDetails.class);
-        List<String> problems = results.getDependencyProblems();
+        Map<String, Object> results = response.getEntity(HashMap.class);
+        List<String> problems = (List)results.get("errors");
         assertNotNull(problems);
 
-        assertFalse(results.canBePromoted);
+        assertFalse((Boolean) results.get("canBePromoted"));
         assertFalse(problems.isEmpty());
         assertEquals("The module you are trying to promote has dependencies that miss the license information: org.missing.license:MissingLicense:1.2.3:classifier:extension", problems.get(0));
     }
@@ -576,11 +573,11 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        PromotionDetails results = response.getEntity(PromotionDetails.class);
-        List<String> problems = results.getDependencyProblems();
+        Map<String, Object> results = response.getEntity(HashMap.class);
+        List<String> problems = (List)results.get("errors");
         assertNotNull(problems);
 
-        assertFalse(results.canBePromoted);
+        assertFalse((Boolean) results.get("canBePromoted"));
         assertFalse(problems.isEmpty());
         assertEquals("The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: org.missing.license:MissingLicense:1.2.3:classifier:extension (NotApproved)", problems.get(0));
     }

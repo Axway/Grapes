@@ -1201,11 +1201,60 @@ function getModulePromotionReport(){
             type: "GET",
             url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/promotion/report2?fullRecursive=true" ,
             data: {},
-            dataType: "html",
+            dataType: "json",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).find("#list"));
+                    var html = "<div class=\"container\">" +
+                    "<div class=\"row-fluid\" id=\"list\">";
+
+                    if(data.canBePromoted == true){
+                        html += "<div id=\"promotion_ok\">The module can be promoted.<br/></div>";
+                    } else {
+                        if(data.errors != null && data.errors[0].search(/snapshot/i) != -1) {
+                            html += "<div id=\"promotion_ko\"><strong>Snapshot module cannot be promoted!!!</strong><br/></div>";
+                        } else if(data.errors != null) {
+                            html += "<div id=\"promotion_ko\"><strong>The module cannot be promoted!!!</strong><br/></div>" +
+                            "<h3>Module promotion problems</h3> <div id=\"dependencyProblems\"><table class=\"table table-bordered table-hover\" id=\"dependencyProblemsTable\">" +
+                            "<thead> <tr> <td><span><strong>Detected problem</strong></span></td> <td><span><strong>Dependencies</strong></span></td></tr></thead><tbody>";
+                            $.each(data.errors, function(key, val) {
+                                var errorDesc = val.substring(0, val.indexOf(":"));
+                                var depList = val.substring(val.indexOf(":") + 1).split(",");
+                                if(errorDesc.search(/miss.*(?=license)|license.*(?=miss)/i) != -1) {
+                                    html += "<tr><td>" + errorDesc + "</td><td>";
+                                    depList.forEach(function(dep, i){
+                                        html += "<a href=\"javascript:void(0)\" onclick=\"getArtifactLink(this)\">" + dep + "</a>";
+                                        if(i != (depList.length - 1)){
+                                           html += ", ";
+                                        }
+                                    });
+                                    html += "</td></tr>";
+                                } else if (errorDesc.search(/not.*(?=accepted)|accepted.*(?=not)/i) != -1) {
+                                    html += "<tr><td>" + errorDesc + "</td><td>";
+                                    depList.forEach(function(dep, i){
+                                        html += "<a href=\"javascript:void(0)\" onclick=\"getArtifactLink(this)\">" + dep.substring(0, dep.indexOf("(")) + "</a>" +
+                                        "<a class=\"licenseLink\" href=\"javascript:void(0)\" onclick=getLicenseDirectLink(this.text)>" + dep.substring(dep.indexOf("("), dep.indexOf(")") + 1) + "</a>";
+
+                                         if(i != (depList.length - 1)){
+                                            html += ", ";
+                                         }
+                                    });
+                                    html += "</td></tr>";
+                                } else {
+                                    html += "<tr><td>" + errorDesc + "</td><td>";
+                                    depList.forEach(function(dep, i){
+                                        html += dep;
+                                         if(i != (depList.length - 1)){
+                                            html += ", ";
+                                         }
+                                    });
+                                    html += "</td></tr>";
+                                }
+                            });
+                        }
+                   }
+                   html += "</tbody></div></div></div>"
+                   $("#results").empty().append(html);
             }
-        })
+        });
 }
 
 function getArtifactOverview(){

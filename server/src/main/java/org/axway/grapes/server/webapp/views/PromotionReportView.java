@@ -25,8 +25,6 @@ public class PromotionReportView extends View {
     private PromotionDetails promotionDetails = new PromotionDetails();
     private List<Artifact> missingThirdPartyDependencyLicenses = new ArrayList<Artifact>();
     private List<Pair> dependenciesWithNotAcceptedLicenses = new ArrayList<Pair>();
-    // Errors to be displayed when a module dependency problem is detected
-    private List<String> dependencyProblems = new ArrayList<String>();
 
     public PromotionReportView() {
         super("PromotionReportView.ftl");
@@ -151,8 +149,10 @@ public class PromotionReportView extends View {
     }
 
     public PromotionDetails promotionDetails() {
-        promotionDetails.canBePromoted = canBePromoted();
-        promotionDetails.setDependencyProblems(dependencyProblems);
+        promotionDetails.canBePromoted=canBePromoted();
+        promotionDetails.isSnapshot=isSnapshot();
+        promotionDetails.setDoNotUseArtifacts(doNotUseArtifacts);
+        promotionDetails.setUnPromotedDependencies(unPromotedDependencies);
 
         return promotionDetails;
     }
@@ -167,14 +167,6 @@ public class PromotionReportView extends View {
         }
     }
 
-    public List<String> getDependencyProblems() {
-        return dependencyProblems;
-    }
-
-    public void setDependencyProblems(List<String> dependencyProblems) {
-        this.dependencyProblems = dependencyProblems;
-    }
-
     public List<Pair> getDependenciesWithNotAcceptedLicenses() {
         return dependenciesWithNotAcceptedLicenses;
     }
@@ -185,7 +177,6 @@ public class PromotionReportView extends View {
         }
 
     }
-
 
     private class PromotionPlanComparator implements Comparator<String> {
         private final Map<String, PromotionReportView> dependencyReports;

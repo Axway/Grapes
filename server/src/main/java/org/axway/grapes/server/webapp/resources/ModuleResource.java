@@ -22,10 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 import java.net.URL;
 import java.util.*;
 
@@ -350,10 +347,9 @@ public class ModuleResource extends AbstractResource {
     public Response getPromotionStatusReport2(@PathParam("name") final String name, @PathParam("version") final String version) {
         LOG.info("Got a get promotion report request.");
         final String moduleId = DbModule.generateID(name, version);
-        PromotionReportView promotionReport = getModuleHandler().getPromotionReport(moduleId);
-        final PromotionReportView promotionReportView = ResourcesUtils.checkPromotionErrors(promotionReport);
-
-        return Response.ok(promotionReportView).build();
+        PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
+        Map<String, Object> promotionReport = ResourcesUtils.checkPromotionErrors(promotionReportView);
+        return Response.ok().entity(promotionReport).build();
     }
 
 
@@ -433,7 +429,7 @@ public class ModuleResource extends AbstractResource {
         final String moduleId = DbModule.generateID(name, version);
         final PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
 
-        return Response.ok(promotionReportView.canBePromoted()).build();
+            return Response.ok(promotionReportView.canBePromoted()).build();
     }
 
     /**
