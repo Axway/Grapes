@@ -4,6 +4,7 @@ import org.apache.commons.jcs.JCS;
 import org.apache.commons.jcs.access.CacheAccess;
 import org.apache.commons.jcs.access.exception.CacheException;
 import org.axway.grapes.commons.datamodel.*;
+import org.axway.grapes.server.core.cache.CacheName;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.core.options.filters.CorporateFilter;
 import org.axway.grapes.server.core.options.filters.PromotedFilter;
@@ -38,15 +39,7 @@ public class ModuleHandler {
 
     public ModuleHandler(final RepositoryHandler repositoryHandler) {
         this.repositoryHandler = repositoryHandler;
-        initCache();
-    }
-
-    private void initCache() {
-        try {
-            cache = JCS.getInstance("default");
-        } catch (CacheException e) {
-            LOG.warn(String.format("Problem initializing cache: %s %s", e.getMessage(), e));
-        }
+        cache = CacheUtils.initCache(CacheName.PROMOTION_REPORTS, PromotionReportView.class);
     }
 
     /**

@@ -5,6 +5,8 @@ import com.yammer.dropwizard.jersey.params.BooleanParam;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.core.CacheUtils;
+import org.axway.grapes.server.core.cache.CacheName;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
@@ -37,7 +39,7 @@ import java.util.List;
 public class LicenseResource extends AbstractResource{
     
     private static final Logger LOG = LoggerFactory.getLogger(LicenseResource.class);
-    
+
     public LicenseResource(final RepositoryHandler repoHandler, final GrapesServerConfig dmConfig){
         super(repoHandler, "LicenseResourceDocumentation.ftl", dmConfig);
     }
@@ -62,6 +64,7 @@ public class LicenseResource extends AbstractResource{
         // Save the license
         final DbLicense dbLicense = getModelMapper().getDbLicense(license);
         getLicenseHandler().store(dbLicense);
+        CacheUtils.clear(CacheName.PROMOTION_REPORTS);
 
 		return Response.ok().status(HttpStatus.CREATED_201).build();
 	}
@@ -128,7 +131,7 @@ public class LicenseResource extends AbstractResource{
 
         LOG.info("Got a delete license request.");
         getLicenseHandler().deleteLicense(name);
-
+        CacheUtils.clear(CacheName.PROMOTION_REPORTS);
         return Response.ok("done").build();
     }
 
@@ -156,7 +159,7 @@ public class LicenseResource extends AbstractResource{
         }
 
         getLicenseHandler().approveLicense(name, approved.get());
-
+        CacheUtils.clear(CacheName.PROMOTION_REPORTS);
         return Response.ok("done").build();
     }
 
