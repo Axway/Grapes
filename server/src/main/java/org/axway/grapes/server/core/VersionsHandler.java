@@ -38,22 +38,6 @@ public class VersionsHandler {
         final List<String> versions = repoHandler.getArtifactVersions(artifact);
         final String currentVersion = artifact.getVersion();
 
-//        try{
-//            final String lastDevVersion = getLastVersion(versions);
-//            final String lastReleaseVersion = getLastRelease(versions);
-//            return currentVersion.equals(lastDevVersion) || currentVersion.equals(lastReleaseVersion);
-//        }
-//        catch (Exception e){
-//            LOG.info("Some problem occured while fetching the Last version or Last release version" , e);
-//            for(final String version: versions){
-//                if(version.compareTo(currentVersion) > 0){
-//                    return false;
-//                }
-//            }
-//            return true;
-//        }
-
-
         final String lastDevVersion = getLastVersion(versions);
         final String lastReleaseVersion = getLastRelease(versions);
 
@@ -68,19 +52,6 @@ public class VersionsHandler {
         } else {
             return currentVersion.equals(lastDevVersion) || currentVersion.equals(lastReleaseVersion);
         }
-
-
-//        catch (Exception e){
-//            LOG.info("Some problem occurred while fetching the Last version or Last release version" , e);
-//            for(final String version: versions){
-//                if(version.compareTo(currentVersion) > 0){
-//                    return false;
-//                }
-//            }
-//            return true;
-//        }
-
-
     }
 
 
@@ -112,11 +83,10 @@ public class VersionsHandler {
                 } catch(final IncomparableException ie) {
                     LOG.error(String.format("Cannot compare latest release [%s]. Details %s", lastRelease, ie));
                 }
-
             }
         }
 
-        if(lastRelease == null){
+        if(lastRelease == null) {
             return null;
         }
 
