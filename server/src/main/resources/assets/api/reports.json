@@ -1,0 +1,225 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Reporting module on the Grapes application",
+    "version": "1.0.0",
+    "title": "Grapes Reporting API",
+    "contact": {
+      "name": "mganuci@axway.com"
+    }
+  },
+  "host": "localhost",
+  "basePath": "/v1",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/report": {
+      "get": {
+        "tags": [
+          "reporting",
+          "license"
+        ],
+        "summary": "Retrieves a list of available reports in Grapes.",
+        "description": "Lists the available reports.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json",
+          "text/csv"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Report"
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/report/execution": {
+      "post": {
+        "summary": "Requests a report execution on server",
+        "description": "Sends a request asking Grapes to execute a certain report from the ones that are available.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json",
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "request",
+            "schema": {
+              "$ref": "#/definitions/ReportRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/ReportResponse"
+            },
+            "examples": {
+              "request": {
+                "reportId": 2,
+                "paramValues": {
+                  "name1": "WebTrader Linx",
+                  "version1": "2.1.0",
+                  "name2": "WebTrader Lion",
+                  "version2": "2.2.0"
+                }
+              },
+              "resultColumnNames": [
+                "License Name",
+                "Status"
+              ],
+              "data": [
+                [
+                  "Apache 2 Netflix",
+                  "Added"
+                ],
+                [
+                  "HBO Prime",
+                  "Added"
+                ],
+                [
+                  "Popcorn 3.2",
+                  "Missing"
+                ]
+              ]
+            }
+          },
+          "400": {
+            "description": "If mandatory parameters are missing. One mandatory parameter is the reportId, but depending on this value, other parameters can become mandatory."
+          },
+          "404": {
+            "description": "Cannot identify the report by id or report parameters refer to  entities which were not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "ReportRequestParameter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The exact name of the parameter"
+        },
+        "value": {
+          "type": "string",
+          "description": "The paramter value to to be sent"
+        }
+      }
+    },
+    "ReportResponse": {
+      "type": "object",
+      "properties": {
+        "request": {
+          "$ref": "#/definitions/ReportRequest"
+        },
+        "resultColumnNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The list of column names"
+        },
+        "data": {
+          "type": "array",
+          "description": "The array of data rows",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "ReportRequest": {
+      "type": "object",
+      "properties": {
+        "reportId": {
+          "type": "integer",
+          "description": "The report numeric id."
+        },
+        "paramValues": {
+          "$ref": "#/definitions/ReportRequestParameter"
+        }
+      }
+    },
+    "ReportParameter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The parameter name"
+        },
+        "description": {
+          "type": "string",
+          "description": "The parameter description"
+        }
+      }
+    },
+    "Report": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "The unique report id"
+        },
+        "name": {
+          "type": "string",
+          "description": "The report name"
+        },
+        "description": {
+          "type": "string",
+          "description": "A short description of the report content."
+        },
+        "columnNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The list of column names the report is returning"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ReportParameter"
+          }
+        }
+      }
+    }
+  }
+}

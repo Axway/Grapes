@@ -178,17 +178,12 @@ public class ProductResource extends AbstractResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDeliveries(@PathParam("name") final String name){
         if(LOG.isInfoEnabled()) {
-            LOG.info(String.format("Got a get deliveries request for product %s", name));
+            LOG.info(String.format("Got a get deliveries request for product [%s]", name));
         }
 
         final DbProduct dbProduct = getProductHandler().getProduct(name);
         final List<Delivery> delivery = dbProduct.getDeliveries();
-        Collections.sort(delivery, new Comparator<Delivery>() {
-            @Override
-            public int compare(Delivery d1, Delivery d2) {
-                return d1.getCommercialName().compareTo(d2.getCommercialName());
-            }
-        });
+        delivery.sort(Comparator.comparing(Delivery::getCommercialName));
 
         return Response.ok(delivery).build();
     }
@@ -219,17 +214,17 @@ public class ProductResource extends AbstractResource {
 
         final DbProduct dbProduct = getProductHandler().getProduct(name);
 
-        final Delivery alreadyExistdelivery = dbProduct.getDelivery(delivery.getCommercialName(), delivery.getCommercialVersion());
+        final Delivery existingDelivery = dbProduct.getDelivery(delivery.getCommercialName(), delivery.getCommercialVersion());
 
-        if(alreadyExistdelivery != null){
-//            throw new WebApplicationException(Response.serverError().status(HttpStatus.CONFLICT_409)
-//                    .entity("Delivery " + delivery.getCommercialName() + " " + delivery.getCommercialVersion() + " already exist for product " + name).build());
+        if(existingDelivery != null){
             throw new WebApplicationException(Response.serverError().status(HttpStatus.CONFLICT_409)
                     .entity(String.format(DELIVERY_MSG_TEMPLATE, delivery.getCommercialName(), delivery.getCommercialVersion(), " already exists for ", name)).build());
         }
 
         dbProduct.getDeliveries().add(delivery);
         getProductHandler().update(dbProduct);
+
+        getReportsHandler().refreshDelivery3rdParty(dbProduct);
 
         return Response.ok().status(Response.Status.CREATED).build();
     }
@@ -253,8 +248,6 @@ public class ProductResource extends AbstractResource {
 
         final Delivery delivery = dbProduct.getDelivery(commercialName, commercialVersion);
         if (delivery == null) {
-//            throw new WebApplicationException(Response.serverError().status(HttpStatus.NOT_FOUND_404)
-//                    .entity("Delivery " + commercialName + " - " + commercialVersion + " does not exist for product " + name + ".").build());
             throw new WebApplicationException(Response.serverError().status(HttpStatus.NOT_FOUND_404)
                     .entity(String.format(DELIVERY_MSG_TEMPLATE, commercialName, commercialVersion, " does not exist for product ", name)).build());
         }
@@ -287,8 +280,6 @@ public class ProductResource extends AbstractResource {
         final Delivery delivery = dbProduct.getDelivery(commercialName, commercialVersion);
         
         if(! dbProduct.getDeliveries().contains(delivery)){
-//            throw new WebApplicationException(Response.serverError().status(HttpStatus.NOT_FOUND_404)
-//                    .entity("Delivery " + commercialName + " - " + commercialVersion + " does not exist for product "+ name + ".").build());
             throw new WebApplicationException(Response.serverError().status(HttpStatus.NOT_FOUND_404)
                     .entity(String.format(DELIVERY_MSG_TEMPLATE, commercialName, commercialVersion, " does not exist for ", name)).build());
         }
@@ -330,8 +321,6 @@ public class ProductResource extends AbstractResource {
         final Delivery delivery = dbProduct.getDelivery(commercialName, commercialVersion);
 
         if(! dbProduct.getDeliveries().contains(delivery)){
-//            throw new WebApplicationException(Response.serverError().status(HttpStatus.NOT_FOUND_404)
-//                    .entity("Delivery " + commercialName + " - " + commercialVersion + " does not exist for product "+ name + ".").build());
             throw new WebApplicationException(Response.serverError().status(HttpStatus.NOT_FOUND_404)
                     .entity(String.format(DELIVERY_MSG_TEMPLATE, commercialName, commercialVersion, " does not exist for product ", name)).build());
         }

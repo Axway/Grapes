@@ -78,4 +78,15 @@ public class DbProduct {
     	}
     	return null;
     }
+
+    @Override
+    public String toString() {
+        return "DbProduct{" +
+                "datamodelVersion='" + datamodelVersion + '\'' +
+                ", name='" + name + '\'' +
+                ", organization='" + organization + '\'' +
+                ", modules=" + modules +
+                ", deliveries=" + deliveries +
+                '}';
+    }
 }

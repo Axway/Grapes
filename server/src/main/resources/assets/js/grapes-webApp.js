@@ -25,11 +25,11 @@ function displayProductOptions(){
     $("#targets").empty();
     cleanAction();
     var productIds = "<div class=\"control-group\">\n";
-    productIds += "   <label class=\"control-label\" for=\"productName\" style=\"width: auto;\">Product Logical Name: </label>\n";
+    productIds += "   <label class=\"control-label\" for=\"productName\" style=\"width: auto;\">Product Name: </label>\n";
     productIds += "      <div class=\"controls\"  style=\"margin-left: 165px;\"><select id=\"productName\"></select></div>\n";
     productIds += "</div>\n";
     productIds += "<div class=\"control-group\">\n";
-    productIds += "   <label class=\"control-label\" for=\"productDelivery\" style=\"width: auto;\">Commercial Delivery: </label>\n";
+    productIds += "   <label class=\"control-label\" for=\"productDelivery\" style=\"width: auto;\">Commercial Releases: </label>\n";
     productIds += "      <div class=\"controls\"  style=\"margin-left: 165px;\"><select id=\"productDelivery\"></select></div>\n";
     productIds += "</div>\n";
     $("#ids").empty().append(productIds);
@@ -37,6 +37,7 @@ function displayProductOptions(){
     var productActions = "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
     productActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='createProduct();'>New Product</button>\n";
     productActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='getProductOverview();'>Overview</button>\n";
+    productActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='compareLicenses();'>Compare Licenses</button>\n";
     productActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='deleteProduct();'>Delete</button>\n";
     productActions += "</div>\n";
     $("#action").empty().append(productActions);
@@ -72,7 +73,7 @@ function displayModuleOptions(){
 	moduleActions += "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
 	moduleActions += "   <div id=\"moduleActions\" class=\"row-fluid\">\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleOverview();' id=\"overviewButton\">Overview</button>\n";
-	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleDependencies();'>Dependencies</button>\n";
+	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleDependencies();'>Internal Dependencies</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleThirdParty();'>Third Party</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleAncestors();'>Ancestors</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModulePromotionReport();'>Promotion Report</button>\n";
@@ -157,7 +158,8 @@ function displayLicenseOptions(){
 	$("#filters").empty().append(licenseFilters);
 	var licenseActions = "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='createLicense();'>New</button>\n";
-	licenseActions += "   <button type=\"button\" id=\"licenseOverview\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='getLicenseOverview();'>Overview</button>\n";
+	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='getLicenseOverview();'>Overview</button>\n";
+	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='getLicenseUsage();'>Used in Products</button>\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='approveLicense();'>Approve</button>\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='rejectLicense();'>Reject</button>\n";
 	licenseActions += "</div>\n";
@@ -592,6 +594,78 @@ function deleteOrganization(organizationId){
 
      cleanCreateArtifact();
  }
+
+ function compareLicenses() {
+     if($('input:checked', '#targets').size() == 0){
+         $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
+         $("#anyAlert").show();
+         return;
+     }
+
+     var html = "<h3>License Comparison Between Commercial Releases</h3>";
+
+     var deliveries = $("#productDelivery")[0];
+     var count = deliveries.children.length;
+
+     //
+     // The first entry is empty, so it must be at least couple of different commercial releases
+     // for the comparison to make sense
+     //
+     if(count < 3) {
+         html = "You need at least two commercial release to perform the comparison";
+     } else {
+         html += "Compare with: ";
+         html += "<select id='version2'>";
+
+         var target = $('input:checked', '#targets').val();
+
+         for(var i = 0; i < count; i++) {
+            var option = deliveries.childNodes[i];
+
+            if(option.innerText !== '' && option.value !== target) {
+                html += "<option value='";
+                html += option.value;
+                html += "'>";
+                html += option.innerText;
+                html += "</option>";
+            }
+         }
+
+         html += "</select>";
+
+         html +="<button type='button' class='btn' id='execute-report' style='margin-left:10px; margin-bottom: 12px;' onclick='getLicensesComparisonsReport()'>Compare Licenses</button>";
+     }
+
+     $("#results").empty().append(html);
+ }
+
+ function getLicensesComparisonsReport() {
+     var target = $('input:checked', '#targets').val();
+
+     var cn1 = getCommercialName(target);
+     var cv1 = getCommercialVersion(target);
+
+     target = $('#version2').val();
+     var cn2 = getCommercialName(target);
+     var cv2 = getCommercialVersion(target);
+
+     $('#execute-report').prop("disabled", "disabled");
+     $("#results").append('<br/><img src="/assets/img/spinner.gif" alt="" id="loader-indicator" />');
+
+     runComparisonReport(cn1, cv1, cn2, cv2, function(result) {
+         var html = '';
+         if(result instanceof Error) {
+            html = "<div style='color:red'>";
+            html += result;
+            html += "</div>";
+         } else {
+            html = reportJSONToUI('License Comparison Between Commercial Releases', result);
+         }
+
+         $("#results").empty().append(html);
+     });
+ }
+
 function getProductOverview(){
     var target = $('input:checked', '#targets').val();
     if(target == null){
@@ -811,7 +885,17 @@ function getProductDeliveryOverview(delivery, product){
                  html += "</tbody>\n";
                  html += "</table>\n";
             }
-            
+
+
+            if(delivery.dependencies.length > 0) {
+                var arguments = [delivery.commercialName, delivery.commercialVersion]
+                    .map(function (e) {
+                        return "'" + e + "'";
+                    })
+                    .join(',');
+                html += "<div id='exportLicensesDiv'> <a href=\"javascript:commercialDeliveriesReport(" + arguments + ")\">Export All Licenses</a> </div>";
+            }
+
             html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
             html += "<thead><tr><th>Dependencies</th></tr></thead>\n";
             html += "<tbody>\n";
@@ -822,7 +906,7 @@ function getProductDeliveryOverview(delivery, product){
 
             html += "</tbody>\n";
             html += "</table>\n";
-            
+
             html += "<div id=\"moduleAddDiv\"/>\n";
             $("#results").empty().append(html);
         }
@@ -1553,6 +1637,23 @@ function getLicenseOverview(){
     $("#extra-action").empty().append("<button type=\"button\" class=\"btn btn-danger\" style=\"margin:2px;\" onclick=\"deleteLicense('"+licenseId+"');\">Delete</button>\n");
     $("#extra-action").append("<button type=\"button\" class=\"btn\" style=\"margin:2px;\" onclick=\"editLicense('"+licenseId+"');\">Edit</button>\n");
 }
+
+function getLicenseUsage() {
+    $("#extra-action").empty();
+
+    if($('input[name=licenseId]:checked', '#targets').size() == 0){
+        $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
+        $("#anyAlert").show();
+        return;
+    }
+    var licenseId = $('input[name=licenseId]:checked', '#targets').val();
+
+    $("#results").empty().append('<img src="/assets/img/spinner.gif" alt="" id="loader-indicator" />');
+    runLicenseUsageReport(licenseId, function(results) {
+        $("#results").empty().append(reportJSONToUI("Products using " + licenseId, results));
+    });
+}
+
 
 function deleteLicense(licenseId){
     $("#toDelete").text(licenseId);

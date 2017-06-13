@@ -15,37 +15,39 @@
 
     <link rel="shortcut icon" type="image/x-icon" href="assets/img/grapes_small.gif"/>
 
-</head>
-<body>
-    <div class="row-fluid">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container">
-                    <a class="brand active" href="/">Grapes</a>
-                    <div class="nav-collapse collapse">
-                        <ul class="nav">
-                            <li class="">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentations</a>
-                                <ul class="dropdown-menu" role="menu" aria-labelledby="drop">
-                                    <li><a tabindex="-1" href="/organization">Organization API</a></li>
-                                    <li><a tabindex="-1" href="/product">Product API</a></li>
-                                    <li><a tabindex="-1" href="/module">Module API</a></li>
-                                    <li><a tabindex="-1" href="/artifact">Artifact API</a></li>
-                                    <li><a tabindex="-1" href="/license">License API</a></li>
-                                </ul>
-                            </li>
-                            <li class="">
-                                <a href="/sequoia">Sequoïa</a>
-                            </li>
-                            <li class="">
-                                <a href="/webapp">Data Browser</a>
-                            </li>
-                        </ul>
+	</head>
+    <body>
+
+        <div class="row-fluid">
+            <div class="navbar navbar-inverse navbar-fixed-top">
+                <div class="navbar-inner">
+                    <div class="container">
+                        <a class="brand active" href="/">Grapes</a>
+                        <div class="nav-collapse collapse">
+                            <ul class="nav">
+                                <li class="">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentations</a>
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop">
+                                        <li><a tabindex="-1" href="/organization">Organization API</a></li>
+                                        <li><a tabindex="-1" href="/product">Product API</a></li>
+                                        <li><a tabindex="-1" href="/module">Module API</a></li>
+                                        <li><a tabindex="-1" href="/artifact">Artifact API</a></li>
+                                        <li><a tabindex="-1" href="/license">License API</a></li>
+                                        <li><a tabindex="-1" href="/report">Report API</a></li>
+                                    </ul>
+                                </li>
+                                <li class="">
+                                    <a href="/sequoia">Sequoïa</a>
+                                </li>
+                                <li class="">
+                                    <a href="/webapp">Data Browser</a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <div class="container" style="">
         <div class="row-fluid">

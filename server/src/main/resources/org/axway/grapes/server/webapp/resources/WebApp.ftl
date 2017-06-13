@@ -34,6 +34,7 @@
                                         <li><a tabindex="-1" href="/module">Module API</a></li>
                                         <li><a tabindex="-1" href="/artifact">Artifact API</a></li>
                                         <li><a tabindex="-1" href="/license">License API</a></li>
+                                        <li><a tabindex="-1" href="/report">Report API</a></li>
                                     </ul>
                                 </li>
                                 <li class="">
@@ -358,6 +359,10 @@
 
  		<!-- Handle CSV exports -->
         <script src="/assets/js/export-csv.js"></script>
+
+        <!-- All reports executions -->
+        <script src="/assets/js/FileSaver.js"></script>
+        <script src="/assets/js/reports.js"></script>
 
 	</body>
 </html>

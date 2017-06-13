@@ -12,6 +12,7 @@ public class Delivery {
 	private String releaseDate;
 	private String moduleName;
 	private List<String> dependencies = new ArrayList<String>();
+	private List<Artifact> allArtifactDependencies = new ArrayList<Artifact>();
 
 	public Delivery() {
 		// Only for creating an instance
@@ -74,5 +75,27 @@ public class Delivery {
 	}
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
+	}
+
+	@Override
+	public String toString() {
+		return "Delivery{" +
+				"commercialName='" + commercialName + '\'' +
+				", commercialVersion='" + commercialVersion + '\'' +
+				", version='" + version + '\'' +
+				", jenkinsBuildUrl='" + jenkinsBuildUrl + '\'' +
+				", releaseDate='" + releaseDate + '\'' +
+				", moduleName='" + moduleName + '\'' +
+				", dependencies=" + dependencies +
+				", all artifacts=" + allArtifactDependencies +
+				'}';
+	}
+
+	public List<Artifact> getAllArtifactDependencies() {
+		return allArtifactDependencies;
+	}
+
+	public void setAllArtifactDependencies(List<Artifact> allArtifactDependencies) {
+		this.allArtifactDependencies = allArtifactDependencies;
 	}
 }

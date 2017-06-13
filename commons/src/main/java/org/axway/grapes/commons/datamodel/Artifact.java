@@ -24,6 +24,7 @@ public class Artifact {
     private String origin = "maven";
     private String sha256 = "";
     private String description = "";
+    private boolean doNotUse = false;
 
     private boolean promoted = false;
 
@@ -226,4 +227,12 @@ public class Artifact {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+    public boolean isDoNotUse() {
+        return doNotUse;
+    }
+
+    public void setDoNotUse(boolean doNotUse) {
+        this.doNotUse = doNotUse;
+    }
 }

@@ -1,5 +1,6 @@
 package org.axway.grapes.server.db;
 
+import org.apache.commons.lang3.StringUtils;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.Dependency;
@@ -8,6 +9,7 @@ import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbDependency;
 import org.axway.grapes.server.db.datamodel.DbModule;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -222,6 +224,29 @@ public final class DataUtils {
         }
 
         return submodules;
+    }
+
+    public static boolean isFullGAVC(final String entry) {
+        return entry.split(":").length > 3;
+    }
+
+    public static String strip(final String gavc, final int stripCount) {
+        if(gavc == null) {
+            throw new IllegalArgumentException("Input must not be null");
+        }
+
+        if(stripCount <= 0) {
+            throw new IllegalArgumentException("Strip count must be > 0");
+        }
+
+        final String[] parts = gavc.split(":");
+        if(parts.length <= stripCount) {
+            return gavc;
+        }
+
+        int limit = parts.length - stripCount;
+        final String[] ts = Arrays.copyOfRange(parts, 0, limit);
+        return StringUtils.join(ts, ":");
     }
 
     /**

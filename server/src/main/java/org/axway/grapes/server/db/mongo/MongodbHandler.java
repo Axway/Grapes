@@ -16,6 +16,8 @@ import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -35,6 +37,8 @@ public class MongodbHandler implements RepositoryHandler {
     private LoadingCache<String, DbCredential> credentialCache;
     // DB connection
     private final DB db;
+
+    private static final Logger LOG = LoggerFactory.getLogger(MongodbHandler.class);
 
     public MongodbHandler(final DataBaseConfig config) throws UnknownHostException {
         final ServerAddress address = new ServerAddress(config.getHost() , config.getPort());
@@ -583,5 +587,41 @@ public class MongodbHandler implements RepositoryHandler {
         final Jongo datastore = getJongoDataStore();
         datastore.getCollection(DbCollections.DB_PRODUCT)
                 .remove(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, name));
+    }
+
+    @Override
+    public <T> Optional<T> getOneByQuery(final String collection,
+                                         final String query,
+                                         final Class<T> c) {
+        LOG.debug(query);
+        final Jongo ds = getJongoDataStore();
+        final Iterator<T> it = ds.getCollection(collection).find(query).as(c).iterator();
+
+        return it.hasNext() ? Optional.of(it.next()) : Optional.empty();
+    }
+
+    public <T> List<T> getListByQuery(final String collection,
+                                      final String query,
+                                      final Class<T> c) {
+        LOG.debug(query);
+        final Jongo ds = getJongoDataStore();
+        final Iterator<T> it = ds.getCollection(collection).find(query).as(c).iterator();
+
+        if(!it.hasNext()) {
+            return Collections.emptyList();
+        }
+
+        List<T> results = new ArrayList<>();
+        while(it.hasNext()) {
+            results.add(it.next());
+        }
+
+        return results;
+    }
+
+    public long getResultCount(final String collectionName, final String query) {
+        LOG.debug(query);
+        final Jongo ds = getJongoDataStore();
+        return ds.getCollection(collectionName).count(query);
     }
 }
