@@ -74,7 +74,9 @@ public class VersionsHandler {
                     if (testedVersion.isRelease()) {
                         if (lastRelease == null) {
                             lastRelease = testedVersion;
-                        } else if (lastRelease.compare(testedVersion) < 0) {
+                        }
+
+                        if (lastRelease.compare(testedVersion) < 0) {
                             lastRelease = testedVersion;
                         }
                     }
@@ -112,7 +114,9 @@ public class VersionsHandler {
 
                     if (lastVersion == null) {
                         lastVersion = testedVersion;
-                    } else if (lastVersion.compare(testedVersion) < 0) {
+                    }
+
+                    if (lastVersion.compare(testedVersion) < 0) {
                         lastVersion = testedVersion;
                     }
                 } catch(final NotHandledVersionException e) {

@@ -1,8 +1,9 @@
 package org.axway.grapes.server.core.version;
 
 
-
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Version Model Class
@@ -12,6 +13,7 @@ package org.axway.grapes.server.core.version;
 public class Version {
 
 	private final String stringVersion;
+	private static final String SNAPSHOT = "SNAPSHOT";
 
 	public Version(final String version) throws NotHandledVersionException {
 		this.stringVersion = version;
@@ -21,24 +23,33 @@ public class Version {
 		if(versionsParts.length > 3){
 			throw new NotHandledVersionException();
 		}
-		
+
+		final String[] validIntegerStrings = getIntegerParts(stringVersion);
+
 		try {
-			for(final String digit: getDigits().split("\\.")){
-				Integer.parseInt(digit);
+			for(final String entry : validIntegerStrings){
+				Integer.parseInt(entry);
 			}
-			
-			if (versionsParts.length > 1 && !versionsParts[1].contains("SNAPSHOT")) {
-				Integer.parseInt(versionsParts[1]);
-			}
-			
-			if (versionsParts.length > 2 && !versionsParts[2].contains("SNAPSHOT")) {
-				Integer.parseInt(versionsParts[2]);
-			}
-			
 		} catch (NumberFormatException e) {
 			throw new NotHandledVersionException(e);
 		}
-		
+	}
+
+	private String[] getIntegerParts(final String stringVersion) {
+		final List<String> resultList = new ArrayList<>();
+
+		resultList.addAll(Arrays.asList(getDigits().split("\\.")));
+
+		final String[] versionsParts = stringVersion.split("-");
+		if (versionsParts.length > 1 && !versionsParts[1].contains(SNAPSHOT)) {
+			resultList.add(versionsParts[1]);
+		}
+
+		if (versionsParts.length > 2 && !versionsParts[2].contains(SNAPSHOT)) {
+			resultList.add(versionsParts[2]);
+		}
+
+		return resultList.toArray(new String[0]);
 	}
 
 	/**
