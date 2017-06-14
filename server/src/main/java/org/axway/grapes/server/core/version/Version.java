@@ -28,7 +28,7 @@ public class Version {
 
 		try {
 			for(final String entry : validIntegerStrings){
-				Integer.parseInt(entry);
+				final int v = Integer.parseInt(entry);
 			}
 		} catch (NumberFormatException e) {
 			throw new NotHandledVersionException(e);

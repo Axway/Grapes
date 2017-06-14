@@ -39,16 +39,12 @@ public final class Migration220 {
             DbModule oldModule = query.as(DbModule.class);
             int migrated = 0;
 
-            while(oldModule != null){
+            while (oldModule != null) {
                 final DbModule newModule = getNewModule(oldModule, printer);
 
-                if(newModule == null ){
-                    printer.println("ERROR: migration error detected on module: " + oldModule.getId());
-                }
-                else{
-                    db.getCollection(DbCollections.DB_MODULES).update("{ _id : \""+oldModule.getId()+"\"}").with(newModule);
-                    migrated ++;
-                }
+                db.getCollection(DbCollections.DB_MODULES).update("{ _id : \"" + oldModule.getId() + "\"}").with(newModule);
+                migrated++;
+
                 oldModule = query.as(DbModule.class);
             }
 

@@ -33,8 +33,8 @@ public final class JongoUtils {
 		for(final Entry<String,Object> param: params.entrySet()){
 			if(newEntry){
 				sb.append(", ");
-				newEntry = false;
 			}
+
 			sb.append(param.getKey());
 			sb.append(": ");
 			sb.append(getParam(param.getValue()));
@@ -53,7 +53,7 @@ public final class JongoUtils {
 	 * @return String
 	 */
 	public static String generateQuery(final String key, final Object value) {
-		final Map<String, Object> params = new HashMap<String, Object>();
+		final Map<String, Object> params = new HashMap<>();
 		params.put(key, value);
 		return generateQuery(params);
 	}
