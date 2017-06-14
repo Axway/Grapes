@@ -28,20 +28,18 @@ public class GrapesEmailTest {
 
         GrapesEmailSender grapesEmailSender = new GrapesEmailSender(mailProperties);
 
-        Properties defaultProps = grapesEmailSender.getSmtpProperties();
+        Properties defaultProps = grapesEmailSender.getDefaultSmtpProperties();
 
         // Checking if all default values are existing
         assertTrue(defaultProps.containsKey(GrapesEmailSender.MAIL_SMTP_STARTTLS_ENABLE));
         assertTrue(defaultProps.containsKey(GrapesEmailSender.MAIL_SMTP_AUTH));
-        assertTrue(defaultProps.containsKey(GrapesEmailSender.MAIL_SMTP_PORT));
-        assertTrue(defaultProps.containsKey(GrapesEmailSender.MAIL_SMTP_SSL_TRUST));
     }
 
 
     @Test
     public void incompleteSetupThrowsIllegalArgumentException() throws UnsupportedEncodingException {
         Properties mailProperties = new Properties();
-        mailProperties.put(GrapesEmailSender.MAIL_SMTP_HOST, "a host");
+        // SMTP host is missing
         mailProperties.put(GrapesEmailSender.MAIL_SMTP_PORT, "a port");
         mailProperties.put(GrapesEmailSender.MAIL_SMTP_USER, "foo@email.com");
         mailProperties.put(GrapesEmailSender.MAIL_SMTP_SSL_TRUST, "a host");
@@ -59,7 +57,7 @@ public class GrapesEmailTest {
         mailProperties.put(GrapesEmailSender.MAIL_SMTP_HOST, "a host");
         mailProperties.put(GrapesEmailSender.MAIL_SMTP_PORT, "8025");
         mailProperties.put(GrapesEmailSender.MAIL_SMTP_USER, "foo@email.com");
-        mailProperties.put(GrapesEmailSender.MAIL_SPECIAL_FIELD, "***");
+//        mailProperties.put(GrapesEmailSender.MAIL_SPECIAL_FIELD, "***");
         mailProperties.put(GrapesEmailSender.MAIL_SMTP_SSL_TRUST, "a host");
         mailProperties.put(GrapesEmailSender.MAIL_SMTP_FROM, "foo@email.com");
         mailProperties.put(GrapesEmailSender.MAIL_DEBUG, true);

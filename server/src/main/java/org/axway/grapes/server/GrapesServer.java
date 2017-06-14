@@ -12,7 +12,6 @@ import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.config.Messages;
 import org.axway.grapes.server.db.DBException;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.webapp.resources.ReportResource;
 import org.axway.grapes.server.reports.writer.CsvReportWriter;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
@@ -43,7 +42,7 @@ public class GrapesServer extends Service<GrapesServerConfig> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GrapesServer.class);
 
-    protected GrapesServer() {
+    private GrapesServer() {
         super();
     }
 
@@ -82,7 +81,7 @@ public class GrapesServer extends Service<GrapesServerConfig> {
 
         // Add credential management
         final GrapesAuthenticator grapesAuthenticator = new GrapesAuthenticator(repoHandler);
-        final BasicAuthProvider authProvider = new BasicAuthProvider<DbCredential>(grapesAuthenticator, "Grapes Authenticator Provider");
+        final BasicAuthProvider authProvider = new BasicAuthProvider<>(grapesAuthenticator, "Grapes Authenticator Provider");
         env.addProvider(authProvider);
         
         
@@ -95,6 +94,7 @@ public class GrapesServer extends Service<GrapesServerConfig> {
         env.addTask(new MigrationTask(config.getDataBaseConfig()));
         env.addTask(new LoggingTask(config.getLoggingConfiguration().getFileConfiguration().getCurrentLogFilename()));
         env.addTask(new RefreshCommercialDeliveriesTask(repoHandler));
+        env.addTask(new SendEmailTestTask(config.getGrapesEmailConfig()));
 
         
         // Health checks

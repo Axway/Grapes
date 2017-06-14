@@ -19,30 +19,31 @@ public class GrapesEmailConfig extends Configuration {
     @Valid
     @NotNull
     @JsonProperty
-    private int port;
-
-    @Valid
-    @JsonProperty
-    private String user;
-
-    @Valid
-    @JsonProperty
-    private String pwd;
+    private int port = 25;
 
     @Valid
     @NotNull
     @JsonProperty
-    private String sslTrust;
+    private String user;
 
     @Valid
     @NotNull
     @JsonProperty
     private String smtpFrom;
-    
+
     @Valid
-    @NotNull
     @JsonProperty
-    private boolean debug;
+    private String pwd;
+
+
+    @Valid
+    @JsonProperty
+    private boolean debug = false;
+
+    @Valid
+    @JsonProperty
+    private boolean auth = false;
+
 
     private Properties mailProperties;
 
@@ -52,13 +53,20 @@ public class GrapesEmailConfig extends Configuration {
         }
 
         mailProperties = new Properties();
-        mailProperties.put(GrapesEmailSender.MAIL_SMTP_HOST, host);
-        mailProperties.put(GrapesEmailSender.MAIL_SMTP_PORT, port);
-        mailProperties.put(GrapesEmailSender.MAIL_SMTP_USER, user);
-        mailProperties.put(GrapesEmailSender.MAIL_SPECIAL_FIELD, pwd);
-        mailProperties.put(GrapesEmailSender.MAIL_SMTP_SSL_TRUST, sslTrust);
-        mailProperties.put(GrapesEmailSender.MAIL_SMTP_FROM, smtpFrom);
+
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_PORT, Integer.toString(port));
         mailProperties.put(GrapesEmailSender.MAIL_DEBUG, debug);
+
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_HOST, host);
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_USER, user);
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_SSL_TRUST, host);
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_FROM, smtpFrom);
+
+        mailProperties.put(GrapesEmailSender.MAIL_SMTP_AUTH, auth);
+
+        if(pwd != null) {
+            mailProperties.put(GrapesEmailSender.MAIL_SPECIAL_FIELD, pwd);
+        }
 
         return mailProperties;
     }
@@ -73,14 +81,6 @@ public class GrapesEmailConfig extends Configuration {
 
     public String getUser() {
         return user;
-    }
-
-    public String getPwd() {
-        return pwd;
-    }
-
-    public String getSslTrust() {
-        return sslTrust;
     }
 
     public String getSmtpFrom() {
