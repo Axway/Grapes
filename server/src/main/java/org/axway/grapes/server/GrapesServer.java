@@ -42,7 +42,7 @@ public class GrapesServer extends Service<GrapesServerConfig> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GrapesServer.class);
 
-    private GrapesServer() {
+    protected GrapesServer() {
         super();
     }
 
