@@ -60,7 +60,9 @@ public class ModuleResource extends AbstractResource {
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
-        LOG.info(String.format("Got a post Module request [%s]", module == null ? "NULL" : module.getName()));
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a post Module request [%s]", module == null ? "NULL" : module.getName()));
+        }
 
         // Checks if the data is corrupted
         DataValidator.validate(module);
@@ -259,7 +261,7 @@ public class ModuleResource extends AbstractResource {
         filters.init(uriInfo.getQueryParameters());
         filters.setCorporateFilter(new CorporateFilter(dbOrganization));
 
-        final AncestorsView view = new AncestorsView("Ancestor List Of " + name + " in version " + version, getLicenseHandler().getLicenses(), filters.getDecorator());
+        final AncestorsView view = new AncestorsView(String.format("Ancestor List Of %s in version %s", name, version), getLicenseHandler().getLicenses(), filters.getDecorator());
 
         for (final String artifactId : DataUtils.getAllArtifacts(dbModule)) {
             final DbArtifact dbArtifact = artifactHandler.getArtifact(artifactId);
@@ -299,7 +301,7 @@ public class ModuleResource extends AbstractResource {
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        final DependencyListView view = new DependencyListView("Dependency List Of " + name + " in version " + version, getLicenseHandler().getLicenses(), filters.getDecorator());
+        final DependencyListView view = new DependencyListView(String.format("Dependency List Of %s in version %s", name, version), getLicenseHandler().getLicenses(), filters.getDecorator());
         final String moduleId = DbModule.generateID(name, version);
         view.addAll(getDependencyHandler().getModuleDependencies(moduleId, filters));
 
@@ -373,7 +375,7 @@ public class ModuleResource extends AbstractResource {
             return Response.serverError().status(HttpStatus.BAD_REQUEST_400).build();
         }
 
-        final LicenseListView view = new LicenseListView("Licenses of " + name + " in version " + version);
+        final LicenseListView view = new LicenseListView(String.format("Licenses of %s in version %s", name, version));
         final String moduleId = DbModule.generateID(name, version);
         final List<DbLicense> dbLicenses = getModuleHandler().getModuleLicenses(moduleId);
 
@@ -534,7 +536,7 @@ public class ModuleResource extends AbstractResource {
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        final List<Module> modules = new ArrayList<Module>();
+        final List<Module> modules = new ArrayList<>();
         final List<DbModule> dbModules = getModuleHandler().getModules(filters);
 
         for (final DbModule dbModule : dbModules) {
