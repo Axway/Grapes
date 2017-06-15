@@ -15,8 +15,8 @@ import java.util.List;
  */
 public class DbProduct {
 
-    public static final String DATA_MODEL_VERSION = "datamodelVersion";
-    private String datamodelVersion = DbCollections.datamodelVersion;
+    public static final String DATA_MODEL_VERSION = "DATAMODEL_VERSION";
+    private String datamodelVersion = DbCollections.DATAMODEL_VERSION;
 
     @Id
     private String name;
@@ -82,7 +82,7 @@ public class DbProduct {
     @Override
     public String toString() {
         return "DbProduct{" +
-                "datamodelVersion='" + datamodelVersion + '\'' +
+                "DATAMODEL_VERSION='" + datamodelVersion + '\'' +
                 ", name='" + name + '\'' +
                 ", organization='" + organization + '\'' +
                 ", modules=" + modules +

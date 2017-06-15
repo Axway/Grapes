@@ -16,8 +16,8 @@ import java.util.List;
  */
 public class DbOrganization {
 
-    public static final String DATA_MODEL_VERSION = "datamodelVersion";
-    private String datamodelVersion = DbCollections.datamodelVersion;
+    public static final String DATA_MODEL_VERSION = "DATAMODEL_VERSION";
+    private String datamodelVersion = DbCollections.DATAMODEL_VERSION;
 
     @Id
     private String name;

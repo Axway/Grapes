@@ -9,7 +9,7 @@ package org.axway.grapes.server.db.datamodel;
  */
 public class DbGrapesInfo {
 
-    public static final String CURRENT_DATAMODEL_VERSION = "datamodelVersion";
+    public static final String CURRENT_DATAMODEL_VERSION = "DATAMODEL_VERSION";
     private String datamodelVersion = "";
 
 

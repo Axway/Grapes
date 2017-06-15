@@ -35,7 +35,7 @@ public final class Migration220 {
             printer.println("Starting the migration of Modules ...");
             final int nbModules = getModuleCount(db);
 
-            final FindOne query = db.getCollection(DbCollections.DB_MODULES).findOne("{" + DbModule.DATA_MODEL_VERSION + " : {$not: #}}", Pattern.compile(DbCollections.datamodelVersion));
+            final FindOne query = db.getCollection(DbCollections.DB_MODULES).findOne("{" + DbModule.DATA_MODEL_VERSION + " : {$not: #}}", Pattern.compile(DbCollections.DATAMODEL_VERSION));
             DbModule oldModule = query.as(DbModule.class);
             int migrated = 0;
 
@@ -62,19 +62,19 @@ public final class Migration220 {
 
             // Migrate Artifacts;
             printer.println("Starting the migration of Artifacts ...");
-            db.getCollection(DbCollections.DB_ARTIFACTS).update("{_id : #}", Pattern.compile(".*")).with("{$set: {"+DbArtifact.DATA_MODEL_VERSION+": # }}", DbCollections.datamodelVersion);
+            db.getCollection(DbCollections.DB_ARTIFACTS).update("{_id : #}", Pattern.compile(".*")).with("{$set: {"+DbArtifact.DATA_MODEL_VERSION+": # }}", DbCollections.DATAMODEL_VERSION);
             printer.println("Artifact migration ended.");
             printer.println("");
 
             // Migrate Licenses;
             printer.println("Starting the migration of Licenses ...");
-            db.getCollection(DbCollections.DB_LICENSES).update("{_id : #}", Pattern.compile(".*")).with("{$set: {"+DbArtifact.DATA_MODEL_VERSION+": # }}", DbCollections.datamodelVersion);
+            db.getCollection(DbCollections.DB_LICENSES).update("{_id : #}", Pattern.compile(".*")).with("{$set: {"+DbArtifact.DATA_MODEL_VERSION+": # }}", DbCollections.DATAMODEL_VERSION);
             printer.println("Licenses migration ended.");
             printer.println("");
 
             // Migrate Credentials;
             printer.println("Starting the migration of Credentials ...");
-            db.getCollection(DbCollections.DB_CREDENTIALS).update("{_id : #}", Pattern.compile(".*")).with("{$set: {"+DbCredential.DATA_MODEL_VERSION+": # }}", DbCollections.datamodelVersion);
+            db.getCollection(DbCollections.DB_CREDENTIALS).update("{_id : #}", Pattern.compile(".*")).with("{$set: {"+DbCredential.DATA_MODEL_VERSION+": # }}", DbCollections.DATAMODEL_VERSION);
             printer.println("Credentials migration ended.");
             printer.println("");
 
@@ -87,7 +87,7 @@ public final class Migration220 {
             // Adding Corporate DbGrapesInfo;
             printer.println("Adding DbGrapesInfo ...");
             final DbGrapesInfo info = new DbGrapesInfo();
-            info.setDatamodelVersion(DbCollections.datamodelVersion);
+            info.setDatamodelVersion(DbCollections.DATAMODEL_VERSION);
             db.getCollection(DbCollections.DB_GRAPES_INFO).save(info);
             printer.println("DbGrapesInfo ok.");
             printer.println("");
