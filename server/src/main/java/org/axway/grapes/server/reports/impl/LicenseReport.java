@@ -22,9 +22,6 @@ public class LicenseReport implements Report {
 
     private static final Logger LOG = LoggerFactory.getLogger(LicenseReport.class);
 
-    private static final String BATCH_TEMPLATE = "{ \"_id\" : { \"$in\" : [%s]}}" ;
-    private static final String BATCH_TEMPLATE_REGEX = "{ \"_id\" : { \"$regex\" : \"%s\"}}";
-
     static List<ParameterDefinition> parameters = new ArrayList<>();
 
     private DataFetchingUtils utils = new DataFetchingUtils();
@@ -61,7 +58,9 @@ public class LicenseReport implements Report {
 
     @Override
     public ReportExecution execute(final RepositoryHandler repoHandler, final ReportRequest request) {
-        LOG.debug(String.format("Executing %s", getName()));
+        if(LOG.isDebugEnabled()) {
+            LOG.debug(String.format("Executing %s", getName()));
+        }
 
         final Map<String, String> params = request.getParamValues();
         final String name = params.get("name");
@@ -83,39 +82,13 @@ public class LicenseReport implements Report {
         final ReportExecution result = new ReportExecution(request, getColumnNames());
 
         delivery.getAllArtifactDependencies().forEach(
-            a -> {
-                a.getLicenses()
+            a -> a.getLicenses()
                         .stream()
                         .filter(lic -> !lic.contains("Axway Software"))
-                        .forEach(lic -> result.addResultRow(makeResultsRow(a, lic)));
-            });
+                        .forEach(lic -> result.addResultRow(makeResultsRow(a, lic)))
+            );
         return result;
     }
-
-//    private ReportExecution computeResult(final RepositoryHandler repoHandler, final ReportRequest request, final Delivery delivery) {
-//        ReportExecution result = new ReportExecution(request, getColumnNames());
-//
-//        Set<String> deps = utils.getDeliveryDependencies(repoHandler, delivery);
-//
-//        // If the dependency is referred with classifier, so it's fairly easy to query by exact match against id
-//        BatchProcessor batchProcessor = new BatchProcessor(repoHandler);
-//        batchProcessor.process(DbCollections.DB_ARTIFACTS,
-//                batch -> QueryUtils.quoteIds(batch, BATCH_TEMPLATE),
-//                deps,
-//                DbArtifact.class,
-//                a -> {
-//                    a.getLicenses()
-//                            .stream()
-//                            .filter(lic -> !lic.contains("Axway Software"))
-//                            .forEach(lic -> result.addResultRow(makeResultsRow(a, lic)));
-//                });
-//
-//        return result;
-//    }
-
-//    private String[] makeResultsRow(final DbArtifact a, final String lic) {
-//        return new String[] {a.getGroupId(), a.getArtifactId(), a.getClassifier(), a.getVersion(), a.getDoNotUse().toString(), lic};
-//    }
 
     private String[] makeResultsRow(final Artifact a, final String lic) {
         return new String[] {a.getGroupId(), a.getArtifactId(), a.getClassifier(), a.getVersion(), Boolean.toString(a.isDoNotUse()), lic};
