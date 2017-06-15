@@ -180,8 +180,8 @@ public final class DataModelFactory {
 		try{
 			final PromotionDetails promotionDetails = new PromotionDetails();
 
-			promotionDetails.canBePromoted=canBePromoted;
-			promotionDetails.isSnapshot=isSnapshot;
+			promotionDetails.setPromotable(canBePromoted);
+			promotionDetails.setSnapshot(isSnapshot);
 			promotionDetails.setUnPromotedDependencies(unPromotedDependencies);
 			promotionDetails.setDoNotUseArtifacts(doNotUseArtifacts);
 

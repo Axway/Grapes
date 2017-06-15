@@ -12,13 +12,29 @@ import java.util.List;
  */
 public class PromotionDetails {
 
-    public Boolean canBePromoted;
-    public Boolean isSnapshot;
+    private Boolean canBePromoted;
+    private Boolean isSnapshot;
     private List<String> unPromotedDependencies = new ArrayList<String>();
     private List<Artifact> doNotUseArtifacts = new ArrayList<Artifact>();
 
     public List<String> getUnPromotedDependencies() {
         return unPromotedDependencies;
+    }
+
+    public Boolean isPromotable() {
+        return canBePromoted;
+    }
+
+    public void setPromotable(Boolean v) {
+        this.canBePromoted = v;
+    }
+
+    public void setSnapshot(Boolean v) {
+        this.isSnapshot = v;
+    }
+
+    public Boolean isSnapshot() {
+        return isSnapshot;
     }
 
     public void setUnPromotedDependencies(List<String> unPromotedDependencies) {

@@ -386,7 +386,7 @@ public class ModuleResourceTest extends ResourceTest {
 
         PromotionDetails results = response.getEntity(PromotionDetails.class);
         assertNotNull(results);
-        assertTrue(results.canBePromoted);
+        assertTrue(results.isPromotable());
 
     }
 
@@ -406,8 +406,8 @@ public class ModuleResourceTest extends ResourceTest {
         PromotionDetails results = response.getEntity(PromotionDetails.class);
         assertNotNull(results);
 
-        assertFalse(results.canBePromoted);
-        assertTrue(results.isSnapshot);
+        assertFalse(results.isPromotable());
+        assertTrue(results.isSnapshot());
     }
 
 

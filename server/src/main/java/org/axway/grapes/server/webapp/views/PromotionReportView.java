@@ -149,8 +149,8 @@ public class PromotionReportView extends View {
     }
 
     public PromotionDetails promotionDetails() {
-        promotionDetails.canBePromoted=canBePromoted();
-        promotionDetails.isSnapshot=isSnapshot();
+        promotionDetails.setPromotable(canBePromoted());
+        promotionDetails.setSnapshot(isSnapshot());
         promotionDetails.setDoNotUseArtifacts(doNotUseArtifacts);
         promotionDetails.setUnPromotedDependencies(unPromotedDependencies);
 
