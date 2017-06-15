@@ -5,6 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -33,26 +38,18 @@ public final class Messages {
         return data.getProperty(key.toString(), key.toString());
     }
 
+    /**
+     * Loads the file content in the properties collection
+     * @param filePath The path of the file to be loaded
+     */
     private static void loadFile(String filePath) {
-        final File f = new File(filePath);
-        FileInputStream stream = null;
+        final Path path = FileSystems.getDefault().getPath(filePath);
 
         try {
-            stream = new FileInputStream(f);
             data.clear();
-            data.load(stream);
-        } catch(FileNotFoundException e) {
-            LOG.warn("File not found " + f.getAbsolutePath(), e);
-        } catch(IOException e1) {
-            LOG.warn("Exception while loading " + f.getAbsolutePath(), e1);
-        } finally {
-            try {
-                if(stream != null) {
-                    stream.close();
-                }
-            } catch (IOException ioExc) {
-                LOG.warn("Exception while closing message bundle stream", ioExc);
-            }
+            data.load(Files.newBufferedReader(path));
+        } catch(IOException e) {
+            LOG.warn("Exception while loading " + path.toString(), e);
         }
     }
 }
