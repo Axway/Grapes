@@ -25,6 +25,7 @@ import java.util.Map;
 @JsonSerialize(using=DependencyListSerializer.class)
 public class DependencyListView extends View {
 
+    public static final String NOT_IDENTIFIED_YET = "not identified yet";
     // Title of the HTML page
     private final String title;
 
@@ -62,10 +63,10 @@ public class DependencyListView extends View {
     public static final String LICENSE_COMMENT_FIELD = "License Comment";
 
     // The dependency list to display
-    private final List<Dependency> dependencies = new ArrayList<Dependency>();
+    private final List<Dependency> dependencies = new ArrayList<>();
 
     // The available licenses to complete dependencies' information
-    private Map<String, License> licenseDictionary = new HashMap<String, License>();
+    private Map<String, License> licenseDictionary = new HashMap<>();
 
     public DependencyListView(final String title, final List<License> licenses, final Decorator decorator) {
         super("DependencyListView.ftl");
@@ -151,7 +152,7 @@ public class DependencyListView extends View {
         License license = licenseDictionary.get(licenseId);
 
         if(license == null){
-            license = DataModelFactory.createLicense("#" + licenseId + "# (to be identified)", "not identified yet", "not identified yet", "not identified yet", "not identified yet" );
+            license = DataModelFactory.createLicense("#" + licenseId + "# (to be identified)", NOT_IDENTIFIED_YET, NOT_IDENTIFIED_YET, NOT_IDENTIFIED_YET, NOT_IDENTIFIED_YET);
             license.setUnknown(true);
         }
 
@@ -164,7 +165,7 @@ public class DependencyListView extends View {
      * @return String[]
      */
     private String[] getHeaders() {
-        final List<String> headers = new ArrayList<String>();
+        final List<String> headers = new ArrayList<>();
 
         if(decorator.getShowSources()){
             headers.add(SOURCE_FIELD);
@@ -217,7 +218,7 @@ public class DependencyListView extends View {
      * @return String[]
      */
     private String[] getDependencyCells(final Dependency dependency, final License license) {
-        final List<String> cells = new ArrayList<String>();
+        final List<String> cells = new ArrayList<>();
 
         if(decorator.getShowSources()){
             cells.add(dependency.getSourceName());

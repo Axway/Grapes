@@ -13,7 +13,8 @@ import java.util.regex.Pattern;
 public final class Migration220 {
 
     private static final String DB_CORPORATE_GID_COLLECTION_NAME = "DbCorporateGroupIds";
-
+    public static final String ID = "{_id : #}";
+    private static final String SET_TEMPLATE = "{$set: {%s: # }}";
 
     private Migration220(){
         // hide utility Class constructor
@@ -31,7 +32,7 @@ public final class Migration220 {
             printer.println("  - create DbGrapesInfo collection");
             printer.flush();
 
-            // Migrate Modules;
+            // Migrate Modules
             printer.println("Starting the migration of Modules ...");
             final int nbModules = getModuleCount(db);
 
@@ -60,31 +61,31 @@ public final class Migration220 {
 
             printer.println("");
 
-            // Migrate Artifacts;
+            // Migrating  Artifacts
             printer.println("Starting the migration of Artifacts ...");
-            db.getCollection(DbCollections.DB_ARTIFACTS).update("{_id : #}", Pattern.compile(".*")).with("{$set: {"+DbArtifact.DATA_MODEL_VERSION+": # }}", DbCollections.DATAMODEL_VERSION);
+            db.getCollection(DbCollections.DB_ARTIFACTS).update(ID, Pattern.compile(".*")).with(String.format(SET_TEMPLATE, DbArtifact.DATA_MODEL_VERSION), DbCollections.DATAMODEL_VERSION);
             printer.println("Artifact migration ended.");
             printer.println("");
 
-            // Migrate Licenses;
+            // Migrating Licenses
             printer.println("Starting the migration of Licenses ...");
-            db.getCollection(DbCollections.DB_LICENSES).update("{_id : #}", Pattern.compile(".*")).with("{$set: {"+DbArtifact.DATA_MODEL_VERSION+": # }}", DbCollections.DATAMODEL_VERSION);
+            db.getCollection(DbCollections.DB_LICENSES).update(ID, Pattern.compile(".*")).with(String.format(SET_TEMPLATE, DbArtifact.DATA_MODEL_VERSION), DbCollections.DATAMODEL_VERSION);
             printer.println("Licenses migration ended.");
             printer.println("");
 
-            // Migrate Credentials;
+            // Migrate Credentials
             printer.println("Starting the migration of Credentials ...");
-            db.getCollection(DbCollections.DB_CREDENTIALS).update("{_id : #}", Pattern.compile(".*")).with("{$set: {"+DbCredential.DATA_MODEL_VERSION+": # }}", DbCollections.DATAMODEL_VERSION);
+            db.getCollection(DbCollections.DB_CREDENTIALS).update(ID, Pattern.compile(".*")).with(String.format(SET_TEMPLATE, DbArtifact.DATA_MODEL_VERSION), DbCollections.DATAMODEL_VERSION);
             printer.println("Credentials migration ended.");
             printer.println("");
 
-            // Removing Corporate GroupIds;
+            // Removing Corporate GroupIds
             printer.println("Removing Corporate groupIds ...");
             db.getCollection(DB_CORPORATE_GID_COLLECTION_NAME).drop();
             printer.println("Deletion ended.");
             printer.println("");
 
-            // Adding Corporate DbGrapesInfo;
+            // Adding Corporate DbGrapesInfo
             printer.println("Adding DbGrapesInfo ...");
             final DbGrapesInfo info = new DbGrapesInfo();
             info.setDatamodelVersion(DbCollections.DATAMODEL_VERSION);
@@ -141,7 +142,7 @@ public final class Migration220 {
     }
 
     private static List<String> getSubmoduleArtifacts(final DbModule newModule) {
-        final List<String> submoduleArtifacts = new ArrayList<String>();
+        final List<String> submoduleArtifacts = new ArrayList<>();
 
         for(final DbModule submodule: DataUtils.getAllSubmodules(newModule)){
             submoduleArtifacts.addAll(submodule.getArtifacts());
