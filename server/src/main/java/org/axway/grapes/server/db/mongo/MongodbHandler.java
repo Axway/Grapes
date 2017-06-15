@@ -5,8 +5,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.mongodb.DB;
-import com.mongodb.MongoClient;
-import com.mongodb.ServerAddress;
 import com.sun.jersey.api.NotFoundException;
 import org.axway.grapes.server.config.DataBaseConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
@@ -21,8 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.net.UnknownHostException;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 /**
@@ -35,19 +33,23 @@ import java.util.regex.Pattern;
 public class MongodbHandler implements RepositoryHandler {
     // cache for credentials
     private LoadingCache<String, DbCredential> credentialCache;
+
     // DB connection
     private final DB db;
 
+    private static final String SET_PATTERN = "{ $set: { \"%s\": #}} ";
+    private Supplier<Jongo> jongoSupplier;
+
     private static final Logger LOG = LoggerFactory.getLogger(MongodbHandler.class);
 
-    public MongodbHandler(final DataBaseConfig config) throws UnknownHostException {
-        final ServerAddress address = new ServerAddress(config.getHost() , config.getPort());
-        final MongoClient mongo = new MongoClient(address);
-        db = mongo.getDB(config.getDatastore());
+    public MongodbHandler(final DataBaseConfig config, final DB theDb) {
+        this.db = theDb;
 
         if(config.getUser() != null && config.getPwd() != null){
             db.authenticate(config.getUser(), config.getPwd());
         }
+
+        this.jongoSupplier = () -> new Jongo(db);
 
         // Init credentials' cache
         credentialCache = CacheBuilder.newBuilder()
@@ -59,7 +61,12 @@ public class MongodbHandler implements RepositoryHandler {
                             }
                         });
     }
-    
+
+    public void setJongoSupplier(final Supplier<Jongo> s) {
+        this.jongoSupplier = s;
+    }
+
+
     /**
 	 * Initialize a connection with the database using Jongo.
 	 * 
@@ -68,7 +75,7 @@ public class MongodbHandler implements RepositoryHandler {
 	 * @return Jongo instance
 	 */
 	private Jongo getJongoDataStore() {
-		return new Jongo(db);
+        return jongoSupplier.get();
 	}
 
     @Override
@@ -102,7 +109,7 @@ public class MongodbHandler implements RepositoryHandler {
         if(!credential.getRoles().contains(role)){
             credential.addRole(role);
             credentials.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, user))
-                    .with("{ $set: { \""+ DbCredential.ROLES_FIELD + "\": #}} " , credential.getRoles());
+                    .with(String.format(SET_PATTERN, DbCredential.ROLES_FIELD), credential.getRoles());
         }
 
         credentialCache.invalidate(credential.getUser());
@@ -123,7 +130,7 @@ public class MongodbHandler implements RepositoryHandler {
         if(credential.getRoles().contains(role)){
             credential.removeRole(role);
             credentials.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, user))
-                    .with("{ $set: { \""+ DbCredential.ROLES_FIELD + "\": #}} " , credential.getRoles());
+                    .with(String.format(SET_PATTERN, DbCredential.ROLES_FIELD), credential.getRoles());
         }
         credentialCache.invalidate(credential.getUser());
     }
@@ -157,7 +164,7 @@ public class MongodbHandler implements RepositoryHandler {
         final Iterable<DbLicense> dbLicenses = datastore.getCollection(DbCollections.DB_LICENSES)
                 .find().as(DbLicense.class);
 
-        final List<String> licenseNames = new ArrayList<String>();
+        final List<String> licenseNames = new ArrayList<>();
         for(final DbLicense dbLicense: dbLicenses){
             if(filters.shouldBeInReport(dbLicense)){
                 licenseNames.add(dbLicense.getName());
@@ -201,7 +208,7 @@ public class MongodbHandler implements RepositoryHandler {
     @Override
     public List<DbArtifact> getArtifacts(final FiltersHolder filters) {
         final Jongo datastore = getJongoDataStore();
-        final List<DbArtifact> artifacts = new ArrayList<DbArtifact>();
+        final List<DbArtifact> artifacts = new ArrayList<>();
 
         final Iterable<DbArtifact> dbArtifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS)
                 .find(JongoUtils.generateQuery(filters.getArtifactFieldsFilters()))
@@ -219,8 +226,7 @@ public class MongodbHandler implements RepositoryHandler {
         final MongoCollection artifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS);
         artifact.addLicense(licenseId);
         artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
-                .with("{ $set: { \""+ DbArtifact.LICENCES_DB_FIELD + "\": #}} " , artifact.getLicenses());
-
+                .with(String.format(SET_PATTERN, DbArtifact.LICENCES_DB_FIELD), artifact.getLicenses());
     }
 
     @Override
@@ -231,9 +237,8 @@ public class MongodbHandler implements RepositoryHandler {
         if(artifact.getLicenses().contains(licenseId)){
             artifact.removeLicense(licenseId);
             artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
-                    .with("{ $set: { \""+ DbArtifact.LICENCES_DB_FIELD + "\": #}} " , artifact.getLicenses());
+                    .with(String.format(SET_PATTERN, DbArtifact.LICENCES_DB_FIELD), artifact.getLicenses());
         }
-
     }
 
     @Override
@@ -242,7 +247,7 @@ public class MongodbHandler implements RepositoryHandler {
         final MongoCollection licenses = datastore.getCollection(DbCollections.DB_LICENSES);
 
         licenses.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, license.getName()))
-                .with("{ $set: { \""+ DbLicense.APPROVED_DB_FIELD + "\": #}} " , approved);
+                .with(String.format(SET_PATTERN, DbLicense.APPROVED_DB_FIELD), approved);
     }
 
     @Override
@@ -283,7 +288,7 @@ public class MongodbHandler implements RepositoryHandler {
     @Override
     public List<String> getArtifactVersions(final DbArtifact artifact) {
         final Jongo datastore = getJongoDataStore();
-        final Map<String,Object> params = new HashMap<String, Object>();
+        final Map<String,Object> params = new HashMap<>();
         params.put(DbArtifact.GROUPID_DB_FIELD, artifact.getGroupId());
         params.put(DbArtifact.ARTIFACTID_DB_FIELD, artifact.getArtifactId());
         params.put(DbArtifact.CLASSIFIER_DB_FIELD, artifact.getClassifier());
@@ -329,7 +334,7 @@ public class MongodbHandler implements RepositoryHandler {
         final MongoCollection artifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS);
 
         artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
-                .with("{ $set: { \""+ DbArtifact.DO_NOT_USE + "\": #}} " , doNotUse);
+                .with(String.format("{ $set: { \"%s\": #}} ", DbArtifact.DO_NOT_USE), doNotUse);
     }
 
     @Override
@@ -338,7 +343,7 @@ public class MongodbHandler implements RepositoryHandler {
         final MongoCollection artifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS);
 
         artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
-                .with("{ $set: { \""+ DbArtifact.DOWNLOAD_URL_DB_FIELD + "\": #}} " , downLoadUrl);
+                .with(String.format(SET_PATTERN, DbArtifact.DOWNLOAD_URL_DB_FIELD), downLoadUrl);
     }
 
     @Override
@@ -347,7 +352,7 @@ public class MongodbHandler implements RepositoryHandler {
         final MongoCollection artifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS);
 
         artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
-                .with("{ $set: { \""+ DbArtifact.PROVIDER + "\": #}} " , provider);
+                .with(String.format(SET_PATTERN, DbArtifact.PROVIDER), provider);
     }
 
     @Override
@@ -360,7 +365,7 @@ public class MongodbHandler implements RepositoryHandler {
                 .find(JongoUtils.generateQuery(queryParams))
                 .as(DbModule.class);
 
-        final List<DbModule> ancestors = new ArrayList<DbModule>();
+        final List<DbModule> ancestors = new ArrayList<>();
         for(final DbModule ancestor: results){
             ancestors.add(ancestor);
         }
@@ -421,7 +426,7 @@ public class MongodbHandler implements RepositoryHandler {
     @Override
     public List<DbModule> getModules(final FiltersHolder filters) {
         final Jongo datastore = getJongoDataStore();
-        final List<DbModule> modules = new ArrayList<DbModule>();
+        final List<DbModule> modules = new ArrayList<>();
 
         final Iterable<DbModule> dbModules = datastore.getCollection(DbCollections.DB_MODULES)
                 .find(JongoUtils.generateQuery(filters.getModuleFieldsFilters()))
