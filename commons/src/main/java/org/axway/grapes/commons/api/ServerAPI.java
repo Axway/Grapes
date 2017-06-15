@@ -9,7 +9,10 @@ package org.axway.grapes.commons.api;
  *
  * @author jdcoffre
  */
-public interface ServerAPI {
+public class ServerAPI {
+
+    private ServerAPI() {}
+    
 
     //RESSOURCES
     /** Value - {@value}, Organization is a Grapes server resource that handles the information about organization.*/
