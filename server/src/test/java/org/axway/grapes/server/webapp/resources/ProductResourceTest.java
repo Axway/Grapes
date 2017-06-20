@@ -86,7 +86,7 @@ public class ProductResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArrayList<String> productNames = response.getEntity(ArrayList.class);
+        List<?> productNames = (List<?>)response.getEntity(ArrayList.class);
         assertNotNull(productNames);
         assertEquals(3, productNames.size());
     }

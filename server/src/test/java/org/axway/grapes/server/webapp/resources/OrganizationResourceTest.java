@@ -86,7 +86,7 @@ public class OrganizationResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArrayList<String> organization = response.getEntity(ArrayList.class);
+        List<?> organization = (List<?>)response.getEntity(List.class);
         assertNotNull(organization);
         assertEquals(1, organization.size());
         assertEquals("organization1", organization.get(0));
@@ -142,7 +142,7 @@ public class OrganizationResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArrayList<String> corporateGroupIds = response.getEntity(ArrayList.class);
+        List<?> corporateGroupIds = (List<?>)response.getEntity(List.class);
         assertNotNull(corporateGroupIds);
         assertEquals(1, corporateGroupIds.size());
         assertEquals("org.test", corporateGroupIds.get(0));

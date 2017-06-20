@@ -13,10 +13,10 @@ import java.util.List;
 public class Table {
 
     private final Row headers;
-    private final List<Row> rows = new ArrayList<Row>();
+    private final List<Row> rows = new ArrayList<>();
 
     public Table(final String... headers){
-        this.headers = new Row(headers);
+        this.headers = new Row((Object[]) headers);
     }
 
     public Row getHeaders(){
@@ -29,7 +29,7 @@ public class Table {
      * @param cells String...
      */
     public void addRow(final String... cells){
-        final Row row = new Row(cells);
+        final Row row = new Row((Object[]) cells);
 
         if(!rows.contains(row)){
             rows.add(row);

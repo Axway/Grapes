@@ -402,14 +402,14 @@ public class GrapesClient {
      * @return a boolean which is true only if the module can be promoted
      * @throws GrapesCommunicationException
      */
-    public Map<String, Object> modulePromotionNewReport(final String name, final String version) throws GrapesCommunicationException {
+    public Map<?, ?> modulePromotionNewReport(final String name, final String version) throws GrapesCommunicationException {
         final Client client = getClient();
         final WebResource resource = client.resource(serverURL).path(RequestUtils.promoteModuleNewReportPath(name, version));
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         client.destroy();
         if(ClientResponse.Status.OK.getStatusCode() == response.getStatus()){
-        	return response.getEntity(HashMap.class);
+        	return response.getEntity(Map.class);
         }
         
         if(ClientResponse.Status.NOT_FOUND.getStatusCode() == response.getStatus()){

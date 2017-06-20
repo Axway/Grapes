@@ -42,8 +42,7 @@ public class LicenseResourceTest extends ResourceTest {
 		repositoryHandler = mock(RepositoryHandler.class);
 
         final RepositoryHandler repoHandler = GrapesTestUtils.getRepoHandlerMock();
-//        final ServiceHandler serviceHandler = GrapesTestUtils.getServiceHandlerMock();
-        
+
         LicenseResource resource = new LicenseResource(repositoryHandler, mock(GrapesServerConfig.class));
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repoHandler), "test auth"));
 		addProvider(ViewMessageBodyWriter.class);
@@ -104,7 +103,7 @@ public class LicenseResourceTest extends ResourceTest {
 		assertNotNull(response);
 		assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArrayList<String> licenses = response.getEntity(ArrayList.class);
+        List<?> licenses = (List<?>)response.getEntity(List.class);
 		assertNotNull(licenses);
 		assertEquals(1, licenses.size());
 		assertEquals("licenseId", licenses.get(0));

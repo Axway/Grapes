@@ -8,7 +8,9 @@ import org.axway.grapes.server.webapp.views.utils.Row;
 import org.axway.grapes.server.webapp.views.utils.Table;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
@@ -17,7 +19,7 @@ public class DependencyListViewTest {
 
     @Test
     public void checkEmptyDependencyList(){
-        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST, new Decorator());
+        final DependencyListView depList = new DependencyListView("test", new ArrayList<>(), new Decorator());
         final Table results = depList.getTable();
 
         assertNotNull(results);
@@ -38,7 +40,7 @@ public class DependencyListViewTest {
         decorator.setShowLicensesLongName(false);
         decorator.setShowLicensesUrl(false);
 
-        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST, decorator);
+        final DependencyListView depList = new DependencyListView("test", new ArrayList<>(), decorator);
         Table results = depList.getTable();
 
         assertNotNull(results);
@@ -132,7 +134,7 @@ public class DependencyListViewTest {
         decorator.setShowLicensesLongName(true);
         decorator.setShowLicensesUrl(true);
 
-        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST, decorator);
+        final DependencyListView depList = new DependencyListView("test", new ArrayList<>(), decorator);
 
         final Artifact artifact = DataModelFactory.createArtifact("com.my.company", "test", "1", null, "jar", "jar");
         artifact.setDownloadUrl("http://");
@@ -176,7 +178,7 @@ public class DependencyListViewTest {
         decorator.setShowLicensesLongName(true);
         decorator.setShowLicensesUrl(true);
 
-        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST, decorator);
+        final DependencyListView depList = new DependencyListView("test", new ArrayList<>(), decorator);
 
         final Artifact artifact = DataModelFactory.createArtifact("com.my.company", "test", "1", null, "jar", "jar");
         artifact.setDownloadUrl("http://");

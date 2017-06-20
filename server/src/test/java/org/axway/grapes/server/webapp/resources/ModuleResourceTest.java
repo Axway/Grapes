@@ -424,7 +424,7 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        Map<String, Object> results = response.getEntity(HashMap.class);
+        Map<?, ?> results = response.getEntity(Map.class);
         assertNotNull(results);
 
         assertFalse((Boolean)results.get("canBePromoted"));
@@ -444,10 +444,10 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        Map<String, Object> results = response.getEntity(HashMap.class);
+        Map<?, ?> results = response.getEntity(Map.class);
         assertNotNull(results);
 
-        List<String> errors = (List)results.get("errors");
+        List<?> errors = (List<?>)results.get("errors");
 
         assertFalse((Boolean) results.get("canBePromoted"));
         assertFalse(errors.isEmpty());
@@ -484,8 +484,8 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        Map<String, Object> results = response.getEntity(HashMap.class);
-        List<String> problems = (List)results.get("errors");
+        Map<?, ?> results = response.getEntity(Map.class);
+        List<?> problems = (List<?>)results.get("errors");
         assertNotNull(problems);
 
         assertFalse((Boolean) results.get("canBePromoted"));
@@ -527,8 +527,8 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        Map<String, Object> results = response.getEntity(HashMap.class);
-        List<String> problems = (List)results.get("errors");
+        Map<?, ?> results = response.getEntity(Map.class);
+        List<?> problems = (List<?>)results.get("errors");
         assertNotNull(problems);
 
         assertFalse((Boolean) results.get("canBePromoted"));
@@ -573,8 +573,8 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        Map<String, Object> results = response.getEntity(HashMap.class);
-        List<String> problems = (List)results.get("errors");
+        Map<?, ?> results = response.getEntity(Map.class);
+        List<?> problems = (List<?>)results.get("errors");
         assertNotNull(problems);
 
         assertFalse((Boolean) results.get("canBePromoted"));
