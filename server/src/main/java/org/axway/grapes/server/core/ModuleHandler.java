@@ -1,8 +1,7 @@
 package org.axway.grapes.server.core;
 
-import org.apache.commons.jcs.JCS;
+
 import org.apache.commons.jcs.access.CacheAccess;
-import org.apache.commons.jcs.access.exception.CacheException;
 import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.core.cache.CacheName;
 import org.axway.grapes.server.core.options.FiltersHolder;
@@ -119,7 +118,7 @@ public class ModuleHandler {
     public List<DbLicense> getModuleLicenses(final String moduleId) {
         final DbModule module = getModule(moduleId);
 
-        final List<DbLicense> licenses = new ArrayList<DbLicense>();
+        final List<DbLicense> licenses = new ArrayList<>();
         final FiltersHolder filters = new FiltersHolder();
         final ArtifactHandler artifactHandler = new ArtifactHandler(repositoryHandler);
 
@@ -181,7 +180,6 @@ public class ModuleHandler {
             // Checks if each dependency module has been promoted
             final List<Dependency> deps = depHandler.getModuleDependencies(moduleId, filters);
             removeDuplicates(deps);
-            // printDeps(moduleId, deps);
 
             for (final Dependency dependency : deps) {
                 final DbModule depModule = repositoryHandler.getRootModuleOf(dependency.getTarget().getGavc());
@@ -192,16 +190,16 @@ public class ModuleHandler {
             }
 
             // Checks if the module has dependencies that shouldn't be used
-            final List<String> treatedArtifacts = new ArrayList<String>();
+            final List<String> treatedArtifacts = new ArrayList<>();
             for (final DbDependency dependency : DataUtils.getAllDbDependencies(module)) {
+                if(dependency.getScope().equals(Scope.TEST)) {
+                    continue;
+                }
+
                 final DbArtifact artifactDep = repositoryHandler.getArtifact(dependency.getTarget());
 
                 if (artifactDep == null) {
                     // handle the case of a corporate artifact which is not available in the repository
-                    continue;
-                }
-
-                if(dependency.getScope().equals(Scope.TEST)) {
                     continue;
                 }
 
@@ -243,7 +241,7 @@ public class ModuleHandler {
     }
 
     private void removeDuplicates(List<Dependency> deps) {
-        Map<String, Dependency> left = new HashMap<String, Dependency>();
+        Map<String, Dependency> left = new HashMap<>();
 
         for (Dependency d : deps) {
             String key = d.getTarget().getGavc();
