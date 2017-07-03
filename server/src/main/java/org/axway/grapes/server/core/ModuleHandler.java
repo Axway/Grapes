@@ -155,7 +155,7 @@ public class ModuleHandler {
      */
     public PromotionReportView getPromotionReport(final String moduleId) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format(":: Starting promo report %s", moduleId));
+            LOG.debug(String.format(":: Starting promo report [%s]", moduleId));
         }
 
         final PromotionReportView fromCache = cache.get(moduleId);
@@ -200,6 +200,11 @@ public class ModuleHandler {
                     // handle the case of a corporate artifact which is not available in the repository
                     continue;
                 }
+
+                if(dependency.getScope().equals(Scope.TEST)) {
+                    continue;
+                }
+
                 if (artifactDep.getDoNotUse() && !treatedArtifacts.contains(artifactDep.getGavc())) {
                     report.addDoNotUseArtifact(modelMapper.getArtifact(artifactDep));
                     treatedArtifacts.add(artifactDep.getGavc());
