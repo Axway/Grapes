@@ -22,7 +22,7 @@ public final class ResourcesUtils {
         Map<String, Object> errors = new HashMap<String, Object>();
         List<String> errorList = new ArrayList<String>();
 
-        errors.put("canBePromoted", promotionReportView.canBePromoted());
+        errors.put("promotable", promotionReportView.canBePromoted());
 
         if (promotionReportView.isSnapshot()) {
             errorList.add("Version is SNAPSHOT");

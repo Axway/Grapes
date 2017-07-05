@@ -91,9 +91,6 @@ public class ServerAPI {
     /** Value - {@value}, GET methods a report of regarding the promotion or the dependencies. Usually used as /resourceName/{resourceUID}<GET_DEPENDENCIES><GET_DEPENDENCIES_REPORT>.*/
     public static final String GET_REPORT = "/report";
     
-    /** Value - {@value}, GET methods a report of regarding the promotion or the dependencies. Usually used as /resourceName/{resourceUID}<GET_DEPENDENCIES><GET_DEPENDENCIES_REPORT>.*/
-    public static final String GET_REPORT2 = "/report2";
-
     /** Value - {@value}, GET methods that returns the licenses of the targeted resource. Usually used as /resourceName/{resourceUID}<GET_LICENSES>.*/
     public static final String GET_LICENSES = "/licenses";
 

@@ -384,9 +384,10 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        PromotionDetails results = response.getEntity(PromotionDetails.class);
-        assertNotNull(results);
-        assertTrue(results.isPromotable());
+        Map result = response.getEntity(Map.class);
+        assertNotNull(result);
+        assertTrue(result.get("promotable").equals(Boolean.TRUE));
+        assertEquals(0, ((List)result.get("errors")).size());
 
     }
 
@@ -403,42 +404,39 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        PromotionDetails results = response.getEntity(PromotionDetails.class);
-        assertNotNull(results);
-
-        assertFalse(results.isPromotable());
-        assertTrue(results.isSnapshot());
-    }
-
-
-    @Test
-    public void getPromotionStatusReport2() {
-        final DbModule dbModule = new DbModule();
-        dbModule.setName("moduleTest");
-        dbModule.setVersion("1.0.0-SNAPSHOT");
-        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
-
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT2);
-        final ClientResponse response = resource
-                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK_200, response.getStatus());
-
         Map<?, ?> results = response.getEntity(Map.class);
         assertNotNull(results);
 
-        assertFalse((Boolean)results.get("canBePromoted"));
-        assertFalse(((List)results.get("errors")).isEmpty());
+        assertFalse(Boolean.getBoolean(results.get("promotable").toString()));
+        System.out.println(results.toString());
+
+        final List<String> errors = (List<String>)results.get("errors");
+        assertTrue(errors.contains("Version is SNAPSHOT"));
     }
 
+
     @Test
-    public void getPromotionStatusReport2ForSnapshot() {
+    public void getPromotionStatusReport2NoLongerAvailable() {
         final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0-SNAPSHOT");
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT2);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + "/report2");
+        final ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
+    }
+
+    @Test
+    public void getPromotionStatusReportForSnapshot() {
+        final DbModule dbModule = new DbModule();
+        dbModule.setName("moduleTest");
+        dbModule.setVersion("1.0.0-SNAPSHOT");
+        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
+
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
         final ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
@@ -449,14 +447,14 @@ public class ModuleResourceTest extends ResourceTest {
 
         List<?> errors = (List<?>)results.get("errors");
 
-        assertFalse((Boolean) results.get("canBePromoted"));
+        assertFalse((Boolean) results.get("promotable"));
         assertFalse(errors.isEmpty());
 
         assertEquals(errors.get(0), "Version is SNAPSHOT");
     }
 
     @Test
-    public void getPromotionStatusReport2ThirdPartyLicenseError() {
+    public void getPromotionStatusReportThirdPartyLicenseError() {
         final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.1.0");
@@ -478,7 +476,7 @@ public class ModuleResourceTest extends ResourceTest {
         when(repositoryHandler.getArtifact(dbModule.getDependencies().get(0).getTarget())).thenReturn(dbArtifact);
         when(repositoryHandler.getRootModuleOf(dbArtifact.getGavc())).thenReturn(dbModule);
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT2);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
         final ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
@@ -488,15 +486,15 @@ public class ModuleResourceTest extends ResourceTest {
         List<?> problems = (List<?>)results.get("errors");
         assertNotNull(problems);
 
-        assertFalse((Boolean) results.get("canBePromoted"));
+        assertFalse((Boolean) results.get("promotable"));
         assertFalse(problems.isEmpty());
-        assertEquals(GrapesTestUtils.MISSING_LICENSE_MESSAGE_4TEST + GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST + GrapesTestUtils.COLON
+        assertTrue(problems.contains(GrapesTestUtils.MISSING_LICENSE_MESSAGE_4TEST + GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST + GrapesTestUtils.COLON
                 + GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_VERSION_4TEST + GrapesTestUtils.COLON
-                + GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_EXTENSION_4TEST, problems.get(0));
+                + GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_EXTENSION_4TEST));
     }
 
     @Test
-    public void getPromotionStatusReport2DBLicenseValidation() {
+    public void getPromotionStatusReportDBLicenseValidation() {
         final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.1.0");
@@ -521,7 +519,7 @@ public class ModuleResourceTest extends ResourceTest {
         when(repositoryHandler.getRootModuleOf(dbArtifact.getGavc())).thenReturn(dbModule);
         when(repositoryHandler.getLicense(nullLicense.getName())).thenReturn(null);
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT2);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
         final ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
@@ -531,13 +529,13 @@ public class ModuleResourceTest extends ResourceTest {
         List<?> problems = (List<?>)results.get("errors");
         assertNotNull(problems);
 
-        assertFalse((Boolean) results.get("canBePromoted"));
+        assertFalse((Boolean) results.get("promotable"));
         assertFalse(problems.isEmpty());
         assertEquals("The module you are trying to promote has dependencies that miss the license information: org.missing.license:MissingLicense:1.2.3:classifier:extension", problems.get(0));
     }
 
     @Test
-    public void getPromotionStatusReport2LicenseNotApproved() {
+    public void getPromotionStatusReportLicenseNotApproved() {
         final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.1.1");
@@ -567,7 +565,7 @@ public class ModuleResourceTest extends ResourceTest {
         when(repositoryHandler.getRootModuleOf(dbArtifact.getGavc())).thenReturn(dbModule);
         when(repositoryHandler.getLicense(notApprovedLicense.getName())).thenReturn(notApprovedLicense);
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT2);
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
         final ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
@@ -577,9 +575,9 @@ public class ModuleResourceTest extends ResourceTest {
         List<?> problems = (List<?>)results.get("errors");
         assertNotNull(problems);
 
-        assertFalse((Boolean) results.get("canBePromoted"));
+        assertFalse((Boolean) results.get("promotable"));
         assertFalse(problems.isEmpty());
-        assertEquals("The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: org.missing.license:MissingLicense:1.2.3:classifier:extension (NotApproved)", problems.get(0));
+        assertTrue(problems.contains("The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: org.missing.license:MissingLicense:1.2.3:classifier:extension (NotApproved)"));
     }
 
     @Test

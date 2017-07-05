@@ -1283,14 +1283,14 @@ function getModulePromotionReport(){
 
 	$.ajax({
             type: "GET",
-            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/promotion/report2?fullRecursive=true" ,
+            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/promotion/report?fullRecursive=true" ,
             data: {},
             dataType: "json",
             success: function(data, textStatus) {
                     var html = "<div class=\"container\">" +
                     "<div class=\"row-fluid\" id=\"list\">";
 
-                    if(data.canBePromoted == true){
+                    if(data.promotable == true){
                         html += "<div id=\"promotion_ok\">The module can be promoted.<br/></div>";
                     } else {
                         if(data.errors != null && data.errors[0].search(/snapshot/i) != -1) {

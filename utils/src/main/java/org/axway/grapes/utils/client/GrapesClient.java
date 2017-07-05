@@ -401,27 +401,27 @@ public class GrapesClient {
      * @return a boolean which is true only if the module can be promoted
      * @throws GrapesCommunicationException
      */
-    public Map modulePromotionNewReport(final String name, final String version) throws GrapesCommunicationException {
-        final Client client = getClient();
-        final WebResource resource = client.resource(serverURL).path(RequestUtils.promoteModuleNewReportPath(name, version));
-        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-
-        client.destroy();
-        if(ClientResponse.Status.OK.getStatusCode() == response.getStatus()){
-        	return response.getEntity(Map.class);
-        }
-        
-        if(ClientResponse.Status.NOT_FOUND.getStatusCode() == response.getStatus()){
-        	return null;
-        }
-
-        final String message = String.format(FAILED_TO_GET_MODULE, "promote module (new report path)", name, version);
-
-        if(LOG.isErrorEnabled()) {
-            LOG.error(String.format(HTTP_STATUS_TEMPLATE_MSG, message, response.getStatus()));
-        }
-        throw new GrapesCommunicationException(message, response.getStatus());
-    }
+//    public Map modulePromotionNewReport(final String name, final String version) throws GrapesCommunicationException {
+//        final Client client = getClient();
+//        final WebResource resource = client.resource(serverURL).path(RequestUtils.promoteModuleNewReportPath(name, version));
+//        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+//
+//        client.destroy();
+//        if(ClientResponse.Status.OK.getStatusCode() == response.getStatus()){
+//        	return response.getEntity(Map.class);
+//        }
+//
+//        if(ClientResponse.Status.NOT_FOUND.getStatusCode() == response.getStatus()){
+//        	return null;
+//        }
+//
+//        final String message = String.format(FAILED_TO_GET_MODULE, "promote module (new report path)", name, version);
+//
+//        if(LOG.isErrorEnabled()) {
+//            LOG.error(String.format(HTTP_STATUS_TEMPLATE_MSG, message, response.getStatus()));
+//        }
+//        throw new GrapesCommunicationException(message, response.getStatus());
+//    }
 
     /**
      * Post an artifact to the Grapes server

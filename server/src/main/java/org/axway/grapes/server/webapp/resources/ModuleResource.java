@@ -339,23 +339,6 @@ public class ModuleResource extends AbstractResource {
 
 
     /**
-     * Return a promotion report 2
-     *
-     * @return Response A promotion report
-     */
-    @GET
-    @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
-    @Path("/{name}/{version}" + ServerAPI.PROMOTION + ServerAPI.GET_REPORT2)
-    public Response getPromotionStatusReport2(@PathParam("name") final String name, @PathParam("version") final String version) {
-        LOG.info("Got a get promotion report request.");
-        final String moduleId = DbModule.generateID(name, version);
-        PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
-        Map<String, Object> promotionReport = ResourcesUtils.checkPromotionErrors(promotionReportView);
-        return Response.ok().entity(promotionReport).build();
-    }
-
-
-    /**
      * Return license list of a module.
      * This method is call via GET <dm_url>/module/<name>/<version>/licenses
      *
@@ -444,13 +427,12 @@ public class ModuleResource extends AbstractResource {
     @Path("/{name}/{version}" + ServerAPI.PROMOTION + ServerAPI.GET_REPORT)
     public Response getPromotionStatusReport(@PathParam("name") final String name, @PathParam("version") final String version) {
         if (LOG.isInfoEnabled()) {
-            LOG.info(String.format("Got a get promotion report request [%s %s]", name, version));
+            LOG.info(String.format("Got a get promotion report request [%s] [%s]", name, version));
         }
-
         final String moduleId = DbModule.generateID(name, version);
-        final PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
-
-        return Response.ok(promotionReportView).build();
+        PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
+        Map<String, Object> promotionReport = ResourcesUtils.checkPromotionErrors(promotionReportView);
+        return Response.ok().entity(promotionReport).build();
     }
 
     /**

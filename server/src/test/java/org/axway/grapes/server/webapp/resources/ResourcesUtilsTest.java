@@ -49,7 +49,7 @@ public class ResourcesUtilsTest {
         expectedResult.put("errors", expectedErrorsList);
 
         // assert if the output from the method equals to the expected data
-        assertEquals((Boolean)expectedResult.get("canBePromoted"), (Boolean) testResult.get("canBePromoted"));
+        assertEquals((Boolean)expectedResult.get("promotable"), (Boolean) testResult.get("canBePromoted"));
         assertEquals((List)expectedResult.get("errors"), (List)testResult.get("errors"));
     }
 
@@ -84,7 +84,7 @@ public class ResourcesUtilsTest {
         expectedResult.put("errors", expectedErrorsList);
 
         // assert if the output from the method equals to the expected data
-        assertEquals((Boolean)expectedResult.get("canBePromoted"), (Boolean) testResult.get("canBePromoted"));
+        assertEquals((Boolean)expectedResult.get("promotable"), (Boolean) testResult.get("canBePromoted"));
         assertEquals((List)expectedResult.get("errors"), (List)testResult.get("errors"));
     }
 
@@ -110,7 +110,7 @@ public class ResourcesUtilsTest {
         List<String> expectedErrorsList = Collections.emptyList();
         expectedResult.put("errors", expectedErrorsList);
 
-        assertEquals((Boolean)expectedResult.get("canBePromoted"), (Boolean) testResult.get("canBePromoted"));
+        assertEquals((Boolean)expectedResult.get("promotable"), (Boolean) testResult.get("canBePromoted"));
         assertEquals((List)expectedResult.get("errors"), (List)testResult.get("errors"));
     }
 }
