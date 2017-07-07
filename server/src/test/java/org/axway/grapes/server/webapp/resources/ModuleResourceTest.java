@@ -384,11 +384,10 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        Map result = response.getEntity(Map.class);
-        assertNotNull(result);
-        assertTrue(result.get("promotable").equals(Boolean.TRUE));
-        assertEquals(0, ((List)result.get("errors")).size());
-
+        final PromotionEvaluationReport report = response.getEntity(PromotionEvaluationReport.class);
+        assertNotNull(report);
+        assertTrue(report.isPromotable());
+        assertEquals(0, report.getErrors().size());
     }
 
     @Test
@@ -404,14 +403,11 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        Map<?, ?> results = response.getEntity(Map.class);
-        assertNotNull(results);
+        PromotionEvaluationReport report = response.getEntity(PromotionEvaluationReport.class);
 
-        assertFalse(Boolean.getBoolean(results.get("promotable").toString()));
-        System.out.println(results.toString());
-
-        final List<String> errors = (List<String>)results.get("errors");
-        assertTrue(errors.contains("Version is SNAPSHOT"));
+        assertNotNull(report);
+        assertFalse(report.isPromotable());
+        assertTrue(report.getErrors().contains("Version is SNAPSHOT"));
     }
 
 
@@ -442,15 +438,11 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        Map<?, ?> results = response.getEntity(Map.class);
-        assertNotNull(results);
+        final PromotionEvaluationReport report = response.getEntity(PromotionEvaluationReport.class);
+        assertNotNull(report);
 
-        List<?> errors = (List<?>)results.get("errors");
-
-        assertFalse((Boolean) results.get("promotable"));
-        assertFalse(errors.isEmpty());
-
-        assertEquals(errors.get(0), "Version is SNAPSHOT");
+        assertFalse(report.isPromotable());
+        assertTrue(report.getErrors().contains("Version is SNAPSHOT"));
     }
 
     @Test
@@ -482,13 +474,11 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        Map<?, ?> results = response.getEntity(Map.class);
-        List<?> problems = (List<?>)results.get("errors");
-        assertNotNull(problems);
+        final PromotionEvaluationReport report = response.getEntity(PromotionEvaluationReport.class);
 
-        assertFalse((Boolean) results.get("promotable"));
-        assertFalse(problems.isEmpty());
-        assertTrue(problems.contains(GrapesTestUtils.MISSING_LICENSE_MESSAGE_4TEST + GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST + GrapesTestUtils.COLON
+        assertFalse(report.isPromotable());
+        assertFalse(report.getErrors().isEmpty());
+        assertTrue(report.getErrors().contains(GrapesTestUtils.MISSING_LICENSE_MESSAGE_4TEST + GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST + GrapesTestUtils.COLON
                 + GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_VERSION_4TEST + GrapesTestUtils.COLON
                 + GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_EXTENSION_4TEST));
     }
@@ -525,13 +515,12 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        Map<?, ?> results = response.getEntity(Map.class);
-        List<?> problems = (List<?>)results.get("errors");
-        assertNotNull(problems);
+        final PromotionEvaluationReport report = response.getEntity(PromotionEvaluationReport.class);
+        assertNotNull(report.getErrors());
 
-        assertFalse((Boolean) results.get("promotable"));
-        assertFalse(problems.isEmpty());
-        assertEquals("The module you are trying to promote has dependencies that miss the license information: org.missing.license:MissingLicense:1.2.3:classifier:extension", problems.get(0));
+        assertFalse(report.isPromotable());
+        assertFalse(report.getErrors().isEmpty());
+        assertTrue(report.getErrors().contains("The module you are trying to promote has dependencies that miss the license information: org.missing.license:MissingLicense:1.2.3:classifier:extension"));
     }
 
     @Test
@@ -571,13 +560,11 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        Map<?, ?> results = response.getEntity(Map.class);
-        List<?> problems = (List<?>)results.get("errors");
-        assertNotNull(problems);
+        final PromotionEvaluationReport report = response.getEntity(PromotionEvaluationReport.class);
 
-        assertFalse((Boolean) results.get("promotable"));
-        assertFalse(problems.isEmpty());
-        assertTrue(problems.contains("The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: org.missing.license:MissingLicense:1.2.3:classifier:extension (NotApproved)"));
+        assertFalse(report.isPromotable());
+        assertFalse(report.getErrors().isEmpty());
+        assertTrue(report.getErrors().contains("The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: org.missing.license:MissingLicense:1.2.3:classifier:extension (NotApproved)"));
     }
 
     @Test

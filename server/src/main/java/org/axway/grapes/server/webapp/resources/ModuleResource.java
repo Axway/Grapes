@@ -2,10 +2,7 @@ package org.axway.grapes.server.webapp.resources;
 
 import com.yammer.dropwizard.auth.Auth;
 import org.axway.grapes.commons.api.ServerAPI;
-import org.axway.grapes.commons.datamodel.Artifact;
-import org.axway.grapes.commons.datamodel.Dependency;
-import org.axway.grapes.commons.datamodel.License;
-import org.axway.grapes.commons.datamodel.Module;
+import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.core.ArtifactHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
@@ -431,8 +428,10 @@ public class ModuleResource extends AbstractResource {
         }
         final String moduleId = DbModule.generateID(name, version);
         PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
-        Map<String, Object> promotionReport = ResourcesUtils.checkPromotionErrors(promotionReportView);
-        return Response.ok().entity(promotionReport).build();
+
+        final PromotionEvaluationReport report = ResourcesUtils.checkPromotionErrors(promotionReportView);
+
+        return Response.ok().entity(report).build();
     }
 
     /**

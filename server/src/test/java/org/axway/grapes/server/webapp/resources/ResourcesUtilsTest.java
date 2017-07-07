@@ -5,8 +5,11 @@ import org.axway.grapes.server.webapp.views.PromotionReportView;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 
 public class ResourcesUtilsTest {
@@ -35,22 +38,17 @@ public class ResourcesUtilsTest {
         promotionViewTest.addUnPromotedDependency(artifactUnpromotedDependency.getGavc());
 
         // pass data to the method
-        Map<String, Object> testResult = ResourcesUtils.checkPromotionErrors(promotionViewTest);
+        final PromotionEvaluationReport report = ResourcesUtils.checkPromotionErrors(promotionViewTest);
 
-        // create expected result data
-        Map<String, Object> expectedResult = new HashMap<String, Object>();
-        expectedResult.put("canBePromoted", false);
-
-        List<String> expectedErrorsList = new ArrayList<String>();
+        List<String> expectedErrorsList = new ArrayList<>();
         expectedErrorsList.add("DO_NOT_USE marked dependencies detected: CheckPromotion:DoNotUse:version:classifier:extension");
         expectedErrorsList.add("Un promoted dependencies detected: CheckPromotion:UnpromotedDependency:version:classifier:extension");
         expectedErrorsList.add("The module you are trying to promote has dependencies that miss the license information: CheckPromotion:MissingLicense:version:classifier:extension");
 
-        expectedResult.put("errors", expectedErrorsList);
-
         // assert if the output from the method equals to the expected data
-        assertEquals((Boolean)expectedResult.get("promotable"), (Boolean) testResult.get("canBePromoted"));
-        assertEquals((List)expectedResult.get("errors"), (List)testResult.get("errors"));
+        assertFalse(report.isPromotable());
+        assertEquals(expectedErrorsList.size(), report.getErrors().size());
+        assertTrue(listMinusSet(expectedErrorsList, report.getErrors()).isEmpty());
     }
 
     @Test
@@ -72,20 +70,15 @@ public class ResourcesUtilsTest {
         promotionViewTest.setDependenciesWithNotAcceptedLicenses(pair);
 
         // pass data to the method
-        Map<String, Object> testResult = ResourcesUtils.checkPromotionErrors(promotionViewTest);
+        final PromotionEvaluationReport report = ResourcesUtils.checkPromotionErrors(promotionViewTest);
 
         // create expected result data
-        Map<String, Object> expectedResult = new HashMap<String, Object>();
-        expectedResult.put("canBePromoted", false);
-
-        List<String> expectedErrorsList = new ArrayList<String>();
+        List<String> expectedErrorsList = new ArrayList<>();
         expectedErrorsList.add("The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: CheckPromotion:artifactId:version:classifier:extension (NotApproved)");
 
-        expectedResult.put("errors", expectedErrorsList);
-
         // assert if the output from the method equals to the expected data
-        assertEquals((Boolean)expectedResult.get("promotable"), (Boolean) testResult.get("canBePromoted"));
-        assertEquals((List)expectedResult.get("errors"), (List)testResult.get("errors"));
+        assertFalse(report.isPromotable());
+        assertTrue(listMinusSet (expectedErrorsList, report.getErrors()).isEmpty());
     }
 
     @Test
@@ -102,15 +95,21 @@ public class ResourcesUtilsTest {
         promotionViewTest.setRootModule(module);
 
         // check promotion status
-        Map<String, Object> testResult = ResourcesUtils.checkPromotionErrors(promotionViewTest);
+        final PromotionEvaluationReport report = ResourcesUtils.checkPromotionErrors(promotionViewTest);
 
-        // initialize expected result map
-        Map<String, Object> expectedResult = new HashMap<String, Object>();
-        expectedResult.put("canBePromoted", true);
-        List<String> expectedErrorsList = Collections.emptyList();
-        expectedResult.put("errors", expectedErrorsList);
-
-        assertEquals((Boolean)expectedResult.get("promotable"), (Boolean) testResult.get("canBePromoted"));
-        assertEquals((List)expectedResult.get("errors"), (List)testResult.get("errors"));
+        assertTrue(report.isPromotable());
+        assertTrue(report.getErrors().isEmpty());
     }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testErrorSetIsImmutable() {
+        PromotionEvaluationReport report = new PromotionEvaluationReport();
+        report.addError("Sample text");
+        report.getErrors().clear();
+    }
+
+    private List<String> listMinusSet(List<String> list, Set<String> set) {
+        return list.stream().filter(entry -> !set.contains(entry)).collect(Collectors.toList());
+    }
+
 }

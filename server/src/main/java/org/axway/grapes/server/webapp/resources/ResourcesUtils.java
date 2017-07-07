@@ -1,6 +1,7 @@
 package org.axway.grapes.server.webapp.resources;
 
 import org.axway.grapes.commons.datamodel.Artifact;
+import org.axway.grapes.commons.datamodel.PromotionEvaluationReport;
 import org.axway.grapes.server.webapp.views.PromotionReportView;
 
 import java.util.*;
@@ -17,39 +18,36 @@ public final class ResourcesUtils {
      * @return - map object with error list
      */
 
-    public static Map<String, Object> checkPromotionErrors(PromotionReportView promotionReportView) {
+    public static PromotionEvaluationReport checkPromotionErrors(PromotionReportView promotionReportView) {
 
-        Map<String, Object> errors = new HashMap<String, Object>();
-        List<String> errorList = new ArrayList<String>();
-
-        errors.put("promotable", promotionReportView.canBePromoted());
-
+        final PromotionEvaluationReport result = new PromotionEvaluationReport();
         if (promotionReportView.isSnapshot()) {
-            errorList.add("Version is SNAPSHOT");
+            result.addError("Version is SNAPSHOT");
         }
+
         // do not use dependency
         if (!promotionReportView.getDoNotUseArtifacts().isEmpty()) {
             String err = addErrors(promotionReportView.getDoNotUseArtifacts(), "DO_NOT_USE marked dependencies detected: %s");
-            errorList.add(err);
+            result.addError(err);
         }
         // unpromoted dependency
         if (!promotionReportView.getUnPromotedDependencies().isEmpty()) {
             String err = addErrors(promotionReportView.getUnPromotedDependencies(), "Un promoted dependencies detected: %s");
-            errorList.add(err);
+            result.addError(err);
         }
+
         // missing third party dependency license
         if (!promotionReportView.getMissingThirdPartyDependencyLicenses().isEmpty()) {
             String err = addErrors(promotionReportView.getMissingThirdPartyDependencyLicenses(), "The module you are trying to promote has dependencies that miss the license information: %s");
-            errorList.add(err);
+            result.addError(err);
         }
         // third party dependency not accepted licenses
         if (!promotionReportView.getDependenciesWithNotAcceptedLicenses().isEmpty()) {
             String err = addErrors(promotionReportView.getDependenciesWithNotAcceptedLicenses(), "The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: %s");
-            errorList.add(err);
+            result.addError(err);
         }
 
-        errors.put("errors", errorList);
-        return errors;
+        return result;
     }
 
     /**

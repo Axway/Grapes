@@ -375,7 +375,7 @@ public class GrapesClient {
      * @return a boolean which is true only if the module can be promoted
      * @throws GrapesCommunicationException
      */
-    public PromotionDetails modulePromotionDetails(final String name, final String version) throws GrapesCommunicationException {
+    public PromotionEvaluationReport getModulePromotionReport(final String name, final String version) throws GrapesCommunicationException {
         final Client client = getClient();
         final WebResource resource = client.resource(serverURL).path(RequestUtils.promoteModuleReportPath(name, version));
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -390,45 +390,15 @@ public class GrapesClient {
             throw new GrapesCommunicationException(message, response.getStatus());
         }
 
-        return response.getEntity(PromotionDetails.class);
+        return response.getEntity(PromotionEvaluationReport.class);
     }
     
     /**
-     * Check if a module can be promoted in the Grapes server (new validation Promotion Status Report 2)
-     *
-     * @param name
-     * @param version
-     * @return a boolean which is true only if the module can be promoted
-     * @throws GrapesCommunicationException
-     */
-//    public Map modulePromotionNewReport(final String name, final String version) throws GrapesCommunicationException {
-//        final Client client = getClient();
-//        final WebResource resource = client.resource(serverURL).path(RequestUtils.promoteModuleNewReportPath(name, version));
-//        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-//
-//        client.destroy();
-//        if(ClientResponse.Status.OK.getStatusCode() == response.getStatus()){
-//        	return response.getEntity(Map.class);
-//        }
-//
-//        if(ClientResponse.Status.NOT_FOUND.getStatusCode() == response.getStatus()){
-//        	return null;
-//        }
-//
-//        final String message = String.format(FAILED_TO_GET_MODULE, "promote module (new report path)", name, version);
-//
-//        if(LOG.isErrorEnabled()) {
-//            LOG.error(String.format(HTTP_STATUS_TEMPLATE_MSG, message, response.getStatus()));
-//        }
-//        throw new GrapesCommunicationException(message, response.getStatus());
-//    }
-
-    /**
      * Post an artifact to the Grapes server
      *
-     * @param artifact
-     * @param user
-     * @param password
+     * @param artifact The artifact to post
+     * @param user The user posting the information
+     * @param password The user password
      * @throws GrapesCommunicationException
      * @throws javax.naming.AuthenticationException
      */
