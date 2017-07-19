@@ -73,7 +73,7 @@ function displayModuleOptions(){
 	moduleActions += "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
 	moduleActions += "   <div id=\"moduleActions\" class=\"row-fluid\">\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleOverview();' id=\"overviewButton\">Overview</button>\n";
-	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='displayModuleDependencyOptions();'>Internal Dependencies</button>\n";
+	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleDependencies();'>Internal Dependencies</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleThirdParty();'>Third Party</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleAncestors();'>Ancestors</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModulePromotionReport();'>Promotion Report</button>\n";
@@ -189,29 +189,7 @@ function displayModuleLicenseOptions(){
                 exportTableToCSV.apply(this, [$('#table_div>table'), 'export.csv']);
             });
         }
-    }, 50);
-
-}
-
-// Used to display optional action on internal dependencies tab
-function displayModuleDependencyOptions(){
-    // Clear previous section attachments from other tabs
-    $("#optional-action").empty();
-
-    getModuleDependencies();
-
-    // Check if the module has internal dependencies and if it does - show the csv export button
-    setTimeout(function(){
-        if(!isEmpty($('#table_div tbody'))) {
-            var moduleDependencyOptionalActions = ""
-            moduleDependencyOptionalActions += "<a href=\"#\" class=\"btn btn-primary action-button exportDependencies\">CSV export</a>\n";
-            $("#optional-action").empty().append(moduleDependencyOptionalActions);
-
-            $(".exportDependencies").on('click', function (event) {
-                exportTableToCSV.apply(this, [$('#table_div>table'), 'export.csv']);
-            });
-        }
-    }, 50);
+    }, 150);
 
 }
 
@@ -1184,6 +1162,9 @@ function getModuleOverview(){
 
 function getModuleDependencies(){
 
+    // Clear previous section attachments from other tabs
+    $("#optional-action").empty();
+
     if($('input[name=moduleId]:checked', '#targets').size() == 0){
         $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
         $("#anyAlert").show();
@@ -1202,8 +1183,11 @@ function getModuleDependencies(){
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).find("#table_div"));
+                var table = $(data).find("#table_div");
+                $("#results").empty().append(table);
                 $('.sortable').tablesorter();
+                // Check if the module has module dependencies and if it does - show the csv export button
+                showCSVExportButton($(table).find("tbody"));
             }
         })
 }
@@ -1229,8 +1213,11 @@ function getModuleThirdParty(){
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).find("#table_div"));
+                var table = $(data).find("#table_div");
+                $("#results").empty().append(table);
                 $('.sortable').tablesorter();
+                // Check if the module has third party dependencies and if it does - show the csv export button
+                showCSVExportButton($(table).find("tbody"));
             }
         })
 }
@@ -2115,4 +2102,16 @@ function getLicenseTarget(licenseIdFieldValue, targetedFieldValue){
 // Check if an html element is empty ignoring whitespaces
 function isEmpty( el ){
     return !$.trim(el.html());
+}
+
+function showCSVExportButton(element) {
+    if(!isEmpty(element)) {
+        var moduleOptionalActions = ""
+        moduleOptionalActions += "<a href=\"#\" class=\"btn btn-primary action-button export\">CSV export</a>\n";
+        $("#optional-action").empty().append(moduleOptionalActions);
+
+        $(".export").on('click', function (event) {
+            exportTableToCSV.apply(this, [$('#table_div>table'), 'export.csv']);
+        });
+    }
 }
