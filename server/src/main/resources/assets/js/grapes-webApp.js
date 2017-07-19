@@ -73,7 +73,7 @@ function displayModuleOptions(){
 	moduleActions += "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
 	moduleActions += "   <div id=\"moduleActions\" class=\"row-fluid\">\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleOverview();' id=\"overviewButton\">Overview</button>\n";
-	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleDependencies();'>Internal Dependencies</button>\n";
+	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='displayModuleDependencyOptions();'>Internal Dependencies</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleThirdParty();'>Third Party</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleAncestors();'>Ancestors</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModulePromotionReport();'>Promotion Report</button>\n";
@@ -173,21 +173,50 @@ function displayLicenseOptions(){
 /*             Add optional actions to the web-app regarding the selected action                  */
 /**************************************************************************************************/
 function displayModuleLicenseOptions(){
-	var moduleLicenseOptionalActions = ""
-	moduleLicenseOptionalActions += "<button id=\"fullRecursive\" type=\"button\" class=\"btn btn-primary action-button\" data-toggle=\"button\" onclick='updateLicenseReport();' >On full corporate tree</button>\n";
-	moduleLicenseOptionalActions += "<a href=\"#\" class=\"btn btn-primary action-button export\">CSV export</a>\n";
-	$("#optional-action").empty().append(moduleLicenseOptionalActions);
 
-	getModuleLicenses();
+    $("#optional-action").empty();
 
-	$(".export").on('click', function (event) {
-        exportTableToCSV.apply(this, [$('#table_div>table'), 'export.csv']);
-    });
+    getModuleLicenses();
+
+    setTimeout(function(){
+        if(!isEmpty($('#table_div tbody'))) {
+            var moduleLicenseOptionalActions = ""
+            moduleLicenseOptionalActions += "<button id=\"fullRecursive\" type=\"button\" class=\"btn btn-primary action-button\" data-toggle=\"button\" onclick='updateLicenseReport();' >On full corporate tree</button>\n";
+            moduleLicenseOptionalActions += "<a href=\"#\" class=\"btn btn-primary action-button export\">CSV export</a>\n";
+            $("#optional-action").empty().append(moduleLicenseOptionalActions);
+
+            $(".export").on('click', function (event) {
+                exportTableToCSV.apply(this, [$('#table_div>table'), 'export.csv']);
+            });
+        }
+    }, 50);
+
+}
+
+// Used to display optional action on internal dependencies tab
+function displayModuleDependencyOptions(){
+    // Clear previous section attachments from other tabs
+    $("#optional-action").empty();
+
+    getModuleDependencies();
+
+    // Check if the module has internal dependencies and if it does - show the csv export button
+    setTimeout(function(){
+        if(!isEmpty($('#table_div tbody'))) {
+            var moduleDependencyOptionalActions = ""
+            moduleDependencyOptionalActions += "<a href=\"#\" class=\"btn btn-primary action-button exportDependencies\">CSV export</a>\n";
+            $("#optional-action").empty().append(moduleDependencyOptionalActions);
+
+            $(".exportDependencies").on('click', function (event) {
+                exportTableToCSV.apply(this, [$('#table_div>table'), 'export.csv']);
+            });
+        }
+    }, 50);
 
 }
 
 /********************************************************************/
-/*          Fill web-app targets regarding the filters               */
+/*          Fill web-app targets regarding the filters              */
 /********************************************************************/
 function getOrganizationList(organizationNameFieldId, targetedFieldId){
     $("#" + targetedFieldId).empty();
@@ -1154,7 +1183,6 @@ function getModuleOverview(){
 }
 
 function getModuleDependencies(){
-    $("#optional-action").empty();
 
     if($('input[name=moduleId]:checked', '#targets').size() == 0){
         $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
@@ -1287,6 +1315,7 @@ function getModulePromotionReport(){
             data: {},
             dataType: "json",
             success: function(data, textStatus) {
+
                     var html = "<div class=\"container\">" +
                     "<div class=\"row-fluid\" id=\"list\">";
 
@@ -2081,4 +2110,9 @@ function getLicenseTarget(licenseIdFieldValue, targetedFieldValue){
                });
             }, 500);
     });
+}
+
+// Check if an html element is empty ignoring whitespaces
+function isEmpty( el ){
+    return !$.trim(el.html());
 }
