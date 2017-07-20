@@ -77,7 +77,7 @@ function displayModuleOptions(){
 	moduleActions += "      <button type=\"button\" id=\"thirdPartyButton\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleThirdParty();'>Third Party</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleAncestors();'>Ancestors</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModulePromotionReport();'>Promotion Report</button>\n";
-	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='displayModuleLicenseOptions();'>Licenses</button>\n";
+	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleLicenses();'>Licenses</button>\n";
 	moduleActions += "   </div>\n";
 	moduleActions += "</div>\n";
 	$("#action").empty().append(moduleActions);
@@ -158,7 +158,7 @@ function displayLicenseOptions(){
 	$("#filters").empty().append(licenseFilters);
 	var licenseActions = "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='createLicense();'>New</button>\n";
-	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='getLicenseOverview();'>Overview</button>\n";
+	licenseActions += "   <button id=\"licenseOverview\" type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='getLicenseOverview();'>Overview</button>\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='getLicenseUsage();'>Used in Products</button>\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='approveLicense();'>Approve</button>\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='rejectLicense();'>Reject</button>\n";
@@ -172,26 +172,7 @@ function displayLicenseOptions(){
 /**************************************************************************************************/
 /*             Add optional actions to the web-app regarding the selected action                  */
 /**************************************************************************************************/
-function displayModuleLicenseOptions(){
 
-    $("#optional-action").empty();
-
-    getModuleLicenses();
-
-    setTimeout(function(){
-        if(!isEmpty($('#table_div tbody'))) {
-            var moduleLicenseOptionalActions = ""
-            moduleLicenseOptionalActions += "<button id=\"fullRecursive\" type=\"button\" class=\"btn btn-primary action-button\" data-toggle=\"button\" onclick='updateLicenseReport();' >On full corporate tree</button>\n";
-            moduleLicenseOptionalActions += "<a href=\"#\" class=\"btn btn-primary action-button export\">CSV export</a>\n";
-            $("#optional-action").empty().append(moduleLicenseOptionalActions);
-
-            $(".export").on('click', function (event) {
-                exportTableToCSV.apply(this, [$('#table_div>table'), 'export.csv']);
-            });
-        }
-    }, 150);
-
-}
 
 /********************************************************************/
 /*          Fill web-app targets regarding the filters              */
@@ -1201,7 +1182,7 @@ function getModuleDependencies(){
                 $("#results").empty().append(table);
                 $('.sortable').tablesorter();
                 // Check if the module has module dependencies and if it does - show the csv export button
-                showCSVExportButton($(table).find("tbody"));
+                showCSVExportLink($(table).find("tbody"));
             }
         })
 }
@@ -1231,7 +1212,7 @@ function getModuleThirdParty(){
                 $("#results").empty().append(table);
                 $('.sortable').tablesorter();
                 // Check if the module has third party dependencies and if it does - show the csv export button
-                showCSVExportButton($(table).find("tbody"));
+                showCSVExportLink($(table).find("tbody"));
             }
         })
 }
@@ -1289,8 +1270,10 @@ function getModuleLicenses(){
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).find("#table_div"));
+                var table = $(data).find("#table_div");
+                $("#results").empty().append(table);
                 $('.sortable').tablesorter();
+                showCSVExportLink($(table).find("tbody"), "<a href=\"javascript:void(0)\" id=\"fullRecursive\" onclick='updateLicenseReport();' >On full corporate tree</a>\n");
             }
         })
 }
@@ -2118,10 +2101,13 @@ function isEmpty( el ){
     return !$.trim(el.html());
 }
 
-function showCSVExportButton(element) {
+function showCSVExportLink(element, additionalActions) {
     if(!isEmpty(element)) {
         var moduleOptionalActions = ""
-        moduleOptionalActions += "<a href=\"#\" class=\"btn btn-primary action-button export\">CSV export</a>\n";
+        moduleOptionalActions += "<a href=\"#\" class=\"export\">CSV export</a>\n";
+        if(additionalActions != null) {
+            moduleOptionalActions += additionalActions;
+        }
         $("#optional-action").empty().append(moduleOptionalActions);
 
         $(".export").on('click', function (event) {
