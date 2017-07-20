@@ -1,5 +1,6 @@
 package org.axway.grapes.server.webapp.views;
 
+import com.yammer.dropwizard.views.View;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.commons.datamodel.License;
@@ -21,7 +22,7 @@ public class AncestorsView extends DependencyListView {
 
 
     public AncestorsView(final String title, final List<License> licenses, final Decorator decorator) {
-        super(title, licenses, decorator);
+        super(title, licenses, decorator, "AncestorsListView.ftl");
     }
 
 

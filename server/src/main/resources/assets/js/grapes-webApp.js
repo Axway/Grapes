@@ -73,8 +73,8 @@ function displayModuleOptions(){
 	moduleActions += "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
 	moduleActions += "   <div id=\"moduleActions\" class=\"row-fluid\">\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleOverview();' id=\"overviewButton\">Overview</button>\n";
-	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleDependencies();'>Internal Dependencies</button>\n";
-	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleThirdParty();'>Third Party</button>\n";
+	moduleActions += "      <button type=\"button\" id=\"internalDependenciesButton\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleDependencies();'>Internal Dependencies</button>\n";
+	moduleActions += "      <button type=\"button\" id=\"thirdPartyButton\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleThirdParty();'>Third Party</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleAncestors();'>Ancestors</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModulePromotionReport();'>Promotion Report</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='displayModuleLicenseOptions();'>Licenses</button>\n";
@@ -115,7 +115,7 @@ function displayArtifactOptions(){
 	$("#filters").empty().append(artifactFilters);
 	var artifactActions = "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
 	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='createArtifact();'>New Artifact</button>\n";
-	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='getArtifactOverview();'>Overview</button>\n";
+	artifactActions += "   <button type=\"button\" id=\"artifactOverviewButton\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='getArtifactOverview();'>Overview</button>\n";
 	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='getArtifactAncestors();'>Ancestors</button>\n";
 	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='doNotUseArtifact();'>Do not use</button>\n";
 	artifactActions += "   <button type=\"button\" id=\"licensesButton\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='getArtifactLicenses();'>Licenses</button>\n";
@@ -946,7 +946,7 @@ function getArtifactLink(artifactObj){
         jQuery('#artifactButton').click();
     });
 
-    getArtifactTarget(groupId, artifactId, version, 'targets');
+    getArtifactTarget(groupId, artifactId, version, 'targets', '#licensesButton');
 }
 
 function getLicenseLink(licenseId) {
@@ -960,6 +960,20 @@ function getLicenseDirectLink(dependencyLicense) {
     dependencyLicense = dependencyLicense.trim();
     var licenseName = dependencyLicense.substring(dependencyLicense.indexOf("(") + 1, dependencyLicense.indexOf(")"));
     getLicenseLink(licenseName);
+}
+
+// Navigate to module dependency
+function getDependencyDirectLink(dependency) {
+   jQuery(function(){
+       jQuery('#artifactButton').click();
+   });
+
+   var groupId = dependency.substring(0, dependency.indexOf(":"));
+   var versionAndArtifact = dependency.substring(dependency.indexOf(":") + 1, dependency.length);
+   var version = versionAndArtifact.substring(versionAndArtifact.indexOf(":") + 1, versionAndArtifact.indexOf("::"));
+   var artifactId = versionAndArtifact.substring(0, versionAndArtifact.indexOf(":"));
+
+   getArtifactTarget(groupId, artifactId, version, 'targets', '#artifactOverviewButton');
 }
 
 function getBuildFromJenkinsURL(jenkinsBuildUrl){
@@ -1984,7 +1998,7 @@ function loadTargetedModuleVersion(moduleName, mVersion){
 }); 
 }
 
-function getArtifactTarget(artifactGroupIdFieldValue, artifactIdFieldValue, artifactVersionFieldValue, targetedFieldValue){
+function getArtifactTarget(artifactGroupIdFieldValue, artifactIdFieldValue, artifactVersionFieldValue, targetedFieldValue, actionButton){
 	$("#" + targetedFieldValue).empty();
 	$('.alert').hide();
 	cleanAction();
@@ -2043,7 +2057,7 @@ function getArtifactTarget(artifactGroupIdFieldValue, artifactIdFieldValue, arti
         setTimeout(function(){
             $("input:radio[name=gavc]:first").attr('checked', true);
             jQuery(function(){
-               jQuery('#licensesButton').click();
+               jQuery(actionButton).click();
             });
         }, 100);
     });

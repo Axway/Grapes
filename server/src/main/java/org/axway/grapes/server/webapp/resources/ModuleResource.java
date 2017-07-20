@@ -298,7 +298,7 @@ public class ModuleResource extends AbstractResource {
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        final DependencyListView view = new DependencyListView(String.format("Dependency List Of %s in version %s", name, version), getLicenseHandler().getLicenses(), filters.getDecorator());
+        final DependencyListView view = new DependencyListView(String.format("Dependency List Of %s in version %s", name, version), getLicenseHandler().getLicenses(), filters.getDecorator(), "DependencyListView.ftl");
         final String moduleId = DbModule.generateID(name, version);
         view.addAll(getDependencyHandler().getModuleDependencies(moduleId, filters));
 

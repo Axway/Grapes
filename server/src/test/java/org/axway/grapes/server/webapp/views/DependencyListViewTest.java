@@ -19,7 +19,7 @@ public class DependencyListViewTest {
 
     @Test
     public void checkEmptyDependencyList(){
-        final DependencyListView depList = new DependencyListView("test", new ArrayList<>(), new Decorator());
+        final DependencyListView depList = new DependencyListView("test", new ArrayList<>(), new Decorator(), "DependencyListView.ftl");
         final Table results = depList.getTable();
 
         assertNotNull(results);
@@ -40,7 +40,7 @@ public class DependencyListViewTest {
         decorator.setShowLicensesLongName(false);
         decorator.setShowLicensesUrl(false);
 
-        final DependencyListView depList = new DependencyListView("test", new ArrayList<>(), decorator);
+        final DependencyListView depList = new DependencyListView("test", new ArrayList<>(), decorator, "DependencyListView.ftl");
         Table results = depList.getTable();
 
         assertNotNull(results);
@@ -89,7 +89,7 @@ public class DependencyListViewTest {
         decorator.setShowLicensesUrl(true);
 
         final License license = DataModelFactory.createLicense("name", "long name", "comment", "", "url");
-        final DependencyListView depList = new DependencyListView("test", Collections.singletonList(license), decorator);
+        final DependencyListView depList = new DependencyListView("test", Collections.singletonList(license), decorator, "DependencyListView.ftl");
 
         final Artifact artifact = DataModelFactory.createArtifact("com.my.company", "test", "1", null, "jar", "jar");
         artifact.setDownloadUrl("http://");
@@ -134,7 +134,7 @@ public class DependencyListViewTest {
         decorator.setShowLicensesLongName(true);
         decorator.setShowLicensesUrl(true);
 
-        final DependencyListView depList = new DependencyListView("test", new ArrayList<>(), decorator);
+        final DependencyListView depList = new DependencyListView("test", new ArrayList<>(), decorator, "DependencyListView.ftl");
 
         final Artifact artifact = DataModelFactory.createArtifact("com.my.company", "test", "1", null, "jar", "jar");
         artifact.setDownloadUrl("http://");
@@ -178,7 +178,7 @@ public class DependencyListViewTest {
         decorator.setShowLicensesLongName(true);
         decorator.setShowLicensesUrl(true);
 
-        final DependencyListView depList = new DependencyListView("test", new ArrayList<>(), decorator);
+        final DependencyListView depList = new DependencyListView("test", new ArrayList<>(), decorator, "DependencyListView.ftl");
 
         final Artifact artifact = DataModelFactory.createArtifact("com.my.company", "test", "1", null, "jar", "jar");
         artifact.setDownloadUrl("http://");
@@ -215,7 +215,7 @@ public class DependencyListViewTest {
         final License license1 = DataModelFactory.createLicense("name1", "long name1", "comment1", "", "url1");
         final License license2 = DataModelFactory.createLicense("name2", "long name2", "comment2", "", "url2");
 
-        final DependencyListView depList = new DependencyListView("test", Lists.newArrayList(license1, license2), new Decorator());
+        final DependencyListView depList = new DependencyListView("test", Lists.newArrayList(license1, license2), new Decorator(), "DependencyListView.ftl");
 
         final Artifact artifact = DataModelFactory.createArtifact("com.my.company", "test", "1", null, "jar", "jar");
         artifact.setDownloadUrl("http://");

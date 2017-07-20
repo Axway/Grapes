@@ -68,8 +68,8 @@ public class DependencyListView extends View {
     // The available licenses to complete dependencies' information
     private Map<String, License> licenseDictionary = new HashMap<>();
 
-    public DependencyListView(final String title, final List<License> licenses, final Decorator decorator) {
-        super("DependencyListView.ftl");
+    public DependencyListView(final String title, final List<License> licenses, final Decorator decorator, String templateName) {
+        super(templateName);
         this.title = title;
         setLicenses(licenses);
         this.decorator = decorator;
