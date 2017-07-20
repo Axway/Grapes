@@ -217,19 +217,19 @@
                                         <td>sha256</td>
                                         <td>String (64 chars)</td>
                                         <td>Yes</td>
-                                        <td>The name of the file to be validated</td>
+                                        <td>The SHA256 of the file to be validated</td>
                                     </tr>
                                     <tr>
                                         <td>name</td>
                                         <td>String</td>
                                         <td>Yes</td>
-                                        <td>The SHA256 of the file to be validated</td>
+                                        <td>The name of the file to be validated</td>
                                     </tr>
                                     <tr>
                                         <td>type</td>
                                         <td>String</td>
                                         <td>Yes</td>
-                                        <td>Type of file. Supported types are : [ 
+                                        <td>Type of file to be validated. Currently supported types are: [
                                 						<#list externalValidatedTypes() as type>
 						                                ${type}<#if type_has_next>, </#if>
 						                                </#list> ]
@@ -239,7 +239,7 @@
                                         <td>location</td>
                                         <td>String</td>
                                         <td>No</td>
-                                        <td>The SHA256 of the file to be validated</td>
+                                        <td>The location of the binary file</td>
                                     </tr>
                                     </tbody>
                                 </table>
