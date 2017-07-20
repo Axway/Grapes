@@ -1,6 +1,8 @@
 package org.axway.grapes.server.db.mongo;
 
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -13,6 +15,9 @@ public class BatchProcessor {
 
     private final RepositoryHandler repoHandler;
     private int batchSize = 1;
+
+    private static final Logger LOG = LoggerFactory.getLogger(BatchProcessor.class);
+
 
     public BatchProcessor(RepositoryHandler handler) {
         this.repoHandler = handler;
@@ -33,6 +38,11 @@ public class BatchProcessor {
             final List<T> dbEntry = repoHandler.getListByQuery(collectionName,
                     batchQueryFn.apply(batch),
                     resultClass);
+
+            if(dbEntry.size() != batch.size()) {
+                LOG.warn(String.format("Got fewer results %s < %s", dbEntry.size(), batch.size()));
+                LOG.warn("There are referred dependencies not related to known artifacts");
+            }
 
             //
             // Apply the same consumer over every element of the retrieved primaryEntries

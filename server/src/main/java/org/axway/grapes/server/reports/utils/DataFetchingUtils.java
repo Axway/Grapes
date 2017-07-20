@@ -1,18 +1,14 @@
 package org.axway.grapes.server.reports.utils;
 
-import org.apache.commons.lang3.StringUtils;
 import org.axway.grapes.commons.datamodel.Delivery;
 import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.server.core.DependencyHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbCollections;
 import org.axway.grapes.server.db.datamodel.DbModule;
 import org.axway.grapes.server.db.datamodel.DbProduct;
-import org.axway.grapes.server.db.mongo.BatchProcessor;
 import org.axway.grapes.server.db.mongo.QueryUtils;
-import org.axway.grapes.server.reports.TriConsumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +63,7 @@ public class DataFetchingUtils {
             return Optional.empty();
         }
 
-        if(filtered.size() > 1) {
+        if (filtered.size() > 1 && LOG.isWarnEnabled()) {
             LOG.warn(String.format("Multiple commercial version entries found for [%s] [%s]", name, version));
         }
 
@@ -89,10 +85,7 @@ public class DataFetchingUtils {
             final DbModule module = repoHandler.getModule(d);
             if (module != null) {
                 final List<Dependency> allDependencies = dependencyHandler.getModuleDependencies(module.getId(), filters);
-
-                allDependencies.forEach(dep -> {
-                    deps.add(dep.getTarget().getGavc());
-                });
+                allDependencies.forEach(dep -> deps.add(dep.getTarget().getGavc()));
             } else {
                 //
                 // This stripping occurs because the dep.getTarget().getGavc() returns the
