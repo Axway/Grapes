@@ -1,13 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.axway.grapes.server.webapp.resources;
 
-import com.mongodb.util.JSON;
 import com.yammer.dropwizard.views.View;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
+import org.axway.grapes.commons.datamodel.PromotionEvaluationReport;
 import org.axway.grapes.commons.datamodel.Scope;
 import org.axway.grapes.commons.utils.JsonUtils;
 import org.axway.grapes.server.config.CommunityConfig;
@@ -17,7 +13,6 @@ import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.reports.*;
-import org.axway.grapes.server.reports.models.ReportRequest;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
@@ -247,7 +242,7 @@ public abstract class AbstractResource extends View {
      * @throws IOException
      */
     public String getPromotionDetailsJsonModel() throws IOException {
-        return JsonUtils.serialize(DataModelFactory.createPromotionDetails(false,false,new ArrayList<String>(),new ArrayList<Artifact>()));
+        return JsonUtils.serialize(new PromotionEvaluationReport());
     }
 
     /**
@@ -275,11 +270,10 @@ public abstract class AbstractResource extends View {
      }
 
     /**
-     * Displays a model for the report request
+     * Displays a sample model for the report request.
      * @return A string describing the structure of a certain report execution
-     * @throws IOException
      */
-     public String[] getReportSamples() throws IOException {
+     public String[] getReportSamples() {
          final Map<String, String> sampleValues = new HashMap<>();
          sampleValues.put("name1", "Secure Transpiler Mars");
          sampleValues.put("version1", "4.7.0");

@@ -468,7 +468,9 @@
                                     <ul>
                                         <li>Get module promotion details</li>
                                         <li>
-                                        	Returns HTML view or an module promotion details in Json
+                                        	Returns HTML view or an module promotion details in Json. The structure of the
+                                            response contains a boolean field indicating if the module is promotable and
+                                            a set of error messages representing the list of validation errors.
                                         	<pre>${getPromotionDetailsJsonModel()}</pre>
                                         </li>
                                     </ul>
