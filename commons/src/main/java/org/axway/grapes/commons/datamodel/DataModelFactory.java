@@ -199,24 +199,18 @@ public final class DataModelFactory {
 	 * @param releaseDate String
 	 * @param dependencies List<String>
 	 * @return Delivery
-	 * @throws IOException
 	 */
+	public static Delivery createDelivery(final String commercialName, final String commercialVersion, final String releaseDate, final List<String> dependencies) {
+		final Delivery delivery = new Delivery();
 
-	public static Delivery createDelivery(final String commercialName, final String commercialVersion, final String releaseDate, final List<String> dependencies) throws IOException{
-        try{
-            final Delivery delivery = new Delivery();
+		delivery.setCommercialName(commercialName);
+		delivery.setCommercialVersion(commercialVersion);
+		delivery.setReleaseDate(releaseDate);
+		delivery.setDependencies(dependencies);
 
-            delivery.setCommercialName(commercialName);
-            delivery.setCommercialVersion(commercialVersion);
-            delivery.setReleaseDate(releaseDate);
-            delivery.setDependencies(dependencies);
-
-            return delivery;
-        }
-        catch(Exception e){
-            throw new IOException(e);
-        }
+		return delivery;
 	}
+
 	public static ArtifactPromotionStatus createArtifactPromotionStatus(final Boolean promoted, final String message) throws IOException{
 		try{
 			final ArtifactPromotionStatus promotionStatus = new ArtifactPromotionStatus();

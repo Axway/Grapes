@@ -71,9 +71,8 @@ public class DataFetchingUtils {
     }
 
     public Set<String> getDeliveryDependencies(final RepositoryHandler repoHandler,
+                                               final DependencyHandler depHandler,
                                                final Delivery delivery) {
-
-        DependencyHandler dependencyHandler = new DependencyHandler(repoHandler);
 
         final FiltersHolder filters = new FiltersHolder();
         filters.getDecorator().setShowCorporate(Boolean.FALSE);
@@ -84,7 +83,7 @@ public class DataFetchingUtils {
         delivery.getDependencies().forEach(d -> {
             final DbModule module = repoHandler.getModule(d);
             if (module != null) {
-                final List<Dependency> allDependencies = dependencyHandler.getModuleDependencies(module.getId(), filters);
+                final List<Dependency> allDependencies = depHandler.getModuleDependencies(module.getId(), filters);
                 allDependencies.forEach(dep -> deps.add(dep.getTarget().getGavc()));
             } else {
                 //

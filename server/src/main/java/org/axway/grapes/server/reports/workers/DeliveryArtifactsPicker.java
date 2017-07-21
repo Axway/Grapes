@@ -3,6 +3,7 @@ package org.axway.grapes.server.reports.workers;
 import org.apache.commons.lang3.StringUtils;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
+import org.axway.grapes.server.core.DependencyHandler;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
@@ -39,8 +40,9 @@ public class DeliveryArtifactsPicker {
 
                 final Set<Artifact> artifacts = new HashSet<>();
 
-                DataFetchingUtils utils = new DataFetchingUtils();
-                final Set<String> deliveryDependencies = utils.getDeliveryDependencies(repoHandler, delivery);
+                final DataFetchingUtils utils = new DataFetchingUtils();
+                final DependencyHandler depHandler = new DependencyHandler(repoHandler);
+                final Set<String> deliveryDependencies = utils.getDeliveryDependencies(repoHandler, depHandler, delivery);
 
                 final Set<String> fullGAVCSet = deliveryDependencies.stream().filter(DataUtils::isFullGAVC).collect(Collectors.toSet());
                 final Set<String> shortIdentiferSet = deliveryDependencies.stream().filter(entry -> !DataUtils.isFullGAVC(entry)).collect(Collectors.toSet());
