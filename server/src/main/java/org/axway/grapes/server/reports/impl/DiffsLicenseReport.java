@@ -1,27 +1,20 @@
 package org.axway.grapes.server.reports.impl;
 
-import org.apache.commons.lang3.StringUtils;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Delivery;
-import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.DbArtifact;
-import org.axway.grapes.server.db.datamodel.DbCollections;
-import org.axway.grapes.server.db.mongo.BatchProcessor;
 import org.axway.grapes.server.reports.Report;
 import org.axway.grapes.server.reports.ReportId;
 import org.axway.grapes.server.reports.models.ParameterDefinition;
 import org.axway.grapes.server.reports.models.ReportExecution;
 import org.axway.grapes.server.reports.models.ReportRequest;
 import org.axway.grapes.server.reports.utils.DataFetchingUtils;
-import org.axway.grapes.server.reports.workers.DeliveryArtifactsPicker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Report showing evolution of licenses between two commercial releases of a product
@@ -31,9 +24,6 @@ public class DiffsLicenseReport implements Report {
     static List<ParameterDefinition> parameters = new ArrayList<>();
     private DataFetchingUtils utils = new DataFetchingUtils();
     private static final Logger LOG = LoggerFactory.getLogger(DiffsLicenseReport.class);
-
-
-    private static final String BATCH_TEMPLATE_REGEX = "{ \"_id\" : { \"$regex\" : \"%s\"}}";
 
     static {
         parameters.add(new ParameterDefinition("name1", "Commercial Release Name"));
