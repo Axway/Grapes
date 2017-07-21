@@ -39,7 +39,7 @@ public class BatchProcessor {
                     batchQueryFn.apply(batch),
                     resultClass);
 
-            if(dbEntry.size() != batch.size()) {
+            if(dbEntry.size() < batch.size()) {
                 LOG.warn(String.format("Got fewer results %s < %s", dbEntry.size(), batch.size()));
                 LOG.warn("There are referred dependencies not related to known artifacts");
             }
