@@ -1156,7 +1156,6 @@ function getModuleOverview(){
 }
 
 function getModuleDependencies(){
-
     // Clear previous section attachments from other tabs
     $("#optional-action").empty();
 
@@ -1245,6 +1244,8 @@ function getModuleAncestors(){
 }
 
 function getModuleLicenses(){
+    $("#optional-action").empty();
+
     if($('input[name=moduleId]:checked', '#targets').size() == 0){
         $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
         $("#anyAlert").show();
