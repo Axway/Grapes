@@ -111,6 +111,8 @@ public class ModelMapper {
         dbArtifact.setDescription(artifact.getDescription());
         dbArtifact.setDownloadUrl(artifact.getDownloadUrl());
         dbArtifact.setProvider(artifact.getProvider());
+        dbArtifact.setCreatedDateTime(artifact.getCreatedDateTime());
+        dbArtifact.setUpdatedDateTime(artifact.getUpdatedDateTime());
 
         return dbArtifact;
     }
@@ -132,6 +134,8 @@ public class ModelMapper {
         artifact.setDownloadUrl(dbArtifact.getDownloadUrl());
         artifact.setProvider(dbArtifact.getProvider());
         artifact.setOrigin(dbArtifact.getOrigin());
+        artifact.setCreatedDateTime(dbArtifact.getCreatedDateTime());
+        artifact.setUpdatedDateTime(dbArtifact.getUpdatedDateTime());
 
         for (final String licenseId : dbArtifact.getLicenses()) {
             artifact.addLicense(licenseId);

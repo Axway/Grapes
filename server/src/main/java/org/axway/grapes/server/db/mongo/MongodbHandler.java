@@ -38,6 +38,7 @@ public class MongodbHandler implements RepositoryHandler {
     private final DB db;
 
     private static final String SET_PATTERN = "{ $set: { \"%s\": #}} ";
+    private static final String SET_PATTERN_DOUBLE = "{ $set: { \"%s\": #, \"%s\": #}} ";
     private Supplier<Jongo> jongoSupplier;
 
     private static final Logger LOG = LoggerFactory.getLogger(MongodbHandler.class);
@@ -226,7 +227,7 @@ public class MongodbHandler implements RepositoryHandler {
         final MongoCollection artifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS);
         artifact.addLicense(licenseId);
         artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
-                .with(String.format(SET_PATTERN, DbArtifact.LICENCES_DB_FIELD), artifact.getLicenses());
+                .with(String.format(SET_PATTERN_DOUBLE, DbArtifact.LICENCES_DB_FIELD, DbArtifact.UPDATED_DATE_DB_FIELD), artifact.getLicenses(), new Date());
     }
 
     @Override
@@ -237,7 +238,7 @@ public class MongodbHandler implements RepositoryHandler {
         if(artifact.getLicenses().contains(licenseId)){
             artifact.removeLicense(licenseId);
             artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
-                    .with(String.format(SET_PATTERN, DbArtifact.LICENCES_DB_FIELD), artifact.getLicenses());
+                    .with(String.format(SET_PATTERN_DOUBLE, DbArtifact.LICENCES_DB_FIELD, DbArtifact.UPDATED_DATE_DB_FIELD), artifact.getLicenses(), new Date());
         }
     }
 
@@ -268,6 +269,7 @@ public class MongodbHandler implements RepositoryHandler {
                 artifact.addLicense(license);
             }
 
+            dbArtifact.setUpdatedDateTime(new Date());
             dbArtifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, dbArtifact.getGavc())).with(artifact);
         }
     }
@@ -334,7 +336,7 @@ public class MongodbHandler implements RepositoryHandler {
         final MongoCollection artifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS);
 
         artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
-                .with(String.format("{ $set: { \"%s\": #}} ", DbArtifact.DO_NOT_USE), doNotUse);
+                .with(String.format(SET_PATTERN_DOUBLE, DbArtifact.DO_NOT_USE, DbArtifact.UPDATED_DATE_DB_FIELD), doNotUse, new Date());
     }
 
     @Override
@@ -343,7 +345,7 @@ public class MongodbHandler implements RepositoryHandler {
         final MongoCollection artifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS);
 
         artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
-                .with(String.format(SET_PATTERN, DbArtifact.DOWNLOAD_URL_DB_FIELD), downLoadUrl);
+                .with(String.format(SET_PATTERN_DOUBLE, DbArtifact.DOWNLOAD_URL_DB_FIELD, DbArtifact.UPDATED_DATE_DB_FIELD), downLoadUrl, new Date());
     }
 
     @Override
@@ -352,7 +354,7 @@ public class MongodbHandler implements RepositoryHandler {
         final MongoCollection artifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS);
 
         artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
-                .with(String.format(SET_PATTERN, DbArtifact.PROVIDER), provider);
+                .with(String.format(SET_PATTERN_DOUBLE, DbArtifact.PROVIDER, DbArtifact.UPDATED_DATE_DB_FIELD), provider, new Date());
     }
 
     @Override

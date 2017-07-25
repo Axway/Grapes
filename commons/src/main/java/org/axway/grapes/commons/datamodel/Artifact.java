@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,6 +34,9 @@ public class Artifact {
     private String provider;
 
     private List<String> licenses = new ArrayList<String>();
+
+    private Date createdDateTime = null;
+    private Date updatedDateTime = null;
 
     protected Artifact() {
         // Should only be instantiated via the DataModelObjectFactory
@@ -144,6 +148,14 @@ public class Artifact {
     public void setOrigin(final String origin) {
         this.origin = origin;
     }
+
+    public Date getCreatedDateTime() {  return createdDateTime;  }
+
+    public void setCreatedDateTime(Date createdDateTime) { this.createdDateTime = createdDateTime;  }
+
+    public Date getUpdatedDateTime() {  return updatedDateTime;  }
+
+    public void setUpdatedDateTime(Date updatedDateTime) { this.updatedDateTime = updatedDateTime;  }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonIgnore

@@ -19,6 +19,7 @@ import org.junit.runners.Parameterized;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -89,7 +90,7 @@ public class MongodbHandlerTest<T> {
 
             verify(collection.update(anyString()),
                     times(1))
-                    .with(eq("{ $set: { \"licenses\": #}} "), anyList());
+                    .with(eq("{ $set: { \"licenses\": #, \"updatedDateTime\": #}} "), anyList(), any(Date.class));
         };
 
     }
@@ -103,7 +104,7 @@ public class MongodbHandlerTest<T> {
 
             verify(collection.update(anyString()),
                     times(1))
-                    .with(eq("{ $set: { \"licenses\": #}} "), anyList());
+                    .with(eq("{ $set: { \"licenses\": #, \"updatedDateTime\": #}} "), anyList(), any(Date.class));
         };
     }
 
@@ -123,7 +124,7 @@ public class MongodbHandlerTest<T> {
 
             verify(collection.update(anyString()),
                     times(1))
-                    .with(eq("{ $set: { \"doNotUse\": #}} "), eq(Boolean.TRUE));
+                    .with(eq("{ $set: { \"doNotUse\": #, \"updatedDateTime\": #}} "), eq(Boolean.TRUE), any(Date.class));
         };
     }
 
@@ -133,7 +134,7 @@ public class MongodbHandlerTest<T> {
 
             verify(collection.update(anyString()),
                     times(1))
-                    .with(eq("{ $set: { \"downloadUrl\": #}} "), eq("www.twitter.com"));
+                    .with(eq("{ $set: { \"downloadUrl\": #, \"updatedDateTime\": #}} "), eq("www.twitter.com"), any(Date.class));
         };
     }
 
@@ -143,7 +144,7 @@ public class MongodbHandlerTest<T> {
 
             verify(collection.update(anyString()),
                     times(1))
-                    .with(eq("{ $set: { \"provider\": #}} "), eq("some-provider"));
+                    .with(eq("{ $set: { \"provider\": #, \"updatedDateTime\": #}} "), eq("some-provider"), any(Date.class));
         };
     }
 

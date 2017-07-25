@@ -5,6 +5,7 @@ import org.axway.grapes.commons.datamodel.Artifact;
 import org.jongo.marshall.jackson.oid.Id;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -68,6 +69,12 @@ public class DbArtifact {
 
     public static final String PROVIDER = "provider";
     private String theProvider = "";
+
+	public static final String CREATED_DATE_DB_FIELD = "createdDateTime";
+	private Date createdDateTime = null;
+
+	public static final String UPDATED_DATE_DB_FIELD = "updatedDateTime";
+	private Date updatedDateTime = null;
 
 	public void setDataModelVersion(final String newVersion){
         this.datamodelVersion = newVersion;
@@ -218,6 +225,14 @@ public class DbArtifact {
 	public void setProvider(final String provider) {
 		this.theProvider = provider;
 	}
+
+	public Date getCreatedDateTime() {return createdDateTime;	}
+
+	public void setCreatedDateTime(Date createdDateTime) {this.createdDateTime = createdDateTime;}
+
+	public Date getUpdatedDateTime() {return updatedDateTime;	}
+
+	public void setUpdatedDateTime(Date updatedDateTime) {this.updatedDateTime = updatedDateTime;}
 
 	@Override
 	public String toString() {

@@ -3,13 +3,8 @@ package org.axway.grapes.server.webapp.resources;
 import com.yammer.dropwizard.auth.Auth;
 import com.yammer.dropwizard.jersey.params.BooleanParam;
 import org.axway.grapes.commons.api.ServerAPI;
-import org.axway.grapes.commons.datamodel.Artifact;
-import org.axway.grapes.commons.datamodel.ArtifactPromotionStatus;
-import org.axway.grapes.commons.datamodel.ArtifactQuery;
-import org.axway.grapes.commons.datamodel.Module;
-import org.axway.grapes.commons.datamodel.Organization;
+import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.config.GrapesServerConfig;
-
 import org.axway.grapes.server.config.Messages;
 import org.axway.grapes.server.core.ArtifactHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
@@ -20,10 +15,6 @@ import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.axway.grapes.server.webapp.DataValidator;
 import org.axway.grapes.server.webapp.views.*;
-
-import static org.axway.grapes.server.core.services.email.MessageKey.*;
-import static org.axway.grapes.server.core.services.email.TemplateReplacer.*;
-
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,10 +24,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+
+import static org.axway.grapes.server.core.services.email.MessageKey.ARTIFACT_VALIDATION_IS_PROMOTED;
+import static org.axway.grapes.server.core.services.email.TemplateReplacer.*;
 
 /**
  * Artifact Resource
@@ -104,6 +95,8 @@ public class ArtifactResource extends AbstractResource {
         	throw new WebApplicationException(Response.serverError().status(HttpStatus.CONFLICT_409)
                         .entity("Artifact with same GAVC already exists.").build());
         }
+
+        artifact.setCreatedDateTime(new Date());
                 
         final DbArtifact dbArtifact = getModelMapper().getDbArtifact(artifact);
         artifactHandler.store(dbArtifact);

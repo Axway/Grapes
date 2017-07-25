@@ -73,6 +73,12 @@
                     <strong>Provider: </strong>${artifact.getProvider()}<br/>
                     <strong>DownloadUrl: </strong>${artifact.getDownloadUrl()}<br/>
                     <strong>Description: </strong>${artifact.getDescription()}<br/>
+                    <#if artifact.getCreatedDateTime()??>
+                        <strong>Created date: </strong>${artifact.getCreatedDateTime()?datetime}<br/>
+                    </#if>
+                    <#if artifact.getUpdatedDateTime()??>
+                        <strong>Last updated date: </strong>${artifact.getUpdatedDateTime()?datetime}<br/>
+                    </#if>
                     <#if isCorporate() && moduleName??>
                     <strong>Module: </strong>${moduleName} in version ${moduleVersion}<br/>
                     </#if>

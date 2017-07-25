@@ -165,7 +165,7 @@ public class ArtifactHandler {
     /**
      * Return an artifact regarding its gavc
      *
-     * @param sha String
+     * @param sha256 String
      * @return DbArtifact
      */
     public DbArtifact getArtifactUsingSHA256(final String sha256) {
@@ -336,7 +336,6 @@ public class ArtifactHandler {
     /**k
      * Returns a list of artifact regarding the filters
      *
-     * @param filters FiltersHolder
      * @return List<DbArtifact>
      */
 	public String getModuleJenkinsJobInfo(final DbArtifact dbArtifact) {
