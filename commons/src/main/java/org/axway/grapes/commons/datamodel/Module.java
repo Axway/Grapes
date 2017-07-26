@@ -1,5 +1,6 @@
 package org.axway.grapes.commons.datamodel;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +24,9 @@ public class Module {
     private Set<Artifact> artifacts = new HashSet<Artifact>();
     private Set<Dependency> dependencies = new HashSet<Dependency>();
     private Set<Module> submodules = new HashSet<Module>();
+
+    private Date createdDateTime = null;
+    private Date updatedDateTime = null;
 
     // productLogicalName and deliveries are used in case of commercial delivery
     private String productLogicalName;
@@ -71,6 +75,14 @@ public class Module {
     public void setSubmodule(final boolean isSubmodule) {
         this.isSubmodule = isSubmodule;
     }
+
+    public Date getCreatedDateTime() { return createdDateTime; }
+
+    public void setCreatedDateTime(Date createdDateTime) { this.createdDateTime = createdDateTime; }
+
+    public Date getUpdatedDateTime() { return updatedDateTime; }
+
+    public void setUpdatedDateTime(Date updatedDateTime) { this.updatedDateTime = updatedDateTime; }
 
     /**
      * Sets the promotion state.

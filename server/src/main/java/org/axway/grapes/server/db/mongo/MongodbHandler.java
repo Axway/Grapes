@@ -258,6 +258,7 @@ public class MongodbHandler implements RepositoryHandler {
         final DbArtifact dbArtifact = getArtifact(artifact.getGavc());
 
         if(dbArtifact == null){
+            artifact.setCreatedDateTime(new Date());
             dbArtifacts.save(artifact);
         }
         else{
@@ -269,7 +270,7 @@ public class MongodbHandler implements RepositoryHandler {
                 artifact.addLicense(license);
             }
 
-            dbArtifact.setUpdatedDateTime(new Date());
+            artifact.setUpdatedDateTime(new Date());
             dbArtifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, dbArtifact.getGavc())).with(artifact);
         }
     }
@@ -385,6 +386,7 @@ public class MongodbHandler implements RepositoryHandler {
         module.updateHasAndUse();
 
         if(dbModule == null){
+            module.setCreatedDateTime(new Date());
             dbModules.save(module);
         }
         else{
@@ -392,7 +394,7 @@ public class MongodbHandler implements RepositoryHandler {
             final Map<String,String> consolidatedBuildInfo = dbModule.getBuildInfo();
             consolidatedBuildInfo.putAll(module.getBuildInfo());
             module.setBuildInfo(consolidatedBuildInfo);
-
+            module.setUpdatedDateTime(new Date());
             dbModules.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, dbModule.getId())).with(module);
         }
 
@@ -461,7 +463,7 @@ public class MongodbHandler implements RepositoryHandler {
         final MongoCollection modules = datastore.getCollection(DbCollections.DB_MODULES);
 
         modules.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, module.getId()))
-                .with("{ $set: { \""+ DbModule.PROMOTION_DB_FIELD + "\": #}} " , Boolean.TRUE);
+                .with(String.format(SET_PATTERN_DOUBLE, DbModule.PROMOTION_DB_FIELD, DbModule.UPDATED_DATE_DB_FIELD) , Boolean.TRUE, new Date());
     }
 
     @Override

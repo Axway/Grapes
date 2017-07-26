@@ -157,6 +157,8 @@ public class ModelMapper {
         dbModule.setVersion(module.getVersion());
         dbModule.setPromoted(module.isPromoted());
         dbModule.setSubmodule(module.isSubmodule());
+        dbModule.setCreatedDateTime(module.getCreatedDateTime());
+        dbModule.setUpdatedDateTime(module.getUpdatedDateTime());
 
         // Artifact
         for (final Artifact artifact : module.getArtifacts()) {
@@ -190,6 +192,8 @@ public class ModelMapper {
         final Module module = DataModelFactory.createModule(dbModule.getName(), dbModule.getVersion());
         module.setPromoted(dbModule.isPromoted());
         module.setSubmodule(dbModule.isSubmodule());
+        module.setCreatedDateTime(dbModule.getCreatedDateTime());
+        module.setUpdatedDateTime(dbModule.getUpdatedDateTime());
 
         // Artifacts
         for (final String gavc : dbModule.getArtifacts()) {

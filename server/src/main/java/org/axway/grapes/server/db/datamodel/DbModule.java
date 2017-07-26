@@ -3,10 +3,7 @@ package org.axway.grapes.server.db.datamodel;
 import org.axway.grapes.commons.datamodel.Scope;
 import org.jongo.marshall.jackson.oid.Id;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Database Module
@@ -50,6 +47,12 @@ public class DbModule {
 
     public static final String BUILD_INFO_DB_FIELD = "buildInfo";
     private Map<String, String> buildInfo = new HashMap<String, String>();
+
+	public static final String CREATED_DATE_DB_FIELD = "createdDateTime";
+	private Date createdDateTime = null;
+
+	public static final String UPDATED_DATE_DB_FIELD = "updatedDateTime";
+	private Date updatedDateTime = null;
 
     public void setDataModelVersion(final String newVersion){
         this.datamodelVersion = newVersion;
@@ -179,6 +182,14 @@ public class DbModule {
     public void setBuildInfo(final Map<String, String> buildInfo) {
         this.buildInfo = buildInfo;
     }
+
+	public Date getCreatedDateTime() {	return createdDateTime;	}
+
+	public void setCreatedDateTime(Date createdDateTime) {	this.createdDateTime = createdDateTime;	}
+
+	public Date getUpdatedDateTime() {	return updatedDateTime;	}
+
+	public void setUpdatedDateTime(Date updatedDateTime) {	this.updatedDateTime = updatedDateTime;	}
 
     @Override
 	public String toString(){

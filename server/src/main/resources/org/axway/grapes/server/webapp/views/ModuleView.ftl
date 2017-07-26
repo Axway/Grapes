@@ -67,6 +67,12 @@
                     <strong>Not promoted</strong><br/>
                 </#if>
                 <strong>Organization: </strong><a href="/organization/${getOrganization()}">${getOrganization()}</a><br/>
+                <#if module.getCreatedDateTime()??>
+                    <strong>Created date: </strong>${module.getCreatedDateTime()?datetime}<br/>
+                </#if>
+                <#if module.getUpdatedDateTime()??>
+                    <strong>Last updated date: </strong>${module.getUpdatedDateTime()?datetime}<br/>
+                </#if>
                 </p>
                 <br/>
             </div>
