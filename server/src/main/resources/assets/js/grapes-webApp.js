@@ -1274,7 +1274,7 @@ function getModuleLicenses(){
                 var table = $(data).find("#table_div");
                 $("#results").empty().append(table);
                 $('.sortable').tablesorter();
-                showCSVExportLink($(table).find("tbody"), "<a href=\"javascript:void(0)\" id=\"fullRecursive\" onclick='updateLicenseReport();' >On full corporate tree</a>\n");
+                showCSVExportLink($(table).find("tbody"), "<a href=\"javascript:void(0)\" class=\"fullRecursiveLink\" id=\"fullRecursive\" onclick='updateLicenseReport();' >On full corporate tree</a>\n");
             }
         })
 }
@@ -2111,7 +2111,7 @@ function showCSVExportLink(element, additionalActions) {
         }
         $("#optional-action").empty().append(moduleOptionalActions);
 
-        $(".export").on('click', function (event) {
+        $("a.export").on('click', function (event) {
             exportTableToCSV.apply(this, [$('#table_div>table'), 'export.csv']);
         });
     }
