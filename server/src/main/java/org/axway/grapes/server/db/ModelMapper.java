@@ -244,4 +244,32 @@ public class ModelMapper {
 
         return dependency;
     }
+
+    /**
+     * Transform comment from database model to client/server model
+     *
+     * @param dbComment - database model to transform
+     * @return - the client/server model
+     */
+    public Comment getComment(final DbComment dbComment) {
+        final Comment comment = DataModelFactory.createComment(dbComment.getEntityId(), dbComment.getEntityType(), dbComment.getCommentText(), dbComment.getCommentedBy(), dbComment.getCreatedDateTime());
+        return comment;
+    }
+
+    /**
+     * Transform client/server model to a database model
+     *
+     * @param comment - client/server model to transform
+     * @return the database model
+     */
+    public DbComment getDbComment(final Comment comment) {
+        final DbComment dbComment = new DbComment();
+        dbComment.setEntityId(comment.getEntityId());
+        dbComment.setEntityType(comment.getEntityType());
+        dbComment.setCommentText(comment.getCommentText());
+        dbComment.setCommentedBy(comment.getCommentedBy());
+        dbComment.setCreatedDateTime(comment.getCreatedDateTime());
+
+        return dbComment;
+    }
 }

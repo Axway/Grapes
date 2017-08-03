@@ -1,6 +1,7 @@
 package org.axway.grapes.commons.datamodel;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -231,4 +232,24 @@ public final class DataModelFactory {
             throw new IOException(e);
         }
     }
+
+	/**
+	 * Generates a comment regarding the parameters.
+	 *
+	 * @param entityId - id of the commented entity
+	 * @param entityType - type of the entity
+	 * @param commentedText - comment text
+	 * @param user - comment left by
+	 * @param date - date comment was created
+	 * @return - comment entity
+	 */
+	public static Comment createComment(final String entityId,final String entityType, final String commentedText, final String user, Date date){
+		final Comment comment = new Comment();
+		comment.setEntityId(entityId);
+		comment.setEntityType(entityType);
+		comment.setCommentText(commentedText);
+		comment.setCommentedBy(user);
+		comment.setCreatedDateTime(date);
+		return comment;
+	}
 }

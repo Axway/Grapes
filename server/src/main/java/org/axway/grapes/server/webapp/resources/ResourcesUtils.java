@@ -1,10 +1,12 @@
 package org.axway.grapes.server.webapp.resources;
 
 import org.axway.grapes.commons.datamodel.Artifact;
+import org.axway.grapes.commons.datamodel.Comment;
 import org.axway.grapes.commons.datamodel.PromotionEvaluationReport;
 import org.axway.grapes.server.webapp.views.PromotionReportView;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p> Utility class for resource classes that performs resource error collection</p>
@@ -27,8 +29,20 @@ public final class ResourcesUtils {
 
         // do not use dependency
         if (!promotionReportView.getDoNotUseArtifacts().isEmpty()) {
-            String err = addErrors(promotionReportView.getDoNotUseArtifacts(), "DO_NOT_USE marked dependencies detected: %s");
-            result.addError(err);
+            boolean isFirstElement = true;
+            StringBuilder mappedComments = new StringBuilder();
+            for (Map.Entry<Artifact, Comment> entry : promotionReportView.getDoNotUseArtifacts().entrySet()) {
+                if (!isFirstElement) {
+                    mappedComments.append(", ");
+                }
+                if(entry.getValue() != null) {
+                    mappedComments.append(entry.getKey() + ". Comment: " + entry.getValue().getCommentText());
+                } else {
+                    mappedComments.append(entry.getKey());
+                }
+                isFirstElement = false;
+            }
+            result.addError(String.format("DO_NOT_USE marked dependencies detected: %s", mappedComments));
         }
         // unpromoted dependency
         if (!promotionReportView.getUnPromotedDependencies().isEmpty()) {

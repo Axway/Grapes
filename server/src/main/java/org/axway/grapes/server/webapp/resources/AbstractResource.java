@@ -316,4 +316,13 @@ public abstract class AbstractResource extends View {
     public List<String> externalValidatedTypes() {
         return getConfig().getExternalValidatedTypes();
     }
+
+    /**
+     * Get comment handler class
+     *
+     * @return CommentHandler class
+     */
+    protected CommentHandler getCommentHandler(){
+        return new CommentHandler(repositoryHandler);
+    }
 }

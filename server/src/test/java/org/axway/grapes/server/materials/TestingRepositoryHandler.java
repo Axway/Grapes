@@ -27,6 +27,7 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     private final List<DbModule> modules = new ArrayList<DbModule>();
     private final List<DbArtifact> artifacts = new ArrayList<DbArtifact>();
     private final List<DbLicense> licenses = new ArrayList<DbLicense>();
+    private final List<DbComment> comments = new ArrayList<>();
 
     @Override
     public void store(final DbCredential credential) {
@@ -332,6 +333,37 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     @Override
     public long getResultCount(String collectionName, String query) {
         return 0;
+    }
+
+    @Override
+    public void store(DbComment dbComment) {
+        comments.add(dbComment);
+    }
+
+    @Override
+    public List<DbComment> getComments(String entityId, String entityType) {
+        List<DbComment> innerList = new ArrayList<>();
+        for (DbComment dbComment : comments) {
+            if(dbComment.getEntityId().equals(entityId) && dbComment.getEntityType().equals(entityType)){
+                innerList.add(dbComment);
+            }
+        }
+        return innerList;
+    }
+
+    @Override
+    public DbComment getLatestComment(String entityId, String entityType) {
+        List<DbComment> commentsList = getComments(entityId, entityType);
+        DbComment latest;
+        int index = 0;
+        for (int i = 0; i < commentsList.size(); i++) {
+            if (commentsList.get(i).getCreatedDateTime().after(commentsList.get(index).getCreatedDateTime())) {
+                index = i;
+            }
+        }
+
+        latest = commentsList.get(index);
+        return latest;
     }
 
     @Override

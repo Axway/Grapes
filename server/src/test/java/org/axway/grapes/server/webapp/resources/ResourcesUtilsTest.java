@@ -25,6 +25,7 @@ public class ResourcesUtilsTest {
         final Artifact artifactMissingLicense = DataModelFactory.createArtifact("CheckPromotion", "MissingLicense", "version", "classifier", "type", "extension");
         final Artifact artifactDoNotUse = DataModelFactory.createArtifact("CheckPromotion", "DoNotUse", "version", "classifier", "type", "extension");
         final Artifact artifactUnpromotedDependency = DataModelFactory.createArtifact("CheckPromotion", "UnpromotedDependency", "version", "classifier", "type", "extension");
+        final Comment comment = DataModelFactory.createComment("CheckPromotion:DoNotUse:version:classifier:extension", Artifact.class.getSimpleName(), "comment test", "test", new Date());
 
         // add dependencies to the module
         module.addArtifact(artifactMissingLicense);
@@ -34,14 +35,14 @@ public class ResourcesUtilsTest {
         // add the sample artifacts to the promotion view
         promotionViewTest.setRootModule(module);
         promotionViewTest.addMissingThirdPartyDependencyLicenses(artifactMissingLicense);
-        promotionViewTest.addDoNotUseArtifact(artifactDoNotUse);
+        promotionViewTest.addDoNotUseArtifact(artifactDoNotUse, comment);
         promotionViewTest.addUnPromotedDependency(artifactUnpromotedDependency.getGavc());
 
         // pass data to the method
         final PromotionEvaluationReport report = ResourcesUtils.checkPromotionErrors(promotionViewTest);
 
         List<String> expectedErrorsList = new ArrayList<>();
-        expectedErrorsList.add("DO_NOT_USE marked dependencies detected: CheckPromotion:DoNotUse:version:classifier:extension");
+        expectedErrorsList.add("DO_NOT_USE marked dependencies detected: CheckPromotion:DoNotUse:version:classifier:type:extension:maven. Comment: comment test");
         expectedErrorsList.add("Un promoted dependencies detected: CheckPromotion:UnpromotedDependency:version:classifier:extension");
         expectedErrorsList.add("The module you are trying to promote has dependencies that miss the license information: CheckPromotion:MissingLicense:version:classifier:extension");
 

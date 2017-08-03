@@ -84,6 +84,24 @@
                     </#if>
                     <#if shouldNotBeUsed()>
                     <strong>This artifact should not be used!!!</strong><br/>
+                        <#if comment??>
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Comment</th>
+                                    <th>Commented by</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>${comment.getCommentText()}</td>
+                                    <td>${comment.getCommentedBy()}</td>
+                                    <td>${comment.getCreatedDateTime()?datetime}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </#if>
                     </#if>
                 </p>
                 <br/>

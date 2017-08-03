@@ -227,6 +227,12 @@ public class ArtifactResource extends AbstractResource {
             view.setOrganization(organization);
         }
 
+        DbComment dbComment = getCommentHandler().getLatestComment(gavc, DbArtifact.class.getSimpleName());
+        if(dbComment != null) {
+            final Comment comment = getModelMapper().getComment(dbComment);
+            view.setComment(comment);
+        }
+
         return Response.ok(view).build();
     }
 
@@ -395,7 +401,7 @@ public class ArtifactResource extends AbstractResource {
      */
     @POST
     @Path("/{gavc}" + ServerAPI.SET_DO_NOT_USE)
-    public Response postDoNotUse(@Auth final DbCredential credential, @PathParam("gavc") final String gavc,@QueryParam(ServerAPI.DO_NOT_USE) final BooleanParam doNotUse){
+    public Response postDoNotUse(@Auth final DbCredential credential, @PathParam("gavc") final String gavc,@QueryParam(ServerAPI.DO_NOT_USE) final BooleanParam doNotUse, final String commentText){
         if(!credential.getRoles().contains(AvailableRoles.ARTIFACT_CHECKER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
@@ -403,6 +409,14 @@ public class ArtifactResource extends AbstractResource {
         if(LOG.isInfoEnabled()) {
             LOG.info(String.format("Got a add \"DO_NOT_USE\" request [%s]", gavc));
         }
+
+        if(commentText.isEmpty()) {
+            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
+        }
+
+        // Set comment for artifact
+        getCommentHandler().store(gavc, commentText, credential, DbArtifact.class.getSimpleName());
+
         getArtifactHandler().updateDoNotUse(gavc, doNotUse.get());
 
         return Response.ok("done").build();

@@ -35,7 +35,9 @@ public class Artifact {
 
     private List<String> licenses = new ArrayList<String>();
 
+    @JsonIgnore
     private Date createdDateTime = null;
+    @JsonIgnore
     private Date updatedDateTime = null;
 
     protected Artifact() {

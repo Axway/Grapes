@@ -3,7 +3,10 @@ package org.axway.grapes.server.webapp.views;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.Lists;
 import com.yammer.dropwizard.views.View;
-import org.axway.grapes.commons.datamodel.*;
+import org.axway.grapes.commons.datamodel.Artifact;
+import org.axway.grapes.commons.datamodel.Comment;
+import org.axway.grapes.commons.datamodel.Module;
+import org.axway.grapes.commons.datamodel.Pair;
 import org.axway.grapes.server.webapp.views.serialization.PromotionReportSerializer;
 
 import java.util.*;
@@ -20,9 +23,8 @@ public class PromotionReportView extends View {
     private Module rootModule;
     private List<String> unPromotedDependencies = new ArrayList<String>();
     private Map<String, PromotionReportView> dependencyReports = new HashMap<String, PromotionReportView>();
-    private List<Artifact> doNotUseArtifacts = new ArrayList<Artifact>();
+    private Map<Artifact, Comment> doNotUseArtifacts = new HashMap<>();
     private Map<String, List<String>> mismatchVersions = new HashMap<String, List<String>>();
-    private PromotionDetails promotionDetails = new PromotionDetails();
     private List<Artifact> missingThirdPartyDependencyLicenses = new ArrayList<Artifact>();
     private List<Pair> dependenciesWithNotAcceptedLicenses = new ArrayList<Pair>();
 
@@ -61,12 +63,12 @@ public class PromotionReportView extends View {
         return dependencyReports.get(moduleId);
     }
 
-    public List<Artifact> getDoNotUseArtifacts() {
+    public Map<Artifact, Comment> getDoNotUseArtifacts() {
         return doNotUseArtifacts;
     }
 
-    public void addDoNotUseArtifact(final Artifact doNotUseArtifact) {
-        doNotUseArtifacts.add(doNotUseArtifact);
+    public void addDoNotUseArtifact(final Artifact doNotUseArtifact, final Comment comment) {
+        doNotUseArtifacts.put(doNotUseArtifact, comment);
     }
 
     public List<PromotionReportView> getReportsWithDoNotUseArtifacts() {
@@ -146,15 +148,6 @@ public class PromotionReportView extends View {
 
     public List<String> getPromotionPlan() {
         return unPromotedDependencies;
-    }
-
-    public PromotionDetails promotionDetails() {
-        promotionDetails.setPromotable(canBePromoted());
-        promotionDetails.setSnapshot(isSnapshot());
-        promotionDetails.setDoNotUseArtifacts(doNotUseArtifacts);
-        promotionDetails.setUnPromotedDependencies(unPromotedDependencies);
-
-        return promotionDetails;
     }
 
     public List<Artifact> getMissingThirdPartyDependencyLicenses() {

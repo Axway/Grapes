@@ -12,8 +12,7 @@ import java.io.IOException;
 public class PromotionReportSerializer extends JsonSerializer<PromotionReportView> {
     @Override
     public void serialize(final PromotionReportView promotionReportView, final JsonGenerator jsonGenerator, final SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-        jsonGenerator.writeObject(promotionReportView.promotionDetails());
+        jsonGenerator.writeObject(promotionReportView);
         jsonGenerator.flush();
-        
     }
 }

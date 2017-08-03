@@ -1460,10 +1460,12 @@ function doNotUseArtifact(){
             dataType: "html",
             success: function(donotUse, textStatus) {
                 if(donotUse == "true"){
-                    $("#doNotUseArtifactModal-text").empty().append(gavc + " is currently flagged with \"DO_NOT_USE\", do you want to un-flagged it?")
+                    $("#doNotUseArtifactModal-text").empty().append(gavc + " is currently flagged with \"DO_NOT_USE\", do you want to un-flagged it?"
+                      + "<br /><div class=\"textareaLabel\">Comment</div><textarea placeholder='Please state the reason for unsetting the artifact flag \"DO_NOT_USE\"!' name='doNotUseComment' id='doNotUseComment'></textarea><br />");
                 }
                 else{
-                    $("#doNotUseArtifactModal-text").empty().append("Do you want to flag " + gavc + " with \"DO_NOT_USE\"")
+                    $("#doNotUseArtifactModal-text").empty().append("Do you want to flag " + gavc + " with \"DO_NOT_USE\""
+                    + "<br /><div class=\"textareaLabel\">Comment</div><textarea placeholder='Please state the reason for setting the artifact flag to \"DO_NOT_USE\"!' name='doNotUseComment' id='doNotUseComment'></textarea><br />");
                 }
                 $('#doNotUseArtifactModal').modal('show');
             }
@@ -1474,10 +1476,11 @@ function doNotUseArtifact(){
 function postDoNotUse(){
     var gavc = $('input[name=gavc]:checked', '#targets').val();
     var doNotUse = $("#doNotUseArtifactModal-text").text().indexOf("you want to flag") >= 0;
+    var commentText = $("#doNotUseComment").val();
     $.ajax({
             type: "POST",
             url: "/artifact/" + encodeURIComponent(gavc) + "/donotuse?doNotUse=" + doNotUse,
-            data: {},
+            data: commentText,
             dataType: "html",
             error: function(xhr, error){
                 alert("The action cannot be performed: status " + xhr.status);

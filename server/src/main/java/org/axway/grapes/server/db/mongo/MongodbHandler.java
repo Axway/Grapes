@@ -633,4 +633,36 @@ public class MongodbHandler implements RepositoryHandler {
         final Jongo ds = getJongoDataStore();
         return ds.getCollection(collectionName).count(query);
     }
+
+    @Override
+    public void store(DbComment comment) {
+        final Jongo datastore = getJongoDataStore();
+        final MongoCollection dbComments = datastore.getCollection(DbCollections.DB_COMMENTS);
+        dbComments.save(comment);
+    }
+
+    @Override
+    public List<DbComment> getComments(String entityId, String entityType) {
+        final Jongo datastore = getJongoDataStore();
+        List<DbComment> result = datastore.getCollection(DbCollections.DB_COMMENTS)
+                .aggregate("{$match: { $and: [" + JongoUtils.generateQuery(DbComment.ENTITY_ID_DB_FIELD, entityId)+ ", "
+                        + JongoUtils.generateQuery(DbComment.ENTITY_TYPE_DB_FIELD, entityType) + "]}}")
+                .as(DbComment.class);
+        return result;
+    }
+
+    @Override
+    public DbComment getLatestComment(String entityId, String entityType) {
+        final Jongo datastore = getJongoDataStore();
+        final Map<String, Object> queryParams = new HashMap<>();
+        List<DbComment> result = datastore.getCollection(DbCollections.DB_COMMENTS)
+                .aggregate("{$match: {entityId: \"" + entityId + "\"}}")
+                .and("{$sort: {\"createdDateTime\": -1}}")
+                .and("{$limit: 1}").as(DbComment.class);
+
+       if(!result.isEmpty()){
+           return result.get(0);
+       }
+       return null;
+    }
 }

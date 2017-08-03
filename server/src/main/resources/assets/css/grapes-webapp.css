@@ -51,3 +51,17 @@ body {
     margin-top: 1%;
     float: left;
 }
+
+/*DO NOT USE modal comments textarea*/
+#doNotUseComment {
+    width: 100%;
+    resize:vertical;
+    overflow: auto;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.textareaLabel {
+    padding-top: 10px;
+    padding-bottom: 5px;
+}

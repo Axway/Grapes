@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 public class ArtifactResourceTest extends ResourceTest {
 
     private RepositoryHandler repositoryHandler;
-    private final String templatePath = GrapesTestUtils.class.getResource("all-messages-pretty-print.txt").getPath();
+    private final String templatePath = GrapesTestUtils.class.getResource("all-messages-pretty-print.txt").getPath().replaceFirst("/", "");
 
     @Override
     protected void setUpResources() throws Exception {
@@ -724,7 +724,7 @@ public class ArtifactResourceTest extends ResourceTest {
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
 
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.SET_DO_NOT_USE);
-        ClientResponse response = resource.queryParam(ServerAPI.DO_NOT_USE, "true").post(ClientResponse.class);
+        ClientResponse response = resource.queryParam(ServerAPI.DO_NOT_USE, "true").post(ClientResponse.class, "commentText");
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
@@ -942,7 +942,7 @@ public class ArtifactResourceTest extends ResourceTest {
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
 
         resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/wrongGavc"  + ServerAPI.SET_DO_NOT_USE);
-        response = resource.queryParam(ServerAPI.DO_NOT_USE, "true").post(ClientResponse.class);
+        response = resource.queryParam(ServerAPI.DO_NOT_USE, "true").post(ClientResponse.class, "commentText");
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
 

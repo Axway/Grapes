@@ -375,4 +375,26 @@ public interface RepositoryHandler {
      * @return Number of results
      */
     public long getResultCount(final String collectionName, final String query);
+
+    /**
+     * Create a new comment or update an existing one into the database
+     * @param dbComment
+     */
+    public void store(final DbComment dbComment);
+
+    /**
+     * Returns the comments for a particular entity
+     * @param entityId - the id of the entity which has comments
+     * @param entityType - the type of the entity (e.g. module, artifact, license)
+     * @return - list of comments
+     */
+    public List<DbComment> getComments(String entityId, String entityType);
+
+    /**
+     * Returns the latest comment for do not use flag
+     * @param entityId - id of the artifact
+     * @param entityType - type of the entity
+     * @return - String comment text
+     */
+    public DbComment getLatestComment(String entityId, String entityType);
 }
