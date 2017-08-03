@@ -15,12 +15,15 @@ public class PromotionEvaluationReport {
     //
     private Set<String> errors = new HashSet<>();
 
+    private boolean promotable = false;
+
     public void addError(String error) {
         this.errors.add(error);
+        promotable = false;
     }
 
     public boolean isPromotable() {
-        return errors.isEmpty();
+        return promotable;
     }
 
     public Set<String> getErrors() {
