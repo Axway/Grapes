@@ -1461,11 +1461,11 @@ function doNotUseArtifact(){
             success: function(donotUse, textStatus) {
                 if(donotUse == "true"){
                     $("#doNotUseArtifactModal-text").empty().append(gavc + " is currently flagged with \"DO_NOT_USE\", do you want to un-flagged it?"
-                      + "<br /><div class=\"textareaLabel\">Comment</div><textarea placeholder='Please state the reason for unsetting the artifact flag \"DO_NOT_USE\"!' name='doNotUseComment' id='doNotUseComment'></textarea><br />");
+                      + "<br /><div class=\"textareaLabel\">Comment</div><textarea rows=\"3\" placeholder='Please state the reason for unsetting the artifact flag \"DO_NOT_USE\"!' name='doNotUseComment' id='doNotUseComment'></textarea><br />");
                 }
                 else{
                     $("#doNotUseArtifactModal-text").empty().append("Do you want to flag " + gavc + " with \"DO_NOT_USE\""
-                    + "<br /><div class=\"textareaLabel\">Comment</div><textarea placeholder='Please state the reason for setting the artifact flag to \"DO_NOT_USE\"!' name='doNotUseComment' id='doNotUseComment'></textarea><br />");
+                    + "<br /><div class=\"textareaLabel\">Comment</div><textarea rows=\"3\" placeholder='Please state the reason for setting the artifact flag to \"DO_NOT_USE\"!' name='doNotUseComment' id='doNotUseComment'></textarea><br />");
                 }
                 $('#doNotUseArtifactModal').modal('show');
             }

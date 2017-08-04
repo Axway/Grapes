@@ -410,11 +410,7 @@ public class ArtifactResource extends AbstractResource {
             LOG.info(String.format("Got a add \"DO_NOT_USE\" request [%s]", gavc));
         }
 
-        if(commentText.isEmpty()) {
-            return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
-        }
-
-        // Set comment for artifact
+        // Set comment for artifact if available
         getCommentHandler().store(gavc, commentText, credential, DbArtifact.class.getSimpleName());
 
         getArtifactHandler().updateDoNotUse(gavc, doNotUse.get());

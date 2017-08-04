@@ -58,6 +58,9 @@ public class CommentHandler {
         comment.setEntityId(gavc);
         comment.setEntityType(entityType);
         comment.setCommentedBy(credential.getUser());
+        if(commentText.isEmpty()) {
+            commentText = credential.getUser() + " marked this artifact as DO_NOT_USE.";
+        }
         comment.setCommentText(commentText);
         comment.setCreatedDateTime(new Date());
 
