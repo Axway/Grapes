@@ -14,8 +14,7 @@ public class PromotionEvaluationReport {
     // require updating the client modules as well.
     //
     private Set<String> errors = new HashSet<>();
-
-    private boolean promotable = false;
+    private boolean promotable = true;
 
     public void addError(String error) {
         this.errors.add(error);
