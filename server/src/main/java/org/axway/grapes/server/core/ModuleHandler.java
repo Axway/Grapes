@@ -218,6 +218,9 @@ public class ModuleHandler {
                     } else {
                         // Check if the existing license name exists in the database
                         for (String licenseName : artifactLicenses) {
+                            if (null == licenseName) {
+                                continue;
+                            }
                             DbLicense currentLicense = repositoryHandler.getLicense(licenseName);
                             if (currentLicense == null) {
                                 report.addMissingThirdPartyDependencyLicenses(modelMapper.getArtifact(artifactDep));
