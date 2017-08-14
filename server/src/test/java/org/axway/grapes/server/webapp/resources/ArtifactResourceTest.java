@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 public class ArtifactResourceTest extends ResourceTest {
 
     private RepositoryHandler repositoryHandler;
-    private final String templatePath = GrapesTestUtils.class.getResource("all-messages-pretty-print.txt").getPath().replaceFirst("/", "");
+    private final String templatePath = GrapesTestUtils.class.getResource("all-messages-pretty-print.txt").getPath();
 
     @Override
     protected void setUpResources() throws Exception {
