@@ -4,8 +4,6 @@ package org.axway.grapes.server.core;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbComment;
 import org.axway.grapes.server.db.datamodel.DbCredential;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.List;
@@ -57,9 +55,10 @@ public class CommentHandler {
         comment.setEntityType(entityType);
         comment.setDbCommentedBy(credential.getUser());
         if(commentText.isEmpty()) {
-            commentText = credential.getUser() + " marked this artifact as DO_NOT_USE.";
+            comment.setDbCommentText(credential.getUser() + " marked this artifact as DO_NOT_USE.");
+        } else {
+            comment.setDbCommentText(commentText);
         }
-        comment.setDbCommentText(commentText);
         comment.setDbCreatedDateTime(new Date());
 
         repositoryHandler.store(comment);

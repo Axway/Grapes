@@ -252,8 +252,7 @@ public class ModelMapper {
      * @return - the client/server model
      */
     public Comment getComment(final DbComment dbComment) {
-        final Comment comment = DataModelFactory.createComment(dbComment.getEntityId(), dbComment.getEntityType(), dbComment.getDbCommentText(), dbComment.getDbCommentedBy(), dbComment.getDbCreatedDateTime());
-        return comment;
+       return DataModelFactory.createComment(dbComment.getEntityId(), dbComment.getEntityType(), dbComment.getDbCommentText(), dbComment.getDbCommentedBy(), dbComment.getDbCreatedDateTime());
     }
 
     /**
