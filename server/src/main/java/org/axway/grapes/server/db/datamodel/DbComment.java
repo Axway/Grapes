@@ -31,27 +31,27 @@ public class DbComment {
     public static final String CREATED_DATE_DB_FIELD = "createdDateTime";
     private Date createdDateTime = null;
 
-    public String getCommentText() {
+    public String getDbCommentText() {
         return commentText;
     }
 
-    public void setCommentText(String commentText) {
+    public void setDbCommentText(String commentText) {
         this.commentText = commentText;
     }
 
-    public String getCommentedBy() {
+    public String getDbCommentedBy() {
         return commentedBy;
     }
 
-    public void setCommentedBy(String commentedBy) {
+    public void setDbCommentedBy(String commentedBy) {
         this.commentedBy = commentedBy;
     }
 
-    public Date getCreatedDateTime() {
+    public Date getDbCreatedDateTime() {
         return createdDateTime;
     }
 
-    public void setCreatedDateTime(Date createdDateTime) {
+    public void setDbCreatedDateTime(Date createdDateTime) {
         this.createdDateTime = createdDateTime;
     }
 
@@ -92,10 +92,10 @@ public class DbComment {
                 StringUtils.trimToEmpty(this.getEntityId()),
                 StringUtils.trimToEmpty(dbComment.getEntityId()))
                 && StringUtils.equals(
-                StringUtils.trimToEmpty(this.getCommentedBy()),
-                StringUtils.trimToEmpty(dbComment.getCommentedBy()))
-                && StringUtils.equals(StringUtils.trimToEmpty(this.getCommentText()),
-                StringUtils.trimToEmpty(dbComment.getCommentText()));
+                StringUtils.trimToEmpty(this.getDbCommentedBy()),
+                StringUtils.trimToEmpty(dbComment.getDbCommentedBy()))
+                && StringUtils.equals(StringUtils.trimToEmpty(this.getDbCommentText()),
+                StringUtils.trimToEmpty(dbComment.getDbCommentText()));
     }
 
 
@@ -104,8 +104,8 @@ public class DbComment {
         int hashCode = super.hashCode();
         hashCode = 31 * hashCode + (this.getEntityId() == null ? 0 : this.getEntityId().hashCode());
         hashCode = 31 * hashCode + (this.getEntityType() == null ? 0 : this.getEntityType().hashCode());
-        hashCode = 31 * hashCode + (this.getCommentedBy() == null ? 0 : this.getCommentedBy().hashCode());
-        hashCode = 31 * hashCode + (this.getCommentText() == null ? 0 : this.getCommentText().hashCode());
+        hashCode = 31 * hashCode + (this.getDbCommentedBy() == null ? 0 : this.getDbCommentedBy().hashCode());
+        hashCode = 31 * hashCode + (this.getDbCommentText() == null ? 0 : this.getDbCommentText().hashCode());
         return hashCode;
     }
 }

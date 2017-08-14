@@ -5,6 +5,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Date;
+
 import static org.junit.Assert.*;
 
 public class DataModelFactoryTest {
@@ -73,6 +75,16 @@ public class DataModelFactoryTest {
 //        }
 //        assertNotNull(exception);
 
+    }
+
+    @Test
+    public void createComment() throws UnsupportedScopeException {
+        Comment comment = DataModelFactory.createComment("com.axway.test:1.0.0::jar", "DbArtifact", "test comment", "testUser", new Date());
+        assertNotNull(comment);
+        assertEquals("com.axway.test:1.0.0::jar", comment.getEntityId());
+        assertEquals("DbArtifact", comment.getEntityType());
+        assertEquals("test comment", comment.getCommentText());
+        assertEquals("testUser", comment.getCommentedBy());
     }
 
 }

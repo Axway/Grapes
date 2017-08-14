@@ -33,7 +33,7 @@ public class Artifact {
     private String downloadUrl;
     private String provider;
 
-    private List<String> licenses = new ArrayList<String>();
+    private List<String> licenses = new ArrayList<>();
 
     @JsonIgnore
     private Date createdDateTime = null;

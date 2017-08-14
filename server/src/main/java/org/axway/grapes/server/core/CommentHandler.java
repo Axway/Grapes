@@ -16,8 +16,6 @@ import java.util.List;
  */
 public class CommentHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ArtifactHandler.class);
-
     private final RepositoryHandler repositoryHandler;
 
     public CommentHandler(final RepositoryHandler repositoryHandler) {
@@ -57,12 +55,12 @@ public class CommentHandler {
         DbComment comment = new DbComment();
         comment.setEntityId(gavc);
         comment.setEntityType(entityType);
-        comment.setCommentedBy(credential.getUser());
+        comment.setDbCommentedBy(credential.getUser());
         if(commentText.isEmpty()) {
             commentText = credential.getUser() + " marked this artifact as DO_NOT_USE.";
         }
-        comment.setCommentText(commentText);
-        comment.setCreatedDateTime(new Date());
+        comment.setDbCommentText(commentText);
+        comment.setDbCreatedDateTime(new Date());
 
         repositoryHandler.store(comment);
     }

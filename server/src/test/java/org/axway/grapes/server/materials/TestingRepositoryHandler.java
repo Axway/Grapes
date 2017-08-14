@@ -357,7 +357,7 @@ public class TestingRepositoryHandler implements RepositoryHandler {
         DbComment latest;
         int index = 0;
         for (int i = 0; i < commentsList.size(); i++) {
-            if (commentsList.get(i).getCreatedDateTime().after(commentsList.get(index).getCreatedDateTime())) {
+            if (commentsList.get(i).getDbCreatedDateTime().after(commentsList.get(index).getDbCreatedDateTime())) {
                 index = i;
             }
         }

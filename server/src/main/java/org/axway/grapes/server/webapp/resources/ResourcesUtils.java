@@ -14,6 +14,13 @@ import java.util.Map;
 public final class ResourcesUtils {
 
     /**
+     * Utility classes should not have public constructors
+     */
+    private ResourcesUtils(){
+        throw new IllegalStateException("Utility class");
+    }
+
+    /**
      * Check and add error to the promotion report if any exist
      *
      * @param promotionReportView - the calculated report for a module
