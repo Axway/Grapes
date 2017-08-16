@@ -22,6 +22,8 @@ import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Mongodb Handler
@@ -662,5 +664,29 @@ public class MongodbHandler implements RepositoryHandler {
            return result.get(0);
        }
        return null;
+    }
+
+    @Override
+    public DbSearch getSearchResult(String searchParam, FiltersHolder filter) {
+        final Jongo datastore = getJongoDataStore();
+
+        Iterable<DbModule> findModules;
+        Iterable<DbArtifact> findArtifacts;
+        List<String> modulesList;
+        List<String> artifactsList;
+        DbSearch search = new DbSearch();
+
+        if (filter.getDecorator().getIncludeModules()) {
+            findModules = datastore.getCollection(DbCollections.DB_MODULES).find("{_id: {$regex: \"" + searchParam + "\"}}").projection("{_id:1}").as(DbModule.class);
+            modulesList = StreamSupport.stream(findModules.spliterator(), false).map(m -> m.getId()).collect(Collectors.toList());
+            search.setModules(modulesList);
+        }
+        if (filter.getDecorator().getIncludeArtifacts()) {
+            findArtifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS).find("{_id: {$regex: \"" + searchParam + "\"}}").projection("{_id:1}").as(DbArtifact.class);
+            artifactsList = StreamSupport.stream(findArtifacts.spliterator(), false).map(ar -> ar.getGavc()).collect(Collectors.toList());
+            search.setArtifacts(artifactsList);
+        }
+
+        return search;
     }
 }

@@ -147,6 +147,16 @@ public class FiltersHolder {
         if(organization != null){
             filters.add(new OrganizationFilter(organization));
         }
+
+        final String modules = queryParameters.getFirst(ServerAPI.MODULES_PARAM);
+        final String artifacts = queryParameters.getFirst(ServerAPI.ARTIFACTS_PARAM);
+        if (modules != null && artifacts == null) {
+            filters.add(new SearchFilter(Boolean.valueOf(modules), Boolean.FALSE));
+        } else if (modules == null && artifacts != null) {
+            filters.add(new SearchFilter(Boolean.FALSE, Boolean.valueOf(artifacts)));
+        } else if (modules != null && artifacts != null){
+            filters.add(new SearchFilter(Boolean.valueOf(modules), Boolean.valueOf(artifacts)));
+        }
 	}
 
     public boolean shouldBeInReport(final DbLicense license) {

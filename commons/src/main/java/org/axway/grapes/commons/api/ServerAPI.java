@@ -39,6 +39,9 @@ public class ServerAPI {
     /** Value - {@value}, Webapp is an UI that is over Grapes server server REST API.*/
     public static final String WEBAPP_RESOURCE = "webapp";
 
+    /** Value = {@value}, Search is a Grapes server resource for searching modules and artifacts*/
+    public static final String SEARCH_RESOURCE = "search";
+
     //METHODS
     /** Value - {@value}, GET methods that returns the deliveries of a product. Usually used as /product/{name}/<GET_DELIVERIES>.*/
     public static final String GET_DELIVERIES = "/deliveries";
@@ -232,4 +235,10 @@ public class ServerAPI {
 
     /** Value - {@value}, String query parameter used to filter artifacts.*/
     public static final String PROVIDER_PARAM = "provider";
+
+    /** Value - {@value}, String query parameter used to filter modules while searching.*/
+    public static final String MODULES_PARAM = "modules";
+
+    /** Value - {@value}, String query parameter used to filter artifacts while searching.*/
+    public static final String ARTIFACTS_PARAM = "artifacts";
 }

@@ -367,6 +367,28 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
+    public DbSearch getSearchResult(String keyword, FiltersHolder filter) {
+        List<String> resultModules = new ArrayList<>();
+        List<String> resultArtifact = new ArrayList<>();
+        for (DbModule module : modules) {
+            if (module.getId().contains(keyword)){
+                resultModules.add(module.getId());
+            }
+        }
+
+        for (DbArtifact artifact : artifacts) {
+            if (artifact.getArtifactId().contains(keyword)){
+                resultArtifact.add(artifact.getArtifactId());
+            }
+        }
+
+        DbSearch result = new DbSearch();
+        result.setModules(resultModules);
+        result.setArtifacts(resultArtifact);
+        return result;
+    }
+
+    @Override
     public List<String> getLicenseNames(final FiltersHolder filters) {
         final List<String> names = new ArrayList<String>();
 

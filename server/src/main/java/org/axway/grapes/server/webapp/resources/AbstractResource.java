@@ -325,4 +325,11 @@ public abstract class AbstractResource extends View {
     protected CommentHandler getCommentHandler(){
         return new CommentHandler(repositoryHandler);
     }
+
+    /**
+     *
+     *
+     * @return
+     */
+    protected SearchHandler getSearchHandler() { return new SearchHandler(repositoryHandler);}
 }

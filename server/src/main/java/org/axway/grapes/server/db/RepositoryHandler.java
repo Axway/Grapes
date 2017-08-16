@@ -397,4 +397,13 @@ public interface RepositoryHandler {
      * @return - String comment text
      */
     public DbComment getLatestComment(String entityId, String entityType);
+
+    /**
+     *
+     * Returns the search result for modules and artifacts
+     * @param search - the searched keyword
+     * @param filter - filter modules and/or artifacts
+     * @return - list of ids for modules and/or artifacts
+     */
+    public DbSearch getSearchResult(String search, FiltersHolder filter);
 }
