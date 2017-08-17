@@ -42,6 +42,9 @@ public class ServerAPI {
     /** Value = {@value}, Search is a Grapes server resource for searching modules and artifacts*/
     public static final String SEARCH_RESOURCE = "search";
 
+    /** Value = {@value}, Search is a Grapes server resource for searching modules and artifacts*/
+    public static final String SEARCH_DOC_RESOURCE = "searchdoc";
+
     //METHODS
     /** Value - {@value}, GET methods that returns the deliveries of a product. Usually used as /product/{name}/<GET_DELIVERIES>.*/
     public static final String GET_DELIVERIES = "/deliveries";

@@ -12,7 +12,11 @@ import org.axway.grapes.server.core.*;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.reports.*;
+import org.axway.grapes.server.db.datamodel.DbSearch;
+import org.axway.grapes.server.reports.Report;
+import org.axway.grapes.server.reports.ReportUtils;
+import org.axway.grapes.server.reports.ReportsHandler;
+import org.axway.grapes.server.reports.ReportsRegistry;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
@@ -246,6 +250,18 @@ public abstract class AbstractResource extends View {
     }
 
     /**
+     * Returns an empty Search object in Json
+     * @return String
+     * @throws IOException
+     */
+    public String getSearchJsonModel() throws IOException {
+        DbSearch search = new DbSearch();
+        search.setArtifacts(new ArrayList<>());
+        search.setModules(new ArrayList<>());
+        return JsonUtils.serialize(search);
+    }
+
+    /**
      * Returns the comma separated list of available scopes
      *
      * @return String
@@ -327,9 +343,9 @@ public abstract class AbstractResource extends View {
     }
 
     /**
+     * Get search handler class
      *
-     *
-     * @return
+     * @return SearchHandler class
      */
     protected SearchHandler getSearchHandler() { return new SearchHandler(repositoryHandler);}
 }

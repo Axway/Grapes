@@ -1,12 +1,10 @@
 package org.axway.grapes.server.webapp.resources;
 
-import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.testing.ResourceTest;
-import com.yammer.dropwizard.views.ViewMessageBodyWriter;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
@@ -19,7 +17,6 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +27,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class SearchResourceTest extends ResourceTest {
+public class WebSearchResourceTest extends ResourceTest {
 
     private RepositoryHandler repositoryHandler;
 
@@ -39,7 +36,7 @@ public class SearchResourceTest extends ResourceTest {
         repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
         final GrapesServerConfig config = mock(GrapesServerConfig.class);
 
-        final SearchResource resource = new SearchResource(repositoryHandler, config);
+        final WebSearchResource resource = new WebSearchResource(repositoryHandler, config);
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repositoryHandler), "test auth"));
         addResource(resource);
     }
@@ -61,7 +58,7 @@ public class SearchResourceTest extends ResourceTest {
         when(repositoryHandler.getSearchResult(eq("testSearch"), (FiltersHolder) anyObject())).thenReturn(search);
 
         final WebResource resource = client().resource("/" + ServerAPI.SEARCH_RESOURCE + "/testSearch");
-        final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
@@ -76,7 +73,7 @@ public class SearchResourceTest extends ResourceTest {
         when(repositoryHandler.getSearchResult(eq("testSearch"), (FiltersHolder) anyObject())).thenReturn(search);
 
         final WebResource resource = client().resource("/" + ServerAPI.SEARCH_RESOURCE + "/testSearch");
-        final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
         final String results = response.getEntity(new GenericType<String>() {
@@ -98,7 +95,7 @@ public class SearchResourceTest extends ResourceTest {
         when(repositoryHandler.getSearchResult(eq("testSearch"), (FiltersHolder) anyObject())).thenReturn(search);
 
         final WebResource resource = client().resource("/" + ServerAPI.SEARCH_RESOURCE + "/testSearch");
-        final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
         final String results = response.getEntity(new GenericType<String>() {
@@ -120,7 +117,7 @@ public class SearchResourceTest extends ResourceTest {
         when(repositoryHandler.getSearchResult(eq("testSearch"), (FiltersHolder) anyObject())).thenReturn(search);
 
         final WebResource resource = client().resource("/" + ServerAPI.SEARCH_RESOURCE + "/testSearch");
-        final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
         final String results = response.getEntity(new GenericType<String>() {

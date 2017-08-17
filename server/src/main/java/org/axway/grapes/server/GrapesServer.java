@@ -111,6 +111,7 @@ public class GrapesServer extends Service<GrapesServerConfig> {
         env.addResource(new RootResource(repoHandler, config));
         env.addResource(new ReportResource(repoHandler, config));
         env.addResource(new SearchResource(repoHandler, config));
+        env.addResource(new WebSearchResource(repoHandler, config));
 
 	}
 
