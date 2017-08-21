@@ -12,3 +12,105 @@
      padding-right:20;
      padding-left:20;
  }
+
+/* Main search form holder*/
+ #searchForm{
+     border:none;
+     margin-top: 5%;
+     text-align: center;
+     height: 7em;
+ }
+
+/* Search input */
+ #s{
+     color :#888888;
+     background:url("/assets/img/search.png") no-repeat;
+     background-size: 20px;
+     background-position: 5px;
+     font-family:Arial,Helvetica,sans-serif;
+     font-size:15px;
+     height:36px;
+     line-height:36px;
+     margin: auto;
+     outline:medium none;
+     padding:0 0 0 35px;
+     text-shadow:1px 1px 0 white;
+     width: 50%;
+ }
+
+/* Search button */
+ #submitButton{
+     background-color: #157EFB;
+     color: #ffff;
+     width: 15%;
+     height:36px;
+     overflow:hidden;
+     text-transform:uppercase;
+     cursor:pointer;
+     -moz-border-radius: 5px;
+     -webkit-border-radius: 5px;
+     border-radius: 5px;
+ }
+
+/* Search input and button wrapper */
+ .searchText {
+    width: 50%;
+    margin: auto;
+ }
+
+/* Search radio and checkbox wrapper */
+ .optionWrapper {
+    width: 33%;
+    display: inline-block;
+    margin-top: 2em;
+    position: relative;
+  }
+
+/* Search radio wrapper */
+ .searchRadio {
+    position: absolute;
+ }
+
+/* Search checkbox wrapper */
+ .searchCheckbox {
+    position: absolute;
+    margin-left: 10em;
+  }
+
+ .searchRadio label, .searchCheckbox label{
+    float: left;
+    margin-left: 0.3em;
+ }
+
+ .searchRadio input, .searchCheckbox input{
+    float: left;
+    margin-left: 0.3em;
+ }
+
+ #searchResultWrapper {
+    width: 80%;
+    margin: auto;
+ }
+
+ .search-table {
+    float: left;
+    width: 50%;
+ }
+
+/* Disabled style */
+ input:disabled {
+    background:#dddddd;
+ }
+
+ input:disabled+label{
+    color:#ccc;
+ }
+
+ /* Loading modal*/
+ #loadingModal {
+    text-align: center;
+ }
+
+ .activated {
+    display: none;
+ }

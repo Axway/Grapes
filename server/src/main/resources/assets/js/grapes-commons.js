@@ -239,3 +239,96 @@ function loadLicensesNames(licenseNamesSelectId){
 		}
 	});
 }
+
+function filterRadioOptions(radio){
+    $(radio).change(function () {
+        var stat = $('input[value="filter"]').is(':checked');
+        if(stat){
+             $("input.options").prop('disabled', false);
+        }
+        else{
+            $("input.options").prop('disabled', 'disabled');
+        }
+        if ($('input[type=checkbox]').is(':disabled')) {
+            $('#s').attr('placeholder', 'Search');
+        }
+    });
+}
+
+function filterCheckBoxOptions(checkbox){
+    $(checkbox).change(function() {
+        if($('input[value=artifacts]').is(':checked') && $('input[value=modules]').is(':checked')) {
+            $('#s').attr('placeholder', 'Search modules and artifacts');
+        } else if ($('input[value=modules]').is(':checked')) {
+            $('#s').attr('placeholder', 'Search modules');
+        } else  if($('input[value=artifacts]').is(':checked')) {
+            $('#s').attr('placeholder', 'Search artifacts');
+        } else {
+            $('#s').attr('placeholder', 'Search');
+        }
+    });
+}
+
+function gerSearchResult(){
+
+      $("#searchResult").empty();
+
+      var searchText = $("#s").val();
+      var queryParams = "";
+
+      if(!$('input[value=modules]').is(':checked') && !$('input[value=all]').is(':checked')){
+        queryParams += "modules=false" + "&"
+      }
+
+      if(!$('input[value=artifacts]').is(':checked') && !$('input[value=all]').is(':checked')){
+        queryParams += "artifacts=false" + "&"
+      }
+
+      var html= "";
+      html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">";
+
+	 $.ajax({
+		type: "GET",
+		accept: {
+			json: 'application/json'
+		},
+		url: "/search/" + searchText + "?" + queryParams,
+		beforeSend: function () {
+            $("#loadingModal").show();
+        },
+		data: {},
+		dataType: "json",
+		success: function(data, textStatus) {
+
+		    html += "<thead><tr><th>Modules</th></tr></thead>";
+            html += "<tbody>";
+
+            if(data != null && data.modules != null && data.modules.length !== 0) {
+                $.each(data.modules, function(i, module) {
+                    html += "<tr><td>" + module + "</td></tr>";
+                });
+            }else {
+                html += "<tr><td>No modules found</td></tr>";
+            }
+
+            html += "</tr></tbody>";
+            html += "</table>";
+            html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result-artifacts\">";
+            html += "<thead><tr><th>Artifacts</th></tr></thead>";
+            html += "<tbody>";
+
+            if(data != null && data.artifacts != null && data.artifacts.length !== 0) {
+                $.each(data.artifacts, function(i, artifact) {
+                    html += "<tr><td>" + artifact + "</td></tr>";
+                });
+            } else {
+                html += "<tr><td>No artifacts found</td></tr>";
+            }
+
+            html += "</tr></tbody>";
+            html += "</table>";
+            $("#loadingModal").hide();
+		    $("#searchResult").empty().append(html);
+		}
+	});
+}

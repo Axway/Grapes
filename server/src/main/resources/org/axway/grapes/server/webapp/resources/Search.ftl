@@ -19,6 +19,7 @@
 
         <!-- Grapes css -->
         <link href="/assets/css/grapes-table.css" rel="stylesheet">
+        <link href="/assets/css/grapes.css" rel="stylesheet">
 
     </head>
     <body>
@@ -64,8 +65,32 @@
                 </div>
             </div>
         </div>
-        <div>
-            Searching is an utopia.
+        <div id="searchForm">
+            <div class="searchText">
+                <input id="s" type="text" placeholder="Search" />
+                <input type="submit" value="Search" id="submitButton" onclick="gerSearchResult()"/>
+            </div>
+            <div class="optionWrapper">
+                <div class="searchRadio">
+                    <input type="radio" value="all" id="all" name="filter" checked="true" onclick="filterRadioOptions(this);"/>
+                    <label for="all" id="siteNameLabel">All</label>
+
+                    <input type="radio" value="filter" id="filtered" name="filter" onclick="filterRadioOptions(this);"/>
+                    <label for="filtered">Filtered</label>
+                </div>
+                <div class="searchCheckbox">
+                    <input id="modules" type="checkbox" name="modules" value="modules" disabled class="options" onclick="filterCheckBoxOptions(this);">
+                    <label class="options" for="modules">Modules</label>
+
+                    <input id="artifacts" type="checkbox" name="artifacts" value="artifacts" disabled class="options" onclick="filterCheckBoxOptions(this);">
+                    <label class="options" for="artifacts">Artifacts</label>
+                </div>
+            </div>
+        </div>
+        <div id="searchResultWrapper">
+            <div id="loadingModal" class="activated"><i>Searching for data...</i></div>
+            <div id="searchResult">
+            </div>
         </div>
 
         <script src="/public/jquery-1.9.1/jquery.js"></script>
