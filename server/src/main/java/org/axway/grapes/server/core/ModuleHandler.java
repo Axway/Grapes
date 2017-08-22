@@ -205,7 +205,7 @@ public class ModuleHandler {
 
                 if (artifactDep.getDoNotUse() && !treatedArtifacts.contains(artifactDep.getGavc())) {
                     DbComment dbComment = repositoryHandler.getLatestComment(artifactDep.getGavc(), artifactDep.getClass().getSimpleName());
-                    report.addDoNotUseArtifact(modelMapper.getArtifact(artifactDep), modelMapper.getComment(dbComment));
+                    report.addDoNotUseArtifact(modelMapper.getArtifact(artifactDep), dbComment == null ? null : modelMapper.getComment(dbComment));
                     treatedArtifacts.add(artifactDep.getGavc());
                 }
 
