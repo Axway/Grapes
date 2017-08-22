@@ -214,7 +214,8 @@ public class ModuleHandler {
                 List<String> artifactLicenses = artifactDep.getLicenses();
                 if (!filters.getCorporateFilter().filter(dependency)) {
                     if (artifactLicenses.isEmpty()) {
-                        report.addMissingThirdPartyDependencyLicenses(modelMapper.getArtifact(artifactDep));
+                        // report.addMissingThirdPartyDependencyLicenses(modelMapper.getArtifact(artifactDep));
+                        LOG.warn(String.format("Missing license on artifact [%s]", artifactDep.getGavc()));
                     } else {
                         // Check if the existing license name exists in the database
                         for (String licenseName : artifactLicenses) {
@@ -223,7 +224,8 @@ public class ModuleHandler {
                             }
                             DbLicense currentLicense = repositoryHandler.getLicense(licenseName);
                             if (currentLicense == null) {
-                                report.addMissingThirdPartyDependencyLicenses(modelMapper.getArtifact(artifactDep));
+                                // report.addMissingThirdPartyDependencyLicenses(modelMapper.getArtifact(artifactDep));
+                                LOG.warn(String.format("Artifact license [%s] not known", licenseName));
                             } else if (currentLicense.isApproved() != null && !currentLicense.isApproved()) { // Check if the third party license is approved. If approved == null it is still valid license
                                 // add to a not approved list
                                 Pair<String, String> pair = Pair.create(modelMapper.getArtifact(artifactDep).getGavc(), modelMapper.getLicense(currentLicense).getName());
