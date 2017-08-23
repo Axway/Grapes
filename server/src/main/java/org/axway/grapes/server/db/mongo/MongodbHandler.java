@@ -677,12 +677,12 @@ public class MongodbHandler implements RepositoryHandler {
         DbSearch search = new DbSearch();
 
         if (filter.getDecorator().getIncludeModules()) {
-            findModules = datastore.getCollection(DbCollections.DB_MODULES).find("{_id: {$regex: \"" + searchParam + "\"}}").projection("{_id:1}").as(DbModule.class);
+            findModules = datastore.getCollection(DbCollections.DB_MODULES).find("{_id: {$regex: \"" + searchParam + "\"}}").projection("{_id:1}").sort("{_id: 1}").as(DbModule.class);
             modulesList = StreamSupport.stream(findModules.spliterator(), false).map(m -> m.getId()).collect(Collectors.toList());
             search.setModules(modulesList);
         }
         if (filter.getDecorator().getIncludeArtifacts()) {
-            findArtifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS).find("{_id: {$regex: \"" + searchParam + "\"}}").projection("{_id:1}").as(DbArtifact.class);
+            findArtifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS).find("{_id: {$regex: \"" + searchParam + "\"}}").projection("{_id:1}").sort("{_id: 1}").as(DbArtifact.class);
             artifactsList = StreamSupport.stream(findArtifacts.spliterator(), false).map(ar -> ar.getGavc()).collect(Collectors.toList());
             search.setArtifacts(artifactsList);
         }
