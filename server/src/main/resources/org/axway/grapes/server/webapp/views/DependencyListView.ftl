@@ -80,7 +80,7 @@
                             <tr>
                                 <#list 0..row?size-1 as cell>
                                     <#if cell == 0>
-                                        <td><a href="javascript:void(0)" onclick="getDependencyDirectLink(this.text)">${row[cell]}</a></td>
+                                        <td><a href="javascript:void(0)" onclick="getDependencyDirectLink(this)">${row[cell]}</a></td>
                                     <#else>
                                         <td>${row[cell]}</td>
                                     </#if>

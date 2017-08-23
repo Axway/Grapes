@@ -240,6 +240,7 @@ function loadLicensesNames(licenseNamesSelectId){
 	});
 }
 
+/* Disable or enable checkbox option depending on user selection */
 function filterRadioOptions(radio){
     $(radio).change(function () {
         var stat = $('input[value="filter"]').is(':checked');
@@ -252,9 +253,15 @@ function filterRadioOptions(radio){
         if ($('input[type=checkbox]').is(':disabled')) {
             $('#s').attr('placeholder', 'Search');
         }
+        // uncheck checkboxes on all radio button select
+        if(!stat) {
+            $('#modules').attr('checked', false);
+            $('#artifacts').attr('checked', false)
+        }
     });
 }
 
+/* Toggle placeholder text depending on user checkbox selection */
 function filterCheckBoxOptions(checkbox){
     $(checkbox).change(function() {
         if($('input[value=artifacts]').is(':checked') && $('input[value=modules]').is(':checked')) {
@@ -269,13 +276,17 @@ function filterCheckBoxOptions(checkbox){
     });
 }
 
+/* Get search result call */
 function gerSearchResult(){
 
+      // empty the result section before new search
       $("#searchResult").empty();
 
+      // get the text input value
       var searchText = $("#s").val();
       var queryParams = "";
 
+      // check for selected checkbox option to include in the request
       if(!$('input[value=modules]').is(':checked') && !$('input[value=all]').is(':checked')){
         queryParams += "modules=false" + "&"
       }
@@ -284,15 +295,17 @@ function gerSearchResult(){
         queryParams += "artifacts=false" + "&"
       }
 
+      // construct response table containing modules and artifacts
       var html= "";
       html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">";
 
+     // make ajax call to search api
 	 $.ajax({
 		type: "GET",
 		accept: {
 			json: 'application/json'
 		},
-		url: "/search/" + searchText + "?" + queryParams,
+		url: getEncodedUrl(searchText, queryParams),
 		beforeSend: function () {
             $("#loadingModal").show();
         },
@@ -303,9 +316,11 @@ function gerSearchResult(){
 		    html += "<thead><tr><th>Modules</th></tr></thead>";
             html += "<tbody>";
 
+            // iterate over modules and construct table body containing the result
             if(data != null && data.modules != null && data.modules.length !== 0) {
                 $.each(data.modules, function(i, module) {
-                    html += "<tr><td>" + module + "</td></tr>";
+                    var obj = getModuleNameAndVersion(module);
+                    html += "<tr><td><a href=\"/module/" + obj.name + "/" + obj.version + "\" >" + module + "</a></td></tr>";
                 });
             }else {
                 html += "<tr><td>No modules found</td></tr>";
@@ -317,9 +332,10 @@ function gerSearchResult(){
             html += "<thead><tr><th>Artifacts</th></tr></thead>";
             html += "<tbody>";
 
+            // iterate over artifacts and construct table body containing artifacts
             if(data != null && data.artifacts != null && data.artifacts.length !== 0) {
                 $.each(data.artifacts, function(i, artifact) {
-                    html += "<tr><td>" + artifact + "</td></tr>";
+                    html += "<tr><td><a href=\"/artifact/" + artifact + "\">" + artifact + "</a></td></tr>";
                 });
             } else {
                 html += "<tr><td>No artifacts found</td></tr>";
@@ -327,8 +343,57 @@ function gerSearchResult(){
 
             html += "</tr></tbody>";
             html += "</table>";
+            // hide the waiter modal
             $("#loadingModal").hide();
 		    $("#searchResult").empty().append(html);
 		}
 	});
+}
+
+/* Return encoded url with or without query params depending on checkbox selection */
+function getEncodedUrl(searchText, queryParams) {
+    var url = "";
+    if (queryParams.length !== 0) {
+        url = "/search/" + encodeURIComponent(searchText) + "?" + queryParams;
+    } else {
+        url = "/search/" + encodeURIComponent(searchText);
+    }
+    return url;
+}
+
+/* Extract the module name and version */
+function getModuleNameAndVersion(module) {
+
+    var indexKey = module.indexOf(':');
+    var nextIndexKey = module.indexOf(':', indexKey + 1);
+    var moduleName = module.substring(0, nextIndexKey);
+    var moduleVersion = module.substring(nextIndexKey + 1);
+
+    return {
+        name: moduleName,
+        version: moduleVersion
+    }
+}
+
+/* Extract the artifactId, groupId and version of artifact from link object */
+function getArtifactGAVC(artifactObj) {
+
+    var artifact = artifactObj.text.trim();
+    var indexKey = artifact.indexOf(':');
+    var nextIndexKey = artifact.indexOf(':', indexKey + 1);
+    var lastIndexKey =  artifact.lastIndexOf(':');
+    var groupId = artifact.substring(0, indexKey);
+    var artifactId = artifact.substring(indexKey + 1, nextIndexKey);
+    // get the version if there is an extension of the dependency else substring to the end of the string
+    if(lastIndexKey != nextIndexKey) {
+        var version = artifact.substring(nextIndexKey + 1, lastIndexKey - 1);
+    } else {
+        var version = artifact.substring(lastIndexKey + 1);
+    }
+
+    return {
+        artifactId: artifactId,
+        groupId: groupId,
+        version: version
+    }
 }

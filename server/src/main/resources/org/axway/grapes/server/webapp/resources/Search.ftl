@@ -101,12 +101,5 @@
         <!-- Make the table sortable -->
         <script src="/public/jquery-tablesorter-1.10.2/jquery.tablesorter.min.js"></script>
 
-        <!-- Handle CSV exports -->
-        <script src="/assets/js/export-csv.js"></script>
-
-        <!-- All reports executions -->
-        <script src="/assets/js/FileSaver.js"></script>
-        <script src="/assets/js/reports.js"></script>
-
     </body>
     </html>

@@ -910,24 +910,14 @@ function getModuleLink(moduleName){
 
 function getArtifactLink(artifactObj){
 
-    var artifact = artifactObj.text.trim();
-	var indexKey = artifact.indexOf(':');
-	var nextIndexKey = artifact.indexOf(':', indexKey + 1);
-	var lastIndexKey =  artifact.lastIndexOf(':');
-	var groupId = artifact.substring(0, indexKey);
-	var artifactId = artifact.substring(indexKey + 1, nextIndexKey);
-	// get the version if there is an extension of the dependency else substring to the end of the string
-	if(lastIndexKey != nextIndexKey) {
-	    var version = artifact.substring(nextIndexKey + 1, lastIndexKey - 1);
-	} else {
-	    var version = artifact.substring(lastIndexKey + 1);
-	}
+    // function that return the artifact groupId, artifactId and version
+    var artifact = getArtifactGAVC(artifactObj);
 
     jQuery(function(){
         jQuery('#artifactButton').click();
     });
 
-    getArtifactTarget(groupId, artifactId, version, 'targets', '#licensesButton');
+    getArtifactTarget(artifact.groupId, artifact.artifactId, artifact.version, 'targets', '#licensesButton');
 }
 
 function getLicenseLink(licenseId) {
@@ -948,6 +938,8 @@ function getDependencyDirectLink(dependency) {
    jQuery(function(){
        jQuery('#artifactButton').click();
    });
+
+   var dependency = dependency.text.trim();
 
    var groupId = dependency.substring(0, dependency.indexOf(":"));
    var versionAndArtifact = dependency.substring(dependency.indexOf(":") + 1, dependency.length);
