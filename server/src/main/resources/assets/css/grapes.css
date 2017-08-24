@@ -107,10 +107,33 @@
  }
 
  /* Loading modal*/
- #loadingModal {
-    text-align: center;
- }
-
- .activated {
+ .overlay {
     display: none;
- }
+    position:fixed;
+    height: 100%;
+    width: 100%;
+    top:0;
+    left:0;
+    right:0;
+    bottom: 0;
+    background-color:rgba(0, 0, 0, 0.85);
+    text-align:center;
+    z-index: 1000;
+    filter:alpha(opacity=50) !important;
+    opacity:0.5;
+  }
+
+.loadingMessage {
+    position: fixed;
+    left: 43%;
+    top: 45%;
+    color:#F1F1F1 !important;
+    text-align:center;
+    font-size: 2em;
+}
+
+.wrapper {
+    position: relative;
+    height: 100%;
+    width: 100%;
+}

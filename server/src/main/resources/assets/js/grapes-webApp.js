@@ -62,6 +62,9 @@ function displayModuleOptions(){
 	moduleIds += "   <label class=\"control-label\" for=\"moduleVersion\" style=\"width: auto;\">version: </label>\n";
 	moduleIds += "   <div class=\"controls\" style=\"margin-left: 75px;\"><select id=\"moduleVersion\"></select></div>\n";
 	moduleIds += "</div>\n";
+	moduleIds += "<div class=\"control-group\">\n";
+	moduleIds += "   <label class=\"control-label\" style=\"width: auto;\">Having troubles finding your entries, try <a id=\"searchModules\" href=\"javascript:void(0);\" onclick=\"navigateToSearch(this); return false;\">advanced search</a> </label>\n";
+	moduleIds += "</div>\n";
 	$("#ids").empty().append(moduleIds);
 	var moduleFilters = "<div class=\"row-fluid\">\n";
 	moduleFilters += "   <label>\n";
@@ -106,6 +109,9 @@ function displayArtifactOptions(){
 	artifactIds += "   <label class=\"control-label\" for=\"artifactArtifactId\" style=\"width: auto;\">artifactId: </label>\n";
 	artifactIds += "   <div class=\"controls\"  style=\"margin-left: 75px;\"><select id=\"artifactId\"></select></div>\n";
 	artifactIds += "</div>\n";
+	artifactIds += "<div class=\"control-group\">\n";
+    artifactIds += "   <label class=\"control-label\" style=\"width: auto;\">Having troubles finding your entries, try <a id=\"searchArtifacts\" href=\"javascript:void(0);\" onclick=\"navigateToSearch(this); return false;\">advanced search</a> </label>\n";
+    artifactIds += "</div>\n";
     $("#ids").empty().append(artifactIds);
 	var artifactFilters = "<div class=\"row-fluid\">\n";
 	artifactFilters += "   <label>\n";
@@ -2110,4 +2116,22 @@ function showCSVExportLink(element, additionalActions) {
             exportTableToCSV.apply(this, [$('#table_div>table'), 'export.csv']);
         });
     }
+}
+
+/* Navigate to search page with checkbox checked depending on the selected section */
+function navigateToSearch(el) {
+    var checkBox;
+    if(el.id == "searchModules") {
+        checkBox = '#modules';
+    } else {
+        checkBox = '#artifacts';
+    }
+    $("body").load("/search");
+    window.history.pushState("", "", "/search");
+    setTimeout(function(){
+        jQuery(function(){
+          jQuery('input[value="filter"]').click();
+        });
+        $(checkBox).attr('checked', true);
+    }, 100);
 }

@@ -307,7 +307,7 @@ function gerSearchResult(){
 		},
 		url: getEncodedUrl(searchText, queryParams),
 		beforeSend: function () {
-            $("#loadingModal").show();
+            $(".overlay").show();
         },
 		data: {},
 		dataType: "json",
@@ -344,7 +344,7 @@ function gerSearchResult(){
             html += "</tr></tbody>";
             html += "</table>";
             // hide the waiter modal
-            $("#loadingModal").hide();
+            $(".overlay").hide();
 		    $("#searchResult").empty().append(html);
 		}
 	});

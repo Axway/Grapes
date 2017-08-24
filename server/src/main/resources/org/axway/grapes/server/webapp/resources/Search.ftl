@@ -13,16 +13,18 @@
         <link href="/public/twitter-bootstrap-2.3.2/css/bootstrap.css" rel="stylesheet">
         <link href="/public/twitter-bootstrap-2.3.2/css/bootstrap-responsive.css" rel="stylesheet">
         <link href="/public/twitter-bootstrap-2.3.2/css/docs.css" rel="stylesheet">
-        <link href="/assets/css/grapes-webapp.css" rel="stylesheet">
 
         <link rel="shortcut icon" type="image/x-icon" href="assets/img/grapes_small.gif"/>
 
         <!-- Grapes css -->
         <link href="/assets/css/grapes-table.css" rel="stylesheet">
         <link href="/assets/css/grapes.css" rel="stylesheet">
+        <link href="/assets/css/grapes-webapp.css" rel="stylesheet">
+        <link href="/assets/css/axway-loader.css" rel="stylesheet">
 
     </head>
     <body>
+    <div class="wrapper">
         <div class="row-fluid">
             <div class="navbar navbar-inverse navbar-fixed-top">
                 <div class="navbar-inner">
@@ -88,7 +90,9 @@
             </div>
         </div>
         <div id="searchResultWrapper">
-            <div id="loadingModal" class="activated"><i>Searching for data...</i></div>
+            <div class="overlay">
+                <div class="loadingMessage"><i>Searching for data</i><div class="loader"><span>Loading...</span></div></div>
+            </div>
             <div id="searchResult">
             </div>
         </div>
@@ -100,6 +104,6 @@
 
         <!-- Make the table sortable -->
         <script src="/public/jquery-tablesorter-1.10.2/jquery.tablesorter.min.js"></script>
-
+    </div>
     </body>
     </html>
