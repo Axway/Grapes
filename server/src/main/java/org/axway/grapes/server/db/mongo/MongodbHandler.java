@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.mongodb.DB;
+import com.mongodb.WriteResult;
 import com.sun.jersey.api.NotFoundException;
 import org.axway.grapes.server.config.DataBaseConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
@@ -14,6 +15,7 @@ import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
+import org.jongo.Update;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,6 +197,21 @@ public class MongodbHandler implements RepositoryHandler {
     }
 
     @Override
+    public List<DbLicense> getMatchingLicenses(String name) {
+        final List<DbLicense> allLicenses = getAllLicenses();
+        return allLicenses
+                .stream()
+                .filter(license ->
+                        name.equalsIgnoreCase(license.getName()) ||
+                                (
+                                        !license.getRegexp().isEmpty() &&
+                                                name.matches(String.format("(?i:%s)", license.getRegexp()))
+                                )
+                )
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void deleteLicense(final String name) {
         final DbLicense license = getLicense(name);
 
@@ -234,15 +251,58 @@ public class MongodbHandler implements RepositoryHandler {
 
     @Override
     public void removeLicenseFromArtifact(final DbArtifact artifact, final String licenseId) {
-        final Jongo datastore = getJongoDataStore();
-        final MongoCollection artifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS);
+        final List<String> licenses = artifact.getLicenses();
 
-        if(artifact.getLicenses().contains(licenseId)){
-            artifact.removeLicense(licenseId);
-            artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
-                    .with(String.format(SET_PATTERN_DOUBLE, DbArtifact.LICENCES_DB_FIELD, DbArtifact.UPDATED_DATE_DB_FIELD), artifact.getLicenses(), new Date());
+        if (licenses.isEmpty()) {
+            return;
         }
+
+        final Set<String> toBeRemoved = new HashSet<>();
+
+        licenses.forEach(licStr -> {
+            final List<DbLicense> matchingLicenses = getMatchingLicenses(licStr);
+            final Optional<DbLicense> first = matchingLicenses
+                    .stream()
+                    .filter(l -> l.getName().equalsIgnoreCase(licenseId))
+                    .findFirst();
+
+            if (first.isPresent()) {
+                toBeRemoved.add(licStr);
+            }
+        });
+
+
+        //
+        //  This means the license is not matched by any entity within the system, so
+        // just removing the string from the artifact list of licenses will do the job
+        //
+        if (toBeRemoved.isEmpty()) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(String.format("Removing orphan license string [%s] from [%s]", licenseId, artifact.getGavc()));
+            }
+            toBeRemoved.add(licenseId);
+        }
+
+
+        final Jongo ds = getJongoDataStore();
+        final MongoCollection artifacts = ds.getCollection(DbCollections.DB_ARTIFACTS);
+        toBeRemoved.forEach(artifact::removeLicense);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(
+                    String.format("Removing [%s] from [%s] caused the following license strings to be removed %s",
+                            licenseId, artifact.getGavc(), toBeRemoved.toString()));
+        }
+
+        artifacts.update(JongoUtils.generateQuery(DbCollections.DEFAULT_ID, artifact.getGavc()))
+                .with(String.format(SET_PATTERN_DOUBLE,
+                        DbArtifact.LICENCES_DB_FIELD,
+                        DbArtifact.UPDATED_DATE_DB_FIELD)
+                        , artifact.getLicenses()
+                        , new Date());
     }
+
+
 
     @Override
     public void approveLicense(final DbLicense license, final Boolean approved) {
