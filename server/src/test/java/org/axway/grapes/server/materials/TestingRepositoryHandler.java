@@ -88,6 +88,11 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
+    public List<DbLicense> getMatchingLicenses(String name) {
+        return Collections.emptyList();
+    }
+
+    @Override
     public void deleteLicense(String name) {
         //To change body of implemented methods use File | Settings | File Templates.
     }

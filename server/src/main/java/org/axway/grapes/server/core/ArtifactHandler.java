@@ -262,20 +262,20 @@ public class ArtifactHandler {
      */
     public List<DbLicense> getArtifactLicenses(final String gavc, final FiltersHolder filters) {
         final DbArtifact artifact = getArtifact(gavc);
-        final List<DbLicense> licenses = new ArrayList<DbLicense>();
+        final List<DbLicense> licenses = new ArrayList<>();
 
         for(final String name: artifact.getLicenses()){
-            final DbLicense dbLicense = repositoryHandler.getLicense(name);
+            final List<DbLicense> matchingLicenses = repositoryHandler.getMatchingLicenses(name);
 
             // Here is a license to identify
-            if(dbLicense == null){
+            if(matchingLicenses.isEmpty()){
                 final DbLicense notIdentifiedLicense = new DbLicense();
                 notIdentifiedLicense.setName(name);
                 licenses.add(notIdentifiedLicense);
-            }
-            // The license has to be validated
-            else if(filters.shouldBeInReport(dbLicense)){
-                licenses.add(dbLicense);
+            } else {
+                matchingLicenses.stream()
+                        .filter(filters::shouldBeInReport)
+                        .forEach(licenses::add);
             }
         }
 
@@ -308,19 +308,17 @@ public class ArtifactHandler {
     /**
      * Remove a license from an artifact
      *
-     * @param gavc String
-     * @param licenseId String
+     * @param gavc String The artifact GAVC
+     * @param licenseId String The license id to be removed.
      */
     public void removeLicenseFromArtifact(final String gavc, final String licenseId) {
         final DbArtifact dbArtifact = getArtifact(gavc);
 
-        // Don't need to access the DB if the job is already done
-        if(!dbArtifact.getLicenses().contains(licenseId)){
-            return;
-        }
-
+        //
+        // The artifact may not have the exact string associated with it, but rather one
+        // matching license regexp expression.
+        //
         repositoryHandler.removeLicenseFromArtifact(dbArtifact, licenseId);
-
     }
 
     /**

@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import javax.ws.rs.WebApplicationException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -243,7 +244,7 @@ public class ModuleHandlerTest {
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
         when(repositoryHandler.getModule(module.getId())).thenReturn(module);
         when(repositoryHandler.getArtifact(artifact1.getGavc())).thenReturn(artifact1);
-        when(repositoryHandler.getLicense(license.getName())).thenReturn(license);
+        when(repositoryHandler.getMatchingLicenses(license.getName())).thenReturn(Arrays.asList(license));
 
         final ModuleHandler handler = new ModuleHandler(repositoryHandler);
         final List<DbLicense> licenses = handler.getModuleLicenses(module.getId());
@@ -251,7 +252,6 @@ public class ModuleHandlerTest {
         assertNotNull(licenses);
         assertEquals(1, licenses.size());
         assertEquals(license, licenses.get(0));
-
     }
 
     @Test

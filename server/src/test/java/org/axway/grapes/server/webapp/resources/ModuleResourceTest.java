@@ -574,9 +574,13 @@ public class ModuleResourceTest extends ResourceTest {
 
         final PromotionEvaluationReport report = response.getEntity(PromotionEvaluationReport.class);
 
-        assertFalse(report.isPromotable());
-        assertFalse(report.getErrors().isEmpty());
-        assertTrue(report.getErrors().contains("The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: org.missing.license:MissingLicense:1.2.3:classifier:extension (NotApproved)"));
+        //
+        // TODO: Update the test once the license related restrictions are reinstalled
+        //
+//        assertFalse(report.isPromotable());
+//        assertFalse(report.getErrors().isEmpty());
+//        assertTrue(report.getErrors().contains("The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: org.missing.license:MissingLicense:1.2.3:classifier:extension (NotApproved)"));
+        assertTrue(report.isPromotable());
     }
 
     @Test

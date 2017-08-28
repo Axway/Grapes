@@ -71,6 +71,14 @@ public interface RepositoryHandler {
     public DbLicense getLicense(final String name);
 
     /**
+     * Gets the matching licenses by the regular expression
+     * @param name The name of the license
+     * @return The list of licenses which are matched by their
+     * regular expression.
+     */
+    public List<DbLicense> getMatchingLicenses(final String name);
+
+    /**
      * Retrieve all licenses from the database
      *
      * @return List<DbLicense>

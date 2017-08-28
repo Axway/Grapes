@@ -230,7 +230,7 @@ public class ModuleHandler {
                                 // add to a not approved list
                                 Pair<String, String> pair = Pair.create(modelMapper.getArtifact(artifactDep).getGavc(), modelMapper.getLicense(currentLicense).getName());
                                 // report.setDependenciesWithNotAcceptedLicenses(pair);
-                                LOG.warn(String.format("Dependency [%s] is used by [%s], but is considered not accepted ", currentLicense, artifactDep.getGavc()));
+                                LOG.warn(String.format("License [%s] is used by [%s], but is considered not accepted ", currentLicense.getName(), artifactDep.getGavc()));
                             }
                         }
                     }

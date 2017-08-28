@@ -8,18 +8,13 @@ import org.axway.grapes.server.db.datamodel.DbCollections;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 
 import org.axway.grapes.server.db.datamodel.DbLicense;
-import org.jongo.FindOne;
-import org.jongo.Jongo;
-import org.jongo.MongoCollection;
-import org.jongo.Update;
+import org.jongo.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -165,12 +160,18 @@ public class MongodbHandlerTest<T> {
                                                      final T one) {
         final Jongo result = mock(Jongo.class);
 
+        setupLicenseCollection(result);
+
         final MongoCollection collection = mock(MongoCollection.class);
         when(result.getCollection(eq(collectionName))).thenReturn(collection);
 
+
+        final Find find = mock(Find.class);
+        when(collection.find()).thenReturn(find);
+        when(find.as(eq(oneClass))).thenReturn(Arrays.asList(one));
+
         final FindOne findOne = mock(FindOne.class);
         when(collection.findOne(anyString())).thenReturn(findOne);
-
         when(findOne.as(eq(oneClass))).thenReturn(one);
 
         final Update update = mock(Update.class);
@@ -181,6 +182,25 @@ public class MongodbHandlerTest<T> {
         when(update.with(anyString(), anyCollection())).thenReturn(writeResult);
 
         return () -> result;
+    }
+
+    private void setupLicenseCollection(Jongo result) {
+        //
+        //  License collection calls are common
+        //
+        final MongoCollection licCollection = mock(MongoCollection.class);
+        when(result.getCollection(eq(DbCollections.DB_LICENSES))).thenReturn(licCollection);
+
+        final Find licFind = mock(Find.class);
+        when(licCollection.find()).thenReturn(licFind);
+        when(licFind.as(eq(DbLicense.class))).thenReturn(Collections.emptyList());
+
+        final Update licUpdate = mock(Update.class);
+        when(licCollection.update(anyString())).thenReturn(licUpdate);
+
+        final WriteResult licWriteResult = mock(WriteResult.class);
+        when(licUpdate.with(anyString())).thenReturn(licWriteResult);
+        when(licUpdate.with(anyString(), anyCollection())).thenReturn(licWriteResult);
     }
 
     private static DbCredential makeCredentials(String name, DbCredential.AvailableRoles... roles) {

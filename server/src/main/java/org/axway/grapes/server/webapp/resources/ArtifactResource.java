@@ -533,25 +533,25 @@ public class ArtifactResource extends AbstractResource {
      *
      * @param credential DbCredential
      * @param gavc String
-     * @param licenseId String
+     * @param licenseString String
      * @return Response
      */
     @DELETE
     @Path("/{gavc}" + ServerAPI.GET_LICENSES)
-    public Response deleteLicense(@Auth final DbCredential credential, @PathParam("gavc") final String gavc,@QueryParam(ServerAPI.LICENSE_ID_PARAM) final String licenseId){
+    public Response deleteLicense(@Auth final DbCredential credential, @PathParam("gavc") final String gavc,@QueryParam(ServerAPI.LICENSE_ID_PARAM) final String licenseString){
         if(!credential.getRoles().contains(AvailableRoles.DATA_UPDATER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
         if(LOG.isInfoEnabled()) {
-            LOG.info(String.format("Got a delete license request [%s, %s]", gavc, licenseId));
+            LOG.info(String.format("Got a delete license request [%s, %s]", gavc, licenseString));
         }
 
-        if(licenseId == null){
+        if(licenseString == null){
             return Response.serverError().status(HttpStatus.NOT_ACCEPTABLE_406).build();
         }
 
-        getArtifactHandler().removeLicenseFromArtifact(gavc, licenseId);
+        getArtifactHandler().removeLicenseFromArtifact(gavc, licenseString);
 
         return Response.ok("done").build();
     }
