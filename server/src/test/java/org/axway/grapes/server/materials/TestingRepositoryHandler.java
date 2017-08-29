@@ -8,6 +8,7 @@ import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.materials.cases.DependencyCase;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Repository Handler
@@ -330,6 +331,11 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     @Override
     public <T> List<T> getListByQuery(String collectionName, String query, Class<T> c) {
         return Collections.emptyList();
+    }
+
+    @Override
+    public <T> void consumeByQuery(String collectionName, String query, Class<T> c, Consumer<T> consumer) {
+
     }
 
     @Override

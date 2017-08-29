@@ -5,7 +5,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.mongodb.DB;
-import com.mongodb.WriteResult;
 import com.sun.jersey.api.NotFoundException;
 import org.axway.grapes.server.config.DataBaseConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
@@ -15,13 +14,13 @@ import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
-import org.jongo.Update;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -674,20 +673,27 @@ public class MongodbHandler implements RepositoryHandler {
     public <T> List<T> getListByQuery(final String collection,
                                       final String query,
                                       final Class<T> c) {
-        LOG.debug(query);
-        final Jongo ds = getJongoDataStore();
-        final Iterator<T> it = ds.getCollection(collection).find(query).as(c).iterator();
-
-        if(!it.hasNext()) {
-            return Collections.emptyList();
-        }
 
         List<T> results = new ArrayList<>();
-        while(it.hasNext()) {
-            results.add(it.next());
-        }
+
+        consumeByQuery(collection, query, c, results::add);
 
         return results;
+    }
+
+    @Override
+    public <T> void consumeByQuery(final String collectionName,
+                                   final String query,
+                                   final Class<T> c,
+                                   final Consumer<T> consumer) {
+
+        LOG.debug(query);
+        final Jongo ds = getJongoDataStore();
+        final Iterator<T> it = ds.getCollection(collectionName).find(query).as(c).iterator();
+
+        while (it.hasNext()) {
+            consumer.accept(it.next());
+        }
     }
 
     public long getResultCount(final String collectionName, final String query) {

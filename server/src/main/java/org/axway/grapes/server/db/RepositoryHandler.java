@@ -7,6 +7,7 @@ import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Repository Handler Interface
@@ -376,6 +377,20 @@ public interface RepositoryHandler {
     public <T> Optional<T> getOneByQuery(final String collectionName, final String query, final Class<T> c);
 
     public <T> List<T> getListByQuery(final String collectionName, final String query, final Class<T> c);
+
+    /**
+     * Consume the query results without loading them all in memory
+     * @param collectionName The name of the collection
+     * @param query The query to select the records for
+     * @param c The model class
+     * @param consumer The model consumer
+     * @param <T>
+     */
+    public <T> void consumeByQuery(final String collectionName,
+                                   final String query,
+                                   final Class<T> c,
+                                   final Consumer<T> consumer);
+
 
     /**
      * Gets the count of the query results

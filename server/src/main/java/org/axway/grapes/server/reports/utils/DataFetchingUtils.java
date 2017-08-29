@@ -1,23 +1,18 @@
 package org.axway.grapes.server.reports.utils;
 
+import com.mongodb.DBCollection;
 import org.axway.grapes.commons.datamodel.Delivery;
 import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.server.core.DependencyHandler;
 import org.axway.grapes.server.core.LicenseHandler;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.db.datamodel.DbCollections;
-import org.axway.grapes.server.db.datamodel.DbLicense;
-import org.axway.grapes.server.db.datamodel.DbModule;
-import org.axway.grapes.server.db.datamodel.DbProduct;
+import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.mongo.QueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -31,6 +26,7 @@ import static org.axway.grapes.server.db.mongo.QueryUtils.makeQuery;
 public class DataFetchingUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataFetchingUtils.class);
+    private final List<String> corporateIds = new ArrayList<>();
 
     public List<DbProduct> getProductWithCommercialDeliveries(final RepositoryHandler repoHandler) {
         return repoHandler.getListByQuery(
@@ -102,4 +98,34 @@ public class DataFetchingUtils {
 
         return deps;
     }
+
+    public void initCorporateIDs(final RepositoryHandler repoHandler,
+                                 final String orgName) {
+
+        corporateIds.clear();
+
+        final List<DbOrganization> listByQuery = repoHandler.getListByQuery(DbCollections.DB_ORGANIZATION,
+                String.format("{_id : '%s'}", orgName),
+                DbOrganization.class);
+
+        if(!listByQuery.isEmpty()) {
+            this.corporateIds.addAll(listByQuery.get(0).getCorporateGroupIdPrefixes());
+        }
+
+        if(corporateIds.isEmpty()) {
+            LOG.warn("Empty list of corporate ids. All artifacts will appear as third-party.");
+        }
+    }
+
+    public boolean isThirdParty(final DbArtifact artifact) {
+        if(corporateIds.isEmpty()) {
+            return true;
+        }
+
+        return corporateIds
+                .stream()
+                .filter(entry -> artifact.getGroupId().startsWith(entry))
+                .count() == 0;
+    }
+
 }
