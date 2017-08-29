@@ -16,6 +16,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import static junit.framework.TestCase.assertTrue;
@@ -37,9 +38,9 @@ public class MongodbHandlerLicTest<T> {
         final DbLicense license = makeLicense("toto 2.0", "(.*)Alexa(.*)");
         sut = withLicenses(license);
 
-        final List<DbLicense> matchingLicenses = sut.getMatchingLicenses("toto 2.0");
+        final Set<DbLicense> matchingLicenses = sut.getMatchingLicenses("toto 2.0");
         assertEquals(1, matchingLicenses.size());
-        assertEquals(license.getName(), matchingLicenses.get(0).getName());
+        assertEquals(license.getName(), matchingLicenses.iterator().next().getName());
     }
 
     @Test
@@ -47,9 +48,9 @@ public class MongodbHandlerLicTest<T> {
         final DbLicense license = makeLicense("toto 2.0", "(.*)Alexa(.*)");
         sut = withLicenses(license);
 
-        final List<DbLicense> matchingLicenses = sut.getMatchingLicenses("TOTO 2.0");
+        final Set<DbLicense> matchingLicenses = sut.getMatchingLicenses("TOTO 2.0");
         assertEquals(1, matchingLicenses.size());
-        assertEquals(license.getName(), matchingLicenses.get(0).getName());
+        assertEquals(license.getName(), matchingLicenses.iterator().next().getName());
     }
 
     @Test
@@ -57,9 +58,9 @@ public class MongodbHandlerLicTest<T> {
         final DbLicense license = makeLicense("toto 2.0", "(.*)Alexa(.*)");
         sut = withLicenses(license);
 
-        final List<DbLicense> matchingLicenses = sut.getMatchingLicenses("Hey, Alexa, make me a sandwich");
+        final Set<DbLicense> matchingLicenses = sut.getMatchingLicenses("Hey, Alexa, make me a sandwich");
         assertEquals(1, matchingLicenses.size());
-        assertEquals(license.getName(), matchingLicenses.get(0).getName());
+        assertEquals(license.getName(), matchingLicenses.iterator().next().getName());
     }
 
     @Test
@@ -67,9 +68,9 @@ public class MongodbHandlerLicTest<T> {
         final DbLicense license = makeLicense("toto 2.0", "(.*)alexa(.*)");
         sut = withLicenses(license);
 
-        final List<DbLicense> matchingLicenses = sut.getMatchingLicenses("Hey, AlexA, make me a sandwich");
+        final Set<DbLicense> matchingLicenses = sut.getMatchingLicenses("Hey, AlexA, make me a sandwich");
         assertEquals(1, matchingLicenses.size());
-        assertEquals(license.getName(), matchingLicenses.get(0).getName());
+        assertEquals(license.getName(), matchingLicenses.iterator().next().getName());
     }
 
     @Test
@@ -77,9 +78,9 @@ public class MongodbHandlerLicTest<T> {
         final DbLicense license = makeLicense("toto 2.0", "(.*)alexa(.*)");
         sut = withLicenses(license);
 
-        final List<DbLicense> matchingLicenses = sut.getMatchingLicenses("Hey, AlexA (*.bots)");
+        final Set<DbLicense> matchingLicenses = sut.getMatchingLicenses("Hey, AlexA (*.bots)");
         assertEquals(1, matchingLicenses.size());
-        assertEquals(license.getName(), matchingLicenses.get(0).getName());
+        assertEquals(license.getName(), matchingLicenses.iterator().next().getName());
     }
 
     @Test
@@ -91,7 +92,7 @@ public class MongodbHandlerLicTest<T> {
                 makeLicense("Apache 1.1 - again", "(.*)(1.1)(.*)")
         );
 
-        final List<DbLicense> matchingLicenses = sut.getMatchingLicenses("Apache 1.1 - (asf)");
+        final Set<DbLicense> matchingLicenses = sut.getMatchingLicenses("Apache 1.1 - (asf)");
         assertEquals(3, matchingLicenses.size());
         assertEquals(3, matchingLicenses.stream().filter(lic -> lic.getName().contains("Apache")).count());
     }
@@ -104,7 +105,7 @@ public class MongodbHandlerLicTest<T> {
                 makeLicense("BSD 3", "(.*)(BSD)(.*)(3-clause)(.*)"),
                 makeLicense("Apache 2", "(((.*)(Apache|apache|asf)(.*)(2)(.*))|(.*)(apache license|apache|Software Licenses))")
         );
-        final List<DbLicense> matchingLicenses = sut.getMatchingLicenses("IBM Commercial");
+        final Set<DbLicense> matchingLicenses = sut.getMatchingLicenses("IBM Commercial");
         assertNotNull(matchingLicenses);
         assertTrue(matchingLicenses.isEmpty());
     }

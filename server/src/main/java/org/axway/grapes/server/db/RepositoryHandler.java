@@ -6,6 +6,7 @@ import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Repository Handler Interface
@@ -76,7 +77,7 @@ public interface RepositoryHandler {
      * @return The list of licenses which are matched by their
      * regular expression.
      */
-    public List<DbLicense> getMatchingLicenses(final String name);
+    public Set<DbLicense> getMatchingLicenses(final String name);
 
     /**
      * Retrieve all licenses from the database

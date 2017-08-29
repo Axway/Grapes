@@ -7,10 +7,7 @@ import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.materials.cases.DependencyCase;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Repository Handler
@@ -88,8 +85,8 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
-    public List<DbLicense> getMatchingLicenses(String name) {
-        return Collections.emptyList();
+    public Set<DbLicense> getMatchingLicenses(String name) {
+        return Collections.emptySet();
     }
 
     @Override

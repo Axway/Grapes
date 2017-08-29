@@ -10,10 +10,7 @@ import org.axway.grapes.server.db.datamodel.DbModule;
 import org.junit.Test;
 
 import javax.ws.rs.WebApplicationException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
@@ -244,7 +241,7 @@ public class ModuleHandlerTest {
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
         when(repositoryHandler.getModule(module.getId())).thenReturn(module);
         when(repositoryHandler.getArtifact(artifact1.getGavc())).thenReturn(artifact1);
-        when(repositoryHandler.getMatchingLicenses(license.getName())).thenReturn(Arrays.asList(license));
+        when(repositoryHandler.getMatchingLicenses(license.getName())).thenReturn(asSet(license));
 
         final ModuleHandler handler = new ModuleHandler(repositoryHandler);
         final List<DbLicense> licenses = handler.getModuleLicenses(module.getId());
@@ -263,5 +260,11 @@ public class ModuleHandlerTest {
         handler.getModules(filters);
 
         verify(repositoryHandler, times(1)).getModules(filters);
+    }
+
+    private <T> Set<T> asSet(T... entries) {
+        Set<T> set = new HashSet<>();
+        set.addAll(Arrays.asList(entries));
+        return set;
     }
 }

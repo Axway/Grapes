@@ -87,19 +87,27 @@ public class LicenseOnProductReleases implements Report {
                                             final String license) {
         ReportExecution result = new ReportExecution(request, getColumnNames());
 
-        DataFetchingUtils x = new DataFetchingUtils();
-        final List<DbProduct> products = x.getProductWithCommercialDeliveries(repoHandler);
+        DataFetchingUtils utils = new DataFetchingUtils();
+        final List<DbProduct> products = utils.getProductWithCommercialDeliveries(repoHandler);
 
         Set<Delivery> allDeliveries = new HashSet<>();
 
         products.forEach(p -> allDeliveries.addAll(p.getDeliveries()));
+
+        LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
 
         allDeliveries
                 .stream()
                 .filter(d -> {
                     final List<Artifact> artifacts = d.getAllArtifactDependencies()
                             .stream()
-                            .filter(a -> a.getLicenses().contains(license))
+                            .filter(a -> {
+                                final Set<DbLicense> dbLicenses = licenseHandler.resolveLicenses(a.getLicenses());
+                                return dbLicenses
+                                        .stream()
+                                        .filter(dbLic -> dbLic.getName().equalsIgnoreCase(license))
+                                        .count() > 0;
+                            })
                             .collect(Collectors.toList());
 
                     return !artifacts.isEmpty();

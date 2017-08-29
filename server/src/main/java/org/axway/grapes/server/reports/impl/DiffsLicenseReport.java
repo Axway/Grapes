@@ -2,7 +2,9 @@ package org.axway.grapes.server.reports.impl;
 
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Delivery;
+import org.axway.grapes.server.core.LicenseHandler;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.axway.grapes.server.reports.Report;
 import org.axway.grapes.server.reports.ReportId;
 import org.axway.grapes.server.reports.models.ParameterDefinition;
@@ -15,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Report showing evolution of licenses between two commercial releases of a product
@@ -73,24 +77,31 @@ public class DiffsLicenseReport implements Report {
         final Optional<Delivery> cd2 = utils.getCommercialDelivery(repoHandler, name2, version2);
         check(cd2, name2, version2);
 
-        return processReport(request, cd1.get(), cd2.get());
+        return processReport(repoHandler, request, cd1.get(), cd2.get());
     }
 
-    private ReportExecution processReport(final ReportRequest request,
+    private ReportExecution processReport(final RepositoryHandler repoHandler,
+                                          final ReportRequest request,
                                           final Delivery d1,
                                           final Delivery d2) {
         ReportExecution result = new ReportExecution(request, getColumnNames());
         Set<String> a1 = new HashSet<>();
 
+        LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
+
         d1.getAllArtifactDependencies()
                 .stream()
                 .map(Artifact::getLicenses)
+                .map(licenseHandler::resolveLicenses)
+                .map(dbLicenses -> dbLicenses.stream().map(DbLicense::getName).collect(Collectors.toSet()))
                 .forEach(a1::addAll);
 
         Set<String> a2 = new HashSet<>();
         d2.getAllArtifactDependencies()
                 .stream()
                 .map(Artifact::getLicenses)
+                .map(licenseHandler::resolveLicenses)
+                .map(dbLicenses -> dbLicenses.stream().map(DbLicense::getName).collect(Collectors.toSet()))
                 .forEach(a2::addAll);
 
         Set<String> all = new HashSet<>();

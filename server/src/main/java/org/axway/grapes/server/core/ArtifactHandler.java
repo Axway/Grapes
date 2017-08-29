@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Artifact Handler
@@ -265,7 +266,7 @@ public class ArtifactHandler {
         final List<DbLicense> licenses = new ArrayList<>();
 
         for(final String name: artifact.getLicenses()){
-            final List<DbLicense> matchingLicenses = repositoryHandler.getMatchingLicenses(name);
+            final Set<DbLicense> matchingLicenses = repositoryHandler.getMatchingLicenses(name);
 
             // Here is a license to identify
             if(matchingLicenses.isEmpty()){

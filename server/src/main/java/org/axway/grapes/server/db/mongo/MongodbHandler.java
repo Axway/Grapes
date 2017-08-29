@@ -197,7 +197,7 @@ public class MongodbHandler implements RepositoryHandler {
     }
 
     @Override
-    public List<DbLicense> getMatchingLicenses(String name) {
+    public Set<DbLicense> getMatchingLicenses(String name) {
         final List<DbLicense> allLicenses = getAllLicenses();
         return allLicenses
                 .stream()
@@ -208,7 +208,7 @@ public class MongodbHandler implements RepositoryHandler {
                                                 name.matches(String.format("(?i:%s)", license.getRegexp()))
                                 )
                 )
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -260,7 +260,7 @@ public class MongodbHandler implements RepositoryHandler {
         final Set<String> toBeRemoved = new HashSet<>();
 
         licenses.forEach(licStr -> {
-            final List<DbLicense> matchingLicenses = getMatchingLicenses(licStr);
+            final Set<DbLicense> matchingLicenses = getMatchingLicenses(licStr);
             final Optional<DbLicense> first = matchingLicenses
                     .stream()
                     .filter(l -> l.getName().equalsIgnoreCase(licenseId))

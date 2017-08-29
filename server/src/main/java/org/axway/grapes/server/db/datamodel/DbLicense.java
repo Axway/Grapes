@@ -86,5 +86,20 @@ public class DbLicense {
 	
 	public final void setApproved(final Boolean approved) {
 		this.approved = approved;
-	}	
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DbLicense dbLicense = (DbLicense) o;
+
+		return name != null ? name.equals(dbLicense.name) : dbLicense.name == null;
+	}
+
+	@Override
+	public int hashCode() {
+		return name != null ? name.hashCode() : 0;
+	}
 }

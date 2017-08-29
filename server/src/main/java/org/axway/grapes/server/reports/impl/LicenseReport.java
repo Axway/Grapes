@@ -1,7 +1,9 @@
 package org.axway.grapes.server.reports.impl;
 
 import org.axway.grapes.commons.datamodel.*;
+import org.axway.grapes.server.core.LicenseHandler;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.axway.grapes.server.reports.Report;
 import org.axway.grapes.server.reports.models.ParameterDefinition;
 import org.axway.grapes.server.reports.models.ReportExecution;
@@ -75,18 +77,23 @@ public class LicenseReport implements Report {
                             .build());
         }
 
-        return computeResult(request, deliveryOp.get());
+        final LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
+        return computeResult(licenseHandler, request, deliveryOp.get());
     }
 
-    private ReportExecution computeResult(final ReportRequest request, final Delivery delivery) {
+    private ReportExecution computeResult(final LicenseHandler licHandler, final ReportRequest request, final Delivery delivery) {
         final ReportExecution result = new ReportExecution(request, getColumnNames());
 
         delivery.getAllArtifactDependencies().forEach(
-            a -> a.getLicenses()
-                        .stream()
-                        .filter(lic -> !lic.contains("Axway Software"))
-                        .forEach(lic -> result.addResultRow(makeResultsRow(a, lic)))
+                a -> {
+                    final Set<DbLicense> dbLicenses = licHandler.resolveLicenses(a.getLicenses());
+                    dbLicenses
+                            .stream()
+                            .filter(lic -> !lic.getName().toLowerCase().contains("axway"))
+                            .forEach(lic -> result.addResultRow(makeResultsRow(a, lic.getName())));
+                }
             );
+
         return result;
     }
 

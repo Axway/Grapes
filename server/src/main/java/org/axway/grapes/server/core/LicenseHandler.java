@@ -13,10 +13,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.PatternSyntaxException;
 
@@ -165,4 +162,20 @@ public class LicenseHandler {
         return licenses;
     }
 
+    /**
+     * Turns a series of strings into their corresponding license entities
+     * by using regular expressions
+     * @param licStrings The list of license strings
+     * @return A set of license entities
+     */
+    public Set<DbLicense> resolveLicenses(List<String> licStrings) {
+        Set<DbLicense> result = new HashSet<>();
+
+        licStrings
+                .stream()
+                .map(repoHandler::getMatchingLicenses)
+                .forEach(result::addAll);
+
+        return result;
+    }
 }
