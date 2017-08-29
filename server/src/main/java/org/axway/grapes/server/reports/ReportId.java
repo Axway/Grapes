@@ -9,7 +9,8 @@ public enum ReportId {
     LICENSE_ON_PRODUCT_RELEASES(3),
     THIRD_PARTY_ARTIFACTS(4),
     MULTIPLE_LICENSE_MATCHING_STRINGS(5),
-    EMPTY_LICENSE_ARTIFACTS(6);
+    EMPTY_LICENSE_ARTIFACTS(6),
+    MOST_USED_LICENSES(7);
 
     private int id;
     ReportId(int reportId) {

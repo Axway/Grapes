@@ -14,6 +14,7 @@ public class ReportExecution {
 
     private ReportRequest request;
     private int sortingColumn = 0;
+    private Comparator<String> comparator;
 
     public String[] getResultColumnNames() {
         return resultColumnNames;
@@ -29,12 +30,13 @@ public class ReportExecution {
         tabularData = new ArrayList<>();
     }
 
-    public void setSortingColumn(int index) {
+    public void setSorting(int index, Comparator<String> comparator) {
         if(index >= resultColumnNames.length) {
             throw new IllegalArgumentException("Invalid sorting column");
         }
 
         this.sortingColumn = index;
+        this.comparator = comparator;
     }
 
     public ReportRequest getRequest() {
@@ -93,7 +95,11 @@ public class ReportExecution {
     }
 
     private void sortByColumn(int index) {
-        tabularData.sort(Comparator.comparing(t -> t[index]));
+        if(null != comparator) {
+            tabularData.sort((r1, r2) -> comparator.compare(r1[index], r2[index]));
+        } else {
+            tabularData.sort(Comparator.comparing(t -> t[index]));
+        }
     }
 
 }
