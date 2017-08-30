@@ -24,7 +24,6 @@
 
     </head>
     <body>
-    <div class="wrapper">
         <div class="row-fluid">
             <div class="navbar navbar-inverse navbar-fixed-top">
                 <div class="navbar-inner">
@@ -68,23 +67,23 @@
             </div>
         </div>
         <div id="searchForm">
-            <div class="searchText">
-                <input id="s" type="text" placeholder="Search" />
-                <input type="submit" value="Search" id="submitButton" onclick="gerSearchResult()"/>
+            <div class="searchText form-group">
+                <input id="s" name="s" minlength="3" class="form-control" type="text" placeholder="Search" tabindex="1" autofocus pattern="^[\w]+$"/>
+                <input type="submit" value="Search" id="submitButton" onclick="getSearchResult()" tabindex="2" disabled/>
             </div>
             <div class="optionWrapper">
                 <div class="searchRadio">
-                    <input type="radio" value="all" id="all" name="filter" checked="true" onclick="filterRadioOptions(this);"/>
+                    <input type="radio" value="all" id="all" name="filter" checked="true" onclick="filterRadioOptions(this);" tabindex="3"/>
                     <label for="all" id="siteNameLabel">All</label>
 
-                    <input type="radio" value="filter" id="filtered" name="filter" onclick="filterRadioOptions(this);"/>
+                    <input type="radio" value="filter" id="filtered" name="filter" onclick="filterRadioOptions(this);" tabindex="4"/>
                     <label for="filtered">Filtered</label>
                 </div>
                 <div class="searchCheckbox">
-                    <input id="modules" type="checkbox" name="modules" value="modules" disabled class="options" onclick="filterCheckBoxOptions(this);">
+                    <input id="modules" type="checkbox" name="modules" value="modules" disabled class="options" onclick="filterCheckBoxOptions(this);" tabindex="5">
                     <label class="options" for="modules">Modules</label>
 
-                    <input id="artifacts" type="checkbox" name="artifacts" value="artifacts" disabled class="options" onclick="filterCheckBoxOptions(this);">
+                    <input id="artifacts" type="checkbox" name="artifacts" value="artifacts" disabled class="options" onclick="filterCheckBoxOptions(this);" tabindex="6">
                     <label class="options" for="artifacts">Artifacts</label>
                 </div>
             </div>
@@ -99,11 +98,12 @@
 
         <script src="/public/jquery-1.9.1/jquery.js"></script>
         <script src="/public/twitter-bootstrap-2.3.2/js/bootstrap.min.js"></script>
+        <script src="/public/twitter-bootstrap-2.3.2/js/bootstrapValidator.js"></script>
         <script src="/assets/js/grapes-webApp.js"></script>
         <script src="/assets/js/grapes-commons.js"></script>
 
         <!-- Make the table sortable -->
         <script src="/public/jquery-tablesorter-1.10.2/jquery.tablesorter.min.js"></script>
-    </div>
+
     </body>
     </html>

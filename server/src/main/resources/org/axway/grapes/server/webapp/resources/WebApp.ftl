@@ -7,12 +7,13 @@
 		<link href="/public/twitter-bootstrap-2.3.2/css/bootstrap.css" rel="stylesheet">
 		<link href="/public/twitter-bootstrap-2.3.2/css/bootstrap-responsive.css" rel="stylesheet">
 		<link href="/public/twitter-bootstrap-2.3.2/css/docs.css" rel="stylesheet">
-		<link href="/assets/css/grapes-webapp.css" rel="stylesheet">
 
         <link rel="shortcut icon" type="image/x-icon" href="assets/img/grapes_small.gif"/>
 
 		<!-- Grapes css -->
 		<link href="/assets/css/grapes-table.css" rel="stylesheet">
+        <link href="/assets/css/grapes-webapp.css" rel="stylesheet">
+        <link href="/assets/css/grapes.css" rel="stylesheet">
 
 	</head>
 	<body>
@@ -355,6 +356,7 @@
 
        	<script src="/public/jquery-1.9.1/jquery.js"></script>
  		<script src="/public/twitter-bootstrap-2.3.2/js/bootstrap.min.js"></script>
+        <script src="/public/twitter-bootstrap-2.3.2/js/bootstrapValidator.js"></script>
  		<script src="/assets/js/grapes-webApp.js"></script>
  		<script src="/assets/js/grapes-commons.js"></script>
 

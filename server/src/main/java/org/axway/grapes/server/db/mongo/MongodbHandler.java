@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+
 /**
  * Mongodb Handler
  *
@@ -34,6 +35,7 @@ import java.util.stream.StreamSupport;
  * @author jdcoffre
  */
 public class MongodbHandler implements RepositoryHandler {
+
     // cache for credentials
     private LoadingCache<String, DbCredential> credentialCache;
 
@@ -43,6 +45,11 @@ public class MongodbHandler implements RepositoryHandler {
     private static final String SET_PATTERN = "{ $set: { \"%s\": #}} ";
     private static final String SET_PATTERN_DOUBLE = "{ $set: { \"%s\": #, \"%s\": #}} ";
     private Supplier<Jongo> jongoSupplier;
+
+    // Maximum result count on search
+    private static final long COUNT_THRESHOLD = 3000;
+
+    private static final String SEARCH_COUNT_EXCEEDED = "TOO_MANY_RESULTS";
 
     private static final Logger LOG = LoggerFactory.getLogger(MongodbHandler.class);
 
@@ -738,20 +745,31 @@ public class MongodbHandler implements RepositoryHandler {
 
         Iterable<DbModule> findModules;
         Iterable<DbArtifact> findArtifacts;
-        List<String> modulesList;
-        List<String> artifactsList;
+        List<String> modulesList = new ArrayList<>();
+        List<String> artifactsList = new ArrayList<>();
         DbSearch search = new DbSearch();
 
+
         if (filter.getDecorator().getIncludeModules()) {
-            findModules = datastore.getCollection(DbCollections.DB_MODULES).find("{_id: {$regex: \"" + searchParam + "\"}}").projection("{_id:1}").sort("{_id: 1}").as(DbModule.class);
-            modulesList = StreamSupport.stream(findModules.spliterator(), false).map(m -> m.getId()).collect(Collectors.toList());
-            search.setModules(modulesList);
+            long documentCount = datastore.getCollection(DbCollections.DB_MODULES).count("{_id: {$regex: \"" + searchParam + "\"}}");
+            if (documentCount <= COUNT_THRESHOLD) {
+                findModules = datastore.getCollection(DbCollections.DB_MODULES).find("{_id: {$regex: \"" + searchParam + "\"}}").projection("{_id:1}").sort("{_id: 1}").as(DbModule.class);
+                modulesList.addAll(StreamSupport.stream(findModules.spliterator(), false).map(m -> m.getId()).collect(Collectors.toList()));
+            } else {
+                modulesList.add(SEARCH_COUNT_EXCEEDED);
+            }
         }
         if (filter.getDecorator().getIncludeArtifacts()) {
-            findArtifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS).find("{_id: {$regex: \"" + searchParam + "\"}}").projection("{_id:1}").sort("{_id: 1}").as(DbArtifact.class);
-            artifactsList = StreamSupport.stream(findArtifacts.spliterator(), false).map(ar -> ar.getGavc()).collect(Collectors.toList());
-            search.setArtifacts(artifactsList);
+            long documentCount = datastore.getCollection(DbCollections.DB_ARTIFACTS).count("{_id: {$regex: \"" + searchParam + "\"}}");
+            if (documentCount <= COUNT_THRESHOLD) {
+                findArtifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS).find("{_id: {$regex: \"" + searchParam + "\"}}").projection("{_id:1}").sort("{_id: 1}").as(DbArtifact.class);
+                artifactsList.addAll(StreamSupport.stream(findArtifacts.spliterator(), false).map(ar -> ar.getGavc()).collect(Collectors.toList()));
+            } else {
+                artifactsList.add(SEARCH_COUNT_EXCEEDED);
+            }
         }
+        search.setModules(modulesList);
+        search.setArtifacts(artifactsList);
 
         return search;
     }

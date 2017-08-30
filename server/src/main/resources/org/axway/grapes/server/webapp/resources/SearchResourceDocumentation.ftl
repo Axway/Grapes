@@ -71,34 +71,17 @@
         <div class="row">
             <div class="span4 bs-docs-sidebar">
                 <ul class="nav nav-list bs-docs-sidenav" data-spy="affix" data-offset-top="80">
-                    <li class=""><a data-toggle="collapse" data-target="#accordion1" href="#searchdoc"><i class="icon-chevron-right"></i>Search documentation</a></li>
-                    <li class=""><a data-toggle="collapse" data-target="#accordion2" href="#websearch"><i class="icon-chevron-right"></i>Web Search section</a></li>
-                    <li class=""><a data-toggle="collapse" data-target="#accordion3" href="#search"><i class="icon-chevron-right"></i>Get Search result</a></li>
+                    <li class=""><a data-toggle="collapse" data-target="#accordion1" href="#websearch"><i class="icon-chevron-right"></i>Web Search section</a></li>
+                    <li class=""><a data-toggle="collapse" data-target="#accordion2" href="#search"><i class="icon-chevron-right"></i>Get Search result</a></li>
                 </ul>
             </div>
 
             <div class="span8">
-                <section id="searchdoc">
-                    <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion1">
-                        <h2>@ /searchdoc</h2>
-                    </a>
-                    <div id="accordion1" class="collapse">
-                        <ul>
-                            <li>
-                                <h3>GET</h3>
-                                <ul>
-                                    <li>Get Search resource documentation</li>
-                                    <li>Returns HTML</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </section>
                 <section id="websearch">
-                    <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion2">
+                    <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion1">
                         <h2>@ /search</h2>
                     </a>
-                    <div id="accordion2" class="collapse">
+                    <div id="accordion1" class="collapse">
                         <ul>
                             <li>
                                 <h3>GET</h3>
@@ -111,10 +94,10 @@
                     </div>
                 </section>
                 <section id="search">
-                    <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion3">
+                    <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion2">
                         <h2>@ /search/{text}</h2>
                     </a>
-                    <div id="accordion3" class="collapse">
+                    <div id="accordion2" class="collapse">
                         <ul>
                             <li>
                                 <h3>GET</h3>
@@ -136,12 +119,12 @@
                                             <tr>
                                                 <td>modules</td>
                                                 <td>true</td>
-                                                <td>Filter search result including or excluding modules</td>
+                                                <td>Filter search result - include modules. Use false to exclude.</td>
                                             </tr>
                                             <tr>
                                                 <td>artifacts</td>
                                                 <td>true</td>
-                                                <td>Filter search result including or excluding artifacts</td>
+                                                <td>Filter search result - include artifacts. Use false to exclude.</td>
                                             </tr>
                                             </tbody>
                                         </table>

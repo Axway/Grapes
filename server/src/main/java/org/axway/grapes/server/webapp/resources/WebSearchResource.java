@@ -32,11 +32,18 @@ public class WebSearchResource extends AbstractResource {
     @Path("/{searchWord}")
     public Response getSearchResult(@PathParam("searchWord") final String searchWord, @Context final UriInfo uriInfo) {
 
+        // Check the length of the search word and if it contains spaces
+        if(searchWord.length() < 3 || searchWord.indexOf(" ") != -1) {
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+        }
+
         SearchView view = new SearchView();
 
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
+
         DbSearch result = getSearchHandler().getSearchResult(searchWord, filters);
+
         view.setSearchOj(result);
         return Response.ok(view).build();
     }

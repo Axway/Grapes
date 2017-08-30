@@ -96,7 +96,7 @@ function loadModuleNames(moduleNameSelect){
  				}
  			});
  			$("#" + moduleNameSelect).empty().append(html);
- 			loadTargetedModuleVersion(moduleName, moduleVersion); 
+ 			//loadTargetedModuleVersion(moduleName, moduleVersion);
  		}
  	});
  }
@@ -277,13 +277,19 @@ function filterCheckBoxOptions(checkbox){
 }
 
 /* Get search result call */
-function gerSearchResult(){
+function getSearchResult(){
 
       // empty the result section before new search
       $("#searchResult").empty();
 
       // get the text input value
-      var searchText = $("#s").val();
+      var searchText = $("#s").val().trim();
+
+      // Do not make request if the search criteria contains space
+      if(searchText.indexOf(' ') !== -1) {
+        return;
+      }
+
       var queryParams = "";
 
       // check for selected checkbox option to include in the request
@@ -297,7 +303,6 @@ function gerSearchResult(){
 
       // construct response table containing modules and artifacts
       var html= "";
-      html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">";
 
      // make ajax call to search api
 	 $.ajax({
@@ -312,37 +317,57 @@ function gerSearchResult(){
 		data: {},
 		dataType: "json",
 		success: function(data, textStatus) {
+            var modulesData;
+            var artifactsData;
+            if(data != null) {
+		        modulesData = data.modules;
+		        artifactsData = data.artifacts;
+		    }
 
-		    html += "<thead><tr><th>Modules</th></tr></thead>";
-            html += "<tbody>";
+            if(modulesData != null && ($('input[value=all]').is(':checked') || $('input[value=modules]').is(':checked'))){
+                html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">";
+                html += "<thead><tr><th>Modules</th></tr></thead>";
+                html += "<tbody>";
 
-            // iterate over modules and construct table body containing the result
-            if(data != null && data.modules != null && data.modules.length !== 0) {
-                $.each(data.modules, function(i, module) {
-                    var obj = getModuleNameAndVersion(module);
-                    html += "<tr><td><a href=\"/module/" + obj.name + "/" + obj.version + "\" >" + module + "</a></td></tr>";
-                });
-            }else {
-                html += "<tr><td>No modules found</td></tr>";
+                // iterate over modules and construct table body containing the result
+                if(modulesData.length !== 0) {
+                    if(modulesData.length === 1 && modulesData[0] === "SEARCH_COUNT_EXCEEDED") {
+                        html += "<tr><td style=\"color: red\">Too many results. Refine your search criteria!</td></tr>";
+                    } else {
+                        $.each(modulesData, function(i, module) {
+                            var obj = getModuleNameAndVersion(module);
+                            html += "<tr><td><a href=\"/module/" + obj.name + "/" + obj.version + "\" >" + module + "</a><span></span><a class=\"secondAnchor\" href=\"javascript:void(0)\" onclick=\"navigateToDataBrowserModule(this); return false;\">Open in data browser</a></td></tr>";
+                        });
+                    }
+                }else {
+                    html += "<tr><td>Nothing found</td></tr>";
+                }
+
+                html += "</tr></tbody>";
+                html += "</table>";
             }
 
-            html += "</tr></tbody>";
-            html += "</table>";
-            html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result-artifacts\">";
-            html += "<thead><tr><th>Artifacts</th></tr></thead>";
-            html += "<tbody>";
+            if(artifactsData != null && ($('input[value=all]').is(':checked') || $('input[value=artifacts]').is(':checked'))){
+                html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result-artifacts\">";
+                html += "<thead><tr><th>Artifacts</th></tr></thead>";
+                html += "<tbody>";
 
-            // iterate over artifacts and construct table body containing artifacts
-            if(data != null && data.artifacts != null && data.artifacts.length !== 0) {
-                $.each(data.artifacts, function(i, artifact) {
-                    html += "<tr><td><a href=\"/artifact/" + artifact + "\">" + artifact + "</a></td></tr>";
-                });
-            } else {
-                html += "<tr><td>No artifacts found</td></tr>";
+                // iterate over artifacts and construct table body containing artifacts
+                if(artifactsData.length !== 0) {
+                    if(artifactsData.length === 1 && artifactsData[0] === "TOO_MANY_RESULTS") {
+                        html += "<tr><td style=\"color: red\">Too many results. Refine your search criteria!</td></tr>";
+                    } else {
+                        $.each(artifactsData, function(i, artifact) {
+                            html += "<tr><td><a href=\"/artifact/" + artifact + "\">" + artifact + "</a><span></span><a class=\"secondAnchor\" href=\"javascript:void(0)\" onclick=\"navigateToDataBrowserArtifact(this); return false;\">Open in data browser</a></td></tr>";
+                        });
+                    }
+                } else {
+                    html += "<tr><td>Nothing found</td></tr>";
+                }
+
+                html += "</tr></tbody>";
+                html += "</table>";
             }
-
-            html += "</tr></tbody>";
-            html += "</table>";
             // hide the waiter modal
             $(".overlay").hide();
 		    $("#searchResult").empty().append(html);
@@ -380,20 +405,110 @@ function getArtifactGAVC(artifactObj) {
 
     var artifact = artifactObj.text.trim();
     var indexKey = artifact.indexOf(':');
-    var nextIndexKey = artifact.indexOf(':', indexKey + 1);
-    var lastIndexKey =  artifact.lastIndexOf(':');
+    var artifactIndexKey = artifact.indexOf(':', indexKey + 1);
+    var versionIndexKey =  artifact.indexOf(':', artifactIndexKey + 1);
     var groupId = artifact.substring(0, indexKey);
-    var artifactId = artifact.substring(indexKey + 1, nextIndexKey);
-    // get the version if there is an extension of the dependency else substring to the end of the string
-    if(lastIndexKey != nextIndexKey) {
-        var version = artifact.substring(nextIndexKey + 1, lastIndexKey - 1);
-    } else {
-        var version = artifact.substring(lastIndexKey + 1);
-    }
+    var artifactId = artifact.substring(indexKey + 1, artifactIndexKey);
+    var version = artifact.substring(artifactIndexKey + 1, versionIndexKey);
 
     return {
         artifactId: artifactId,
         groupId: groupId,
         version: version
     }
+}
+
+$("input[type='text']").keypress(function(e) {
+    //input#s.form-control
+    if ((this.value.length > 2) && ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
+        e.preventDefault();
+        $("input[type='submit']").click();
+    }
+    if(this.value.length < 3) {
+        $("input[type='submit']").attr('disabled', true);
+    }
+    else {
+        $("input[type='submit']").attr('disabled',false);
+    }
+});
+
+$('#searchForm').bootstrapValidator({
+        feedbackIcons: {
+            valid: 'glyphicon glyphicon-ok',
+            invalid: 'glyphicon glyphicon-remove',
+            validating: 'glyphicon glyphicon-refresh'
+        },
+        fields: {
+            s: {
+                validators: {
+                    stringLength: {
+                        min: 3,
+                        message: 'The search criteria must contain at least 3 characters'
+                    },
+                    regexp: {
+                        regexp: /^[\w]+$/,
+                        message: 'Spaces are not allowed!'
+                    }
+                }
+            }
+        }
+});
+
+/* Navigate to search page with checkbox checked depending on the selected section */
+function navigateToSearch(el) {
+    var checkBox;
+    if(el.id == "searchModules") {
+        checkBox = '#modules';
+    } else {
+        checkBox = '#artifacts';
+    }
+
+    $("body").load("/search", function(data){
+        document.open();
+        document.write(data);
+        setTimeout(function() {
+           $('#s').focus();
+           $('input[value="filter"]').click();
+           $(checkBox).attr('checked', true);
+        }, 300);
+        document.close();
+    });
+    window.history.pushState("", "", "/search");
+}
+
+/* Navigate to artifact data browser section */
+function navigateToDataBrowserArtifact(el) {
+    // Get the first anchor element (artifact gavc)
+    var elText = getNextAnchor(el);
+    var artifact = getArtifactGAVC(elText);
+    $("body").load("/webapp", function() {
+        $(function(){
+            $('#artifactButton').click();
+        });
+    });
+    setTimeout(function() {
+        getArtifactTarget(artifact.groupId, artifact.artifactId, artifact.version, 'targets', '#artifactOverviewButton');
+    }, 400);
+    window.history.pushState("", "", "/webapp");
+}
+
+/* Navigate to module data browser section */
+function navigateToDataBrowserModule(el) {
+    // Get the first anchor element (module name and version)
+    var elText = getNextAnchor(el);
+    var module = getModuleNameAndVersion(elText.text);
+    $("body").load("/webapp", function() {
+        $(function(){
+            $('#moduleButton').click();
+        });
+    });
+    setTimeout(function() {
+        getModuleTarget(module.name, module.version,'false','targets');
+    }, 400);
+    window.history.pushState("", "", "/webapp");
+}
+
+/* Get the anchor next to current anchor */
+function getNextAnchor(el){
+    return $(el).parent().children('a:eq(0)').get(0);
 }

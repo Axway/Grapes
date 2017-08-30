@@ -91,7 +91,7 @@ function displayModuleOptions(){
 		loadModuleVersions($("#moduleName").val(), "moduleVersion");
 	});
 
-	$("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getModuleList(\"moduleName\", \"moduleVersion\", \"promoted\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+	$("#search").empty().append("<button id=\"searchModuleRadioButton\" type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getModuleList(\"moduleName\", \"moduleVersion\", \"promoted\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
 }
 
 function displayArtifactOptions(){
@@ -139,7 +139,7 @@ function displayArtifactOptions(){
 		loadArtifactArtifactId($("#groupId").val(),$("#version").val(), "artifactId");
 	});
 
-	$("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getArtifactList(\"groupId\", \"artifactId\", \"version\", \"doNotUse\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+	$("#search").empty().append("<button id=\"searchArtifactRadio\" type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getArtifactList(\"groupId\", \"artifactId\", \"version\", \"doNotUse\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
 }
 
 function displayLicenseOptions(){
@@ -1908,44 +1908,22 @@ function getModuleTarget(moduleNameFieldValue, moduleVersionFieldValue, promoted
 	cleanAction();
 	var moduleName = moduleNameFieldValue;
 	var moduleVersion = moduleVersionFieldValue;
-	
-	var queryParams = "";
-	if(moduleName != '-' && moduleName != null){
-		queryParams += "name="+ moduleName +"&"
-	}
-	if(moduleVersion != '-' && moduleVersion != null){
-		queryParams += "version="+ moduleVersion +"&"
-	}
-	queryParams += "promoted="+ promotedFieldValue
-			
-	$.ajax({
-		type: "GET",
-		accept: {
-			json: 'application/json'
-			},
-		url: "/module/all?" + queryParams ,
-		data: {},
-		dataType: "json",
-		success: function(data, textStatus) {
-			var html = "";
-			$.each(data, function(i, module) {
-				var moduleId = module.name + ":" + module.version;
-				html += "<label class=\"radio\">"
-				html += "<input type=\"radio\" name=\"moduleId\" value=\""+ moduleId+ "\" onclick=\"cleanAction()\">";
-				html += moduleId;
-				html += "</label>"
-			});
 
-			$("#" + targetedFieldValue).append(html);
-		}
-    }).done(function(){
-        setTimeout(function(){
+	var promise = asyncDeferred();
+        promise.then(function() {
+            $("#moduleName").val(moduleName);
+            loadModuleVersions(moduleName, "moduleVersion");
+            return asyncDeferred();
+        }).then(function() {
+            $("#moduleVersion").val(moduleVersion);
+            return asyncDeferred();
+        }).then(function(){
+            $("#searchModuleRadioButton").click();
+            return asyncDeferred();
+        }).then(function() {
             $("input:radio[name=moduleId]:first").attr('checked', true);
-            jQuery(function(){
-        		jQuery('#overviewButton').click();
-        	});
-        }, 500);
-    });
+            $("#overviewButton").click();
+        });
 }
 
 function loadTargetedModuleVersion(moduleName, mVersion){
@@ -1991,69 +1969,32 @@ function getArtifactTarget(artifactGroupIdFieldValue, artifactIdFieldValue, arti
 	var artifactId = artifactIdFieldValue;
 	var version = artifactVersionFieldValue;
 
-	var queryParams = "";
-	if(groupId != '-' && groupId != null){
-		queryParams += "groupId="+ groupId +"&"
-	}
-	if(artifactId != '-' && artifactId != null){
-		queryParams += "artifactId="+ artifactId +"&"
-	}
-	if(version != '-' && version != null){
-    		queryParams += "version="+ version
-    }
-
-	$.ajax({
-            type: "GET",
-            accept: {
-                json: 'application/json'
-            },
-            url: "/artifact/all?" + queryParams ,
-            data: {},
-            dataType: "json",
-            success: function(data, textStatus) {
-                var html = "";
-                $.each(data, function(i, artifact) {
-                    var gavc = artifact.groupId + ":" + artifact.artifactId + ":" +artifact.version + ":";
-                    if(typeof artifact.classifier!='undefined'){
-                        gavc+= artifact.classifier;
-                    }
-                    gavc+= ":";
-                    if(typeof artifact.extension!='undefined'){
-                        gavc+= artifact.extension;
-                    }
-
-                    html += "<label class=\"radio\">"
-                    html += "<input type=\"radio\" name=\"gavc\" value=\""+ gavc+ "\" onclick=\"cleanAction()\">";
-                    html += gavc;
-                    html += "</label>"
-                });
-
-                $("#" + targetedFieldValue).append(html);
-            }
-    }).done(function(){
-
-        asyncDeferred('#groupId', groupId)
-            .then(function() {
-                return asyncDeferred('#version', version);
-            }).then(function() {
-                return asyncDeferred('#artifactId', artifactId);
-        });
-
-        setTimeout(function(){
+    var promise = asyncDeferred();
+        promise.then(function() {
+            $("#groupId").val(groupId);
+            loadArtifactVersions(groupId, "version");
+            return asyncDeferred();
+        }).then(function() {
+            $("#version").val(version);
+            loadArtifactArtifactId(groupId, version, "artifactId");
+            return asyncDeferred();
+        }).then(function(){
+            $("#artifactId").val(artifactId);
+            return asyncDeferred();
+        }).then(function(){
+            $("#searchArtifactRadio").click();
+            return asyncDeferred();
+        }).then(function() {
             $("input:radio[name=gavc]:first").attr('checked', true);
-            jQuery(function(){
-               jQuery(actionButton).click();
-            });
-        }, 100);
-    });
+            $(actionButton).click();
+        });
 }
 
 function asyncDeferred(elId, elVal) {
     var deferredObject = $.Deferred();
-	setTimeout(function() {
-	    $(elId).val(elVal).trigger('change');
- 		deferredObject.resolve();
- 	}, 400);
+    setTimeout(function() {
+        deferredObject.resolve();
+    }, 400);
  	return deferredObject.promise();
 }
 
@@ -2116,22 +2057,4 @@ function showCSVExportLink(element, additionalActions) {
             exportTableToCSV.apply(this, [$('#table_div>table'), 'export.csv']);
         });
     }
-}
-
-/* Navigate to search page with checkbox checked depending on the selected section */
-function navigateToSearch(el) {
-    var checkBox;
-    if(el.id == "searchModules") {
-        checkBox = '#modules';
-    } else {
-        checkBox = '#artifacts';
-    }
-    $("body").load("/search");
-    window.history.pushState("", "", "/search");
-    setTimeout(function(){
-        jQuery(function(){
-          jQuery('input[value="filter"]').click();
-        });
-        $(checkBox).attr('checked', true);
-    }, 100);
 }
