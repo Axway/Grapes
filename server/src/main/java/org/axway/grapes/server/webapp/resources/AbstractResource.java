@@ -298,6 +298,7 @@ public abstract class AbstractResource extends View {
          sampleValues.put("license", "CDDL-1.1");
          sampleValues.put("name", "Secure Pretender");
          sampleValues.put("version", "2.7.0");
+         sampleValues.put("organization", "Axway");
 
          return ReportsRegistry.allReports()
                  .stream()
