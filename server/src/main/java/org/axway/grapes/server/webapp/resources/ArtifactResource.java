@@ -7,6 +7,8 @@ import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.config.Messages;
 import org.axway.grapes.server.core.ArtifactHandler;
+import org.axway.grapes.server.core.CacheUtils;
+import org.axway.grapes.server.core.cache.CacheName;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.core.services.email.GrapesEmailSender;
 import org.axway.grapes.server.db.DataUtils;
@@ -42,6 +44,8 @@ public class ArtifactResource extends AbstractResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArtifactResource.class);
     private GrapesEmailSender sender;
+
+    private CacheUtils cacheUtils = new CacheUtils();
 
     public ArtifactResource(final RepositoryHandler repoHandler, final GrapesServerConfig dmConfig) {
         super(repoHandler, "ArtifactResourceDocumentation.ftl", dmConfig);
@@ -510,7 +514,9 @@ public class ArtifactResource extends AbstractResource {
      */
     @POST
     @Path("/{gavc}" + ServerAPI.GET_LICENSES)
-    public Response addLicense(@Auth final DbCredential credential, @PathParam("gavc") final String gavc,@QueryParam(ServerAPI.LICENSE_ID_PARAM) final String licenseId){
+    public Response addLicense(@Auth final DbCredential credential,
+                               @PathParam("gavc") final String gavc,
+                               @QueryParam(ServerAPI.LICENSE_ID_PARAM) final String licenseId){
         if(!credential.getRoles().contains(AvailableRoles.DATA_UPDATER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
@@ -524,6 +530,7 @@ public class ArtifactResource extends AbstractResource {
         }
 
         getArtifactHandler().addLicenseToArtifact(gavc, licenseId);
+        cacheUtils.clear(CacheName.PROMOTION_REPORTS);
 
         return Response.ok("done").build();
     }
@@ -538,7 +545,9 @@ public class ArtifactResource extends AbstractResource {
      */
     @DELETE
     @Path("/{gavc}" + ServerAPI.GET_LICENSES)
-    public Response deleteLicense(@Auth final DbCredential credential, @PathParam("gavc") final String gavc,@QueryParam(ServerAPI.LICENSE_ID_PARAM) final String licenseString){
+    public Response deleteLicense(@Auth final DbCredential credential,
+                                  @PathParam("gavc") final String gavc,
+                                  @QueryParam(ServerAPI.LICENSE_ID_PARAM) final String licenseString){
         if(!credential.getRoles().contains(AvailableRoles.DATA_UPDATER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
@@ -552,6 +561,7 @@ public class ArtifactResource extends AbstractResource {
         }
 
         getArtifactHandler().removeLicenseFromArtifact(gavc, licenseString);
+        cacheUtils.clear(CacheName.PROMOTION_REPORTS);
 
         return Response.ok("done").build();
     }

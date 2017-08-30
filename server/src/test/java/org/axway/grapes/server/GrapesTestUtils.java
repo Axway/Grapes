@@ -2,11 +2,17 @@ package org.axway.grapes.server;
 
 import com.google.common.collect.Lists;
 
+import org.axway.grapes.server.config.GrapesEmailConfig;
+import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 import org.axway.grapes.server.db.datamodel.DbOrganization;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -75,4 +81,28 @@ public class GrapesTestUtils {
 
         return mock(RepositoryHandler.class);
     }
+
+    public static GrapesServerConfig getGrapesConfig() {
+        GrapesServerConfig config = mock(GrapesServerConfig.class);
+        List<String> validatedTypes = new ArrayList<String>();
+        validatedTypes.add("filetype1");
+        validatedTypes.add("filetype2");
+        when(config.getExternalValidatedTypes()).thenReturn(validatedTypes);
+        when(config.getArtifactNotificationRecipients()).thenReturn(new String[] {"toto@axway.com"});
+
+        GrapesEmailConfig emailCfgMock = mock(GrapesEmailConfig.class);
+        when(config.getGrapesEmailConfig()).thenReturn(emailCfgMock);
+
+        Properties p = new Properties();
+        p.setProperty("mail.smtp.host", "1");
+        p.setProperty("mail.smtp.user", "2");
+        p.setProperty("mail.smtp.password", "3");
+        p.setProperty("mail.smtp.ssl.trust", "4");
+        p.setProperty("mail.smtp.from", "5");
+
+        when(emailCfgMock.getProperties()).thenReturn(p);
+
+        return config;
+    }
+
 }

@@ -34,11 +34,12 @@ public class ModuleHandler {
     private final RepositoryHandler repositoryHandler;
 
     private CacheAccess<String, PromotionReportView> cache = null;
+    private CacheUtils cacheUtils = new CacheUtils();
 
 
     public ModuleHandler(final RepositoryHandler repositoryHandler) {
         this.repositoryHandler = repositoryHandler;
-        cache = CacheUtils.initCache(CacheName.PROMOTION_REPORTS, PromotionReportView.class);
+        cache = cacheUtils.initCache(CacheName.PROMOTION_REPORTS, PromotionReportView.class);
     }
 
     /**

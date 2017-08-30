@@ -13,7 +13,7 @@ public class CacheUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(CacheUtils.class);
 
-    public static void clear(final CacheName cacheName) {
+    public void clear(final CacheName cacheName) {
         try {
             final CacheAccess<Object, Object> cache = JCS.getInstance(cacheName.name());
             cache.getCacheControl().removeAll();
@@ -24,7 +24,7 @@ public class CacheUtils {
         }
     }
 
-    public static <T> CacheAccess<String, T> initCache(final CacheName cacheName, final Class<T> valueClass) {
+    public <T> CacheAccess<String, T> initCache(final CacheName cacheName, final Class<T> valueClass) {
         try {
             return JCS.getInstance(cacheName.name());
         } catch (CacheException e) {

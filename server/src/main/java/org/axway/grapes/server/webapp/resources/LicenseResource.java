@@ -39,6 +39,7 @@ import java.util.List;
 public class LicenseResource extends AbstractResource{
     
     private static final Logger LOG = LoggerFactory.getLogger(LicenseResource.class);
+    private CacheUtils cacheUtils = new CacheUtils();
 
     public LicenseResource(final RepositoryHandler repoHandler, final GrapesServerConfig dmConfig){
         super(repoHandler, "LicenseResourceDocumentation.ftl", dmConfig);
@@ -64,7 +65,7 @@ public class LicenseResource extends AbstractResource{
         // Save the license
         final DbLicense dbLicense = getModelMapper().getDbLicense(license);
         getLicenseHandler().store(dbLicense);
-        CacheUtils.clear(CacheName.PROMOTION_REPORTS);
+        cacheUtils.clear(CacheName.PROMOTION_REPORTS);
 
 		return Response.ok().status(HttpStatus.CREATED_201).build();
 	}
@@ -131,7 +132,7 @@ public class LicenseResource extends AbstractResource{
 
         LOG.info("Got a delete license request.");
         getLicenseHandler().deleteLicense(name);
-        CacheUtils.clear(CacheName.PROMOTION_REPORTS);
+        cacheUtils.clear(CacheName.PROMOTION_REPORTS);
         return Response.ok("done").build();
     }
 
@@ -159,7 +160,7 @@ public class LicenseResource extends AbstractResource{
         }
 
         getLicenseHandler().approveLicense(name, approved.get());
-        CacheUtils.clear(CacheName.PROMOTION_REPORTS);
+        cacheUtils.clear(CacheName.PROMOTION_REPORTS);
         return Response.ok("done").build();
     }
 

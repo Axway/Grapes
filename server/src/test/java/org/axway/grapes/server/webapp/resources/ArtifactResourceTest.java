@@ -49,34 +49,35 @@ public class ArtifactResourceTest extends ResourceTest {
     protected void setUpResources() throws Exception {
         repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
 
-        ArtifactResource resource = new ArtifactResource(repositoryHandler, getGrapesConfig());
+        ArtifactResource resource = new ArtifactResource(repositoryHandler,
+                GrapesTestUtils.getGrapesConfig());
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repositoryHandler), "test auth"));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);
     }
     
-    private GrapesServerConfig getGrapesConfig(){
-        GrapesServerConfig config = mock(GrapesServerConfig.class);
-        List<String> validatedTypes = new ArrayList<String>();
-        validatedTypes.add("filetype1");
-        validatedTypes.add("filetype2");
-        when(config.getExternalValidatedTypes()).thenReturn(validatedTypes);
-        when(config.getArtifactNotificationRecipients()).thenReturn(new String[] {"toto@axway.com"});
-
-        GrapesEmailConfig emailCfgMock = mock(GrapesEmailConfig.class);
-        when(config.getGrapesEmailConfig()).thenReturn(emailCfgMock);
-
-        Properties p = new Properties();
-        p.setProperty("mail.smtp.host", "1");
-        p.setProperty("mail.smtp.user", "2");
-        p.setProperty("mail.smtp.password", "3");
-        p.setProperty("mail.smtp.ssl.trust", "4");
-        p.setProperty("mail.smtp.from", "5");
-
-        when(emailCfgMock.getProperties()).thenReturn(p);
-
-        return config;
-    }
+//    private GrapesServerConfig getGrapesConfig(){
+//        GrapesServerConfig config = mock(GrapesServerConfig.class);
+//        List<String> validatedTypes = new ArrayList<String>();
+//        validatedTypes.add("filetype1");
+//        validatedTypes.add("filetype2");
+//        when(config.getExternalValidatedTypes()).thenReturn(validatedTypes);
+//        when(config.getArtifactNotificationRecipients()).thenReturn(new String[] {"toto@axway.com"});
+//
+//        GrapesEmailConfig emailCfgMock = mock(GrapesEmailConfig.class);
+//        when(config.getGrapesEmailConfig()).thenReturn(emailCfgMock);
+//
+//        Properties p = new Properties();
+//        p.setProperty("mail.smtp.host", "1");
+//        p.setProperty("mail.smtp.user", "2");
+//        p.setProperty("mail.smtp.password", "3");
+//        p.setProperty("mail.smtp.ssl.trust", "4");
+//        p.setProperty("mail.smtp.from", "5");
+//
+//        when(emailCfgMock.getProperties()).thenReturn(p);
+//
+//        return config;
+//    }
 
     @Test
     public void getDocumentation(){
@@ -348,7 +349,7 @@ public class ArtifactResourceTest extends ResourceTest {
     @Test
     public void getValidationType(){
 
-        final List<String> results = getGrapesConfig().getExternalValidatedTypes();;
+        final List<String> results = GrapesTestUtils.getGrapesConfig().getExternalValidatedTypes();;
         
         assertFalse(results.isEmpty());
         assertFalse(!results.contains("filetype1"));
@@ -729,7 +730,6 @@ public class ArtifactResourceTest extends ResourceTest {
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
         verify(repositoryHandler, times(1)).updateDoNotUse(artifact, Boolean.TRUE);
-
     }
 
 
@@ -966,4 +966,5 @@ public class ArtifactResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
     }
+
 }
