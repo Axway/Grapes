@@ -1,14 +1,12 @@
 package org.axway.grapes.server.webapp.views;
 
-import com.yammer.dropwizard.views.View;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Dependency;
-import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.commons.datamodel.Module;
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.Decorator;
 import org.axway.grapes.server.db.DataUtils;
-
-import java.util.List;
+import org.axway.grapes.server.db.ModelMapper;
 
 /**
  * Ancestors View
@@ -21,8 +19,11 @@ import java.util.List;
 public class AncestorsView extends DependencyListView {
 
 
-    public AncestorsView(final String title, final List<License> licenses, final Decorator decorator) {
-        super(title, licenses, decorator, "AncestorsListView.ftl");
+    public AncestorsView(final String title,
+                         final Decorator decorator,
+                         final LicenseMatcher licMatcher,
+                         final ModelMapper mapper) {
+        super(title, decorator, licMatcher, mapper, "AncestorsListView.ftl");
     }
 
 

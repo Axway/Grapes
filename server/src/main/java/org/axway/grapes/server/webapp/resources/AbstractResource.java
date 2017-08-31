@@ -91,7 +91,7 @@ public abstract class AbstractResource extends View {
      * @return ArtifactHandler
      */
     protected ArtifactHandler getArtifactHandler(){
-        return new ArtifactHandler(repositoryHandler);
+        return new ArtifactHandler(repositoryHandler, getLicenseHandler());
     }
 
     /**

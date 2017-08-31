@@ -1,6 +1,7 @@
 package org.axway.grapes.server.core;
 
 
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
@@ -29,7 +30,7 @@ public class ArtifactHandlerTest {
     @Test
     public void checkStoreArtifact(){
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
 
         final DbArtifact artifact = new DbArtifact();
         handler.store(artifact);
@@ -44,7 +45,7 @@ public class ArtifactHandlerTest {
         artifact.setVersion("1.0.0-SNAPSHOT");
 
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
 
         handler.storeIfNew(artifact);
 
@@ -54,7 +55,7 @@ public class ArtifactHandlerTest {
     @Test
     public void checkGetGavcs(){
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
         handler.getArtifactGavcs(mock(FiltersHolder.class));
 
         verify(repositoryHandler, times(1)).getGavcs(any(FiltersHolder.class));
@@ -63,7 +64,7 @@ public class ArtifactHandlerTest {
     @Test
     public void checkGetGroupIds(){
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
         handler.getArtifactGroupIds(mock(FiltersHolder.class));
 
         verify(repositoryHandler, times(1)).getGroupIds(any(FiltersHolder.class));
@@ -79,7 +80,7 @@ public class ArtifactHandlerTest {
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
         when(repositoryHandler.getArtifactVersions(artifact)).thenReturn(Collections.singletonList(artifact.getVersion()));
 
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
         final List<String> versions = handler.getArtifactVersions(artifact.getGavc());
 
         verify(repositoryHandler, times(1)).getArtifact(artifact.getGavc());
@@ -96,7 +97,7 @@ public class ArtifactHandlerTest {
         artifact.setVersion("1.0.0-SNAPSHOT");
 
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
         WebApplicationException exception = null;
 
         try {
@@ -124,7 +125,7 @@ public class ArtifactHandlerTest {
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
         when(repositoryHandler.getArtifactVersions(artifact)).thenReturn(versions);
 
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
         final String lastVersion = handler.getArtifactLastVersion(artifact.getGavc());
 
         assertEquals("3.0.0", lastVersion);
@@ -145,7 +146,7 @@ public class ArtifactHandlerTest {
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
         when(repositoryHandler.getArtifactVersions(artifact)).thenReturn(versions);
 
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
         final String lastVersion = handler.getArtifactLastVersion(artifact.getGavc());
 
         assertEquals("ZZZZZ", lastVersion);
@@ -154,7 +155,7 @@ public class ArtifactHandlerTest {
     @Test
     public void getTheLastVersionOfAnArtifactThatDoesNotExist(){
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
         WebApplicationException exception = null;
 
         try{
@@ -175,7 +176,7 @@ public class ArtifactHandlerTest {
 
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
 
         final DbArtifact gotArtifact = handler.getArtifact(artifact.getGavc());
 
@@ -187,7 +188,7 @@ public class ArtifactHandlerTest {
     @Test
     public void getAnArtifactThatDoesNotExist(){
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
         WebApplicationException exception = null;
 
         try {
@@ -207,7 +208,7 @@ public class ArtifactHandlerTest {
         artifact.setVersion("1.0.0-SNAPSHOT");
 
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
 
         final DbOrganization organization = handler.getOrganization(artifact);
 
@@ -222,7 +223,7 @@ public class ArtifactHandlerTest {
 
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
         when(repositoryHandler.getRootModuleOf(artifact.getGavc())).thenReturn(new DbModule());
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
 
         final DbOrganization organization = handler.getOrganization(artifact);
 
@@ -244,7 +245,7 @@ public class ArtifactHandlerTest {
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
         when(repositoryHandler.getRootModuleOf(artifact.getGavc())).thenReturn(module);
         when(repositoryHandler.getOrganization(organization.getName())).thenReturn(organization);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
 
         final DbOrganization gotOrganization = handler.getOrganization(artifact);
 
@@ -261,7 +262,7 @@ public class ArtifactHandlerTest {
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
 
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
         handler.updateProvider(artifact.getGavc(), "me");
 
         verify(repositoryHandler, times(1)).updateProvider(artifact, "me");
@@ -270,7 +271,7 @@ public class ArtifactHandlerTest {
     @Test
     public void updateTheProviderOfAnArtifactThatDoesNotExist(){
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
 
         WebApplicationException exception = null;
 
@@ -293,7 +294,7 @@ public class ArtifactHandlerTest {
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
 
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
         handler.updateDownLoadUrl(artifact.getGavc(), "http://download.url");
 
         verify(repositoryHandler, times(1)).updateDownloadUrl(artifact, "http://download.url");
@@ -302,7 +303,7 @@ public class ArtifactHandlerTest {
     @Test
     public void updateTheDownloadUrlOfAnArtifactThatDoesNotExist(){
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
 
         WebApplicationException exception = null;
 
@@ -325,7 +326,7 @@ public class ArtifactHandlerTest {
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
 
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
         handler.deleteArtifact(artifact.getGavc());
 
         verify(repositoryHandler, times(1)).deleteArtifact(artifact.getGavc());
@@ -334,7 +335,7 @@ public class ArtifactHandlerTest {
     @Test
     public void deleteAnArtifactThatDoesNotExist(){
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
 
         WebApplicationException exception = null;
 
@@ -357,7 +358,7 @@ public class ArtifactHandlerTest {
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
 
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
         handler.updateDoNotUse(artifact.getGavc(), true);
 
         verify(repositoryHandler, times(1)).updateDoNotUse(artifact, true);
@@ -366,7 +367,7 @@ public class ArtifactHandlerTest {
     @Test
     public void updateDoNotUseFlagOfAnArtifactThatDoesNotExist(){
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
 
         WebApplicationException exception = null;
 
@@ -391,7 +392,7 @@ public class ArtifactHandlerTest {
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
 
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
         handler.getAncestors(artifact.getGavc(), filters);
 
         verify(repositoryHandler, times(1)).getAncestors(artifact, filters);
@@ -400,7 +401,7 @@ public class ArtifactHandlerTest {
     @Test
     public void getAncestorsOfAnArtifactThatDoesNotExist(){
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
 
         WebApplicationException exception = null;
 
@@ -417,7 +418,7 @@ public class ArtifactHandlerTest {
     @Test
     public void checkGetAllArtifact(){
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
         final FiltersHolder filtersHolder = mock(FiltersHolder.class);
 
         handler.getArtifacts(filtersHolder);
@@ -440,7 +441,7 @@ public class ArtifactHandlerTest {
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
         when(repositoryHandler.getRootModuleOf(artifact.getGavc())).thenReturn(module);
 
-        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler handler = new ArtifactHandler(repositoryHandler, mock(LicenseMatcher.class));
         String jenkinsJobInfo = handler.getModuleJenkinsJobInfo(artifact);
         
         assertEquals("http://localhost:8080/test", jenkinsJobInfo);       

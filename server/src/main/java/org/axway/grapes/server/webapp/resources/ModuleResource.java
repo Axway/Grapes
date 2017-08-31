@@ -19,7 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.net.URL;
 import java.util.*;
 
@@ -258,7 +261,10 @@ public class ModuleResource extends AbstractResource {
         filters.init(uriInfo.getQueryParameters());
         filters.setCorporateFilter(new CorporateFilter(dbOrganization));
 
-        final AncestorsView view = new AncestorsView(String.format("Ancestor List Of %s in version %s", name, version), getLicenseHandler().getLicenses(), filters.getDecorator());
+        final AncestorsView view = new AncestorsView(String.format("Ancestor List Of %s in version %s", name, version),
+                filters.getDecorator(),
+                getLicenseHandler(),
+                getModelMapper());
 
         for (final String artifactId : DataUtils.getAllArtifacts(dbModule)) {
             final DbArtifact dbArtifact = artifactHandler.getArtifact(artifactId);
@@ -298,7 +304,13 @@ public class ModuleResource extends AbstractResource {
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        final DependencyListView view = new DependencyListView(String.format("Dependency List Of %s in version %s", name, version), getLicenseHandler().getLicenses(), filters.getDecorator(), "DependencyListView.ftl");
+        final DependencyListView view = new DependencyListView(
+                String.format("Dependency List Of %s in version %s", name, version),
+                filters.getDecorator(),
+                getLicenseHandler(),
+                getModelMapper(),
+                "DependencyListView.ftl");
+
         final String moduleId = DbModule.generateID(name, version);
         view.addAll(getDependencyHandler().getModuleDependencies(moduleId, filters));
 
@@ -357,7 +369,7 @@ public class ModuleResource extends AbstractResource {
 
         final LicenseListView view = new LicenseListView(String.format("Licenses of %s in version %s", name, version));
         final String moduleId = DbModule.generateID(name, version);
-        final List<DbLicense> dbLicenses = getModuleHandler().getModuleLicenses(moduleId);
+        final List<DbLicense> dbLicenses = getModuleHandler().getModuleLicenses(moduleId, getLicenseHandler());
 
         for (final DbLicense dbLicense : dbLicenses) {
             final License license = getModelMapper().getLicense(dbLicense);

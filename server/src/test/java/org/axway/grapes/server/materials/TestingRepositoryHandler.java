@@ -1,6 +1,7 @@
 package org.axway.grapes.server.materials;
 
 import org.axway.grapes.server.GrapesTestUtils;
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
@@ -86,11 +87,6 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
-    public Set<DbLicense> getMatchingLicenses(String name) {
-        return Collections.emptySet();
-    }
-
-    @Override
     public void deleteLicense(String name) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -106,7 +102,7 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
-    public void removeLicenseFromArtifact(DbArtifact artifact, String name) {
+    public void removeLicenseFromArtifact(DbArtifact artifact, String name, LicenseMatcher m) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 

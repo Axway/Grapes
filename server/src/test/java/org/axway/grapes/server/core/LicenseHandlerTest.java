@@ -1,6 +1,7 @@
 package org.axway.grapes.server.core;
 
 
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
@@ -93,7 +94,9 @@ public class LicenseHandlerTest {
         handler.deleteLicense(license.getName());
 
         verify(repositoryHandler, times(1)).deleteLicense(license.getName());
-        verify(repositoryHandler, times(1)).removeLicenseFromArtifact(artifact, license.getName());
+        //verify(repositoryHandler, never()).removeLicenseFromArtifact(artifact, license.getName(), any());
+        verify(repositoryHandler, times(1)).removeLicenseFromArtifact(
+                eq(artifact), eq(license.getName()), any(LicenseMatcher.class));
     }
 
     @Test

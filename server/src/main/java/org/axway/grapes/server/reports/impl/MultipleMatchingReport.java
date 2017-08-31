@@ -1,5 +1,7 @@
 package org.axway.grapes.server.reports.impl;
 
+import org.axway.grapes.server.core.LicenseHandler;
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbCollections;
@@ -59,6 +61,8 @@ public class MultipleMatchingReport implements Report {
 
     @Override
     public ReportExecution execute(RepositoryHandler repoHandler, ReportRequest request) {
+        final LicenseMatcher licenseMatcher = new LicenseHandler(repoHandler);
+
         if (LOG.isDebugEnabled()) {
             LOG.debug(String.format("Executing %s", getName()));
         }
@@ -75,7 +79,7 @@ public class MultipleMatchingReport implements Report {
                 a -> {
                     if (dataUtils.isThirdParty(a)) {
                         a.getLicenses().forEach(licString -> {
-                            final Set<DbLicense> matchingLicenses = repoHandler.getMatchingLicenses(licString);
+                            final Set<DbLicense> matchingLicenses = licenseMatcher.getMatchingLicenses(licString);
                             if (matchingLicenses.size() > 1) {
                                 result.addResultRow(new String[]{a.getGavc(), licString, matchingLicenses.toString()});
                             }

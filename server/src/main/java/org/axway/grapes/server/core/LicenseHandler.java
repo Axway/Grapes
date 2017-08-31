@@ -1,6 +1,7 @@
 package org.axway.grapes.server.core;
 
 import org.axway.grapes.commons.datamodel.License;
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.core.options.filters.LicenseIdFilter;
 import org.axway.grapes.server.db.ModelMapper;
@@ -12,23 +13,23 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 /**
  * License Handler
- *
+ * <p>
  * <p>Handles the license resolution. It stores the licenses names and the regexp to avoid db access. It must be updated at license addition / deletion.</p>
  *
  * @author jdcoffre
  */
-public class LicenseHandler {
+public class LicenseHandler implements LicenseMatcher {
 
     private static final Logger LOG = LoggerFactory.getLogger(LicenseHandler.class);
 
-    private final Map<String, DbLicense> licensesRegexp = new HashMap<String, DbLicense>();
+    private final Map<String, DbLicense> licensesRegexp = new HashMap<>();
     private final RepositoryHandler repoHandler;
 
     public LicenseHandler(final RepositoryHandler repoHandler) {
@@ -41,15 +42,14 @@ public class LicenseHandler {
      *
      * @param licenses
      */
-    private void init(final List<DbLicense> licenses){
+    private void init(final List<DbLicense> licenses) {
         licensesRegexp.clear();
 
-        for(final DbLicense license: licenses){
-            if(license.getRegexp() == null ||
-                    license.getRegexp().isEmpty()){
+        for (final DbLicense license : licenses) {
+            if (license.getRegexp() == null ||
+                    license.getRegexp().isEmpty()) {
                 licensesRegexp.put(license.getName(), license);
-            }
-            else{
+            } else {
                 licensesRegexp.put(license.getRegexp(), license);
             }
         }
@@ -83,7 +83,7 @@ public class LicenseHandler {
     public DbLicense getLicense(final String name) {
         final DbLicense license = repoHandler.getLicense(name);
 
-        if(license == null){
+        if (license == null) {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
                     .entity("License " + name + " does not exist.").build());
         }
@@ -94,27 +94,26 @@ public class LicenseHandler {
     /**
      * Delete a license from the repository
      *
-     * @param name
+     * @param licName The name of the license to remove
      */
-    public void deleteLicense(final String name) {
-        final DbLicense dbLicense = getLicense(name);
+    public void deleteLicense(final String licName) {
+        final DbLicense dbLicense = getLicense(licName);
 
         repoHandler.deleteLicense(dbLicense.getName());
 
         final FiltersHolder filters = new FiltersHolder();
-        final LicenseIdFilter licenseIdFilter = new LicenseIdFilter(name);
+        final LicenseIdFilter licenseIdFilter = new LicenseIdFilter(licName);
         filters.addFilter(licenseIdFilter);
 
-        for(final DbArtifact artifact: repoHandler.getArtifacts(filters)){
-            repoHandler.removeLicenseFromArtifact(artifact, name);
+        for (final DbArtifact artifact : repoHandler.getArtifacts(filters)) {
+            repoHandler.removeLicenseFromArtifact(artifact, licName, this);
         }
-
     }
 
     /**
      * Approve or reject a license
      *
-     * @param name String
+     * @param name     String
      * @param approved Boolean
      */
     public void approveLicense(final String name, final Boolean approved) {
@@ -130,20 +129,22 @@ public class LicenseHandler {
      * @param licenseId
      * @return DbLicense
      */
-    public DbLicense resolve(final String licenseId){
+    public DbLicense resolve(final String licenseId) {
 
-        for(final Entry<String, DbLicense> regexp  : licensesRegexp.entrySet()){
-            try{
-                if(licenseId.matches(regexp.getKey())){
+        for (final Entry<String, DbLicense> regexp : licensesRegexp.entrySet()) {
+            try {
+                if (licenseId.matches(regexp.getKey())) {
                     return regexp.getValue();
                 }
-            }
-            catch (PatternSyntaxException e){
+            } catch (PatternSyntaxException e) {
                 LOG.error("Wrong pattern for the following license " + regexp.getValue().getName(), e);
                 continue;
             }
         }
-        LOG.warn("No matching pattern for license " + licenseId);
+
+        if(LOG.isWarnEnabled()) {
+            LOG.warn(String.format("No matching pattern for license %s", licenseId));
+        }
         return null;
     }
 
@@ -152,10 +153,10 @@ public class LicenseHandler {
      *
      * @return List<License>
      */
-    public List<License> getLicenses(){
+    public List<License> getLicenses() {
         final ModelMapper modelMapper = new ModelMapper(repoHandler);
-        final List<License> licenses = new ArrayList<License>();
-        for(final DbLicense dbLicense: licensesRegexp.values()){
+        final List<License> licenses = new ArrayList<>();
+        for (final DbLicense dbLicense : licensesRegexp.values()) {
             licenses.add(modelMapper.getLicense(dbLicense));
         }
 
@@ -165,6 +166,7 @@ public class LicenseHandler {
     /**
      * Turns a series of strings into their corresponding license entities
      * by using regular expressions
+     *
      * @param licStrings The list of license strings
      * @return A set of license entities
      */
@@ -173,9 +175,24 @@ public class LicenseHandler {
 
         licStrings
                 .stream()
-                .map(repoHandler::getMatchingLicenses)
+                .map(this::getMatchingLicenses)
                 .forEach(result::addAll);
 
         return result;
+    }
+
+    @Override
+    public Set<DbLicense> getMatchingLicenses(String licenseString) {
+        final List<DbLicense> allLicenses = repoHandler.getAllLicenses();
+        return allLicenses
+                .stream()
+                .filter(license ->
+                        licenseString.equalsIgnoreCase(license.getName()) ||
+                                (
+                                        !license.getRegexp().isEmpty() &&
+                                                licenseString.matches(String.format("(?i:%s)", license.getRegexp()))
+                                )
+                )
+                .collect(Collectors.toSet());
     }
 }

@@ -4,6 +4,7 @@ package org.axway.grapes.server.core;
 import org.apache.commons.jcs.access.CacheAccess;
 import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.core.cache.CacheName;
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.core.options.filters.CorporateFilter;
 import org.axway.grapes.server.core.options.filters.PromotedFilter;
@@ -116,12 +117,13 @@ public class ModuleHandler {
      * @param moduleId String
      * @return List<DbLicense>
      */
-    public List<DbLicense> getModuleLicenses(final String moduleId) {
+    public List<DbLicense> getModuleLicenses(final String moduleId,
+                                             final LicenseMatcher licenseMatcher) {
         final DbModule module = getModule(moduleId);
 
         final List<DbLicense> licenses = new ArrayList<>();
         final FiltersHolder filters = new FiltersHolder();
-        final ArtifactHandler artifactHandler = new ArtifactHandler(repositoryHandler);
+        final ArtifactHandler artifactHandler = new ArtifactHandler(repositoryHandler, licenseMatcher);
 
         for (final String gavc : DataUtils.getAllArtifacts(module)) {
             licenses.addAll(artifactHandler.getArtifactLicenses(gavc, filters));
@@ -215,8 +217,9 @@ public class ModuleHandler {
                 List<String> artifactLicenses = artifactDep.getLicenses();
                 if (!filters.getCorporateFilter().filter(dependency)) {
                     if (artifactLicenses.isEmpty()) {
-                        // report.addMissingThirdPartyDependencyLicenses(modelMapper.getArtifact(artifactDep));
-                        LOG.warn(String.format("Missing license on artifact [%s]", artifactDep.getGavc()));
+                        if(LOG.isWarnEnabled()) {
+                            LOG.warn(String.format("Missing license on artifact [%s]", artifactDep.getGavc()));
+                        }
                     } else {
                         // Check if the existing license name exists in the database
                         for (String licenseName : artifactLicenses) {
@@ -225,13 +228,16 @@ public class ModuleHandler {
                             }
                             DbLicense currentLicense = repositoryHandler.getLicense(licenseName);
                             if (currentLicense == null) {
-                                // report.addMissingThirdPartyDependencyLicenses(modelMapper.getArtifact(artifactDep));
-                                LOG.warn(String.format("Artifact license [%s] not known", licenseName));
+                                if(LOG.isWarnEnabled()) {
+                                    LOG.warn(String.format("Artifact license [%s] not known", licenseName));
+                                }
                             } else if (currentLicense.isApproved() != null && !currentLicense.isApproved()) { // Check if the third party license is approved. If approved == null it is still valid license
                                 // add to a not approved list
                                 Pair<String, String> pair = Pair.create(modelMapper.getArtifact(artifactDep).getGavc(), modelMapper.getLicense(currentLicense).getName());
-                                // report.setDependenciesWithNotAcceptedLicenses(pair);
-                                LOG.warn(String.format("License [%s] is used by [%s], but is considered not accepted ", currentLicense.getName(), artifactDep.getGavc()));
+
+                                if(LOG.isWarnEnabled()) {
+                                    LOG.warn(String.format("License [%s] is used by [%s], but is considered not accepted ", currentLicense.getName(), artifactDep.getGavc()));
+                                }
                             }
                         }
                     }

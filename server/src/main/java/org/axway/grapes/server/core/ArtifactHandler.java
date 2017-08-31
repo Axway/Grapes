@@ -1,6 +1,7 @@
 package org.axway.grapes.server.core;
 
 
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
@@ -29,9 +30,12 @@ public class ArtifactHandler {
     private static final Logger LOG = LoggerFactory.getLogger(ArtifactHandler.class);
 
     private final RepositoryHandler repositoryHandler;
+    private final LicenseMatcher licenseMatcher;
 
-    public ArtifactHandler(final RepositoryHandler repositoryHandler) {
+    public ArtifactHandler(final RepositoryHandler repositoryHandler,
+                           final LicenseMatcher matcher) {
         this.repositoryHandler = repositoryHandler;
+        this.licenseMatcher = matcher;
     }
 
     /**
@@ -266,7 +270,7 @@ public class ArtifactHandler {
         final List<DbLicense> licenses = new ArrayList<>();
 
         for(final String name: artifact.getLicenses()){
-            final Set<DbLicense> matchingLicenses = repositoryHandler.getMatchingLicenses(name);
+            final Set<DbLicense> matchingLicenses = licenseMatcher.getMatchingLicenses(name);
 
             // Here is a license to identify
             if(matchingLicenses.isEmpty()){
@@ -319,7 +323,7 @@ public class ArtifactHandler {
         // The artifact may not have the exact string associated with it, but rather one
         // matching license regexp expression.
         //
-        repositoryHandler.removeLicenseFromArtifact(dbArtifact, licenseId);
+        repositoryHandler.removeLicenseFromArtifact(dbArtifact, licenseId, licenseMatcher);
     }
 
     /**

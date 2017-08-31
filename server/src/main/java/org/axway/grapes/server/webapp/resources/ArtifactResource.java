@@ -462,7 +462,10 @@ public class ArtifactResource extends AbstractResource {
         filters.getDecorator().setShowLicenses(false);
         filters.init(uriInfo.getQueryParameters());
 
-        final AncestorsView view = new AncestorsView("Ancestor List Of " + gavc, getLicenseHandler().getLicenses(), filters.getDecorator());
+        final AncestorsView view = new AncestorsView("Ancestor List Of " + gavc,
+                filters.getDecorator(),
+                getLicenseHandler(),
+                getModelMapper());
 
         final List<DbModule> dbAncestors = getArtifactHandler().getAncestors(gavc, filters);
         final Artifact artifact = DataUtils.createArtifact(gavc);
@@ -637,12 +640,14 @@ public class ArtifactResource extends AbstractResource {
     @Path(ServerAPI.GET_ALL)
     public Response getAll(@Context final UriInfo uriInfo){
 
-        LOG.info(String.format("Got a get all artifact request [%s]", uriInfo.getPath()));
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Got a get all artifact request [%s]", uriInfo.getPath()));
+        }
 
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
-        final List<Artifact> artifacts = new ArrayList<Artifact>();
+        final List<Artifact> artifacts = new ArrayList<>();
 
         final List<DbArtifact> dbArtifacts = getArtifactHandler().getArtifacts(filters);
         for(final DbArtifact dbArtifact: dbArtifacts){

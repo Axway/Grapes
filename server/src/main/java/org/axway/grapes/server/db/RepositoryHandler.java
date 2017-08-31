@@ -1,12 +1,12 @@
 package org.axway.grapes.server.db;
 
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -73,14 +73,6 @@ public interface RepositoryHandler {
     public DbLicense getLicense(final String name);
 
     /**
-     * Gets the matching licenses by the regular expression
-     * @param name The name of the license
-     * @return The list of licenses which are matched by their
-     * regular expression.
-     */
-    public Set<DbLicense> getMatchingLicenses(final String name);
-
-    /**
      * Retrieve all licenses from the database
      *
      * @return List<DbLicense>
@@ -113,10 +105,13 @@ public interface RepositoryHandler {
     /**
      * Remove a license from an existing artifact
      *
-     * @param artifact DbArtifact
+     * @param artifact DbArtifact The artifact entity
      * @param name String
+     * @param licenseMatcher LicenseMatcher
      */
-    public void removeLicenseFromArtifact(final DbArtifact artifact, final String name);
+    public void removeLicenseFromArtifact(final DbArtifact artifact,
+                                          final String name,
+                                          final LicenseMatcher licenseMatcher);
 
     /**
      * Approve or reject a license

@@ -1,5 +1,7 @@
 package org.axway.grapes.server.reports.impl;
 
+import org.axway.grapes.server.core.LicenseHandler;
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbCollections;
@@ -56,6 +58,8 @@ public class MostUsedLicensesReport implements Report {
 
     @Override
     public ReportExecution execute(RepositoryHandler repoHandler, ReportRequest request) {
+        final LicenseMatcher matcher = new LicenseHandler(repoHandler);
+
         if (LOG.isDebugEnabled()) {
             LOG.debug(String.format("Executing %s", getName()));
         }
@@ -85,7 +89,7 @@ public class MostUsedLicensesReport implements Report {
 
         counters.entrySet()
                 .forEach(entry -> {
-                    final Set<DbLicense> matchingLicenses = repoHandler.getMatchingLicenses(entry.getKey());
+                    final Set<DbLicense> matchingLicenses = matcher.getMatchingLicenses(entry.getKey());
 
                     if (!matchingLicenses.isEmpty()) {
                         final DbLicense lic = matchingLicenses.iterator().next();

@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.mongodb.DB;
 import com.sun.jersey.api.NotFoundException;
 import org.axway.grapes.server.config.DataBaseConfig;
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
@@ -203,21 +204,6 @@ public class MongodbHandler implements RepositoryHandler {
     }
 
     @Override
-    public Set<DbLicense> getMatchingLicenses(String name) {
-        final List<DbLicense> allLicenses = getAllLicenses();
-        return allLicenses
-                .stream()
-                .filter(license ->
-                        name.equalsIgnoreCase(license.getName()) ||
-                                (
-                                        !license.getRegexp().isEmpty() &&
-                                                name.matches(String.format("(?i:%s)", license.getRegexp()))
-                                )
-                )
-                .collect(Collectors.toSet());
-    }
-
-    @Override
     public void deleteLicense(final String name) {
         final DbLicense license = getLicense(name);
 
@@ -256,7 +242,9 @@ public class MongodbHandler implements RepositoryHandler {
     }
 
     @Override
-    public void removeLicenseFromArtifact(final DbArtifact artifact, final String licenseId) {
+    public void removeLicenseFromArtifact(final DbArtifact artifact,
+                                          final String licenseId,
+                                          final LicenseMatcher licenseMatcher) {
         final List<String> licenses = artifact.getLicenses();
 
         if (licenses.isEmpty()) {
@@ -266,7 +254,7 @@ public class MongodbHandler implements RepositoryHandler {
         final Set<String> toBeRemoved = new HashSet<>();
 
         licenses.forEach(licStr -> {
-            final Set<DbLicense> matchingLicenses = getMatchingLicenses(licStr);
+            final Set<DbLicense> matchingLicenses = licenseMatcher.getMatchingLicenses(licStr);
             final Optional<DbLicense> first = matchingLicenses
                     .stream()
                     .filter(l -> l.getName().equalsIgnoreCase(licenseId))
@@ -754,7 +742,7 @@ public class MongodbHandler implements RepositoryHandler {
             long documentCount = datastore.getCollection(DbCollections.DB_MODULES).count("{_id: {$regex: \"" + searchParam + "\"}}");
             if (documentCount <= COUNT_THRESHOLD) {
                 findModules = datastore.getCollection(DbCollections.DB_MODULES).find("{_id: {$regex: \"" + searchParam + "\"}}").projection("{_id:1}").sort("{_id: 1}").as(DbModule.class);
-                modulesList.addAll(StreamSupport.stream(findModules.spliterator(), false).map(m -> m.getId()).collect(Collectors.toList()));
+                modulesList.addAll(StreamSupport.stream(findModules.spliterator(), false).map(DbModule::getId).collect(Collectors.toList()));
             } else {
                 modulesList.add(SEARCH_COUNT_EXCEEDED);
             }
@@ -763,7 +751,7 @@ public class MongodbHandler implements RepositoryHandler {
             long documentCount = datastore.getCollection(DbCollections.DB_ARTIFACTS).count("{_id: {$regex: \"" + searchParam + "\"}}");
             if (documentCount <= COUNT_THRESHOLD) {
                 findArtifacts = datastore.getCollection(DbCollections.DB_ARTIFACTS).find("{_id: {$regex: \"" + searchParam + "\"}}").projection("{_id:1}").sort("{_id: 1}").as(DbArtifact.class);
-                artifactsList.addAll(StreamSupport.stream(findArtifacts.spliterator(), false).map(ar -> ar.getGavc()).collect(Collectors.toList()));
+                artifactsList.addAll(StreamSupport.stream(findArtifacts.spliterator(), false).map(DbArtifact::getGavc).collect(Collectors.toList()));
             } else {
                 artifactsList.add(SEARCH_COUNT_EXCEEDED);
             }

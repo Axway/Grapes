@@ -2,6 +2,7 @@ package org.axway.grapes.server.core;
 
 import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.Dependency;
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.core.options.filters.CorporateFilter;
 import org.axway.grapes.server.core.reports.DependencyReport;

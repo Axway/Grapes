@@ -711,7 +711,7 @@ public class ArtifactResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        verify(repositoryHandler, times(1)).removeLicenseFromArtifact(artifact, license.getName());
+        verify(repositoryHandler, times(1)).removeLicenseFromArtifact(eq(artifact), eq(license.getName()), any());
     }
 
     @Test

@@ -3,6 +3,7 @@ package org.axway.grapes.server.db.mongo;
 import com.mongodb.DB;
 import com.mongodb.WriteResult;
 import org.axway.grapes.server.config.DataBaseConfig;
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbCollections;
 import org.axway.grapes.server.db.datamodel.DbCredential;
@@ -52,13 +53,21 @@ public class MongodbHandlerTest<T> {
                 { DbCollections.DB_CREDENTIALS, DbCredential.class, makeCredentials("toto"), addUserRoleTest(), "Add user role" },
                 { DbCollections.DB_CREDENTIALS, DbCredential.class, makeCredentials("toto-modifier", DATA_UPDATER), removeUserRoleTest(DATA_UPDATER), "Remove user role" },
                 { DbCollections.DB_ARTIFACTS, DbArtifact.class, new DbArtifact(), addLicenseTest(), "Add license to artifact" },
-                { DbCollections.DB_ARTIFACTS, DbArtifact.class, new DbArtifact(), removeLicenseTest(), "Remove license from artifact" },
+                { DbCollections.DB_ARTIFACTS, DbArtifact.class, new DbArtifact(), removeLicenseTestLicenseExists(), "Remove license from artifact; artifact contains license" },
+                { DbCollections.DB_ARTIFACTS, DbArtifact.class, new DbArtifact(), removeLicenseEmptyLicenseList(), "Remove license from artifact having empty list of licenses" },
+//                { DbCollections.DB_ARTIFACTS, DbArtifact.class, new DbArtifact(), testRemoveAllMatchingStrings(), "Test remove all license strings" },
                 { DbCollections.DB_LICENSES, DbLicense.class, new DbLicense(), approveLicenseTest(), "Approve license" },
                 { DbCollections.DB_ARTIFACTS, DbArtifact.class, makeSampleArtifact(), updateDoNotUseFlagTest(), "Update DO_NOT_USE flag" },
                 { DbCollections.DB_ARTIFACTS, DbArtifact.class, makeSampleArtifact(), updateDownloadURLTest(), "Update download url flag" },
                 { DbCollections.DB_ARTIFACTS, DbArtifact.class, makeSampleArtifact(), updateProvider(), "Update provider" }
         });
     }
+
+//    private static BiConsumer<MongodbHandler, MongoCollection> testRemoveAllMatchingStrings() {
+//        return (sut, collection) -> {
+//            sut.removeLicenseFromArtifact();
+//        };
+//    }
 
     private static BiConsumer<MongodbHandler, MongoCollection> addUserRoleTest() {
         return (sut, collection) -> {
@@ -90,18 +99,33 @@ public class MongodbHandlerTest<T> {
 
     }
 
-    private static BiConsumer<MongodbHandler, MongoCollection> removeLicenseTest() {
+    private static BiConsumer<MongodbHandler, MongoCollection> removeLicenseTestLicenseExists() {
         return (sut, collection) -> {
             DbArtifact d = makeSampleArtifact();
             d.addLicense("123");
 
-            sut.removeLicenseFromArtifact(d, "123");
+            sut.removeLicenseFromArtifact(d, "123", mock(LicenseMatcher.class));
 
             verify(collection.update(anyString()),
                     times(1))
                     .with(eq("{ $set: { \"licenses\": #, \"updatedDateTime\": #}} "), anyList(), any(Date.class));
         };
     }
+
+    private static BiConsumer<MongodbHandler, MongoCollection> removeLicenseEmptyLicenseList() {
+        return (sut, collection) -> {
+            DbArtifact d = makeSampleArtifact();
+
+            final LicenseMatcher matcherMock = mock(LicenseMatcher.class);
+            sut.removeLicenseFromArtifact(d, "123", matcherMock);
+
+            verify(matcherMock, never()).getMatchingLicenses(anyString());
+//            verify(collection.update(anyString()),
+//                    times(1))
+//                    .with(eq("{ $set: { \"licenses\": #, \"updatedDateTime\": #}} "), anyList(), any(Date.class));
+        };
+    }
+
 
     private static BiConsumer<MongodbHandler, MongoCollection> approveLicenseTest() {
         return (sut, collection) -> {
