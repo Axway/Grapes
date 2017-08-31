@@ -272,6 +272,7 @@ function filterCheckBoxOptions(checkbox){
             $('#s').attr('placeholder', 'Search artifacts');
         } else {
             $('#s').attr('placeholder', 'Search');
+            $("#all").click();
         }
     });
 }
@@ -331,8 +332,8 @@ function getSearchResult(){
 
                 // iterate over modules and construct table body containing the result
                 if(modulesData.length !== 0) {
-                    if(modulesData.length === 1 && modulesData[0] === "SEARCH_COUNT_EXCEEDED") {
-                        html += "<tr><td style=\"color: red\">Too many results. Refine your search criteria!</td></tr>";
+                    if(modulesData.length === 1 && modulesData[0] === "TOO_MANY_RESULTS") {
+                        html += "<tr><td style=\"color: red\">The search generated too many results. You can refine your search criteria by providing group id and classifier id such as javax.mail:mail:1</td></tr>";
                     } else {
                         $.each(modulesData, function(i, module) {
                             var obj = getModuleNameAndVersion(module);
@@ -357,7 +358,7 @@ function getSearchResult(){
                 // iterate over artifacts and construct table body containing artifacts
                 if(artifactsData.length !== 0) {
                     if(artifactsData.length === 1 && artifactsData[0] === "TOO_MANY_RESULTS") {
-                        html += "<tr><td style=\"color: red\">Too many results. Refine your search criteria!</td></tr>";
+                        html += "<tr><td style=\"color: red\">The search generated too many results. You can refine your search criteria by providing group id and classifier id such as javax.mail:mail:1</td></tr>";
                     } else {
                         $.each(artifactsData, function(i, artifact) {
                             html += "<tr><td>"+
@@ -436,12 +437,6 @@ $("input[type='text']").keypress(function(e) {
         e.preventDefault();
         $("input[type='submit']").click();
     }
-    if(this.value.length < 3) {
-        $("input[type='submit']").attr('disabled', true);
-    }
-    else {
-        $("input[type='submit']").attr('disabled',false);
-    }
 });
 
 $('#searchForm').bootstrapValidator({
@@ -458,8 +453,11 @@ $('#searchForm').bootstrapValidator({
                         message: 'The search criteria must contain at least 3 characters'
                     },
                     regexp: {
-                        regexp: /^[\w]+$/,
+                        regexp: /^[^\s]+$/,
                         message: 'Spaces are not allowed!'
+                    },
+                    notEmpty: {
+                        message: 'Search criteria required'
                     }
                 }
             }
@@ -478,13 +476,14 @@ function navigateToSearch(el) {
     $("body").load("/search", function(data){
         document.open();
         document.write(data);
-        setTimeout(function() {
-           $('#s').focus();
-           $('input[value="filter"]').click();
-           $(checkBox).attr('checked', true);
-        }, 300);
         document.close();
+        setTimeout(function(){
+            $('#s').focus();
+            $('input[value="filter"]').click();
+            $(checkBox).attr('checked', true);
+        }, 300);
     });
+
     window.history.pushState("", "", "/search");
 }
 

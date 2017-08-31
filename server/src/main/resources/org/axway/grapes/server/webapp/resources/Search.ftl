@@ -68,15 +68,15 @@
         </div>
         <div id="searchForm">
             <div class="searchText form-group">
-                <input id="s" name="s" minlength="3" class="form-control" type="text" placeholder="Search" tabindex="1" autofocus pattern="^[\w]+$"/>
-                <input type="submit" value="Search" id="submitButton" onclick="getSearchResult()" tabindex="2" disabled/>
+                <input id="s" name="s" minlength="3" class="form-control" type="text" placeholder="Search" tabindex="1" autofocus pattern="^[^\s]+$"/>
+                <input type="submit" class="btn btn-primary" value="Search" id="submitButton" onclick="getSearchResult()" tabindex="2" disabled/>
             </div>
             <div class="optionWrapper">
                 <div class="searchRadio">
-                    <input type="radio" value="all" id="all" name="filter" checked="true" onclick="filterRadioOptions(this);" tabindex="3"/>
+                    <input type="radio" value="all" id="all" name="filter" checked="true" onclick="filterRadioOptions(this)" tabindex="3"/>
                     <label for="all" id="siteNameLabel">All</label>
 
-                    <input type="radio" value="filter" id="filtered" name="filter" onclick="filterRadioOptions(this);" tabindex="4"/>
+                    <input type="radio" value="filter" id="filtered" name="filter" onclick="filterRadioOptions(this)" tabindex="4"/>
                     <label for="filtered">Filtered</label>
                 </div>
                 <div class="searchCheckbox">
