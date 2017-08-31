@@ -67,7 +67,7 @@
             <div class="row-fluid" id="module_overview">
                 <h3>Overview</h3>
 
-                <span>
+                <p>
                     <button type="button"
                             class="btn btn-inverse"
                             aria-label="Left Align"
@@ -75,7 +75,7 @@
                         <span class="icon-white icon-list" aria-hidden="true"></span>
                         Select in Data Browser
                     </button>
-                </span>
+                </p>
 
                 <p>
                     <strong>Name: </strong>${module.getName()}<br/>
