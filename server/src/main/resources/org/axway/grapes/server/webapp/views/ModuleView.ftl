@@ -14,6 +14,10 @@
         <link href="/assets/css/grapes.css" rel="stylesheet">
         <link href="/assets/css/grapes-table.css" rel="stylesheet">
 
+        <script src="/public/jquery-1.9.1/jquery.js"></script>
+        <script src="/public/twitter-bootstrap-2.3.2/js/bootstrapValidator.js"></script>
+        <script src="/assets/js/grapes-commons.js"></script>
+
         <link rel="shortcut icon" type="image/x-icon" href="assets/img/grapes_small.gif"/>
 
 	</head>
@@ -62,6 +66,17 @@
         <div class="container" id="module_info">
             <div class="row-fluid" id="module_overview">
                 <h3>Overview</h3>
+
+                <span>
+                    <button type="button"
+                            class="btn btn-inverse"
+                            aria-label="Left Align"
+                            onclick="navigateToModuleInDB('${module.getName()}', '${module.getVersion()}')">
+                        <span class="icon-white icon-list" aria-hidden="true"></span>
+                        Select in Data Browser
+                    </button>
+                </span>
+
                 <p>
                     <strong>Name: </strong>${module.getName()}<br/>
                     <strong>Version: </strong>${module.getVersion()}<br/>

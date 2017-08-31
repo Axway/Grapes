@@ -339,7 +339,7 @@ function getSearchResult(){
                             var obj = getModuleNameAndVersion(module);
                             html += "<tr><td>" +
                                 getDataBrowserButton('navigateToDataBrowserModule') +
-                                " <a href=\"/module/" + obj.name + "/" + obj.version + "\" >" + module + "</a><span></span></td></tr>";
+                                " <a href=\"/module/" + encodeURIComponent(obj.name) + "/" + encodeURIComponent(obj.version) + "\" >" + module + "</a><span></span></td></tr>";
                         });
                     }
                 }else {
@@ -363,7 +363,7 @@ function getSearchResult(){
                         $.each(artifactsData, function(i, artifact) {
                             html += "<tr><td>"+
                                 getDataBrowserButton('navigateToDataBrowserArtifact') +
-                                " <a href=\"/artifact/" + artifact + "\">" + artifact + "</a><span></span></td></tr>";
+                                " <a href=\"/artifact/" + encodeURIComponent(artifact) + "\">" + artifact + "</a><span></span></td></tr>";
                         });
                     }
                 } else {
@@ -381,11 +381,11 @@ function getSearchResult(){
 }
 
 function getDataBrowserButton(fnName) {
-    return "<button class='btn btn-inverse' "+
+    return "<button class='btn btn-inverse' " +
             " onclick=\"" + fnName + "(this); return false;\"" +
-            ">" +
-           "<span class='icon-list icon-white' title='Open in Data Browser'></span>" +
-           "</button>";
+            " title='Select in Data Browser'>" +
+            "<span class='icon-list icon-white' title='Select in Data Browser'></span>" +
+            "</button>";
 }
 
 /* Return encoded url with or without query params depending on checkbox selection */
@@ -492,15 +492,21 @@ function navigateToDataBrowserArtifact(el) {
     // Get the first anchor element (artifact gavc)
     var elText = getNextAnchor(el);
     var artifact = getArtifactGAVC(elText);
+
+    navigateToArtifactInDB(artifact.groupId, artifact.artifactId, artifact.version, 'targets', '#artifactOverviewButton');
+}
+
+function navigateToArtifactInDB(groupId, artifactId, version) {
     $("body").load("/webapp", function() {
         $(function(){
             $('#artifactButton').click();
         });
     });
     setTimeout(function() {
-        getArtifactTarget(artifact.groupId, artifact.artifactId, artifact.version, 'targets', '#artifactOverviewButton');
+        getArtifactTarget(groupId, artifactId, version, 'targets', '#artifactOverviewButton');
     }, 400);
     window.history.pushState("", "", "/webapp");
+
 }
 
 /* Navigate to module data browser section */
@@ -508,13 +514,18 @@ function navigateToDataBrowserModule(el) {
     // Get the first anchor element (module name and version)
     var elText = getNextAnchor(el);
     var module = getModuleNameAndVersion(elText.text);
+
+    navigateToModuleInDB(module.name, module.version);
+}
+
+function navigateToModuleInDB(name, version) {
     $("body").load("/webapp", function() {
         $(function(){
             $('#moduleButton').click();
         });
     });
     setTimeout(function() {
-        getModuleTarget(module.name, module.version,'false','targets');
+        getModuleTarget(name, version,'false','targets');
     }, 400);
     window.history.pushState("", "", "/webapp");
 }

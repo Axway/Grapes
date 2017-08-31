@@ -12,11 +12,17 @@
 		<link href="/public/twitter-bootstrap-2.3.2/css/bootstrap-responsive.css" rel="stylesheet">
 		<link href="/public/twitter-bootstrap-2.3.2/css/docs.css" rel="stylesheet">
 
+
         <!-- Grapes css -->
         <link href="/assets/css/grapes.css" rel="stylesheet">
         <link href="/assets/css/grapes-table.css" rel="stylesheet">
 
         <link rel="shortcut icon" type="image/x-icon" href="assets/img/grapes_small.gif"/>
+
+        <script src="/public/jquery-1.9.1/jquery.js"></script>
+        <script src="/public/twitter-bootstrap-2.3.2/js/bootstrapValidator.js"></script>
+        <script src="/assets/js/grapes-commons.js"></script>
+
 
 	</head>
     <body>
@@ -65,6 +71,17 @@
         <div class="container" id="artifact_info">
             <div class="row-fluid"  id="artifact_overview">
                 <h3>Overview</h3>
+
+                <span>
+                    <button type="button"
+                            class="btn btn-inverse"
+                            aria-label="Left Align"
+                            onclick="navigateToArtifactInDB('${artifact.getGroupId()}', '${artifact.getArtifactId()}', '${artifact.getVersion()}')">
+                        <span class="icon-white icon-list" aria-hidden="true"></span>
+                        Select in Data Browser
+                    </button>
+                </span>
+
                 <p>
                     <strong>GroupId: </strong>${artifact.getGroupId()}<br/>
                     <strong>ArtifactId: </strong>${artifact.getArtifactId()}<br/>
