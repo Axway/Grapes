@@ -336,7 +336,9 @@ function getSearchResult(){
                     } else {
                         $.each(modulesData, function(i, module) {
                             var obj = getModuleNameAndVersion(module);
-                            html += "<tr><td><a href=\"/module/" + obj.name + "/" + obj.version + "\" >" + module + "</a><span></span><a class=\"secondAnchor\" href=\"javascript:void(0)\" onclick=\"navigateToDataBrowserModule(this); return false;\">Open in data browser</a></td></tr>";
+                            html += "<tr><td>" +
+                                getDataBrowserButton('navigateToDataBrowserModule') +
+                                " <a href=\"/module/" + obj.name + "/" + obj.version + "\" >" + module + "</a><span></span></td></tr>";
                         });
                     }
                 }else {
@@ -358,7 +360,9 @@ function getSearchResult(){
                         html += "<tr><td style=\"color: red\">Too many results. Refine your search criteria!</td></tr>";
                     } else {
                         $.each(artifactsData, function(i, artifact) {
-                            html += "<tr><td><a href=\"/artifact/" + artifact + "\">" + artifact + "</a><span></span><a class=\"secondAnchor\" href=\"javascript:void(0)\" onclick=\"navigateToDataBrowserArtifact(this); return false;\">Open in data browser</a></td></tr>";
+                            html += "<tr><td>"+
+                                getDataBrowserButton('navigateToDataBrowserArtifact') +
+                                " <a href=\"/artifact/" + artifact + "\">" + artifact + "</a><span></span></td></tr>";
                         });
                     }
                 } else {
@@ -373,6 +377,14 @@ function getSearchResult(){
 		    $("#searchResult").empty().append(html);
 		}
 	});
+}
+
+function getDataBrowserButton(fnName) {
+    return "<button class='btn btn-inverse' "+
+            " onclick=\"" + fnName + "(this); return false;\"" +
+            ">" +
+           "<span class='icon-list icon-white' title='Open in Data Browser'></span>" +
+           "</button>";
 }
 
 /* Return encoded url with or without query params depending on checkbox selection */
