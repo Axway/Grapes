@@ -319,7 +319,8 @@ public class ModelMapperTest {
     public void getDbCommentFromComment() throws Exception {
         final String entityId = "com.axway.test:1.0.0::jar";
         final String entityType = "DbArtifact";
-        final Comment comment = DataModelFactory.createComment(entityId, entityType, "test comment", "testUser", new Date());
+        final Comment comment = DataModelFactory.createComment(entityId, entityType,
+                "test action","test comment", "testUser", new Date());
 
         final ModelMapper modelMapper = new ModelMapper(mock(RepositoryHandler.class));
         final DbComment dbComment = modelMapper.getDbComment(comment);
@@ -327,6 +328,7 @@ public class ModelMapperTest {
         assertEquals(entityId, dbComment.getEntityId());
         assertEquals(entityType, dbComment.getEntityType());
         assertEquals("test comment", dbComment.getDbCommentText());
+        assertEquals("test action", dbComment.getAction());
         assertEquals("testUser", dbComment.getDbCommentedBy());
     }
 }

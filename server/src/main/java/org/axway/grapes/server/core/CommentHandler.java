@@ -49,16 +49,21 @@ public class CommentHandler {
      * @param credential - user credentials
      * @param entityType - type of the entity
      */
-    public void store(String gavc, String commentText, DbCredential credential, String entityType) {
+    public void store(String gavc,
+                      String action,
+                      String commentText,
+                      DbCredential credential,
+                      String entityType) {
         DbComment comment = new DbComment();
         comment.setEntityId(gavc);
         comment.setEntityType(entityType);
         comment.setDbCommentedBy(credential.getUser());
-        if(commentText.isEmpty()) {
-            comment.setDbCommentText(credential.getUser() + " marked this artifact as DO_NOT_USE.");
-        } else {
+        comment.setAction(action);
+
+        if(!commentText.isEmpty()) {
             comment.setDbCommentText(commentText);
         }
+
         comment.setDbCreatedDateTime(new Date());
 
         repositoryHandler.store(comment);

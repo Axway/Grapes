@@ -11,6 +11,7 @@ public class Comment {
 
     private String entityId;
     private String entityType;
+    private String action;
     private String commentText;
     private String commentedBy;
     private Date createdDateTime;
@@ -61,25 +62,11 @@ public class Comment {
         this.createdDateTime = createdDateTime;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof Comment){
-            return hashCode() == obj.hashCode();
-        }
-
-        return false;
+    public String getAction() {
+        return action;
     }
 
-    @Override
-    public int hashCode() {
-        final StringBuilder sb = new StringBuilder();
-
-        sb.append(getEntityId());
-        sb.append(getEntityType());
-        sb.append(getCommentText());
-        sb.append(getCommentedBy());
-        sb.append(getCreatedDateTime());
-
-        return sb.toString().hashCode();
+    public void setAction(String action) {
+        this.action = action;
     }
 }

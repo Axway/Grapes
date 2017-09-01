@@ -405,7 +405,10 @@ public class ArtifactResource extends AbstractResource {
      */
     @POST
     @Path("/{gavc}" + ServerAPI.SET_DO_NOT_USE)
-    public Response postDoNotUse(@Auth final DbCredential credential, @PathParam("gavc") final String gavc,@QueryParam(ServerAPI.DO_NOT_USE) final BooleanParam doNotUse, final String commentText){
+    public Response postDoNotUse(@Auth final DbCredential credential,
+                                 @PathParam("gavc") final String gavc,
+                                 @QueryParam(ServerAPI.DO_NOT_USE) final BooleanParam doNotUse,
+                                 final String commentText){
         if(!credential.getRoles().contains(AvailableRoles.ARTIFACT_CHECKER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
@@ -415,7 +418,11 @@ public class ArtifactResource extends AbstractResource {
         }
 
         // Set comment for artifact if available
-        getCommentHandler().store(gavc, commentText, credential, DbArtifact.class.getSimpleName());
+        getCommentHandler().store(gavc,
+                doNotUse.get() ? "mark as DO_NOT_USE" : "cleared DO_NOT_USE flag",
+                commentText,
+                credential,
+                DbArtifact.class.getSimpleName());
 
         getArtifactHandler().updateDoNotUse(gavc, doNotUse.get());
 

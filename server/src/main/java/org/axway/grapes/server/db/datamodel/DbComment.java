@@ -22,6 +22,9 @@ public class DbComment {
     public static final String ENTITY_TYPE_DB_FIELD = "entityType";
     private String entityType = "";
 
+    public static final String ACTION_TEXT_DB_FIELD = "action";
+    private String action = "";
+
     public static final String COMMENT_TEXT_DB_FIELD = "commentText";
     private String commentText = "";
 
@@ -80,32 +83,60 @@ public class DbComment {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof DbComment)) {
-            return false;
-        }
-        final DbComment dbComment = (DbComment) obj;
-        return StringUtils.equals(
-                StringUtils.trimToEmpty(this.getEntityType()),
-                StringUtils.trimToEmpty(dbComment.getEntityType()))
-                && StringUtils.equals(
-                StringUtils.trimToEmpty(this.getEntityId()),
-                StringUtils.trimToEmpty(dbComment.getEntityId()))
-                && StringUtils.equals(
-                StringUtils.trimToEmpty(this.getDbCommentedBy()),
-                StringUtils.trimToEmpty(dbComment.getDbCommentedBy()))
-                && StringUtils.equals(StringUtils.trimToEmpty(this.getDbCommentText()),
-                StringUtils.trimToEmpty(dbComment.getDbCommentText()));
-    }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        DbComment dbComment = (DbComment) o;
+
+        if (datamodelVersion != null ? !datamodelVersion.equals(dbComment.datamodelVersion) : dbComment.datamodelVersion != null)
+            return false;
+        if (entityId != null ? !entityId.equals(dbComment.entityId) : dbComment.entityId != null) return false;
+        if (entityType != null ? !entityType.equals(dbComment.entityType) : dbComment.entityType != null) return false;
+        if (action != null ? !action.equals(dbComment.action) : dbComment.action != null) return false;
+        if (commentText != null ? !commentText.equals(dbComment.commentText) : dbComment.commentText != null)
+            return false;
+        if (commentedBy != null ? !commentedBy.equals(dbComment.commentedBy) : dbComment.commentedBy != null)
+            return false;
+        return createdDateTime != null ? createdDateTime.equals(dbComment.createdDateTime) : dbComment.createdDateTime == null;
+    }
 
     @Override
     public int hashCode() {
-        int hashCode = super.hashCode();
-        hashCode = 31 * hashCode + (this.getEntityId() == null ? 0 : this.getEntityId().hashCode());
-        hashCode = 31 * hashCode + (this.getEntityType() == null ? 0 : this.getEntityType().hashCode());
-        hashCode = 31 * hashCode + (this.getDbCommentedBy() == null ? 0 : this.getDbCommentedBy().hashCode());
-        hashCode = 31 * hashCode + (this.getDbCommentText() == null ? 0 : this.getDbCommentText().hashCode());
-        return hashCode;
+        int result = datamodelVersion != null ? datamodelVersion.hashCode() : 0;
+        result = 31 * result + (entityId != null ? entityId.hashCode() : 0);
+        result = 31 * result + (entityType != null ? entityType.hashCode() : 0);
+        result = 31 * result + (action != null ? action.hashCode() : 0);
+        result = 31 * result + (commentText != null ? commentText.hashCode() : 0);
+        result = 31 * result + (commentedBy != null ? commentedBy.hashCode() : 0);
+        result = 31 * result + (createdDateTime != null ? createdDateTime.hashCode() : 0);
+        return result;
+    }
+
+//    @Override
+//    public boolean equals(Object obj) {
+//        if (!(obj instanceof DbComment)) {
+//            return false;
+//        }
+//        final DbComment dbComment = (DbComment) obj;
+//        return StringUtils.equals(
+//                StringUtils.trimToEmpty(this.getEntityType()),
+//                StringUtils.trimToEmpty(dbComment.getEntityType()))
+//                && StringUtils.equals(
+//                StringUtils.trimToEmpty(this.getEntityId()),
+//                StringUtils.trimToEmpty(dbComment.getEntityId()))
+//                && StringUtils.equals(
+//                StringUtils.trimToEmpty(this.getDbCommentedBy()),
+//                StringUtils.trimToEmpty(dbComment.getDbCommentedBy()))
+//                && StringUtils.equals(StringUtils.trimToEmpty(this.getDbCommentText()),
+//                StringUtils.trimToEmpty(dbComment.getDbCommentText()));
+//    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 }

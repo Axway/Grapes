@@ -4,7 +4,10 @@ import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.webapp.views.PromotionReportView;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertTrue;
@@ -25,7 +28,12 @@ public class ResourcesUtilsTest {
         final Artifact artifactMissingLicense = DataModelFactory.createArtifact("CheckPromotion", "MissingLicense", "version", "classifier", "type", "extension");
         final Artifact artifactDoNotUse = DataModelFactory.createArtifact("CheckPromotion", "DoNotUse", "version", "classifier", "type", "extension");
         final Artifact artifactUnpromotedDependency = DataModelFactory.createArtifact("CheckPromotion", "UnpromotedDependency", "version", "classifier", "type", "extension");
-        final Comment comment = DataModelFactory.createComment("CheckPromotion:DoNotUse:version:classifier:extension", Artifact.class.getSimpleName(), "comment test", "test", new Date());
+        final Comment comment = DataModelFactory.createComment("CheckPromotion:DoNotUse:version:classifier:extension",
+                Artifact.class.getSimpleName(),
+                "sample action",
+                "comment test",
+                "test",
+                new Date());
 
         // add dependencies to the module
         module.addArtifact(artifactMissingLicense);

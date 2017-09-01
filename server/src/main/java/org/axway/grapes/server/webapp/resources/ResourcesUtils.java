@@ -5,6 +5,8 @@ import org.axway.grapes.commons.datamodel.Comment;
 import org.axway.grapes.commons.datamodel.PromotionEvaluationReport;
 import org.axway.grapes.server.webapp.views.PromotionReportView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +14,8 @@ import java.util.Map;
  * <p> Utility class for resource classes that performs resource error collection</p>
  */
 public final class ResourcesUtils {
+
+    final static DateFormat DATE_FORMAT = SimpleDateFormat.getDateInstance();
 
     /**
      * Utility classes should not have public constructors
@@ -42,8 +46,15 @@ public final class ResourcesUtils {
                 if (!isFirstElement) {
                     mappedComments.append(", ");
                 }
-                if(entry.getValue() != null) {
-                    mappedComments.append(entry.getKey() + ". Comment: " + entry.getValue().getCommentText());
+
+
+                final Comment comment = entry.getValue();
+                if(comment != null) {
+                    mappedComments.append(String.format("%s. %s (%s on %s) %s", entry.getKey(),
+                            comment.getCommentedBy(),
+                            comment.getAction(),
+                            DATE_FORMAT.format(comment.getCreatedDateTime()),
+                            comment.getCommentText()));
                 } else {
                     mappedComments.append(entry.getKey());
                 }

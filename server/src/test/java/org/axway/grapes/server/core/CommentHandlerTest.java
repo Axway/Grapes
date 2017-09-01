@@ -75,7 +75,7 @@ public class CommentHandlerTest {
 
         final RepositoryHandler repo = mock(RepositoryHandler.class);
         final CommentHandler commentHandler = new CommentHandler(repo);
-        commentHandler.store(entityId, "test comment", credential, entityType);
+        commentHandler.store(entityId, "some action", "test comment", credential, entityType);
 
         verify(repo, times(1)).store(dbComment);
     }

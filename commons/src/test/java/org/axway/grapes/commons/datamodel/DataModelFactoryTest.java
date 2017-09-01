@@ -79,12 +79,19 @@ public class DataModelFactoryTest {
 
     @Test
     public void createComment() throws UnsupportedScopeException {
-        Comment comment = DataModelFactory.createComment("com.axway.test:1.0.0::jar", "DbArtifact", "test comment", "testUser", new Date());
+        Comment comment = DataModelFactory.createComment("com.axway.test:1.0.0::jar",
+                "DbArtifact",
+                "Flag as DO_NOT_USE",
+                "test comment",
+                "testUser",
+                new Date());
+
         assertNotNull(comment);
         assertEquals("com.axway.test:1.0.0::jar", comment.getEntityId());
         assertEquals("DbArtifact", comment.getEntityType());
         assertEquals("test comment", comment.getCommentText());
         assertEquals("testUser", comment.getCommentedBy());
+        assertEquals("Flag as DO_NOT_USE", comment.getAction());
     }
 
 }

@@ -1,12 +1,12 @@
 package org.axway.grapes.commons.datamodel;
 
+import org.axway.grapes.commons.exceptions.UnsupportedScopeException;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.axway.grapes.commons.exceptions.UnsupportedScopeException;
 
 
 /**
@@ -238,15 +238,23 @@ public final class DataModelFactory {
 	 *
 	 * @param entityId - id of the commented entity
 	 * @param entityType - type of the entity
+	 * @param action - the action performed by the user
 	 * @param commentedText - comment text
 	 * @param user - comment left by
 	 * @param date - date comment was created
 	 * @return - comment entity
 	 */
-	public static Comment createComment(final String entityId,final String entityType, final String commentedText, final String user, Date date){
+	public static Comment createComment(final String entityId,
+										final String entityType,
+										final String action,
+										final String commentedText,
+										final String user,
+										final Date date) {
+
 		final Comment comment = new Comment();
 		comment.setEntityId(entityId);
 		comment.setEntityType(entityType);
+		comment.setAction(action);
 		comment.setCommentText(commentedText);
 		comment.setCommentedBy(user);
 		comment.setCreatedDateTime(date);

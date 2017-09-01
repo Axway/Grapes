@@ -103,26 +103,37 @@
                     <#if isCorporate() && moduleName??>
                     <strong>Module: </strong>${moduleName} in version ${moduleVersion}<br/>
                     </#if>
+
                     <#if shouldNotBeUsed()>
-                    <strong>This artifact should not be used!!!</strong><br/>
-                        <#if comment??>
-                        <table class="table table-bordered table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Comment</th>
-                                    <th>Commented by</th>
-                                    <th>Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>${comment.getCommentText()}</td>
-                                    <td>${comment.getCommentedBy()}</td>
-                                    <td>${comment.getCreatedDateTime()?datetime}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        </#if>
+                        <strong style='color:red'>This artifact should not be used!!!</strong><br/>
+                    </#if>
+
+                    <#if comment??>
+                        <hr/>
+                        <p>
+                            <strong>Latest comment on this artifact</strong>
+                        </p>
+
+                        <p>
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>Comment</th>
+                                        <th>Author</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>${comment.getAction()}</td>
+                                        <td>${comment.getCommentText()}</td>
+                                        <td>${comment.getCommentedBy()}</td>
+                                        <td>${comment.getCreatedDateTime()?datetime}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </p>
                     </#if>
                 </p>
                 <br/>
