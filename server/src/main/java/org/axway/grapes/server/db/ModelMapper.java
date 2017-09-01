@@ -270,6 +270,7 @@ public class ModelMapper {
         final DbComment dbComment = new DbComment();
         dbComment.setEntityId(comment.getEntityId());
         dbComment.setEntityType(comment.getEntityType());
+        dbComment.setAction(comment.getAction());
         dbComment.setDbCommentText(comment.getCommentText());
         dbComment.setDbCommentedBy(comment.getCommentedBy());
         dbComment.setDbCreatedDateTime(comment.getCreatedDateTime());

@@ -70,13 +70,13 @@ public final class ResourcesUtils {
 
         // missing third party dependency license
         if (!promotionReportView.getMissingThirdPartyDependencyLicenses().isEmpty()) {
-            String err = addErrors(promotionReportView.getMissingThirdPartyDependencyLicenses(), "The module you are trying to promote has dependencies that miss the license information: %s");
-            result.addError(err);
+//            String err = addErrors(promotionReportView.getMissingThirdPartyDependencyLicenses(), "The module you are trying to promote has dependencies that miss the license information: %s");
+//            result.addError(err);
         }
         // third party dependency not accepted licenses
         if (!promotionReportView.getDependenciesWithNotAcceptedLicenses().isEmpty()) {
-            String err = addErrors(promotionReportView.getDependenciesWithNotAcceptedLicenses(), "The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: %s");
-            result.addError(err);
+//            String err = addErrors(promotionReportView.getDependenciesWithNotAcceptedLicenses(), "The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: %s");
+//            result.addError(err);
         }
 
         return result;
