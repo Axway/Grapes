@@ -452,7 +452,7 @@ $("input[type='text']").keyup(function(e) {
 $(document).ready(function(event) {
     if(document.location.pathname === "/search"){
         // if the input value has 3 chars or more - enable
-        if(minCount($("#s").val()) > 2) {
+        if($("#s").val().length > 2) {
             $("#submitButton").prop("disabled", false);
         }
         checkRadioButtonsStatus($('input[value="filter"]').is(':checked'));
