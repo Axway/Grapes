@@ -68,7 +68,7 @@
         </div>
         <div id="searchForm">
             <div class="searchText form-group">
-                <input id="s" name="s" minlength="3" class="form-control" type="text" placeholder="Search" tabindex="1" autofocus pattern="^[^\s]+$"/>
+                <input id="s" name="s" class="form-control" type="text" placeholder="Search" tabindex="1" autofocus pattern="^[^.*]([^\s]+)*([^.*])?$"/>
                 <input type="submit" class="btn btn-primary" value="Search" id="submitButton" onclick="getSearchResult()" tabindex="2" disabled/>
             </div>
             <div class="optionWrapper">

@@ -243,22 +243,27 @@ function loadLicensesNames(licenseNamesSelectId){
 /* Disable or enable checkbox option depending on user selection */
 function filterRadioOptions(radio){
     $(radio).change(function () {
-        var stat = $('input[value="filter"]').is(':checked');
-        if(stat){
-             $("input.options").prop('disabled', false);
-        }
-        else{
-            $("input.options").prop('disabled', 'disabled');
-        }
-        if ($('input[type=checkbox]').is(':disabled')) {
-            $('#s').attr('placeholder', 'Search');
-        }
-        // uncheck checkboxes on all radio button select
-        if(!stat) {
-            $('#modules').attr('checked', false);
-            $('#artifacts').attr('checked', false)
-        }
+        var status = $('input[value="filter"]').is(':checked');
+       checkRadioButtonsStatus(status);
+       // uncheck checkboxes on all radio button select
+       if(!status) {
+           $('#modules').attr('checked', false);
+           $('#artifacts').attr('checked', false)
+       }
     });
+}
+
+/* Enable/disable checkbox section depending on radio button select */
+function checkRadioButtonsStatus(status) {
+    if(status){
+         $("input.options").prop('disabled', false);
+    }
+    else{
+        $("input.options").prop('disabled', 'disabled');
+    }
+    if ($('input[type=checkbox]').is(':disabled')) {
+        $('#s').attr('placeholder', 'Search');
+    }
 }
 
 /* Toggle placeholder text depending on user checkbox selection */
@@ -431,11 +436,26 @@ function getArtifactGAVC(artifactObj) {
     }
 }
 
-$("input[type='text']").keypress(function(e) {
+/* Enable searching with enter button if the length validation is ok */
+$("input[type='text']").keyup(function(e) {
     //input#s.form-control
-    if ((this.value.length > 2) && ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
+    if ((this.value.trim().length > 2) && ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))) {
         e.preventDefault();
         $("input[type='submit']").click();
+    }
+    if (this.value.length == 0) {
+        $("#submitButton").prop("disabled", true);
+    }
+});
+
+/* Browser back button handling*/
+$(document).ready(function(event) {
+    if(document.location.pathname === "/search"){
+        // if the input value has 3 chars or more - enable
+        if(minCount($("#s").val()) > 2) {
+            $("#submitButton").prop("disabled", false);
+        }
+        checkRadioButtonsStatus($('input[value="filter"]').is(':checked'));
     }
 });
 
@@ -449,20 +469,24 @@ $('#searchForm').bootstrapValidator({
             s: {
                 validators: {
                     stringLength: {
-                        min: 3,
-                        message: 'The search criteria must contain at least 3 characters'
+                        message: 'The search criteria must contain at least 3 characters',
+                        min: minCount
                     },
                     regexp: {
-                        regexp: /^[^\s]+$/,
+                        regexp: /^[^.*]([^\s]+)*([^.*])?$/,
                         message: 'Spaces are not allowed!'
-                    },
-                    notEmpty: {
-                        message: 'Search criteria required'
                     }
                 }
             }
         }
 });
+
+/* Return the minimum length of the user input (3 trimmed chars)*/
+function minCount(value, validator, $field) {
+    var actual = value.length;
+    var trimmed = value.trim().length;
+    return (actual - trimmed) + 3;
+}
 
 /* Navigate to search page with checkbox checked depending on the selected section */
 function navigateToSearch(el) {
