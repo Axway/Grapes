@@ -473,7 +473,7 @@ $('#searchForm').bootstrapValidator({
                         min: minCount
                     },
                     regexp: {
-                        regexp: /^[^.*]([^\s]+)*([^.*])?$/,
+                        regexp: /^\s*([^\s]+)*\s*$/,
                         message: 'Spaces are not allowed!'
                     }
                 }
