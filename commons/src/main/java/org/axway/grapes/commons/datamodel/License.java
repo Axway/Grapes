@@ -112,8 +112,20 @@ public class License {
 		sb.append(url);
 		sb.append(comments);
 		sb.append(regexp);
-		
+
         return sb.toString().hashCode();
     }
 
+	@Override
+	public String toString() {
+		return "License{" +
+				"name='" + name + '\'' +
+				", longName='" + longName + '\'' +
+				", url='" + url + '\'' +
+				", comments='" + comments + '\'' +
+				", regexp='" + regexp + '\'' +
+				", approved=" + approved +
+				", unknown=" + unknown +
+				'}';
+	}
 }

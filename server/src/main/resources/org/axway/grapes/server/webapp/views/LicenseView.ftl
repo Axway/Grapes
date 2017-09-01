@@ -67,11 +67,14 @@
                     <strong>Comments: </strong>${license.getComments()}<br/>
                     <strong>Regular Expression: </strong>${license.getRegexp()}<br/>
                     <strong>Url: </strong>${license.getUrl()}<br/>
-                    <#if license.isApproved()??>
-                        <strong>Accepted: </strong>${license.isApproved()?string("yes", "refused")}<br/>
-                    <#else>
-                        <strong>To be validated.</strong><br/>
-                    </#if>
+
+                    <p>
+                        <#if license.isApproved()>
+                            <strong>This license contains accepted terms<br/>
+                        <#else>
+                            <strong><span style="color:red">This license is not accepted by legal department</span></strong><br/>
+                        </#if>
+                    </p>
                 </p>
                 <br/>
             </div>
