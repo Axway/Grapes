@@ -4,6 +4,8 @@ import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbComment;
 import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.omg.PortableInterceptor.ACTIVE;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,22 +65,22 @@ public class CommentHandlerTest {
 
         final String entityId = "com.axway.test:1.0.0::jar";
         final String entityType = "DbArtifact";
-        DbComment dbComment = new DbComment();
-        dbComment.setEntityId(entityId);
-        dbComment.setEntityType(entityType);
-        dbComment.setAction("some action");
-        dbComment.setDbCommentText("test comment");
-        dbComment.setDbCommentedBy("testUser");
-        dbComment.setDbCreatedDateTime(new Date());
+        final String action = "Some Action";
+        final String commentText = "Test Comment";
 
         DbCredential credential = new DbCredential();
         credential.setUser("testUser");
 
         final RepositoryHandler repo = mock(RepositoryHandler.class);
         final CommentHandler commentHandler = new CommentHandler(repo);
-        commentHandler.store(entityId, dbComment.getAction(), "test comment", credential, entityType);
+        commentHandler.store(entityId, action, commentText, credential, entityType);
 
-        verify(repo, times(1)).store(dbComment);
+        ArgumentCaptor<DbComment> captor = ArgumentCaptor.forClass(DbComment.class);
+        verify(repo, times(1)).store(captor.capture());
+
+        final DbComment arg = captor.getValue();
+        assertEquals(action, arg.getAction());
+        assertEquals(commentText, arg.getDbCommentText());
     }
 
     @Test
