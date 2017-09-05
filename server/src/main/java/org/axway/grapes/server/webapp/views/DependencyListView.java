@@ -2,6 +2,7 @@ package org.axway.grapes.server.webapp.views;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.yammer.dropwizard.views.View;
+import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.commons.datamodel.License;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -280,5 +282,17 @@ public class DependencyListView extends View {
         }
 
         return cells.toArray(new String[cells.size()]);
+    }
+
+    public String getArtifactLink(String gavc) {
+        final Optional<Dependency> first = dependencies.stream().filter(dep -> dep.getTarget().getGavc().equalsIgnoreCase(gavc)).findFirst();
+
+        if(first.isPresent()) {
+            final Artifact a = first.get().getTarget();
+            return String.format("/webapp?section=artifacts&groupId=%s&artifactId=%s&version=%s",
+                    a.getGroupId(), a.getArtifactId(), a.getVersion());
+        }
+
+        return "/webapp/section=artifacts";
     }
 }

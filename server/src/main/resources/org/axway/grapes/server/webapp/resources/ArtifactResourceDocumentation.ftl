@@ -437,7 +437,7 @@
                         <ul>
                             <li>List the license(s) of an artifact</li>
                             <li>
-                                Returns HTML view or a list of licenses in Json
+                                Returns the of the artifact licenses in Json format
                                 <pre>${getLicenseJsonModel()}</pre>
                             </li>
                         </ul>

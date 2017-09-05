@@ -961,18 +961,6 @@ function getModuleLink(moduleName){
 	return "/webapp?moduleName=" + name + "&moduleVersion=" + version;
 }
 
-function getArtifactLink(artifactObj){
-
-    // function that return the artifact groupId, artifactId and version
-    var artifact = getArtifactGAVC(artifactObj);
-
-    jQuery(function(){
-        jQuery('#artifactButton').click();
-    });
-
-    getArtifactTarget(artifact.groupId, artifact.artifactId, artifact.version, 'targets', '#licensesButton');
-}
-
 function getLicenseLink(licenseId) {
     jQuery(function(){
         jQuery('#licenseButton').click();
@@ -984,22 +972,6 @@ function getLicenseDirectLink(dependencyLicense) {
     dependencyLicense = dependencyLicense.trim();
     var licenseName = dependencyLicense.substring(dependencyLicense.indexOf("(") + 1, dependencyLicense.indexOf(")"));
     getLicenseLink(licenseName);
-}
-
-// Navigate to module dependency
-function getDependencyDirectLink(dependency) {
-   jQuery(function(){
-       jQuery('#artifactButton').click();
-   });
-
-   var dependency = dependency.text.trim();
-
-   var groupId = dependency.substring(0, dependency.indexOf(":"));
-   var versionAndArtifact = dependency.substring(dependency.indexOf(":") + 1, dependency.length);
-   var version = versionAndArtifact.substring(versionAndArtifact.indexOf(":") + 1, versionAndArtifact.indexOf("::"));
-   var artifactId = versionAndArtifact.substring(0, versionAndArtifact.indexOf(":"));
-
-   getArtifactTarget(groupId, artifactId, version, 'targets', '#artifactOverviewButton');
 }
 
 function getBuildFromJenkinsURL(jenkinsBuildUrl){
@@ -1364,6 +1336,7 @@ function getModulePromotionReport(){
                                 if(errorDesc.search(/miss.*(?=license)|license.*(?=miss)/i) != -1) {
                                     html += "<tr><td>" + errorDesc + "</td><td>";
                                     depList.forEach(function(dep, i){
+                                        // TODO: Turn this into a normal link on section artifacts
                                         html += "<a href=\"javascript:void(0)\" onclick=\"getArtifactLink(this)\">" + dep + "</a>";
                                         if(i != (depList.length - 1)){
                                            html += ", ";
@@ -1374,6 +1347,7 @@ function getModulePromotionReport(){
                                     html += "<tr><td>" + errorDesc + "</td><td>";
                                     depList.forEach(function(dep, i){
                                         html += "<a href=\"javascript:void(0)\" onclick=\"getArtifactLink(this)\">" + dep.substring(0, dep.indexOf("(")) + "</a>" +
+                                        // TODO: Turn this into a normal link on section artifacts
                                         "<a class=\"licenseLink\" href=\"javascript:void(0)\" onclick=getLicenseDirectLink(this.text)>" + dep.substring(dep.indexOf("("), dep.indexOf(")") + 1) + "</a>";
 
                                          if(i != (depList.length - 1)){

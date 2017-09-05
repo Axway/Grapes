@@ -65,6 +65,7 @@
         <#assign table = getTable()>
         <#assign headers = table.getHeaders()>
         <#assign rows = table.getRows()>
+
         <div class="container" style="">
             <div class="row-fluid" id='table_div'>
                 <table class="table table-bordered table-hover sortable">
@@ -80,7 +81,9 @@
                             <tr>
                                 <#list 0..row?size-1 as cell>
                                     <#if cell == 0>
-                                        <td><a href="javascript:void(0)" onclick="getDependencyDirectLink(this)">${row[cell]}</a></td>
+                                        <td>
+                                            <a href="${getArtifactLink(row[0])}">${row[cell]}</a>
+                                        </td>
                                     <#else>
                                         <td>${row[cell]}</td>
                                     </#if>

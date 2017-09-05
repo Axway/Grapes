@@ -237,7 +237,11 @@ public abstract class AbstractResource extends View {
      * @throws IOException
      */
     public String getLicenseJsonModel() throws IOException {
-        return JsonUtils.serialize(DataModelFactory.createLicense("","","","",""));
+        return JsonUtils.serialize(DataModelFactory.createLicense("Apache 2",
+                "The Apache Software License, Version 2.0",
+                "",
+                "(((.*)(Apache|apache|asf)(.*)(2)(.*))|(.*)(apache license|apache|Software Licenses))",
+                "http://www.opensource.org/licenses/apache2.0.php"));
     }
     /**
      * Returns an empty Promotion details in Json

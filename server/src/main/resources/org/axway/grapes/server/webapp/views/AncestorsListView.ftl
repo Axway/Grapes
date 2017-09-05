@@ -4,8 +4,8 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="author" content="jdcoffre">
 		
-		<title>Grapes Dependency List</title>
-		<meta name="description" content="Dependency List">
+		<title>Grapes Ancestors List</title>
+		<meta name="description" content="Ancestors List">
 
         <link rel="shortcut icon" type="image/x-icon" href="assets/img/grapes_small.gif"/>
 

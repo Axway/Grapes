@@ -152,12 +152,12 @@
                                                 <#if errorDesc?contains("miss")>
                                                     <td>${errorDesc}</td>
                                                     <td><#list depList as dep>
-                                                        <a href="javascript:void(0)" onclick="getArtifactLink(this)">${dep}<#if dep_has_next>,</#if></a>
+                                                        <a href="${getArtifactLink(dep)}">${dep}<#if dep_has_next>,</#if></a>
                                                     </#list></td>
                                                     <#elseif errorDesc?contains("not accepted")>
                                                         <td>${errorDesc}</td>
                                                         <td><#list depList as dep>
-                                                            <a href="javascript:void(0)" onclick="getArtifactLink(this)">${dep?substring(0, dep?index_of("("))}</a><a class="licenseLink" onclick=getLicenseDirectLink(this.text)>${dep?substring(dep?index_of("("), dep?index_of(")") + 1)}</a><#if dep_has_next>,</#if>
+                                                            <a href="${getArtifactLink(dep)}">${dep?substring(0, dep?index_of("("))}</a><a class="licenseLink" onclick=getLicenseDirectLink(this.text)>${dep?substring(dep?index_of("("), dep?index_of(")") + 1)}</a><#if dep_has_next>,</#if>
                                                         </#list></td>
                                                     <#else>
                                                         <td>${errorDesc}</td>

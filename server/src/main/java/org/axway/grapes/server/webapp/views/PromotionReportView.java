@@ -168,7 +168,6 @@ public class PromotionReportView extends View {
         if (!dependenciesWithNotAcceptedLicenses.contains(pair)) {
             dependenciesWithNotAcceptedLicenses.add(pair);
         }
-
     }
 
     private class PromotionPlanComparator implements Comparator<String> {
@@ -177,7 +176,6 @@ public class PromotionReportView extends View {
         public PromotionPlanComparator(final Map<String, PromotionReportView> dependencyReports) {
             this.dependencyReports = dependencyReports;
         }
-
 
         @Override
         public int compare(final String module1, final String module2) {
@@ -193,6 +191,16 @@ public class PromotionReportView extends View {
             }
 
             return 0;
+        }
+    }
+
+    public String getArtifactLink(final String gavc) {
+        final String[] parts = gavc.split(":");
+        if(parts.length > 2) {
+            return String.format("/webapp?section-artifacts&groupId=%s&artifactId=%s&version=%s",
+                    parts[0], parts[1], parts[2] );
+        } else {
+            return "/webapp?section=artifacts";
         }
     }
 }

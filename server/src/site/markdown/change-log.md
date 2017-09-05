@@ -1,3 +1,11 @@
+1.8.0
+-------------
+* [ECDDEV-813](https://techweb.axway.com/jira/browse/ECDDEV-813) Improve the search for modules and artifacts
+* [ECDDEV-509](https://techweb.axway.com/jira/browse/ECDDEV-509) Add links to artifact details for module dependencies
+* [ECDDEV-840](https://techweb.axway.com/jira/browse/ECDDEV-840) Enhance the detection of the artifact license association
+* [ECDDEV-852](https://techweb.axway.com/jira/browse/ECDDEV-852) Include administrative reports on license management
+
+
 1.5.0
 -------------
 * [ECDDEV-434](https://techweb.axway.com/jira/browse/ECDDEV-434) Allow external systems to check if an arbitrary artifact is promoted.

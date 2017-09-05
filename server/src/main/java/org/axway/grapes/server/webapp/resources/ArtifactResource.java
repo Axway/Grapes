@@ -490,10 +490,10 @@ public class ArtifactResource extends AbstractResource {
      * This method is call via GET <grapes_url>/artifact/{gavc}/licenses
      *
      * @param gavc The artifact gavc identification
-     * @return Response A list of dependencies in HTML or JSON
+     * @return Response A list of dependencies in JSON
      */
     @GET
-    @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Path("/{gavc}" + ServerAPI.GET_LICENSES)
     public Response getLicenses(@PathParam("gavc") final String gavc, @Context final UriInfo uriInfo){
 
