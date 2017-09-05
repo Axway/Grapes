@@ -155,13 +155,25 @@ public class ModuleResourceTest extends ResourceTest {
     }
 
     @Test
-    public void getAllModules() {
+    public void getAllModulesWithNoFilteringIsBadRequest() {
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + ServerAPI.GET_ALL);
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        final String entity = response.getEntity(String.class);
+        assertTrue(entity.contains("provide at least one module filtering criteria"));
+    }
+
+    @Test
+    public void getAllModulesNameFilter() {
         final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         when(repositoryHandler.getModules((FiltersHolder) anyObject())).thenReturn(Collections.singletonList(dbModule));
 
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + ServerAPI.GET_ALL);
+        WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + ServerAPI.GET_ALL);
+        resource = resource.queryParam("name", dbModule.getName());
+
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());

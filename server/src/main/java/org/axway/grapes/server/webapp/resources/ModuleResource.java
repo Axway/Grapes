@@ -529,6 +529,11 @@ public class ModuleResource extends AbstractResource {
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
+        if(filters.getModuleFieldsFilters().size() == 0) {
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Please provide at least one module filtering criteria").build());
+        }
+
         final List<Module> modules = new ArrayList<>();
         final List<DbModule> dbModules = getModuleHandler().getModules(filters);
 

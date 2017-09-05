@@ -654,6 +654,12 @@ public class ArtifactResource extends AbstractResource {
         final FiltersHolder filters = new FiltersHolder();
         filters.init(uriInfo.getQueryParameters());
 
+        if(filters.getArtifactFieldsFilters().size() == 0) {
+            LOG.warn("No artifact filtering criteria. Returning BAD_REQUEST");
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Please provide at least one artifact filtering criteria").build());
+        }
+
         final List<Artifact> artifacts = new ArrayList<>();
 
         final List<DbArtifact> dbArtifacts = getArtifactHandler().getArtifacts(filters);

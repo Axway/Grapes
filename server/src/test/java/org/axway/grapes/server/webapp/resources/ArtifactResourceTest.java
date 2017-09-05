@@ -55,29 +55,6 @@ public class ArtifactResourceTest extends ResourceTest {
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);
     }
-    
-//    private GrapesServerConfig getGrapesConfig(){
-//        GrapesServerConfig config = mock(GrapesServerConfig.class);
-//        List<String> validatedTypes = new ArrayList<String>();
-//        validatedTypes.add("filetype1");
-//        validatedTypes.add("filetype2");
-//        when(config.getExternalValidatedTypes()).thenReturn(validatedTypes);
-//        when(config.getArtifactNotificationRecipients()).thenReturn(new String[] {"toto@axway.com"});
-//
-//        GrapesEmailConfig emailCfgMock = mock(GrapesEmailConfig.class);
-//        when(config.getGrapesEmailConfig()).thenReturn(emailCfgMock);
-//
-//        Properties p = new Properties();
-//        p.setProperty("mail.smtp.host", "1");
-//        p.setProperty("mail.smtp.user", "2");
-//        p.setProperty("mail.smtp.password", "3");
-//        p.setProperty("mail.smtp.ssl.trust", "4");
-//        p.setProperty("mail.smtp.from", "5");
-//
-//        when(emailCfgMock.getProperties()).thenReturn(p);
-//
-//        return config;
-//    }
 
     @Test
     public void getDocumentation(){
@@ -87,6 +64,17 @@ public class ArtifactResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
+
+    @Test
+    public void getAllArtifactsWithNoFilteringIsBadRequest() {
+        final WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + ServerAPI.GET_ALL);
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        final String entity = response.getEntity(String.class);
+        assertTrue(entity.contains("provide at least one artifact filtering criteria"));
+    }
+
     
     @Test
     public void postArtifactTest(){
