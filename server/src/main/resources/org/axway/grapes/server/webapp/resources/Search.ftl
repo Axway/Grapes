@@ -102,6 +102,9 @@
         <script src="/assets/js/grapes-webApp.js"></script>
         <script src="/assets/js/grapes-commons.js"></script>
 
+        <!-- Navigation support -->
+        <script src="/assets/js/navigation.js"></script>
+
         <!-- Make the table sortable -->
         <script src="/public/jquery-tablesorter-1.10.2/jquery.tablesorter.min.js"></script>
 

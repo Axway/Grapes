@@ -19,6 +19,7 @@ function displayOrganizationOptions(){
     loadOrganizationNames("organizationName");
 
     $("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getOrganizationList(\"organizationName\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+    resetURL();
 }
 
 function displayProductOptions(){
@@ -49,9 +50,10 @@ function displayProductOptions(){
     });
 
     $("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getProductList(\"productName\", \"productDelivery\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+    resetURL();
 }
 
-function displayModuleOptions(){
+function displayModuleOptions(moduleName, version){
     $("#targets").empty();
     cleanAction();
 	var moduleIds = "<div class=\"control-group\">\n";
@@ -85,16 +87,31 @@ function displayModuleOptions(){
 	moduleActions += "</div>\n";
 	$("#action").empty().append(moduleActions);
 	$("#action-perform").empty();
-	loadModuleNames("moduleName");
 
-	$("#moduleName").change(function () {
-		loadModuleVersions($("#moduleName").val(), "moduleVersion");
-	});
+	if(undefined === moduleName) {
+        loadModuleNames("moduleName");
+    } else {
+        setFixedSelectOption('moduleName', moduleName);
+    }
+
+    if(undefined === version) {
+        $("#moduleName").change(function () {
+            loadModuleVersions($("#moduleName").val(), "moduleVersion");
+        });
+    } else {
+	    setFixedSelectOption('moduleVersion', version);
+    }
 
 	$("#search").empty().append("<button id=\"searchModuleRadioButton\" type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getModuleList(\"moduleName\", \"moduleVersion\", \"promoted\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+
+	if(undefined !== moduleName && undefined !== version) {
+	    $('#searchModuleRadioButton').click();
+    } else {
+        resetURL();
+    }
 }
 
-function displayArtifactOptions(){
+function displayArtifactOptions(groupId, artifactId, version){
     $("#targets").empty();
     cleanAction();
 	var artifactIds = "<div class=\"control-group\">\n";
@@ -128,18 +145,37 @@ function displayArtifactOptions(){
 	artifactActions += "</div>\n";
 	$("#action").empty().append(artifactActions);
 	$("#action-perform").empty();
-	loadArtifactGroupIds("groupId");
 
-	$("#groupId").change(function () {
-		loadArtifactVersions($("#groupId").val(), "version");
-		$("#artifactId").empty();
-	});
+	if(undefined === groupId) {
+        loadArtifactGroupIds("groupId");
+    } else {
+        setFixedSelectOption('groupId', groupId);
+    }
 
-	$("#version").change(function () {
-		loadArtifactArtifactId($("#groupId").val(),$("#version").val(), "artifactId");
-	});
+	if(undefined === artifactId) {
+        $("#groupId").change(function () {
+            loadArtifactVersions($("#groupId").val(), "version");
+            $("#artifactId").empty();
+        });
+    } else {
+        setFixedSelectOption('artifactId', artifactId);
+    }
+
+    if(undefined === version) {
+        $("#version").change(function () {
+            loadArtifactArtifactId($("#groupId").val(),$("#version").val(), "artifactId");
+        });
+    } else {
+        setFixedSelectOption('version', version);
+    }
 
 	$("#search").empty().append("<button id=\"searchArtifactRadio\" type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getArtifactList(\"groupId\", \"artifactId\", \"version\", \"doNotUse\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+
+    if(undefined !== groupId && undefined !== artifactId && undefined !== version) {
+        $("#searchArtifactRadio").click();
+    } else {
+        resetURL();
+    }
 }
 
 function displayLicenseOptions(){
@@ -174,6 +210,7 @@ function displayLicenseOptions(){
 	loadLicensesNames("licenseName");
 
 	$("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getLicenseList(\"licenseName\", \"toBeValidated\", \"validated\", \"unvalidated\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+    resetURL();
 }
 /**************************************************************************************************/
 /*             Add optional actions to the web-app regarding the selected action                  */
@@ -285,6 +322,11 @@ function getModuleList(moduleNameFieldId, moduleVersionFieldId, promotedFieldId,
     }).done(function(){
         setTimeout(function(){
             $("input:radio[name=moduleId]:first").attr('checked', true);
+
+            let size = $("#" + targetedFieldId).html().length;
+            if(size > 1) {
+                $("#overviewButton").click();
+            }
         }, 500);
     });
 }
@@ -339,11 +381,16 @@ function getArtifactList(groupIdFieldId, artifactIdFieldId, versionFieldId, doNo
 
     			$("#" + targetedFieldId).append(html);
     		}
-    }).done(function(){
-          setTimeout(function(){
-                $("input:radio[name=gavc]:first").attr('checked', true);
-              }, 500);
-      });
+    }).done(function () {
+        setTimeout(function () {
+            $("input:radio[name=gavc]:first").attr('checked', true);
+
+            let size = $("#" + targetedFieldId).html().length;
+            if (size > 1) {
+                $("#artifactOverviewButton").click();
+            }
+        }, 500);
+    });
 }
 
 function getLicenseList(licenseNameFieldId, toBeValidatedFieldId, validatedFieldId, unvalidatedFieldId, targetedFieldId){

@@ -517,20 +517,7 @@ function navigateToDataBrowserArtifact(el) {
     var elText = getNextAnchor(el);
     var artifact = getArtifactGAVC(elText);
 
-    navigateToArtifactInDB(artifact.groupId, artifact.artifactId, artifact.version, 'targets', '#artifactOverviewButton');
-}
-
-function navigateToArtifactInDB(groupId, artifactId, version) {
-    $("body").load("/webapp", function() {
-        $(function(){
-            $('#artifactButton').click();
-        });
-    });
-    setTimeout(function() {
-        getArtifactTarget(groupId, artifactId, version, 'targets', '#artifactOverviewButton');
-    }, 400);
-    window.history.pushState("", "", "/webapp");
-
+    navigateToArtifact(artifact.groupId, artifact.artifactId, artifact.version);
 }
 
 /* Navigate to module data browser section */
@@ -539,19 +526,7 @@ function navigateToDataBrowserModule(el) {
     var elText = getNextAnchor(el);
     var module = getModuleNameAndVersion(elText.text);
 
-    navigateToModuleInDB(module.name, module.version);
-}
-
-function navigateToModuleInDB(name, version) {
-    $("body").load("/webapp", function() {
-        $(function(){
-            $('#moduleButton').click();
-        });
-    });
-    setTimeout(function() {
-        getModuleTarget(name, version,'false','targets');
-    }, 400);
-    window.history.pushState("", "", "/webapp");
+    navigateToModule(module.name, module.version);
 }
 
 /* Get the anchor next to current anchor */

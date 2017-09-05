@@ -360,6 +360,7 @@
         <script src="/public/twitter-bootstrap-2.3.2/js/bootstrapValidator.js"></script>
         <script src="/assets/js/grapes-webApp.js"></script>
         <script src="/assets/js/grapes-commons.js"></script>
+        <script src="/assets/js/navigation.js"></script>
 
  		<!-- Make the table sortable -->
         <script src="/public/jquery-tablesorter-1.10.2/jquery.tablesorter.min.js"></script>
@@ -370,6 +371,16 @@
         <!-- All reports executions -->
         <script src="/assets/js/FileSaver.js"></script>
         <script src="/assets/js/reports.js"></script>
+
+        <script>
+            const fns = [
+                {section: 'artifacts', btn: 'artifactButton', fn: displayArtifactOptions, args: ['groupId', 'artifactId', 'version']},
+                {section: 'modules', btn: 'moduleButton', fn: displayModuleOptions, args: ['moduleName', 'version']}
+            ];
+
+            displayByQueryParams(window.location.href, fns);
+
+        </script>
 
 	</body>
 </html>

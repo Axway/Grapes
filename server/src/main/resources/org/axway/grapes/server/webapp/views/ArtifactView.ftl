@@ -22,6 +22,7 @@
         <script src="/public/jquery-1.9.1/jquery.js"></script>
         <script src="/public/twitter-bootstrap-2.3.2/js/bootstrapValidator.js"></script>
         <script src="/assets/js/grapes-commons.js"></script>
+        <script src="/assets/js/navigation.js"></script>
 
 
 	</head>
@@ -76,7 +77,7 @@
                     <button type="button"
                             class="btn btn-inverse"
                             aria-label="Left Align"
-                            onclick="navigateToArtifactInDB('${artifact.getGroupId()}', '${artifact.getArtifactId()}', '${artifact.getVersion()}')">
+                            onclick="navigateToArtifact('${artifact.getGroupId()}', '${artifact.getArtifactId()}', '${artifact.getVersion()}')">
                         <span class="icon-white icon-list" aria-hidden="true"></span>
                         Select in Data Browser
                     </button>
