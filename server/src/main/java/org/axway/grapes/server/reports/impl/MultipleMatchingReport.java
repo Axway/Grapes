@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Report showing third party artifacts depending on the organization name provided
@@ -81,7 +82,11 @@ public class MultipleMatchingReport implements Report {
                         a.getLicenses().forEach(licString -> {
                             final Set<DbLicense> matchingLicenses = licenseMatcher.getMatchingLicenses(licString);
                             if (matchingLicenses.size() > 1) {
-                                result.addResultRow(new String[]{a.getGavc(), licString, matchingLicenses.toString()});
+                                result.addResultRow(new String[]{a.getGavc(), licString, matchingLicenses
+                                        .stream()
+                                        .map(DbLicense::getName)
+                                        .collect(Collectors.toList())
+                                        .toString()});
                             }
                         });
                     }
