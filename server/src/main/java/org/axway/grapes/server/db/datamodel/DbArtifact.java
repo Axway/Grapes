@@ -4,9 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.jongo.marshall.jackson.oid.Id;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Database Artifact
@@ -165,21 +164,28 @@ public class DbArtifact {
 	}
 
 	public List<String> getLicenses() {
-		return licenses;
+		return Collections.unmodifiableList(licenses);
 	}
 
-	public void setLicenses(final List<String> licenses) {
-		this.licenses = licenses;
+	public void setLicenses(final List<String> lics) {
+		if(null != lics) {
+			this.licenses.clear();
+			this.licenses = lics.stream().filter(Objects::nonNull).collect(Collectors.toList());
+		}
 	}
 
 	public void addLicense(final String licenseId) {
-		if (!licenses.contains(licenseId)) {
-			this.licenses.add(licenseId);
+		if(null != licenseId) {
+			if (!licenses.contains(licenseId)) {
+				this.licenses.add(licenseId);
+			}
 		}
 	}
 
 	public void addLicense(final DbLicense license) {
-		addLicense(license.getName());
+		if(null != license && null != license.getName()) {
+			addLicense(license.getName());
+		}
 	}
 
 	public void removeLicense(final String licenseId) {
