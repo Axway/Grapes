@@ -247,8 +247,10 @@ function filterRadioOptions(radio){
        checkRadioButtonsStatus(status);
        // uncheck checkboxes on all radio button select
        if(!status) {
-           $('#modules').attr('checked', false);
-           $('#artifacts').attr('checked', false)
+           $('#modules').prop('checked', false);
+           $('#artifacts').prop('checked', false);
+       } else {
+           $('#artifacts').prop('checked', true);
        }
     });
 }
@@ -276,8 +278,7 @@ function filterCheckBoxOptions(checkbox){
         } else  if($('input[value=artifacts]').is(':checked')) {
             $('#s').attr('placeholder', 'Search artifacts');
         } else {
-            $('#s').attr('placeholder', 'Search');
-            $("#all").click();
+            $("#artifacts").prop('checked', true);
         }
     });
 }
@@ -504,7 +505,7 @@ function navigateToSearch(el) {
         setTimeout(function(){
             $('#s').focus();
             $('input[value="filter"]').click();
-            $(checkBox).attr('checked', true);
+            $(checkBox).prop('checked', true);
         }, 300);
     });
 

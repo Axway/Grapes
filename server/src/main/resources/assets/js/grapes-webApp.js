@@ -65,7 +65,7 @@ function displayModuleOptions(moduleName, version){
 	moduleIds += "   <div class=\"controls\" style=\"margin-left: 75px;\"><select id=\"moduleVersion\"></select></div>\n";
 	moduleIds += "</div>\n";
 	moduleIds += "<div class=\"control-group\">\n";
-	moduleIds += "   <label class=\"control-label\" style=\"width: auto;\">Having troubles finding your entries, try <a id=\"searchModules\" href=\"javascript:void(0);\" onclick=\"navigateToSearch(this); return false;\">advanced search</a> </label>\n";
+	moduleIds += "   <label class=\"control-label\" style=\"width: auto;\">Having troubles finding your modules? Try <a id=\"searchModules\" href=\"javascript:void(0);\" onclick=\"navigateToSearch(this); return false;\">advanced search</a> </label>\n";
 	moduleIds += "</div>\n";
 	$("#ids").empty().append(moduleIds);
 	var moduleFilters = "<div class=\"row-fluid\">\n";
@@ -127,7 +127,7 @@ function displayArtifactOptions(groupId, artifactId, version){
 	artifactIds += "   <div class=\"controls\"  style=\"margin-left: 75px;\"><select id=\"artifactId\"></select></div>\n";
 	artifactIds += "</div>\n";
 	artifactIds += "<div class=\"control-group\">\n";
-    artifactIds += "   <label class=\"control-label\" style=\"width: auto;\">Having troubles finding your entries, try <a id=\"searchArtifacts\" href=\"javascript:void(0);\" onclick=\"navigateToSearch(this); return false;\">advanced search</a> </label>\n";
+    artifactIds += "   <label class=\"control-label\" style=\"width: auto;\">Having troubles finding artifacts? Try <a id=\"searchArtifacts\" href=\"javascript:void(0);\" onclick=\"navigateToSearch(this); return false;\">advanced search</a> </label>\n";
     artifactIds += "</div>\n";
     $("#ids").empty().append(artifactIds);
 	var artifactFilters = "<div class=\"row-fluid\">\n";
