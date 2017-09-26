@@ -399,9 +399,19 @@ public class ModuleResource extends AbstractResource {
             LOG.info(String.format("Got a get promote module request [%s, %s]", name, version));
         }
         final String moduleId = DbModule.generateID(name, version);
-        getModuleHandler().promoteModule(moduleId);
 
-        return Response.ok("done").build();
+        final PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
+        final PromotionEvaluationReport report =
+                PromotionReportTranslator.toReport(getConfig().getPromotionValidationConfiguration().getErrors(),
+                        promotionReportView);
+
+        if(report.isPromotable()) {
+            getModuleHandler().promoteModule(moduleId);
+            return Response.ok("done").build();
+        } else {
+            return Response.status(Response.Status.BAD_REQUEST).entity(report).build();
+
+        }
     }
 
     /**
@@ -423,7 +433,12 @@ public class ModuleResource extends AbstractResource {
         final String moduleId = DbModule.generateID(name, version);
         final PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
 
-            return Response.ok(promotionReportView.canBePromoted()).build();
+        final PromotionEvaluationReport report =
+                PromotionReportTranslator.toReport(getConfig().getPromotionValidationConfiguration().getErrors(),
+                        promotionReportView);
+
+
+        return Response.ok(report.isPromotable()).build();
     }
 
     /**
@@ -441,7 +456,9 @@ public class ModuleResource extends AbstractResource {
         final String moduleId = DbModule.generateID(name, version);
         PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
 
-        final PromotionEvaluationReport report = ResourcesUtils.checkPromotionErrors(promotionReportView);
+        final PromotionEvaluationReport report =
+                PromotionReportTranslator.toReport(getConfig().getPromotionValidationConfiguration().getErrors(),
+                                                   promotionReportView);
 
         return Response.ok().entity(report).build();
     }

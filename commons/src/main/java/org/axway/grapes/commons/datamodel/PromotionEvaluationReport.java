@@ -14,11 +14,16 @@ public class PromotionEvaluationReport {
     // require updating the client modules as well.
     //
     private Set<String> errors = new HashSet<>();
+    private Set<String> warnings = new HashSet<>();
     private boolean promotable = true;
 
     public void addError(String error) {
         this.errors.add(error);
         promotable = false;
+    }
+
+    public void addWarning(String warning) {
+        this.warnings.add(warning);
     }
 
     public boolean isPromotable() {
@@ -27,5 +32,9 @@ public class PromotionEvaluationReport {
 
     public Set<String> getErrors() {
         return Collections.unmodifiableSet(errors);
+    }
+
+    public Set<String> getWarnings() {
+        return Collections.unmodifiableSet(warnings);
     }
 }

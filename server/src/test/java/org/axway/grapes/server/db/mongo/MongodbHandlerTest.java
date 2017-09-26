@@ -55,19 +55,12 @@ public class MongodbHandlerTest<T> {
                 { DbCollections.DB_ARTIFACTS, DbArtifact.class, new DbArtifact(), addLicenseTest(), "Add license to artifact" },
                 { DbCollections.DB_ARTIFACTS, DbArtifact.class, new DbArtifact(), removeLicenseTestLicenseExists(), "Remove license from artifact; artifact contains license" },
                 { DbCollections.DB_ARTIFACTS, DbArtifact.class, new DbArtifact(), removeLicenseEmptyLicenseList(), "Remove license from artifact having empty list of licenses" },
-//                { DbCollections.DB_ARTIFACTS, DbArtifact.class, new DbArtifact(), testRemoveAllMatchingStrings(), "Test remove all license strings" },
                 { DbCollections.DB_LICENSES, DbLicense.class, new DbLicense(), approveLicenseTest(), "Approve license" },
                 { DbCollections.DB_ARTIFACTS, DbArtifact.class, makeSampleArtifact(), updateDoNotUseFlagTest(), "Update DO_NOT_USE flag" },
                 { DbCollections.DB_ARTIFACTS, DbArtifact.class, makeSampleArtifact(), updateDownloadURLTest(), "Update download url flag" },
                 { DbCollections.DB_ARTIFACTS, DbArtifact.class, makeSampleArtifact(), updateProvider(), "Update provider" }
         });
     }
-
-//    private static BiConsumer<MongodbHandler, MongoCollection> testRemoveAllMatchingStrings() {
-//        return (sut, collection) -> {
-//            sut.removeLicenseFromArtifact();
-//        };
-//    }
 
     private static BiConsumer<MongodbHandler, MongoCollection> addUserRoleTest() {
         return (sut, collection) -> {

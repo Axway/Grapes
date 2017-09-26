@@ -39,6 +39,11 @@ public class GrapesServerConfig extends Configuration{
     @JsonProperty
     private final GrapesEmailConfig mailing = new GrapesEmailConfig();
 
+    @Valid
+	@NotNull
+	@JsonProperty
+	private final PromoValidationConfig promotionValidation = new PromoValidationConfig();
+
 	@Valid
     @NotNull
     @JsonProperty
@@ -119,4 +124,8 @@ public class GrapesServerConfig extends Configuration{
     public CommunityConfig getCommunityConfiguration() {
         return community;
     }
+
+    public PromoValidationConfig getPromotionValidationConfiguration() {
+		return promotionValidation;
+	}
 }

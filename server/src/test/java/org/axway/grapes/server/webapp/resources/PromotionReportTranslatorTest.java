@@ -1,23 +1,22 @@
 package org.axway.grapes.server.webapp.resources;
 
 import org.axway.grapes.commons.datamodel.*;
+import org.axway.grapes.server.promo.validations.PromotionValidation;
 import org.axway.grapes.server.webapp.views.PromotionReportView;
 import org.junit.Test;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import static org.axway.grapes.server.promo.validations.PromotionValidation.*;
 
-public class ResourcesUtilsTest {
+public class PromotionReportTranslatorTest {
 
 
     @Test
@@ -49,12 +48,14 @@ public class ResourcesUtilsTest {
         promotionViewTest.addUnPromotedDependency(artifactUnpromotedDependency.getGavc());
 
         // pass data to the method
-        final PromotionEvaluationReport report = ResourcesUtils.checkPromotionErrors(promotionViewTest);
+        final PromotionEvaluationReport report = PromotionReportTranslator.toReport(
+                Arrays.asList(DO_NOT_USE_DEPS.name(), UNPROMOTED_DEPS.name(), DEPS_WITH_NO_LICENSES.name()),
+                promotionViewTest);
 
         List<String> expectedErrorsList = new ArrayList<>();
         expectedErrorsList.add("DO_NOT_USE marked dependencies detected: CheckPromotion:DoNotUse:version:classifier:type:extension:maven. " + commentAsString(comment));
-        expectedErrorsList.add("Un promoted dependencies detected: CheckPromotion:UnpromotedDependency:version:classifier:extension");
-//        expectedErrorsList.add("The module you are trying to promote has dependencies that miss the license information: CheckPromotion:MissingLicense:version:classifier:extension");
+        expectedErrorsList.add("Corporate dependencies not promoted were detected: CheckPromotion:UnpromotedDependency:version:classifier:extension");
+        expectedErrorsList.add("The module you are trying to promote has dependencies that miss the license information: CheckPromotion:MissingLicense:version:classifier:extension");
 
         // assert if the output from the method equals to the expected data
         assertFalse(report.isPromotable());
@@ -65,7 +66,6 @@ public class ResourcesUtilsTest {
 
     @Test
     public void checkNotApprovedLicensePromotion() {
-        // TODO: Come back here with warnings instead of errors
 
         // Create sample promotion report
         PromotionReportView promotionViewTest = new PromotionReportView();
@@ -84,18 +84,19 @@ public class ResourcesUtilsTest {
         promotionViewTest.setDependenciesWithNotAcceptedLicenses(pair);
 
         // pass data to the method
-        final PromotionEvaluationReport report = ResourcesUtils.checkPromotionErrors(promotionViewTest);
+        final PromotionEvaluationReport report = PromotionReportTranslator.toReport(
+                Arrays.asList(DEPS_UNACCEPTABLE_LICENSE.name()),
+                promotionViewTest);
 
         // create expected result data
         List<String> expectedErrorsList = new ArrayList<>();
         expectedErrorsList.add("The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: CheckPromotion:artifactId:version:classifier:extension (NotApproved)");
 
         // assert if the output from the method equals to the expected data
+        // assertTrue(report.isPromotable());
 
-        assertTrue(report.isPromotable());
-
-        //assertFalse(report.isPromotable());
-        //assertTrue(listMinusSet (expectedErrorsList, report.getErrors()).isEmpty());
+        assertFalse(report.isPromotable());
+        assertTrue(listMinusSet (expectedErrorsList, report.getErrors()).isEmpty());
     }
 
     @Test
@@ -112,7 +113,9 @@ public class ResourcesUtilsTest {
         promotionViewTest.setRootModule(module);
 
         // check promotion status
-        final PromotionEvaluationReport report = ResourcesUtils.checkPromotionErrors(promotionViewTest);
+        final PromotionEvaluationReport report = PromotionReportTranslator.toReport(
+                Arrays.stream(PromotionValidation.values()).map(PromotionValidation::name).collect(Collectors.toList()),
+                promotionViewTest);
 
         assertTrue(report.isPromotable());
         assertTrue(report.getErrors().isEmpty());
