@@ -3,39 +3,39 @@ package org.axway.grapes.server.webapp.resources;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Comment;
 import org.axway.grapes.commons.datamodel.PromotionEvaluationReport;
+import org.axway.grapes.server.promo.validations.PromotionValidation;
 import org.axway.grapes.server.webapp.views.PromotionReportView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.axway.grapes.server.promo.validations.PromotionValidation.*;
 
 /**
- * <p> Utility class for resource classes that performs resource error collection</p>
+ * Class for translating an instance of <CODE>PromotionReportView</CODE> to
+ * an instance of PromotionEvaluationReport
  */
-public final class ResourcesUtils {
+public final class PromotionReportTranslator {
 
-    final static DateFormat DATE_FORMAT = SimpleDateFormat.getDateInstance();
+    private static final DateFormat DATE_FORMAT = SimpleDateFormat.getDateInstance();
 
     /**
      * Utility classes should not have public constructors
      */
-    private ResourcesUtils(){
-        throw new IllegalStateException("Utility class");
+    private PromotionReportTranslator() {
     }
 
-    /**
-     * Check and add error to the promotion report if any exist
-     *
-     * @param promotionReportView - the calculated report for a module
-     * @return - map object with error list
-     */
-
-    public static PromotionEvaluationReport checkPromotionErrors(PromotionReportView promotionReportView) {
-
+    public static PromotionEvaluationReport toReport(final List<String> errorStrings,
+                                                     final PromotionReportView promotionReportView) {
         final PromotionEvaluationReport result = new PromotionEvaluationReport();
+
+        final List<PromotionValidation> errors = toPromotionValidations(errorStrings);
+
         if (promotionReportView.isSnapshot()) {
-            result.addError("Version is SNAPSHOT");
+            appendToReport(errors.contains(VERSION_IS_SNAPSHOT), result, "Version is SNAPSHOT");
         }
 
         // do not use dependency
@@ -60,23 +60,27 @@ public final class ResourcesUtils {
                 }
                 isFirstElement = false;
             }
-            result.addError(String.format("DO_NOT_USE marked dependencies detected: %s", mappedComments));
+
+            appendToReport(errors.contains(DO_NOT_USE_DEPS),
+                           result,
+                           String.format("DO_NOT_USE marked dependencies detected: %s", mappedComments));
         }
         // unpromoted dependency
         if (!promotionReportView.getUnPromotedDependencies().isEmpty()) {
-            String err = addErrors(promotionReportView.getUnPromotedDependencies(), "Un promoted dependencies detected: %s");
-            result.addError(err);
+            String err = buildErrorMsg(promotionReportView.getUnPromotedDependencies(), "Corporate dependencies not promoted were detected: %s");
+
+            appendToReport(errors.contains(UNPROMOTED_DEPS), result, err);
         }
 
         // missing third party dependency license
         if (!promotionReportView.getMissingThirdPartyDependencyLicenses().isEmpty()) {
-//            String err = addErrors(promotionReportView.getMissingThirdPartyDependencyLicenses(), "The module you are trying to promote has dependencies that miss the license information: %s");
-//            result.addError(err);
+            String err = buildErrorMsg(promotionReportView.getMissingThirdPartyDependencyLicenses(), "The module you are trying to promote has dependencies that miss the license information: %s");
+            appendToReport(errors.contains(PromotionValidation.DEPS_WITH_NO_LICENSES), result, err);
         }
         // third party dependency not accepted licenses
         if (!promotionReportView.getDependenciesWithNotAcceptedLicenses().isEmpty()) {
-//            String err = addErrors(promotionReportView.getDependenciesWithNotAcceptedLicenses(), "The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: %s");
-//            result.addError(err);
+            String err = buildErrorMsg(promotionReportView.getDependenciesWithNotAcceptedLicenses(), "The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: %s");
+            appendToReport(errors.contains(DEPS_UNACCEPTABLE_LICENSE), result, err);
         }
 
         return result;
@@ -89,7 +93,7 @@ public final class ResourcesUtils {
      * @param message      - the custom error message to be displayed to the user
      * @return String
      */
-    private static String addErrors(List<?> dependencies, String message) {
+    private static String buildErrorMsg(List<?> dependencies, String message) {
         StringBuilder promotionErrors = new StringBuilder();
         boolean isFirstElement = true;
         for (Object dependency : dependencies) {
@@ -103,4 +107,24 @@ public final class ResourcesUtils {
         }
         return String.format(message, promotionErrors.toString());
     }
+
+    private static List<PromotionValidation> toPromotionValidations(final List<String> errorStrings) {
+        return errorStrings
+                .stream()
+                .map(PromotionValidation::valueOf)
+                .collect(Collectors.toList());
+    }
+
+
+    private static void appendToReport(final boolean isError,
+                                final PromotionEvaluationReport report,
+                                final String details) {
+
+        if(isError) {
+            report.addError(details);
+        } else {
+            report.addWarning(details);
+        }
+    }
+
 }

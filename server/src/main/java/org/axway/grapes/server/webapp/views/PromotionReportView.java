@@ -92,7 +92,9 @@ public class PromotionReportView extends View {
             return false;
         }
         return unPromotedDependencies.isEmpty() &&
-                doNotUseArtifacts.isEmpty() && missingThirdPartyDependencyLicenses.isEmpty() && dependenciesWithNotAcceptedLicenses.isEmpty();
+                doNotUseArtifacts.isEmpty() &&
+                missingThirdPartyDependencyLicenses.isEmpty() &&
+                dependenciesWithNotAcceptedLicenses.isEmpty();
     }
 
     public boolean isSnapshot() {

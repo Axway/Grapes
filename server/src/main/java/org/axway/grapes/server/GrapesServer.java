@@ -12,6 +12,7 @@ import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.config.Messages;
 import org.axway.grapes.server.db.DBException;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.promo.validations.PromoConfigValidator;
 import org.axway.grapes.server.webapp.resources.ReportResource;
 import org.axway.grapes.server.reports.writer.CsvReportWriter;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
@@ -73,7 +74,11 @@ public class GrapesServer extends Service<GrapesServerConfig> {
 
 	@Override
 	public void run(final GrapesServerConfig config, final Environment env) throws DBException, UnknownHostException {
-		// init the repoHandler
+
+        PromoConfigValidator v = new PromoConfigValidator();
+        v.testValidity(config.getPromotionValidationConfiguration());
+
+        // init the repoHandler
         final RepositoryHandler repoHandler = getRepositoryHandler(config);
         
         Messages.init(config.getMsgBundle());

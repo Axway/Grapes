@@ -220,6 +220,7 @@ public class ModuleHandler {
                         if(LOG.isWarnEnabled()) {
                             LOG.warn(String.format("Missing license on artifact [%s]", artifactDep.getGavc()));
                         }
+                        report.addMissingThirdPartyDependencyLicenses(modelMapper.getArtifact(artifactDep));
                     } else {
                         // Check if the existing license name exists in the database
                         for (String licenseName : artifactLicenses) {
@@ -231,9 +232,11 @@ public class ModuleHandler {
                                 if(LOG.isWarnEnabled()) {
                                     LOG.warn(String.format("Artifact license [%s] not known", licenseName));
                                 }
+                                report.addMissingThirdPartyDependencyLicenses(modelMapper.getArtifact(artifactDep));
                             } else if (currentLicense.isApproved() != null && !currentLicense.isApproved()) { // Check if the third party license is approved. If approved == null it is still valid license
                                 // add to a not approved list
                                 Pair<String, String> pair = Pair.create(modelMapper.getArtifact(artifactDep).getGavc(), modelMapper.getLicense(currentLicense).getName());
+                                report.setDependenciesWithNotAcceptedLicenses(pair);
 
                                 if(LOG.isWarnEnabled()) {
                                     LOG.warn(String.format("License [%s] is used by [%s], but is considered not accepted ", currentLicense.getName(), artifactDep.getGavc()));

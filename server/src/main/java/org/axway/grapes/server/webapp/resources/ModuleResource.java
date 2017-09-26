@@ -12,6 +12,7 @@ import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
+import org.axway.grapes.server.promo.validations.PromotionValidation;
 import org.axway.grapes.server.webapp.DataValidator;
 import org.axway.grapes.server.webapp.views.*;
 import org.eclipse.jetty.http.HttpStatus;
@@ -25,6 +26,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Module Resource
@@ -441,7 +443,9 @@ public class ModuleResource extends AbstractResource {
         final String moduleId = DbModule.generateID(name, version);
         PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
 
-        final PromotionEvaluationReport report = ResourcesUtils.checkPromotionErrors(promotionReportView);
+        final PromotionEvaluationReport report =
+                PromotionReportTranslator.toReport(getConfig().getPromotionValidationConfiguration().getErrors(),
+                                                   promotionReportView);
 
         return Response.ok().entity(report).build();
     }
