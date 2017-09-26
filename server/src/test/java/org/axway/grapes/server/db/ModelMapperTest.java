@@ -64,6 +64,23 @@ public class ModelMapperTest {
     }
 
     @Test
+    public void testGetPendingLicense() throws Exception {
+        final DbLicense dbLicense = new DbLicense() ;
+        dbLicense.setName("name");
+        dbLicense.setLongName("longName");
+        dbLicense.setComments("comments");
+        dbLicense.setRegexp("regexp");
+        dbLicense.setUrl("url");
+        //dbLicense.setApproved(false);
+
+        final ModelMapper modelMapper = new ModelMapper(mock(RepositoryHandler.class));
+        final License license = modelMapper.getLicense(dbLicense);
+
+        assertEquals(true, license.isPending());
+
+    }
+
+    @Test
     public void testGetDbArtifact(){
         final Artifact artifact = DataModelFactory.createArtifact("groupId", "artifactId", "version", "classifier", "type", "extension");
         artifact.setSize("10Mo");

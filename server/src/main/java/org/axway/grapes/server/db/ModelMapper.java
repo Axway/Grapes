@@ -76,6 +76,8 @@ public class ModelMapper {
 
         if (dbLicense.isApproved() != null) {
             license.setApproved(dbLicense.isApproved());
+        }else{
+            license.setPending(true);
         }
 
         if (license.getLongName().isEmpty() && license.getComments().isEmpty() && license.getUrl().isEmpty()

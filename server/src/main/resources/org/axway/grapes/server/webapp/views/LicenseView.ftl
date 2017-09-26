@@ -69,10 +69,13 @@
                     <strong>Url: </strong>${license.getUrl()}<br/>
 
                     <p>
-                        <#if license.isApproved()>
-                            <strong>This license contains accepted terms<br/>
+                        <strong>Status: </strong>
+                        <#if license.isPending()>
+                            <img class="license-img" src="assets/img/pending.png" title="This license is pending approval">
+                        <#elseif license.isApproved()>
+                            <img class="license-img" src="assets/img/approved.png" title="This license contains accepted terms">
                         <#else>
-                            <strong><span style="color:red">This license is not accepted by legal department</span></strong><br/>
+                            <img class="license-img" src="assets/img/rejected.png" title="This license is not accepted by legal department">
                         </#if>
                     </p>
                 </p>
