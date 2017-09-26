@@ -2,7 +2,9 @@ package org.axway.grapes.server.reports;
 
 import org.junit.Test;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
@@ -27,5 +29,13 @@ public class ReportsRegistryTest {
         ReportsRegistry.init();
         final Optional<Report> byId = ReportsRegistry.findById(LICENSES_PER_PRODUCT_RELEASE.getId());
         assertTrue(byId.isPresent());
+    }
+
+    @Test
+    public void testReportNoIdDuplicate() {
+        ReportsRegistry.init();
+        Set<Integer> ids = new HashSet<>();
+        ReportsRegistry.allReports().forEach(report -> assertTrue(ids.add(report.getId())));
+
     }
 }
