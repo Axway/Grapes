@@ -655,15 +655,33 @@ function deleteOrganization(organizationId){
      if(count < 3) {
          html = "You need at least two commercial release to perform the comparison";
      } else {
-         html += "Compare with: ";
-         html += "<select id='version2'>";
+          html += "Compare: ";
+          // first dropdown
+          html += "<select id='version1'>";
 
-         var target = $('input:checked', '#targets').val();
+          var target = $('input:checked', '#targets').val();
+
+          for(var i = 0; i < count; i++) {
+            var option = deliveries.childNodes[i];
+            if(option.innerText !== ''){
+                html += "<option value='";
+                html += option.value;
+                html += "'>";
+                html += option.innerText;
+                html += "</option>";
+            }
+          }
+
+         html += "</select>";
+
+         html += " with ";
+
+         // second dropdown
+         html += "<select id='version2'>";
 
          for(var i = 0; i < count; i++) {
             var option = deliveries.childNodes[i];
-
-            if(option.innerText !== '' && option.value !== target) {
+            if(option.innerText !== ''){
                 html += "<option value='";
                 html += option.value;
                 html += "'>";
@@ -678,10 +696,20 @@ function deleteOrganization(organizationId){
      }
 
      $("#results").empty().append(html);
+
+     //set first dropdown value to selected target
+      $("#version1").val(target);
+      // disabled first dropdown selection showing up in second dropdown
+      $("#version2 option[value='" + $("#version1").val() + "']").css("display","none");
+      $("#version1").on("change", function(){
+         $("#version2 option").css("display","block");
+         $("#version2 option[value='" + $(this).val() + "']").css("display","none");
+      });
  }
 
  function getLicensesComparisonsReport() {
-     var target = $('input:checked', '#targets').val();
+
+     var target = $('#version1').val();
 
      var cn1 = getCommercialName(target);
      var cv1 = getCommercialVersion(target);
