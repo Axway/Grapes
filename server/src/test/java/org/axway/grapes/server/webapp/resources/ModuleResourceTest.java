@@ -13,12 +13,13 @@ import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.config.PromoValidationConfig;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
-import org.axway.grapes.server.db.datamodel.DbCredential;
 import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.axway.grapes.server.db.datamodel.DbModule;
+import org.axway.grapes.server.promo.validations.PromotionValidation;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
@@ -26,10 +27,8 @@ import org.mockito.ArgumentCaptor;
 
 import javax.ws.rs.core.MediaType;
 import java.net.UnknownHostException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -40,14 +39,15 @@ import static org.mockito.Mockito.*;
 public class ModuleResourceTest extends ResourceTest {
 
     private RepositoryHandler repositoryHandler;
+    private GrapesServerConfig config;
 
     @Override
     protected void setUpResources() throws Exception {
         repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
-        final GrapesServerConfig config = mock(GrapesServerConfig.class);
+        config = mock(GrapesServerConfig.class);
 
         final ModuleResource resource = new ModuleResource(repositoryHandler, config);
-        addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repositoryHandler), "test auth"));
+        addProvider(new BasicAuthProvider<>(new GrapesAuthenticator(repositoryHandler), "test auth"));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);
     }
@@ -384,46 +384,6 @@ public class ModuleResourceTest extends ResourceTest {
     }
 
     @Test
-    public void getPromotionStatusReport() {
-        final DbModule dbModule = new DbModule();
-        dbModule.setName("moduleTest");
-        dbModule.setVersion("1.0.0");
-        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
-
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
-        final ClientResponse response = resource
-                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK_200, response.getStatus());
-
-        final PromotionEvaluationReport report = response.getEntity(PromotionEvaluationReport.class);
-        assertNotNull(report);
-        assertTrue(report.isPromotable());
-        assertEquals(0, report.getErrors().size());
-    }
-
-    @Test
-    public void getPromotionStatusReportForSnapshotVersion() {
-        final DbModule dbModule = new DbModule();
-        dbModule.setName("moduleTest");
-        dbModule.setVersion("1.0.0-SNAPSHOT");
-        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
-
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
-        final ClientResponse response = resource
-                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK_200, response.getStatus());
-
-        PromotionEvaluationReport report = response.getEntity(PromotionEvaluationReport.class);
-
-        assertNotNull(report);
-        assertFalse(report.isPromotable());
-        assertTrue(report.getErrors().contains("Version is SNAPSHOT"));
-    }
-
-
-    @Test
     public void getPromotionStatusReport2NoLongerAvailable() {
         final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
@@ -437,162 +397,11 @@ public class ModuleResourceTest extends ResourceTest {
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
     }
 
-    @Test
-    public void getPromotionStatusReportForSnapshot() {
-        final DbModule dbModule = new DbModule();
-        dbModule.setName("moduleTest");
-        dbModule.setVersion("1.0.0-SNAPSHOT");
-        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
-
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
-        final ClientResponse response = resource
-                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK_200, response.getStatus());
-
-        final PromotionEvaluationReport report = response.getEntity(PromotionEvaluationReport.class);
-        assertNotNull(report);
-
-        assertFalse(report.isPromotable());
-        assertTrue(report.getErrors().contains("Version is SNAPSHOT"));
-    }
-
-    @Test
-    public void getPromotionStatusReportNoLicenseString() {
-        final DbModule dbModule = getSampleDbModule();
-
-        final DbArtifact dbArtifact = new DbArtifact();
-        dbArtifact.setGroupId(GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST);
-        dbArtifact.setArtifactId(GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST);
-        dbArtifact.setVersion(GrapesTestUtils.ARTIFACT_VERSION_4TEST);
-        dbArtifact.setClassifier(GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST);
-        dbArtifact.setExtension(GrapesTestUtils.ARTIFACT_EXTENSION_4TEST);
-        // Setting empty license list to simulate missing license
-        dbArtifact.setLicenses(Collections.emptyList());
-
-        dbModule.addArtifact(dbArtifact);
-        dbModule.addDependency(dbArtifact.getGavc(), Scope.COMPILE);
-
-        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
-        // get the module dependency
-        when(repositoryHandler.getArtifact(dbModule.getDependencies().get(0).getTarget())).thenReturn(dbArtifact);
-        when(repositoryHandler.getRootModuleOf(dbArtifact.getGavc())).thenReturn(dbModule);
-
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
-        final ClientResponse response = resource
-                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK_200, response.getStatus());
-
-        final PromotionEvaluationReport report = response.getEntity(PromotionEvaluationReport.class);
-
-        // TODO: Update the test once the license related restrictions are reinstalled
-        assertTrue(report.isPromotable());
-
-//        assertFalse(report.isPromotable());
-//        assertFalse(report.getErrors().isEmpty());
-//        assertTrue(report.getErrors().contains(GrapesTestUtils.MISSING_LICENSE_MESSAGE_4TEST + GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST + GrapesTestUtils.COLON
-//                + GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_VERSION_4TEST + GrapesTestUtils.COLON
-//                + GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_EXTENSION_4TEST));
-    }
-
-    @Test
-    public void getPromotionStatusUnknownLicense() {
-        final DbModule dbModule = getSampleDbModule();
-
-        final DbArtifact dbArtifact = new DbArtifact();
-        dbArtifact.setGroupId(GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST);
-        dbArtifact.setArtifactId(GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST);
-        dbArtifact.setVersion(GrapesTestUtils.ARTIFACT_VERSION_4TEST);
-        dbArtifact.setClassifier(GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST);
-        dbArtifact.setExtension(GrapesTestUtils.ARTIFACT_EXTENSION_4TEST);
-
-        // Setting a license text not identified in the list of licenses
-        final DbLicense unknownLicense = new DbLicense();
-        unknownLicense.setName("Super-Creative License");
-
-        dbArtifact.addLicense(unknownLicense);
-
-        dbModule.addArtifact(dbArtifact);
-        dbModule.addDependency(dbArtifact.getGavc(), Scope.COMPILE);
-
-        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
-        // get the module dependency
-        when(repositoryHandler.getArtifact(dbModule.getDependencies().get(0).getTarget())).thenReturn(dbArtifact);
-        when(repositoryHandler.getRootModuleOf(dbArtifact.getGavc())).thenReturn(dbModule);
-        when(repositoryHandler.getLicense(unknownLicense.getName())).thenReturn(null);
-
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
-        final ClientResponse response = resource
-                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK_200, response.getStatus());
-
-        final PromotionEvaluationReport report = response.getEntity(PromotionEvaluationReport.class);
-        assertNotNull(report.getErrors());
-
-        //
-        // assertFalse(report.isPromotable());
-        // TODO: Update the test once the license related restrictions are reinstalled
-        //
-        assertTrue(report.isPromotable());
-        // assertFalse(report.getErrors().isEmpty());
-        // assertTrue(report.getErrors().contains("The module you are trying to promote has dependencies that miss the license information: org.missing.license:MissingLicense:1.2.3:classifier:extension"));
-    }
-
     private DbModule getSampleDbModule() {
         final DbModule dbModule = new DbModule();
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.1.0");
         return dbModule;
-    }
-
-    @Test
-    public void getPromotionStatusReportLicenseNotApproved() {
-        final DbModule dbModule = new DbModule();
-        dbModule.setName("moduleTest");
-        dbModule.setVersion("1.1.1");
-
-        final DbArtifact dbArtifact = new DbArtifact();
-        dbArtifact.setGroupId(GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST);
-        dbArtifact.setArtifactId(GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST);
-        dbArtifact.setVersion(GrapesTestUtils.ARTIFACT_VERSION_4TEST);
-        dbArtifact.setClassifier(GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST);
-        dbArtifact.setExtension(GrapesTestUtils.ARTIFACT_EXTENSION_4TEST);
-        // Setting empty license list to simulate missing license
-        final DbLicense notApprovedLicense = new DbLicense();
-
-        notApprovedLicense.setName("NotApproved");
-        notApprovedLicense.setApproved(false);
-        notApprovedLicense.setLongName("NotApproved");
-
-
-        dbArtifact.addLicense(notApprovedLicense);
-
-        dbModule.addArtifact(dbArtifact);
-        dbModule.addDependency(dbArtifact.getGavc(), Scope.COMPILE);
-
-        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
-        // get the module dependency
-        when(repositoryHandler.getArtifact(dbModule.getDependencies().get(0).getTarget())).thenReturn(dbArtifact);
-        when(repositoryHandler.getRootModuleOf(dbArtifact.getGavc())).thenReturn(dbModule);
-        when(repositoryHandler.getLicense(notApprovedLicense.getName())).thenReturn(notApprovedLicense);
-
-        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT);
-        final ClientResponse response = resource
-                .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK_200, response.getStatus());
-
-        final PromotionEvaluationReport report = response.getEntity(PromotionEvaluationReport.class);
-
-        //
-        // TODO: Update the test once the license related restrictions are reinstalled
-        //
-//        assertFalse(report.isPromotable());
-//        assertFalse(report.getErrors().isEmpty());
-//        assertTrue(report.getErrors().contains("The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: org.missing.license:MissingLicense:1.2.3:classifier:extension (NotApproved)"));
-        assertTrue(report.isPromotable());
     }
 
     @Test
@@ -677,6 +486,14 @@ public class ModuleResourceTest extends ResourceTest {
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
+    }
+
+    private void withErrors(final GrapesServerConfig serverConfig, PromotionValidation... validations) {
+        final PromoValidationConfig promoValidationMock = mock(PromoValidationConfig.class);
+        final List<String> errors = Arrays.stream(validations).map(PromotionValidation::name).collect(Collectors.toList());
+        when(promoValidationMock.getErrors()).thenReturn(errors);
+
+        when(serverConfig.getPromotionValidationConfiguration()).thenReturn(promoValidationMock);
     }
 
 }
