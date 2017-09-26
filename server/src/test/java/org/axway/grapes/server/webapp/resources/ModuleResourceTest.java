@@ -214,6 +214,7 @@ public class ModuleResourceTest extends ResourceTest {
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
+        withErrors(config, PromotionValidation.VERSION_IS_SNAPSHOT);
 
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
         final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION);
@@ -221,6 +222,26 @@ public class ModuleResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
         verify(repositoryHandler, times(1)).promoteModule((DbModule) any());
+    }
+
+    @Test
+    public void promoteFailsOnUnpromotableModule() throws AuthenticationException, UnknownHostException {
+        final DbModule dbModule = new DbModule();
+        dbModule.setName("moduleTest");
+        dbModule.setVersion("1.0.0-SNAPSHOT");
+        when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
+        withErrors(config, PromotionValidation.VERSION_IS_SNAPSHOT);
+
+        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION);
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class);
+        assertNotNull(response);
+
+        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
+        final PromotionEvaluationReport report = response.getEntity(PromotionEvaluationReport.class);
+
+        assertNotNull(report);
+        verify(repositoryHandler, times(0)).promoteModule((DbModule) any());
     }
 
     @Test
@@ -372,6 +393,8 @@ public class ModuleResourceTest extends ResourceTest {
         dbModule.setName("moduleTest");
         dbModule.setVersion("1.0.0");
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
+
+        withErrors(config, PromotionValidation.VERSION_IS_SNAPSHOT);
 
         final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_FEASIBLE);
         ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);

@@ -250,7 +250,11 @@ public abstract class AbstractResource extends View {
      * @throws IOException
      */
     public String getPromotionDetailsJsonModel() throws IOException {
-        return JsonUtils.serialize(new PromotionEvaluationReport());
+        final PromotionEvaluationReport sampleReport = new PromotionEvaluationReport();
+        sampleReport.addWarning("Corporate dependencies not promoted were detected: com.acme.secure-smh:core-relay:1.2.0");
+        sampleReport.addWarning("DO_NOT_USE marked dependencies detected: com.google.guava:guava:20.0");
+        sampleReport.addError("Version is SNAPSHOT");
+        return JsonUtils.serialize(sampleReport);
     }
 
     /**

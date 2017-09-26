@@ -88,98 +88,123 @@ public class PromoEvaluationTest extends ResourceTest {
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{},
                         modulePrepare(),
-                        countersAssert(),
+                        countersAssert().andThen(matchesDoableResponse()),
                         0,
                         0},
                 {"Snapshot version - allowed",
                         makeModule("a-module", "1.0.0-SNAPSHOT"),
                         new PromotionValidation[]{},
                         modulePrepare(),
-                        countersAssert().andThen(reportContainsWarning("Version is SNAPSHOT")),
+                        countersAssert()
+                                .andThen(reportContainsWarning("Version is SNAPSHOT"))
+                                .andThen(matchesDoableResponse()),
                         1,
                         0},
                 {"Snapshot version - forbidden",
                         makeModule("a-module", "1.0.1-SNAPSHOT"),
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT},
                         modulePrepare(),
-                        countersAssert().andThen(reportContainsError("Version is SNAPSHOT")),
+                        countersAssert()
+                                .andThen(reportContainsError("Version is SNAPSHOT"))
+                                .andThen(matchesDoableResponse()),
                         0,
                         1},
                 {"No License on Artifacts - allowed",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT, PromotionValidation.DO_NOT_USE_DEPS},
                         prepareNoLicenseOnArtifacts(),
-                        countersAssert().andThen(reportContainsWarning(noLicenseMsg())),
+                        countersAssert()
+                                .andThen(reportContainsWarning(noLicenseMsg()))
+                                .andThen(matchesDoableResponse()),
                         1,
                         0},
                 {"No License on Artifacts - forbidden",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT, PromotionValidation.DEPS_WITH_NO_LICENSES},
                         prepareNoLicenseOnArtifacts(),
-                        countersAssert().andThen(reportContainsError(noLicenseMsg())),
+                        countersAssert()
+                                .andThen(reportContainsError(noLicenseMsg()))
+                                .andThen(matchesDoableResponse()),
                         0,
                         1},
                 {"Unknown Licenses on Artifacts - allowed",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT},
                         prepareUnknownLicenseOnArtifacts(),
-                        countersAssert().andThen(reportContainsWarning(unknownLicenseMsg())),
+                        countersAssert()
+                                .andThen(reportContainsWarning(unknownLicenseMsg()))
+                                .andThen(matchesDoableResponse()),
                         1,
                         0},
                 {"Unknown Licenses on Artifacts - forbidden",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT, PromotionValidation.DEPS_WITH_NO_LICENSES},
                         prepareUnknownLicenseOnArtifacts(),
-                        countersAssert().andThen(reportContainsError(unknownLicenseMsg())),
+                        countersAssert()
+                                .andThen(reportContainsError(unknownLicenseMsg()))
+                                .andThen(matchesDoableResponse()),
                         0,
                         1},
                 {"Unacceptable License Terms - allowed",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT},
                         prepareUnacceptableLicenseTerms(),
-                        countersAssert().andThen(reportContainsWarning(unacceptableLicenseErrorMsg())),
+                        countersAssert()
+                                .andThen(reportContainsWarning(unacceptableLicenseErrorMsg()))
+                                .andThen(matchesDoableResponse()),
                         1,
                         0},
                 {"Unacceptable License Terms - forbidden",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT, PromotionValidation.DEPS_UNACCEPTABLE_LICENSE},
                         prepareUnacceptableLicenseTerms(),
-                        countersAssert().andThen(reportContainsError(unacceptableLicenseErrorMsg())),
+                        countersAssert()
+                                .andThen(reportContainsError(unacceptableLicenseErrorMsg()))
+                                .andThen(matchesDoableResponse()),
                         0,
                         1},
                 {"Un-promoted dependencies - allowed",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT},
                         prepareUnpromotedDependencies(),
-                        countersAssert().andThen(reportContainsWarning(getUnpromotedMessage("secure-translate", ARTIFACT_VERSION_4TEST))),
+                        countersAssert()
+                                .andThen(reportContainsWarning(getUnpromotedMessage("secure-translate", ARTIFACT_VERSION_4TEST)))
+                                .andThen(matchesDoableResponse()),
                         1,
                         0},
                 {"Un-promoted dependencies - forbidden",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{PromotionValidation.UNPROMOTED_DEPS},
                         prepareUnpromotedDependencies(),
-                        countersAssert().andThen(reportContainsError(getUnpromotedMessage("secure-translate", ARTIFACT_VERSION_4TEST))),
+                        countersAssert()
+                                .andThen(reportContainsError(getUnpromotedMessage("secure-translate", ARTIFACT_VERSION_4TEST)))
+                                .andThen(matchesDoableResponse()),
                         0,
                         1},
                 {"Do not use dependencies - allowed",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{},
                         prepareDoNotUseDependencies(),
-                        countersAssert().andThen(reportContainsWarning(doNotUseMessage("com.corporate.test:toto:1.2.3:classifier:extension:maven"))),
+                        countersAssert()
+                                .andThen(reportContainsWarning(doNotUseMessage("com.corporate.test:toto:1.2.3:classifier:extension:maven")))
+                                .andThen(matchesDoableResponse()),
                         1,
                         0},
                 {"Do not use dependencies - forbidden",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{PromotionValidation.DO_NOT_USE_DEPS},
                         prepareDoNotUseDependencies(),
-                        countersAssert().andThen(reportContainsError(doNotUseMessage("com.corporate.test:toto:1.2.3:classifier:extension:maven"))),
+                        countersAssert()
+                                .andThen(reportContainsError(doNotUseMessage("com.corporate.test:toto:1.2.3:classifier:extension:maven")))
+                                .andThen(matchesDoableResponse()),
                         0,
                         1},
                 {"Snapshot dependencies - allowed",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{},
                         prepareSnapshotDependencies(),
-                        countersAssert(),
+                        countersAssert()
+                                .andThen(matchesDoableResponse()),
                         1,
                         0}
         });
@@ -196,7 +221,7 @@ public class PromoEvaluationTest extends ResourceTest {
             when(parent.repositoryHandler.getModule(eq(module.getId()))).thenReturn(module);
             withErrors(parent.config, parent.validationOfTypeError);
 
-            return execute(parent.client(), promotionReportEnpoint(module));
+            return execute(parent.client(), promotionReportEnpoint(module), PromotionEvaluationReport.class);
         };
     }
 
@@ -225,7 +250,7 @@ public class PromoEvaluationTest extends ResourceTest {
 
             withErrors(parent.config, parent.validationOfTypeError);
 
-            return execute(parent.client(), promotionReportEnpoint(dbModule));
+            return execute(parent.client(), promotionReportEnpoint(dbModule), PromotionEvaluationReport.class);
         };
     }
 
@@ -264,7 +289,7 @@ public class PromoEvaluationTest extends ResourceTest {
 
             withErrors(parent.config, parent.validationOfTypeError);
 
-            return execute(parent.client(), promotionReportEnpoint(dbModule));
+            return execute(parent.client(), promotionReportEnpoint(dbModule), PromotionEvaluationReport.class);
         };
     }
 
@@ -300,7 +325,7 @@ public class PromoEvaluationTest extends ResourceTest {
 
             withErrors(parent.config, parent.validationOfTypeError);
 
-            return execute(parent.client(), promotionReportEnpoint(dbModule));
+            return execute(parent.client(), promotionReportEnpoint(dbModule), PromotionEvaluationReport.class);
         };
     }
 
@@ -352,7 +377,7 @@ public class PromoEvaluationTest extends ResourceTest {
 
             withErrors(parent.config, parent.validationOfTypeError);
 
-            return execute(parent.client(), promotionReportEnpoint(dbModule));
+            return execute(parent.client(), promotionReportEnpoint(dbModule), PromotionEvaluationReport.class);
         };
     }
 
@@ -396,7 +421,7 @@ public class PromoEvaluationTest extends ResourceTest {
 
             withErrors(parent.config, parent.validationOfTypeError);
 
-            return execute(parent.client(), promotionReportEnpoint(dbModule));
+            return execute(parent.client(), promotionReportEnpoint(dbModule), PromotionEvaluationReport.class);
         };
     }
 
@@ -427,7 +452,7 @@ public class PromoEvaluationTest extends ResourceTest {
             when(parent.repositoryHandler.getArtifact(snapshotDep.getGavc())).thenReturn(snapshotDep);
 
             withErrors(parent.config, parent.validationOfTypeError);
-            return execute(parent.client(), promotionReportEnpoint(dbModule));
+            return execute(parent.client(), promotionReportEnpoint(dbModule), PromotionEvaluationReport.class);
         };
     };
 
@@ -460,6 +485,10 @@ public class PromoEvaluationTest extends ResourceTest {
         return "/" + ServerAPI.MODULE_RESOURCE + "/" + module.getName() + "/" + module.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT;
     }
 
+    private static String doableEndpoint(final DbModule module) {
+        return "/" + ServerAPI.MODULE_RESOURCE + "/" + module.getName() + "/" + module.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_FEASIBLE;
+    }
+
     private static DbModule makeModule(final String name, final String version) {
         final DbModule result = new DbModule();
         result.setName(name);
@@ -470,6 +499,13 @@ public class PromoEvaluationTest extends ResourceTest {
     private static BiConsumer<PromoEvaluationTest, PromotionEvaluationReport> reportContainsError(final String msg) {
         return (parent, report) -> {
             assertTrue(report.getErrors().contains(msg));
+        };
+    }
+
+    private static BiConsumer<PromoEvaluationTest, PromotionEvaluationReport> matchesDoableResponse() {
+        return (parent, report) -> {
+            final Boolean isDoable = execute(parent.client(), doableEndpoint(parent.module), Boolean.class);
+            assertEquals(report.isPromotable(), isDoable);
         };
     }
 
@@ -486,12 +522,12 @@ public class PromoEvaluationTest extends ResourceTest {
      * @param url
      * @return
      */
-    private static PromotionEvaluationReport execute(final Client client, final String url) {
+    private static final <T> T execute(final Client client, final String url, Class<T> entityClass) {
         final WebResource resource = client.resource(url);
         final ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
-        return response.getEntity(PromotionEvaluationReport.class);
+        return response.getEntity(entityClass);
     }
 
 }

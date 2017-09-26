@@ -439,7 +439,11 @@
                                     <h3>POST</h3>
                                     <ul>
                                         <li>Promote a module</li>
-                                        <li>Return status 200 if ok</li>
+                                        <li>Return status 200 if the module is promoted successfully</li>
+                                        <li>Return status 400 if the module fails validations configured as errors. The response
+                                            payload will contain the promotion report JSON containing warnings and errors
+                                            <pre>${getPromotionDetailsJsonModel()}</pre>
+                                        </li>
                                     </ul>
                                 </li>
                             </ul>
