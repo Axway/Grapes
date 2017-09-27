@@ -19,23 +19,29 @@ public class ReportsRegistryTest {
 
     @Test
     public void testNotFoundReport() {
-        ReportsRegistry.init();
+        initReports();
         final Optional<Report> byId = ReportsRegistry.findById(-100);
         assertFalse(byId.isPresent());
     }
 
     @Test
     public void testReportIsCorrectlyIdentified() {
-        ReportsRegistry.init();
+        initReports();
         final Optional<Report> byId = ReportsRegistry.findById(LICENSES_PER_PRODUCT_RELEASE.getId());
         assertTrue(byId.isPresent());
     }
 
     @Test
     public void testReportNoIdDuplicate() {
-        ReportsRegistry.init();
+        initReports();
         Set<Integer> ids = new HashSet<>();
         ReportsRegistry.allReports().forEach(report -> assertTrue(ids.add(report.getId())));
 
+    }
+
+    private void initReports(){
+        if(ReportsRegistry.allReports().isEmpty()){
+            ReportsRegistry.init();
+        }
     }
 }
