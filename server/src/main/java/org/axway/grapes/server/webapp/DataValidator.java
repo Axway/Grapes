@@ -227,8 +227,13 @@ public final class DataValidator {
     public static void validateLicensePattern(License license, LicenseHandler licenseHandler){
 
         if(license.getRegexp() == null || license.getRegexp().isEmpty()) return;
+        DbLicense dbLicense = null;
 
-        final DbLicense dbLicense = licenseHandler.getLicense(license.getName());
+        try{
+           dbLicense = licenseHandler.getLicense(license.getName());
+        }catch (Exception e){
+            //No license found
+        }
 
         if(dbLicense == null || !license.getRegexp().equals(dbLicense.getRegexp())){
             Set<DbLicense> licenses = licenseHandler.getMatchingLicenses(license.getName());
