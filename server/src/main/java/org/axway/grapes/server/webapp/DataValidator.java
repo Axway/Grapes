@@ -236,7 +236,7 @@ public final class DataValidator {
         }
 
         if(dbLicense == null || !license.getRegexp().equals(dbLicense.getRegexp())){
-            Set<DbLicense> licenses = licenseHandler.getMatchingLicenses(license.getName());
+            Set<DbLicense> licenses = licenseHandler.getMatchingLicenses(license.getRegexp());
             if(!licenses.isEmpty()){
                 throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
                         .entity("Pattern conflict with other licenses")

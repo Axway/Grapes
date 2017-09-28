@@ -1,14 +1,20 @@
 package org.axway.grapes.server.webapp;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.axway.grapes.commons.datamodel.*;
+import org.axway.grapes.server.core.LicenseHandler;
+import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.junit.Test;
 
 import javax.ws.rs.WebApplicationException;
 
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DataValidatorTest {
 
@@ -484,6 +490,35 @@ public class DataValidatorTest {
             exception = e;
         }
         assertNotNull(exception);
+    }
+
+    @Test
+    public void validateLicenseRegex(){
+
+        //Added license
+        final License license = DataModelFactory.createLicense("TestLicense",
+                "TestLicense", "TestLicense",
+                "((.*)(academic)(.*)|(AFL)+(.*))(3)(.*)", "TestLicense");
+        WebApplicationException exception = null;
+
+        //Db license
+        final DbLicense dbLicense = new DbLicense();
+        dbLicense.setName("TestLicense2");
+        dbLicense.setRegexp("()");
+
+        final RepositoryHandler repoHandler = mock(RepositoryHandler.class);
+        when(repoHandler.getAllLicenses()).thenReturn(Collections.singletonList(dbLicense));
+
+        final LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
+
+        try{
+            DataValidator.validateLicensePattern(license, licenseHandler);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+
+        assertNull(exception);
     }
     
     
