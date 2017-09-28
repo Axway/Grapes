@@ -1365,7 +1365,7 @@ function getModulePromotionReport(){
                                     html += "<tr><td>" + errorDesc + "</td><td>";
                                     depList.forEach(function(dep, i){
                                         // TODO: Turn this into a normal link on section artifacts
-                                        html += "<a href=\"javascript:void(0)\" onclick=\"getArtifactLink(this)\">" + dep + "</a>";
+                                        html += "<a href=\"/artifact/" + encodeURIComponent(dep) + "\">" + dep + "</a>";
                                         if(i != (depList.length - 1)){
                                            html += ", ";
                                         }
@@ -1374,7 +1374,7 @@ function getModulePromotionReport(){
                                 } else if (errorDesc.search(/not.*(?=accepted)|accepted.*(?=not)/i) != -1) {
                                     html += "<tr><td>" + errorDesc + "</td><td>";
                                     depList.forEach(function(dep, i){
-                                        html += "<a href=\"javascript:void(0)\" onclick=\"getArtifactLink(this)\">" + dep.substring(0, dep.indexOf("(")) + "</a>" +
+                                        html += "<a href=\"/artifact/" + encodeURIComponent(dep) + "\">" + dep.substring(0, dep.indexOf("(")) + "</a>" +
                                         // TODO: Turn this into a normal link on section artifacts
                                         "<a class=\"licenseLink\" href=\"javascript:void(0)\" onclick=getLicenseDirectLink(this.text)>" + dep.substring(dep.indexOf("("), dep.indexOf(")") + 1) + "</a>";
 
