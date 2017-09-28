@@ -62,6 +62,9 @@ public class LicenseResource extends AbstractResource{
         // Checks if the data is corrupted
         DataValidator.validate(license);
 
+        //Check if license is ok
+        DataValidator.validateLicensePattern(license, getLicenseHandler());
+
         // Save the license
         final DbLicense dbLicense = getModelMapper().getDbLicense(license);
         getLicenseHandler().store(dbLicense);

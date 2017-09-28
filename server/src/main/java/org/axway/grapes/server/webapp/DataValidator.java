@@ -2,10 +2,12 @@ package org.axway.grapes.server.webapp;
 
 
 import org.axway.grapes.commons.datamodel.*;
+import org.axway.grapes.server.core.LicenseHandler;
 import org.axway.grapes.server.db.DataUtils;
-
+import org.axway.grapes.server.db.datamodel.DbLicense;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -111,6 +113,13 @@ public final class DataValidator {
                 throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
                         .entity("License regexp does not compile! " + e).build());
             }
+
+            Pattern regex = Pattern.compile("[&%//]");
+            if(regex.matcher(license.getRegexp()).find()){
+                throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                        .entity("License regexp does not compile!").build());
+            }
+
         }
     }
 
@@ -206,6 +215,28 @@ public final class DataValidator {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
                     .entity("Mandatory field [type] missing")
                     .build());
+        }
+    }
+
+    /**
+     * Check if license pattern is ok
+     * @param license
+     * @param licenseHandler
+     * @throws WebApplicationException if the data is corrupted
+     */
+    public static void validateLicensePattern(License license, LicenseHandler licenseHandler){
+
+        if(license.getRegexp() == null || license.getRegexp().isEmpty()) return;
+
+        final DbLicense dbLicense = licenseHandler.getLicense(license.getName());
+
+        if(dbLicense == null || !license.getRegexp().equals(dbLicense.getRegexp())){
+            Set<DbLicense> licenses = licenseHandler.getMatchingLicenses(license.getName());
+            if(!licenses.isEmpty()){
+                throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Pattern conflict with other licenses")
+                        .build());
+            }
         }
     }
 }
