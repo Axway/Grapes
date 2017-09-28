@@ -8,11 +8,9 @@ import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.junit.Assert;
 import org.junit.Test;
-
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
-
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
@@ -212,5 +210,20 @@ public class LicenseHandlerTest {
         final LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
 
         assertEquals(1, licenseHandler.getLicenses().size());
+    }
+
+
+    @Test
+    public void findMatchingLicenses(){
+        final DbLicense license = new DbLicense();
+        license.setName("LGPL-3.0");
+        license.setRegexp("((.*)(GNU)(.*)(lesser)(.*)|(LGPL)*)(?!.*(GPL|gpl|BSD|SQL|COMM|W|CC|GNU)).*(3)+(.*)");
+
+        final RepositoryHandler repoHandler = mock(RepositoryHandler.class);
+        when(repoHandler.getAllLicenses()).thenReturn(Collections.singletonList(license));
+
+        final LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
+
+        assertEquals(1, licenseHandler.getMatchingLicenses("LGPL-3.0").size());
     }
 }
