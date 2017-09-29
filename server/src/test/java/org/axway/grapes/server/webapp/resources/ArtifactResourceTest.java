@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import static org.axway.grapes.server.GrapesTestUtils.PASSWORD_4TEST;
+import static org.axway.grapes.server.GrapesTestUtils.USER_4TEST;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
@@ -82,7 +84,7 @@ public class ArtifactResourceTest extends ResourceTest {
         Artifact artifact = DataModelFactory.createArtifact(GrapesTestUtils.CORPORATE_GROUPID_4TEST, "artifactId", "version", "classifier", "type", "extension");
         artifact.setSha256(sha);
         
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
         final WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
         final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifact);
         assertNotNull(response);
@@ -98,7 +100,7 @@ public class ArtifactResourceTest extends ResourceTest {
     public void postArtifactNullSHATest(){
         Artifact artifact = DataModelFactory.createArtifact(GrapesTestUtils.CORPORATE_GROUPID_4TEST, "artifactId", "version", "classifier", "type", "extension");
         
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
         final WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
         final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifact);
 
@@ -117,7 +119,7 @@ public class ArtifactResourceTest extends ResourceTest {
         Artifact artifact = DataModelFactory.createArtifact(GrapesTestUtils.CORPORATE_GROUPID_4TEST, "artifactId", "version", "classifier", "type", "extension");
         artifact.setSha256("smallLengthSHACode");
         
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
         final WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
         final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifact);
 
@@ -147,7 +149,7 @@ public class ArtifactResourceTest extends ResourceTest {
     	Artifact artifact = DataModelFactory.createArtifact(GrapesTestUtils.CORPORATE_GROUPID_4TEST, "artifactId", "version", "classifier", "type", "extension");
         artifact.setSha256(sha256);
         
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
         final WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
         final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifact);
 
@@ -177,7 +179,7 @@ public class ArtifactResourceTest extends ResourceTest {
     	Artifact artifact = DataModelFactory.createArtifact(GrapesTestUtils.CORPORATE_GROUPID_4TEST, "artifactId", "version", "classifier", "type", "extension");
         artifact.setSha256(sha256);
         
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
         final WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
         final ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifact);
 
@@ -369,7 +371,7 @@ public class ArtifactResourceTest extends ResourceTest {
         artifact.setDownloadUrl("downloadUrl");
         artifact.setSize("size");
 
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
         ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifact);
         assertNotNull(response);
@@ -378,7 +380,7 @@ public class ArtifactResourceTest extends ResourceTest {
 
     @Test
     public void postMalFormedArtifact() throws AuthenticationException, UnknownHostException {
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
         ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, DataModelFactory.createArtifact(null, null, null, null, null, null));
         assertNotNull(response);
@@ -401,7 +403,7 @@ public class ArtifactResourceTest extends ResourceTest {
         artifact.setSize("size");
         
         //user does not have DATA_UPDATER privileges
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.UNAUTHORIZED_USER_FOR_POSTING, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.UNAUTHORIZED_USER_FOR_POSTING, PASSWORD_4TEST));
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE);
         ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, artifact);
         assertNotNull(response);
@@ -417,7 +419,7 @@ public class ArtifactResourceTest extends ResourceTest {
         artifact.setClassifier("classifier");
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
 
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_DOWNLOAD_URL);
         ClientResponse response = resource.queryParam(ServerAPI.URL_PARAM, "testUrl").post(ClientResponse.class);
         assertNotNull(response);
@@ -435,7 +437,7 @@ public class ArtifactResourceTest extends ResourceTest {
         artifact.setClassifier("classifier");
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
 
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_DOWNLOAD_URL);
         ClientResponse response = resource.post(ClientResponse.class);
         assertNotNull(response);
@@ -451,7 +453,7 @@ public class ArtifactResourceTest extends ResourceTest {
         artifact.setClassifier("classifier");
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
 
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_PROVIDER);
         ClientResponse response = resource.queryParam(ServerAPI.PROVIDER_PARAM, "providerTest").post(ClientResponse.class);
         assertNotNull(response);
@@ -469,7 +471,7 @@ public class ArtifactResourceTest extends ResourceTest {
         artifact.setClassifier("classifier");
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
 
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_PROVIDER);
         ClientResponse response = resource.post(ClientResponse.class);
         assertNotNull(response);
@@ -552,7 +554,7 @@ public class ArtifactResourceTest extends ResourceTest {
     @Test
     public void deleteAnArtifact() throws UnknownHostException, AuthenticationException{
         when(repositoryHandler.getArtifact(anyString())).thenReturn(new DbArtifact());
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/gavc");
         ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
         assertNotNull(response);
@@ -672,7 +674,7 @@ public class ArtifactResourceTest extends ResourceTest {
         license.setName("licenseId");
         when(repositoryHandler.getLicense(license.getName())).thenReturn(license);
 
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
 
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_LICENSES);
         ClientResponse response = resource.queryParam(ServerAPI.LICENSE_ID_PARAM, license.getName()).post(ClientResponse.class);
@@ -692,7 +694,7 @@ public class ArtifactResourceTest extends ResourceTest {
         artifact.addLicense(license);
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
 
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
 
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_LICENSES);
         ClientResponse response = resource.queryParam(ServerAPI.LICENSE_ID_PARAM, license.getName()).delete(ClientResponse.class);
@@ -710,7 +712,7 @@ public class ArtifactResourceTest extends ResourceTest {
         artifact.setVersion("version");
         when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
 
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
 
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.SET_DO_NOT_USE);
         ClientResponse response = resource.queryParam(ServerAPI.DO_NOT_USE, "true").post(ClientResponse.class, "commentText");
@@ -892,7 +894,7 @@ public class ArtifactResourceTest extends ResourceTest {
 
     @Test
     public void notFound() throws AuthenticationException, UnknownHostException {
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
 
         WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/wrong" + ServerAPI.GET_LICENSES);
         ClientResponse response = resource.queryParam(ServerAPI.LICENSE_ID_PARAM, "test").post(ClientResponse.class);
@@ -953,6 +955,65 @@ public class ArtifactResourceTest extends ResourceTest {
         response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
+    }
+
+    @Test
+    public void testUserHasAccessLicenseToArtifact() throws AuthenticationException, UnknownHostException {
+        final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId("groupId");
+        artifact.setArtifactId("artifactId");
+        artifact.setVersion("version");
+        when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
+        final DbLicense license = new DbLicense();
+        license.setName("licenseId");
+        when(repositoryHandler.getLicense(license.getName())).thenReturn(license);
+
+        final DbCredential user = new DbCredential();
+        user.setUser(USER_4TEST);
+        user.setPassword(GrapesAuthenticator.encrypt(PASSWORD_4TEST));
+        user.addRole(DbCredential.AvailableRoles.ARTIFACT_CHECKER);
+        user.addRole(DbCredential.AvailableRoles.DATA_DELETER);
+        user.addRole(DbCredential.AvailableRoles.DATA_UPDATER);
+        user.addRole(DbCredential.AvailableRoles.DEPENDENCY_NOTIFIER);
+        user.addRole(DbCredential.AvailableRoles.LICENSE_CHECKER);
+        user.addRole(DbCredential.AvailableRoles.LICENSE_SETTER);
+        when(repositoryHandler.getCredential(USER_4TEST)).thenReturn(user);
+
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
+
+        WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_LICENSES);
+        ClientResponse response = resource.queryParam(ServerAPI.LICENSE_ID_PARAM, license.getName()).post(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        verify(repositoryHandler, times(1)).addLicenseToArtifact(artifact, license.getName());
+    }
+
+    @Test
+    public void testUserHasNoAccessLicenseToArtifact() throws AuthenticationException, UnknownHostException {
+        final DbArtifact artifact = new DbArtifact();
+        artifact.setGroupId("groupId");
+        artifact.setArtifactId("artifactId");
+        artifact.setVersion("version");
+        when(repositoryHandler.getArtifact(artifact.getGavc())).thenReturn(artifact);
+        final DbLicense license = new DbLicense();
+        license.setName("licenseId");
+        when(repositoryHandler.getLicense(license.getName())).thenReturn(license);
+
+        final DbCredential user = new DbCredential();
+        user.setUser(USER_4TEST);
+        user.setPassword(GrapesAuthenticator.encrypt(PASSWORD_4TEST));
+        user.addRole(DbCredential.AvailableRoles.ARTIFACT_CHECKER);
+        user.addRole(DbCredential.AvailableRoles.DATA_DELETER);
+        user.addRole(DbCredential.AvailableRoles.DEPENDENCY_NOTIFIER);
+        user.addRole(DbCredential.AvailableRoles.LICENSE_CHECKER);
+        when(repositoryHandler.getCredential(USER_4TEST)).thenReturn(user);
+
+        client().addFilter(new HTTPBasicAuthFilter(USER_4TEST, PASSWORD_4TEST));
+
+        WebResource resource = client().resource("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + artifact.getGavc() + ServerAPI.GET_LICENSES);
+        ClientResponse response = resource.queryParam(ServerAPI.LICENSE_ID_PARAM, license.getName()).post(ClientResponse.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
     }
 
 }

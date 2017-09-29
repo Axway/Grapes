@@ -51,6 +51,7 @@ public class GrapesTestUtils {
             user.addRole(AvailableRoles.DATA_UPDATER);
             user.addRole(AvailableRoles.DEPENDENCY_NOTIFIER);
             user.addRole(AvailableRoles.LICENSE_CHECKER);
+            user.addRole(AvailableRoles.LICENSE_SETTER);
             when(repositoryHandler.getCredential(USER_4TEST)).thenReturn(user);
 
             final DbCredential wrongUser = new DbCredential();

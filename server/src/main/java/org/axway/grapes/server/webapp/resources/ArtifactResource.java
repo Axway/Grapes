@@ -527,7 +527,8 @@ public class ArtifactResource extends AbstractResource {
     public Response addLicense(@Auth final DbCredential credential,
                                @PathParam("gavc") final String gavc,
                                @QueryParam(ServerAPI.LICENSE_ID_PARAM) final String licenseId){
-        if(!credential.getRoles().contains(AvailableRoles.DATA_UPDATER)){
+        if(!credential.getRoles().contains(AvailableRoles.DATA_UPDATER) &&
+                !credential.getRoles().contains(AvailableRoles.LICENSE_SETTER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
@@ -558,7 +559,8 @@ public class ArtifactResource extends AbstractResource {
     public Response deleteLicense(@Auth final DbCredential credential,
                                   @PathParam("gavc") final String gavc,
                                   @QueryParam(ServerAPI.LICENSE_ID_PARAM) final String licenseString){
-        if(!credential.getRoles().contains(AvailableRoles.DATA_UPDATER)){
+        if(!credential.getRoles().contains(AvailableRoles.DATA_UPDATER) &&
+                !credential.getRoles().contains(AvailableRoles.LICENSE_SETTER)){
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
 
