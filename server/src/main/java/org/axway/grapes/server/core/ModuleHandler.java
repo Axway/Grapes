@@ -2,7 +2,10 @@ package org.axway.grapes.server.core;
 
 
 import org.apache.commons.jcs.access.CacheAccess;
-import org.axway.grapes.commons.datamodel.*;
+import org.axway.grapes.commons.datamodel.DataModelFactory;
+import org.axway.grapes.commons.datamodel.Dependency;
+import org.axway.grapes.commons.datamodel.Pair;
+import org.axway.grapes.commons.datamodel.Scope;
 import org.axway.grapes.server.core.cache.CacheName;
 import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
@@ -13,13 +16,12 @@ import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.webapp.views.PromotionReportView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Module Handler
@@ -37,9 +39,11 @@ public class ModuleHandler {
     private CacheAccess<String, PromotionReportView> cache = null;
     private CacheUtils cacheUtils = new CacheUtils();
 
+    private LicenseMatcher licenseMatcher;
 
     public ModuleHandler(final RepositoryHandler repositoryHandler) {
         this.repositoryHandler = repositoryHandler;
+        this.licenseMatcher = new LicenseHandler(repositoryHandler);
         cache = cacheUtils.initCache(CacheName.PROMOTION_REPORTS, PromotionReportView.class);
     }
 
@@ -174,7 +178,7 @@ public class ModuleHandler {
         final PromotionReportView report = new PromotionReportView();
         report.setRootModule(DataModelFactory.createModule(module.getName(), module.getVersion()));
 
-        if (!report.isSnapshot()) {
+//        if (!report.isSnapshot()) {
             // filters initialization
             final FiltersHolder filters = new FiltersHolder();
             filters.addFilter(new PromotedFilter(false));
@@ -227,26 +231,33 @@ public class ModuleHandler {
                             if (null == licenseName) {
                                 continue;
                             }
-                            DbLicense currentLicense = repositoryHandler.getLicense(licenseName);
-                            if (currentLicense == null) {
+                            // DbLicense currentLicense = repositoryHandler.getLicense(licenseName);
+                            final Set<DbLicense> matchingLicenses = licenseMatcher.getMatchingLicenses(licenseName);
+                            if (matchingLicenses.isEmpty()) {
                                 if(LOG.isWarnEnabled()) {
-                                    LOG.warn(String.format("Artifact license [%s] not known", licenseName));
+                                    LOG.warn(String.format("Artifact license string [%s] unknown to Grapes", licenseName));
                                 }
                                 report.addMissingThirdPartyDependencyLicenses(modelMapper.getArtifact(artifactDep));
-                            } else if (currentLicense.isApproved() != null && !currentLicense.isApproved()) { // Check if the third party license is approved. If approved == null it is still valid license
-                                // add to a not approved list
-                                Pair<String, String> pair = Pair.create(modelMapper.getArtifact(artifactDep).getGavc(), modelMapper.getLicense(currentLicense).getName());
-                                report.setDependenciesWithNotAcceptedLicenses(pair);
+                            } else {
+                                matchingLicenses.forEach(lic -> {
+                                    //
+                                    // Check if the third party license is approved. If approved == null it is still valid license
+                                    // add to a not approved list
+                                    //
+                                    if (lic.isApproved() != null && !lic.isApproved()) {
+                                        report.addUnacceptedLicenseEntry(modelMapper.getArtifact(artifactDep).getGavc(), lic.getName());
 
-                                if(LOG.isWarnEnabled()) {
-                                    LOG.warn(String.format("License [%s] is used by [%s], but is considered not accepted ", currentLicense.getName(), artifactDep.getGavc()));
-                                }
+                                        if (LOG.isWarnEnabled()) {
+                                            LOG.warn(String.format("License [%s] is used by [%s], but is not accepted ", lic.getName(), artifactDep.getGavc()));
+                                        }
+                                    }
+                                });
                             }
                         }
                     }
                 }
             }
-        }
+//      }
 
         report.compute();
         if (LOG.isDebugEnabled()) {
