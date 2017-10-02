@@ -21,6 +21,8 @@ import org.axway.grapes.server.webapp.healthcheck.DataModelVersionCheck;
 import org.axway.grapes.server.webapp.resources.*;
 import org.axway.grapes.server.webapp.tasks.*;
 import org.axway.grapes.server.webapp.tasks.migrate.MigrationTask;
+import org.axway.grapes.server.webapp.tasks.validations.ChangeValidationsTask;
+import org.axway.grapes.server.webapp.tasks.validations.ShowValidationsTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,6 +101,8 @@ public class GrapesServer extends Service<GrapesServerConfig> {
         env.addTask(new MigrationTask(config.getDataBaseConfig()));
         env.addTask(new RefreshCommercialDeliveriesTask(repoHandler));
         env.addTask(new SendEmailTestTask(config.getGrapesEmailConfig()));
+        env.addTask(new ShowValidationsTask());
+        env.addTask(new ChangeValidationsTask());
 
         
         // Health checks
@@ -117,7 +121,6 @@ public class GrapesServer extends Service<GrapesServerConfig> {
         env.addResource(new ReportResource(repoHandler, config));
         env.addResource(new SearchResource(repoHandler, config));
         env.addResource(new WebSearchResource(repoHandler, config));
-
 	}
 
     public RepositoryHandler getRepositoryHandler(final GrapesServerConfig config) throws DBException, UnknownHostException {

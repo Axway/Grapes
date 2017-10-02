@@ -6,7 +6,8 @@ import com.yammer.dropwizard.views.View;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.Comment;
 import org.axway.grapes.commons.datamodel.Module;
-import org.axway.grapes.commons.datamodel.Pair;
+import org.axway.grapes.commons.datamodel.PromotionEvaluationReport;
+import org.axway.grapes.server.webapp.resources.PromotionReportTranslator;
 import org.axway.grapes.server.webapp.views.serialization.PromotionReportSerializer;
 
 import java.util.*;
@@ -21,12 +22,12 @@ import java.util.*;
 public class PromotionReportView extends View {
 
     private Module rootModule;
-    private List<String> unPromotedDependencies = new ArrayList<String>();
-    private Map<String, PromotionReportView> dependencyReports = new HashMap<String, PromotionReportView>();
+    private List<String> unPromotedDependencies = new ArrayList<>();
+    private Map<String, PromotionReportView> dependencyReports = new HashMap<>();
     private Map<Artifact, Comment> doNotUseArtifacts = new HashMap<>();
-    private Map<String, List<String>> mismatchVersions = new HashMap<String, List<String>>();
-    private List<Artifact> missingThirdPartyDependencyLicenses = new ArrayList<Artifact>();
-    private List<Pair> dependenciesWithNotAcceptedLicenses = new ArrayList<Pair>();
+    private Map<String, List<String>> mismatchVersions = new HashMap<>();
+    private List<Artifact> missingLicenses = new ArrayList<>();
+    private Map<String, String> dependenciesWithNotAcceptedLicenses = new HashMap<>();
 
     public PromotionReportView() {
         super("PromotionReportView.ftl");
@@ -72,7 +73,7 @@ public class PromotionReportView extends View {
     }
 
     public List<PromotionReportView> getReportsWithDoNotUseArtifacts() {
-        final List<PromotionReportView> reports = new ArrayList<PromotionReportView>();
+        final List<PromotionReportView> reports = new ArrayList<>();
 
         if (!getDoNotUseArtifacts().isEmpty()) {
             reports.add(this);
@@ -85,16 +86,6 @@ public class PromotionReportView extends View {
         }
 
         return reports;
-    }
-
-    public Boolean canBePromoted() {
-        if (isSnapshot()) {
-            return false;
-        }
-        return unPromotedDependencies.isEmpty() &&
-                doNotUseArtifacts.isEmpty() &&
-                missingThirdPartyDependencyLicenses.isEmpty() &&
-                dependenciesWithNotAcceptedLicenses.isEmpty();
     }
 
     public boolean isSnapshot() {
@@ -139,7 +130,7 @@ public class PromotionReportView extends View {
     }
 
     private List<PromotionReportView> getAllDependencyReport() {
-        final List<PromotionReportView> reports = new ArrayList<PromotionReportView>();
+        final List<PromotionReportView> reports = new ArrayList<>();
         for (final PromotionReportView report : dependencyReports.values()) {
             reports.addAll(report.getAllDependencyReport());
         }
@@ -152,23 +143,23 @@ public class PromotionReportView extends View {
         return unPromotedDependencies;
     }
 
-    public List<Artifact> getMissingThirdPartyDependencyLicenses() {
-        return missingThirdPartyDependencyLicenses;
+    public List<Artifact> getMissingLicenses() {
+        return missingLicenses;
     }
 
     public void addMissingThirdPartyDependencyLicenses(final Artifact dependency) {
-        if (!missingThirdPartyDependencyLicenses.contains(dependency)) {
-            missingThirdPartyDependencyLicenses.add(dependency);
+        if (!missingLicenses.contains(dependency)) {
+            missingLicenses.add(dependency);
         }
     }
 
-    public List<Pair> getDependenciesWithNotAcceptedLicenses() {
-        return dependenciesWithNotAcceptedLicenses;
+    public Map<String, String> getDependenciesWithNotAcceptedLicenses() {
+        return Collections.unmodifiableMap(dependenciesWithNotAcceptedLicenses);
     }
 
-    public void setDependenciesWithNotAcceptedLicenses(Pair<?,?> pair) {
-        if (!dependenciesWithNotAcceptedLicenses.contains(pair)) {
-            dependenciesWithNotAcceptedLicenses.add(pair);
+    public void addUnacceptedLicenseEntry(final String artifact, final String license) {
+        if(!dependenciesWithNotAcceptedLicenses.containsKey(artifact)) {
+            dependenciesWithNotAcceptedLicenses.put(artifact, license);
         }
     }
 
@@ -182,12 +173,15 @@ public class PromotionReportView extends View {
         @Override
         public int compare(final String module1, final String module2) {
             final PromotionReportView report1 = dependencyReports.get(module1);
-            final PromotionReportView report2 = dependencyReports.get(module2);
+            final PromotionEvaluationReport ev1 = PromotionReportTranslator.toReport(report1);
 
-            if (report1.canBePromoted() ||
+            final PromotionReportView report2 = dependencyReports.get(module2);
+            final PromotionEvaluationReport ev2 = PromotionReportTranslator.toReport(report2);
+
+            if (ev1.isPromotable() ||
                     report2.getUnPromotedDependencies().contains(module1)) {
                 return -1;
-            } else if (report2.canBePromoted() ||
+            } else if (ev2.isPromotable() ||
                     report1.getUnPromotedDependencies().contains(module2)) {
                 return 1;
             }

@@ -30,6 +30,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.axway.grapes.server.GrapesTestUtils.ARTIFACT_VERSION_4TEST;
+import static org.axway.grapes.server.GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST;
+import static org.axway.grapes.server.webapp.resources.PromotionReportTranslator.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -72,8 +74,10 @@ public class PromoEvaluationTest extends ResourceTest {
 
     @Override
     protected void setUpResources() throws Exception {
+
         repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
         config = mock(GrapesServerConfig.class);
+        withErrors(config, this.validationOfTypeError);
 
         final ModuleResource resource = new ModuleResource(repositoryHandler, config);
         addProvider(new BasicAuthProvider<>(new GrapesAuthenticator(repositoryHandler), "test auth"));
@@ -96,7 +100,7 @@ public class PromoEvaluationTest extends ResourceTest {
                         new PromotionValidation[]{},
                         modulePrepare(),
                         countersAssert()
-                                .andThen(reportContainsWarning("Version is SNAPSHOT"))
+                                .andThen(reportContainsWarning(PromotionReportTranslator.SNAPSHOT_VERSION_MSG))
                                 .andThen(matchesDoableResponse()),
                         1,
                         0},
@@ -105,7 +109,7 @@ public class PromoEvaluationTest extends ResourceTest {
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT},
                         modulePrepare(),
                         countersAssert()
-                                .andThen(reportContainsError("Version is SNAPSHOT"))
+                                .andThen(reportContainsError(PromotionReportTranslator.SNAPSHOT_VERSION_MSG))
                                 .andThen(matchesDoableResponse()),
                         0,
                         1},
@@ -114,7 +118,9 @@ public class PromoEvaluationTest extends ResourceTest {
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT, PromotionValidation.DO_NOT_USE_DEPS},
                         prepareNoLicenseOnArtifacts(),
                         countersAssert()
-                                .andThen(reportContainsWarning(noLicenseMsg()))
+                                .andThen(reportContainsWarning(MISSING_LICENSE_MSG))
+                                .andThen(reportContainsWarning(GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST))
+                                .andThen(reportContainsWarning(GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST))
                                 .andThen(matchesDoableResponse()),
                         1,
                         0},
@@ -123,7 +129,8 @@ public class PromoEvaluationTest extends ResourceTest {
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT, PromotionValidation.DEPS_WITH_NO_LICENSES},
                         prepareNoLicenseOnArtifacts(),
                         countersAssert()
-                                .andThen(reportContainsError(noLicenseMsg()))
+                                .andThen(reportContainsError(MISSING_LICENSE_MSG))
+                                .andThen(reportContainsError(GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST))
                                 .andThen(matchesDoableResponse()),
                         0,
                         1},
@@ -132,7 +139,7 @@ public class PromoEvaluationTest extends ResourceTest {
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT},
                         prepareUnknownLicenseOnArtifacts(),
                         countersAssert()
-                                .andThen(reportContainsWarning(unknownLicenseMsg()))
+                                .andThen(reportContainsWarning(MISSING_LICENSE_MSG))
                                 .andThen(matchesDoableResponse()),
                         1,
                         0},
@@ -141,7 +148,7 @@ public class PromoEvaluationTest extends ResourceTest {
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT, PromotionValidation.DEPS_WITH_NO_LICENSES},
                         prepareUnknownLicenseOnArtifacts(),
                         countersAssert()
-                                .andThen(reportContainsError(unknownLicenseMsg()))
+                                .andThen(reportContainsError(MISSING_LICENSE_MSG))
                                 .andThen(matchesDoableResponse()),
                         0,
                         1},
@@ -150,7 +157,7 @@ public class PromoEvaluationTest extends ResourceTest {
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT},
                         prepareUnacceptableLicenseTerms(),
                         countersAssert()
-                                .andThen(reportContainsWarning(unacceptableLicenseErrorMsg()))
+                                .andThen(reportContainsWarning(UNACCEPTABLE_LICENSE_MSG))
                                 .andThen(matchesDoableResponse()),
                         1,
                         0},
@@ -159,7 +166,7 @@ public class PromoEvaluationTest extends ResourceTest {
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT, PromotionValidation.DEPS_UNACCEPTABLE_LICENSE},
                         prepareUnacceptableLicenseTerms(),
                         countersAssert()
-                                .andThen(reportContainsError(unacceptableLicenseErrorMsg()))
+                                .andThen(reportContainsError(UNACCEPTABLE_LICENSE_MSG))
                                 .andThen(matchesDoableResponse()),
                         0,
                         1},
@@ -168,7 +175,7 @@ public class PromoEvaluationTest extends ResourceTest {
                         new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT},
                         prepareUnpromotedDependencies(),
                         countersAssert()
-                                .andThen(reportContainsWarning(getUnpromotedMessage("secure-translate", ARTIFACT_VERSION_4TEST)))
+                                .andThen(reportContainsWarning(UNPROMOTED_MSG))
                                 .andThen(matchesDoableResponse()),
                         1,
                         0},
@@ -177,7 +184,7 @@ public class PromoEvaluationTest extends ResourceTest {
                         new PromotionValidation[]{PromotionValidation.UNPROMOTED_DEPS},
                         prepareUnpromotedDependencies(),
                         countersAssert()
-                                .andThen(reportContainsError(getUnpromotedMessage("secure-translate", ARTIFACT_VERSION_4TEST)))
+                                .andThen(reportContainsError(UNPROMOTED_MSG))
                                 .andThen(matchesDoableResponse()),
                         0,
                         1},
@@ -186,7 +193,7 @@ public class PromoEvaluationTest extends ResourceTest {
                         new PromotionValidation[]{},
                         prepareDoNotUseDependencies(),
                         countersAssert()
-                                .andThen(reportContainsWarning(doNotUseMessage("com.corporate.test:toto:1.2.3:classifier:extension:maven")))
+                                .andThen(reportContainsWarning(DO_NOT_USE_MSG))
                                 .andThen(matchesDoableResponse()),
                         1,
                         0},
@@ -195,7 +202,7 @@ public class PromoEvaluationTest extends ResourceTest {
                         new PromotionValidation[]{PromotionValidation.DO_NOT_USE_DEPS},
                         prepareDoNotUseDependencies(),
                         countersAssert()
-                                .andThen(reportContainsError(doNotUseMessage("com.corporate.test:toto:1.2.3:classifier:extension:maven")))
+                                .andThen(reportContainsError(DO_NOT_USE_MSG))
                                 .andThen(matchesDoableResponse()),
                         0,
                         1},
@@ -210,18 +217,12 @@ public class PromoEvaluationTest extends ResourceTest {
         });
     }
 
-    private static String unknownLicenseMsg() {
-        return "The module you are trying to promote has dependencies that miss the license information: org.missing.license:MissingLicense:1.2.3:classifier:extension";
-    }
-
     // Actual prepare / assert tests
     private static Function<PromoEvaluationTest, PromotionEvaluationReport> modulePrepare() {
         return parent -> {
             DbModule module = parent.module;
             when(parent.repositoryHandler.getModule(eq(module.getId()))).thenReturn(module);
-            withErrors(parent.config, parent.validationOfTypeError);
-
-            return execute(parent.client(), promotionReportEnpoint(module), PromotionEvaluationReport.class);
+            return execute(parent.client(), promotionReportEndpoint(module), PromotionEvaluationReport.class);
         };
     }
 
@@ -233,7 +234,7 @@ public class PromoEvaluationTest extends ResourceTest {
 
             final DbArtifact dbArtifact = new DbArtifact();
             dbArtifact.setGroupId(GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST);
-            dbArtifact.setArtifactId(GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST);
+            dbArtifact.setArtifactId(MISSING_LICENSE_ARTIFACTID_4TEST);
             dbArtifact.setVersion(ARTIFACT_VERSION_4TEST);
             dbArtifact.setClassifier(GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST);
             dbArtifact.setExtension(GrapesTestUtils.ARTIFACT_EXTENSION_4TEST);
@@ -250,14 +251,8 @@ public class PromoEvaluationTest extends ResourceTest {
 
             withErrors(parent.config, parent.validationOfTypeError);
 
-            return execute(parent.client(), promotionReportEnpoint(dbModule), PromotionEvaluationReport.class);
+            return execute(parent.client(), promotionReportEndpoint(dbModule), PromotionEvaluationReport.class);
         };
-    }
-
-    private static String noLicenseMsg() {
-        return GrapesTestUtils.MISSING_LICENSE_MESSAGE_4TEST + GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST + GrapesTestUtils.COLON
-                + GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST + GrapesTestUtils.COLON + ARTIFACT_VERSION_4TEST + GrapesTestUtils.COLON
-                + GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST + GrapesTestUtils.COLON + GrapesTestUtils.ARTIFACT_EXTENSION_4TEST;
     }
 
     // Test the artifact licenses contain license strings, but the licenses are not known
@@ -268,7 +263,7 @@ public class PromoEvaluationTest extends ResourceTest {
 
             final DbArtifact dbArtifact = new DbArtifact();
             dbArtifact.setGroupId(GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST);
-            dbArtifact.setArtifactId(GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST);
+            dbArtifact.setArtifactId(MISSING_LICENSE_ARTIFACTID_4TEST);
             dbArtifact.setVersion(ARTIFACT_VERSION_4TEST);
             dbArtifact.setClassifier(GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST);
             dbArtifact.setExtension(GrapesTestUtils.ARTIFACT_EXTENSION_4TEST);
@@ -289,7 +284,7 @@ public class PromoEvaluationTest extends ResourceTest {
 
             withErrors(parent.config, parent.validationOfTypeError);
 
-            return execute(parent.client(), promotionReportEnpoint(dbModule), PromotionEvaluationReport.class);
+            return execute(parent.client(), promotionReportEndpoint(dbModule), PromotionEvaluationReport.class);
         };
     }
 
@@ -300,9 +295,9 @@ public class PromoEvaluationTest extends ResourceTest {
             when(parent.repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
 
             final DbArtifact dbArtifact = new DbArtifact();
-            dbArtifact.setGroupId(GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST);
-            dbArtifact.setArtifactId(GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST);
-            dbArtifact.setVersion(ARTIFACT_VERSION_4TEST);
+            dbArtifact.setGroupId("some.group.id");
+            dbArtifact.setArtifactId("someArtifactID");
+            dbArtifact.setVersion("12.2.1");
             dbArtifact.setClassifier(GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST);
             dbArtifact.setExtension(GrapesTestUtils.ARTIFACT_EXTENSION_4TEST);
             // Setting empty license list to simulate the rejected license
@@ -321,16 +316,11 @@ public class PromoEvaluationTest extends ResourceTest {
             // get the module dependency
             when(parent.repositoryHandler.getArtifact(dbModule.getDependencies().get(0).getTarget())).thenReturn(dbArtifact);
             when(parent.repositoryHandler.getRootModuleOf(dbArtifact.getGavc())).thenReturn(dbModule);
-            when(parent.repositoryHandler.getLicense(notApprovedLicense.getName())).thenReturn(notApprovedLicense);
+            // when(parent.repositoryHandler.getLicense(notApprovedLicense.getName())).thenReturn(notApprovedLicense);
+            when(parent.repositoryHandler.getAllLicenses()).thenReturn(Arrays.asList(notApprovedLicense));
 
-            withErrors(parent.config, parent.validationOfTypeError);
-
-            return execute(parent.client(), promotionReportEnpoint(dbModule), PromotionEvaluationReport.class);
+            return execute(parent.client(), promotionReportEndpoint(dbModule), PromotionEvaluationReport.class);
         };
-    }
-
-    private static String unacceptableLicenseErrorMsg() {
-        return "The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: org.missing.license:MissingLicense:1.2.3:classifier:extension (NotApproved)";
     }
 
     // Test unpromoted dependencies
@@ -377,7 +367,7 @@ public class PromoEvaluationTest extends ResourceTest {
 
             withErrors(parent.config, parent.validationOfTypeError);
 
-            return execute(parent.client(), promotionReportEnpoint(dbModule), PromotionEvaluationReport.class);
+            return execute(parent.client(), promotionReportEndpoint(dbModule), PromotionEvaluationReport.class);
         };
     }
 
@@ -421,7 +411,7 @@ public class PromoEvaluationTest extends ResourceTest {
 
             withErrors(parent.config, parent.validationOfTypeError);
 
-            return execute(parent.client(), promotionReportEnpoint(dbModule), PromotionEvaluationReport.class);
+            return execute(parent.client(), promotionReportEndpoint(dbModule), PromotionEvaluationReport.class);
         };
     }
 
@@ -452,7 +442,7 @@ public class PromoEvaluationTest extends ResourceTest {
             when(parent.repositoryHandler.getArtifact(snapshotDep.getGavc())).thenReturn(snapshotDep);
 
             withErrors(parent.config, parent.validationOfTypeError);
-            return execute(parent.client(), promotionReportEnpoint(dbModule), PromotionEvaluationReport.class);
+            return execute(parent.client(), promotionReportEndpoint(dbModule), PromotionEvaluationReport.class);
         };
     };
 
@@ -473,7 +463,8 @@ public class PromoEvaluationTest extends ResourceTest {
         };
     }
 
-    private static void withErrors(final GrapesServerConfig serverConfig, PromotionValidation... validations) {
+    private static void withErrors(final GrapesServerConfig serverConfig,
+                                   final PromotionValidation... validations) {
         final PromoValidationConfig promoValidationMock = mock(PromoValidationConfig.class);
         final List<String> errors = Arrays.stream(validations).map(PromotionValidation::name).collect(Collectors.toList());
         when(promoValidationMock.getErrors()).thenReturn(errors);
@@ -481,7 +472,7 @@ public class PromoEvaluationTest extends ResourceTest {
         when(serverConfig.getPromotionValidationConfiguration()).thenReturn(promoValidationMock);
     }
 
-    private static String promotionReportEnpoint(final DbModule module) {
+    private static String promotionReportEndpoint(final DbModule module) {
         return "/" + ServerAPI.MODULE_RESOURCE + "/" + module.getName() + "/" + module.getVersion() + ServerAPI.PROMOTION + ServerAPI.GET_REPORT;
     }
 
@@ -496,9 +487,10 @@ public class PromoEvaluationTest extends ResourceTest {
         return result;
     }
 
-    private static BiConsumer<PromoEvaluationTest, PromotionEvaluationReport> reportContainsError(final String msg) {
+    private static BiConsumer<PromoEvaluationTest, PromotionEvaluationReport> reportContainsError(
+            final String msg) {
         return (parent, report) -> {
-            assertTrue(report.getErrors().contains(msg));
+            assertSetContains(report.getErrors(), msg);
         };
     }
 
@@ -509,9 +501,13 @@ public class PromoEvaluationTest extends ResourceTest {
         };
     }
 
+    private static void assertSetContains(final Set<String> msgs, final String msg) {
+        assertTrue(msgs.stream().filter(w -> w.contains(msg)).count() > 0);
+    }
+
     private static BiConsumer<PromoEvaluationTest, PromotionEvaluationReport> reportContainsWarning(final String msg) {
         return (parent, report) -> {
-            assertTrue(report.getWarnings().contains(msg));
+            assertSetContains(report.getWarnings(), msg);
         };
     }
 
@@ -529,5 +525,4 @@ public class PromoEvaluationTest extends ResourceTest {
 
         return response.getEntity(entityClass);
     }
-
 }

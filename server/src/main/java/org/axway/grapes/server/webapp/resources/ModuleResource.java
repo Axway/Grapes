@@ -44,6 +44,7 @@ public class ModuleResource extends AbstractResource {
 
     public ModuleResource(final RepositoryHandler repoHandler, final GrapesServerConfig dmConfig) {
         super(repoHandler, "ModuleResourceDocumentation.ftl", dmConfig);
+        PromotionReportTranslator.setErrorStrings(dmConfig.getPromotionValidationConfiguration().getErrors());
     }
 
     /**
@@ -402,8 +403,7 @@ public class ModuleResource extends AbstractResource {
 
         final PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
         final PromotionEvaluationReport report =
-                PromotionReportTranslator.toReport(getConfig().getPromotionValidationConfiguration().getErrors(),
-                        promotionReportView);
+                PromotionReportTranslator.toReport(promotionReportView);
 
         if(report.isPromotable()) {
             getModuleHandler().promoteModule(moduleId);
@@ -434,8 +434,7 @@ public class ModuleResource extends AbstractResource {
         final PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
 
         final PromotionEvaluationReport report =
-                PromotionReportTranslator.toReport(getConfig().getPromotionValidationConfiguration().getErrors(),
-                        promotionReportView);
+                PromotionReportTranslator.toReport(promotionReportView);
 
 
         return Response.ok(report.isPromotable()).build();
@@ -457,8 +456,7 @@ public class ModuleResource extends AbstractResource {
         PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
 
         final PromotionEvaluationReport report =
-                PromotionReportTranslator.toReport(getConfig().getPromotionValidationConfiguration().getErrors(),
-                                                   promotionReportView);
+                PromotionReportTranslator.toReport(promotionReportView);
 
         return Response.ok().entity(report).build();
     }

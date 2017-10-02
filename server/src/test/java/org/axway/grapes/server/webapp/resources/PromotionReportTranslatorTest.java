@@ -7,14 +7,17 @@ import org.junit.Test;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertTrue;
+import static org.axway.grapes.server.promo.validations.PromotionValidation.*;
+import static org.axway.grapes.server.webapp.resources.PromotionReportTranslator.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-
-import static org.axway.grapes.server.promo.validations.PromotionValidation.*;
 
 public class PromotionReportTranslatorTest {
 
@@ -48,20 +51,21 @@ public class PromotionReportTranslatorTest {
         promotionViewTest.addUnPromotedDependency(artifactUnpromotedDependency.getGavc());
 
         // pass data to the method
-        final PromotionEvaluationReport report = PromotionReportTranslator.toReport(
-                Arrays.asList(DO_NOT_USE_DEPS.name(), UNPROMOTED_DEPS.name(), DEPS_WITH_NO_LICENSES.name()),
-                promotionViewTest);
-
-        List<String> expectedErrorsList = new ArrayList<>();
-        expectedErrorsList.add("DO_NOT_USE marked dependencies detected: CheckPromotion:DoNotUse:version:classifier:type:extension:maven. " + commentAsString(comment));
-        expectedErrorsList.add("Corporate dependencies not promoted were detected: CheckPromotion:UnpromotedDependency:version:classifier:extension");
-        expectedErrorsList.add("The module you are trying to promote has dependencies that miss the license information: CheckPromotion:MissingLicense:version:classifier:extension");
+        PromotionReportTranslator.setErrorStrings(Arrays.asList(
+                DO_NOT_USE_DEPS.name(),
+                UNPROMOTED_DEPS.name(),
+                DEPS_WITH_NO_LICENSES.name()));
+        final PromotionEvaluationReport report = PromotionReportTranslator.toReport(promotionViewTest);
 
         // assert if the output from the method equals to the expected data
         assertFalse(report.isPromotable());
-        assertEquals(expectedErrorsList.size(), report.getErrors().size());
-        final List<String> strings = listMinusSet(expectedErrorsList, report.getErrors());
-        assertTrue(strings.isEmpty());
+
+        assertEquals(0, report
+                .getErrors()
+                .stream()
+                .filter(isPartOf(DO_NOT_USE_MSG, UNPROMOTED_MSG, MISSING_LICENSE_MSG))
+                .count());
+
     }
 
     @Test
@@ -78,25 +82,19 @@ public class PromotionReportTranslatorTest {
         module.addArtifact(artifactNotApprovedLicense);
 
         promotionViewTest.setRootModule(module);
-
-        Pair pair = Pair.create(artifactNotApprovedLicense.getGavc(), notApprovedLicense.getName());
-
-        promotionViewTest.setDependenciesWithNotAcceptedLicenses(pair);
+        promotionViewTest.addUnacceptedLicenseEntry(artifactNotApprovedLicense.getGavc(), notApprovedLicense.getName());
 
         // pass data to the method
-        final PromotionEvaluationReport report = PromotionReportTranslator.toReport(
-                Arrays.asList(DEPS_UNACCEPTABLE_LICENSE.name()),
-                promotionViewTest);
+        PromotionReportTranslator.setErrorStrings(Arrays.asList(DEPS_UNACCEPTABLE_LICENSE.name()));
+        final PromotionEvaluationReport report = PromotionReportTranslator.toReport(promotionViewTest);
 
         // create expected result data
-        List<String> expectedErrorsList = new ArrayList<>();
-        expectedErrorsList.add("The module you try to promote makes use of third party dependencies whose licenses are not accepted by Axway: CheckPromotion:artifactId:version:classifier:extension (NotApproved)");
-
-        // assert if the output from the method equals to the expected data
-        // assertTrue(report.isPromotable());
-
         assertFalse(report.isPromotable());
-        assertTrue(listMinusSet (expectedErrorsList, report.getErrors()).isEmpty());
+        assertEquals(0,
+                report.getErrors()
+                        .stream()
+                        .filter(isPartOf(UNACCEPTABLE_LICENSE_MSG))
+                        .count());
     }
 
     @Test
@@ -113,9 +111,8 @@ public class PromotionReportTranslatorTest {
         promotionViewTest.setRootModule(module);
 
         // check promotion status
-        final PromotionEvaluationReport report = PromotionReportTranslator.toReport(
-                Arrays.stream(PromotionValidation.values()).map(PromotionValidation::name).collect(Collectors.toList()),
-                promotionViewTest);
+        PromotionReportTranslator.setErrorStrings(Arrays.stream(PromotionValidation.values()).map(PromotionValidation::name).collect(Collectors.toList()));
+        final PromotionEvaluationReport report = PromotionReportTranslator.toReport(promotionViewTest);
 
         assertTrue(report.isPromotable());
         assertTrue(report.getErrors().isEmpty());
@@ -128,19 +125,7 @@ public class PromotionReportTranslatorTest {
         report.getErrors().clear();
     }
 
-    private List<String> listMinusSet(List<String> list, Set<String> set) {
-        return list.stream().filter(entry -> !set.contains(entry)).collect(Collectors.toList());
+    private Predicate<String> isPartOf(String... msgs) {
+        return x -> Arrays.stream(msgs).filter(msg -> msg.contains(x)).count() > 0;
     }
-
-
-    private String commentAsString(Comment comment) {
-        DateFormat df = SimpleDateFormat.getDateInstance();
-
-        return String.format("%s (%s on %s) %s",
-                comment.getCommentedBy(),
-                comment.getAction(),
-                df.format(comment.getCreatedDateTime()),
-                comment.getCommentText());
-    }
-
 }
