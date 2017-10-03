@@ -1,5 +1,6 @@
 package org.axway.grapes.server.webapp.resources;
 
+import com.mongodb.util.JSON;
 import com.yammer.dropwizard.views.View;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
@@ -251,9 +252,14 @@ public abstract class AbstractResource extends View {
      */
     public String getPromotionDetailsJsonModel() throws IOException {
         final PromotionEvaluationReport sampleReport = new PromotionEvaluationReport();
-        sampleReport.addWarning("Corporate dependencies not promoted were detected: com.acme.secure-smh:core-relay:1.2.0");
-        sampleReport.addWarning("DO_NOT_USE marked dependencies detected: com.google.guava:guava:20.0");
-        sampleReport.addError("Version is SNAPSHOT");
+        sampleReport.addWarning(String.format("%s %s", PromotionReportTranslator.UNPROMOTED_MSG, "com.acme.secure-smh:core-relay:1.2.0"));
+        sampleReport.addWarning(String.format("%s %s", PromotionReportTranslator.DO_NOT_USE_MSG, "com.google.guava:guava:20.0"));
+        sampleReport.addWarning(String.format("%s %s", PromotionReportTranslator.MISSING_LICENSE_MSG, "org.apache.maven.wagon:wagon-webdav-jackrabbit:2.12"));
+        sampleReport.addWarning(String.format("%s %s", PromotionReportTranslator.UNACCEPTABLE_LICENSE_MSG,
+                "aopaliance:aopaliance:1.0 licensed as Attribution-ShareAlike 2.5 Generic, " +
+                "org.polyjdbc:polyjdbc0.7.1 licensed as Creative Commons Attribution-ShareAlike 3.0 Unported License"));
+
+        sampleReport.addError(PromotionReportTranslator.SNAPSHOT_VERSION_MSG);
         return JsonUtils.serialize(sampleReport);
     }
 

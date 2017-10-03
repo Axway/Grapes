@@ -85,6 +85,7 @@
                         <li class=""><a data-toggle="collapse" data-target="#accordion9" href="#module-promotion"><i class="icon-chevron-right"></i> Promote a module</a></li>
                         <li class=""><a data-toggle="collapse" data-target="#accordion10" href="#module-promotion-doable"><i class="icon-chevron-right"></i> Can it be promoted?</a></li>
                         <li class=""><a data-toggle="collapse" data-target="#accordion11" href="#module-buildinfo"><i class="icon-chevron-right"></i> Get/Update build info</a></li>
+                        <li class=""><a data-toggle="collapse" data-target="#accordion12" href="#module-promotion-report"><i class="icon-chevron-right"></i> Get validation report</a></li>
                     </ul>
                 </div>
                 <div class="span8">
@@ -465,32 +466,11 @@
                             </ul>
                         </div>
                     </section>
-                    <section id="module-promotion-report">
-                        <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion11">
-                            <h2>@ /module/{name}/{version}/promotion/report</h2>
-                        </a>
-                        <div id="accordion11" class="collapse">
-                            <ul>
-                                <li>
-                                    <h3>GET</h3>
-                                    <ul>
-                                        <li>Get module promotion details</li>
-                                        <li>
-                                        	Returns HTML view or an module promotion details in Json. The structure of the
-                                            response contains a boolean field indicating if the module is promotable and
-                                            a set of error messages representing the list of validation errors.
-                                        	<pre>${getPromotionDetailsJsonModel()}</pre>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                    </section>
                     <section id="module-buildinfo">
                         <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion12">
                             <h2>@ /module/{name}/{version}/buildinfo</h2>
                         </a>
-                        <div id="accordion12" class="collapse">
+                        <div id="accordion11" class="collapse">
                             <ul>
                                 <li>
                                     <h3>GET</h3>
@@ -505,6 +485,26 @@
                                         <li>Update a build info</li>
                                         <li>If existing information are posted, they will be overrided</li>
                                         <li>Return status 200 if ok</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </section>
+                    <section id="module-promotion-report">
+                        <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion12">
+                            <h2>@ /module/{name}/{version}/promotion/report</h2>
+                        </a>
+                        <div id="accordion12" class="collapse">
+                            <ul>
+                                <li>
+                                    <h3>GET</h3>
+                                    <ul>
+                                        <li>Get a module promotion report</li>
+                                        <li>
+                                            Returns a JSON structure containing the module validation result. It contains
+                                            warnings and errors displayed as strings without doing a promotion.
+                                            <pre>${getPromotionDetailsJsonModel()}</pre>
+                                        </li>
                                     </ul>
                                 </li>
                             </ul>
