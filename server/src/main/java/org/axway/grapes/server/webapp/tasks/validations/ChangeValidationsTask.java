@@ -14,6 +14,8 @@ import java.util.*;
 public class ChangeValidationsTask extends Task {
 
     private static final Logger LOG = LoggerFactory.getLogger(ChangeValidationsTask.class);
+    private static final String ERROR_PARAM_KEY = "error";
+    private static final String NONE_VALUE = "NONE";
 
 
     public ChangeValidationsTask() {
@@ -30,27 +32,47 @@ public class ChangeValidationsTask extends Task {
 
         final ImmutableMap<String, Collection<String>> params = immutableMultimap.asMap();
 
-        if(params.containsKey("error")) {
-            final Set<String> newErrors = new HashSet<>();
-            final String[] providedErrors = params.get("error").toArray(new String[0]);
+        if (!params.containsKey(ERROR_PARAM_KEY)) {
+            LOG.error("Invalid message to change the validation configuration");
+            printWriter.println(String.format(
+                    "Invalid message to change the validation configuration. Use x-www-form-urlencoded as " +
+                            "request body and include discrete entries named %s for each of the validations. " +
+                            "To set all as warnings, use %s field with the special value %s.",
+                    ERROR_PARAM_KEY,
+                    ERROR_PARAM_KEY,
+                    NONE_VALUE));
+            return;
+        }
 
-            for(String provided : providedErrors) {
-                try {
-                    PromotionValidation.valueOf(provided);
-                    newErrors.add(provided);
-                    if(LOG.isInfoEnabled()) {
-                        LOG.info(String.format("Validation treated as error: %s", provided));
-                    }
-                } catch(IllegalArgumentException exc) {
-                    LOG.info(String.format("Invalid validation provided: %s Ignoring.", provided));
-                }
+
+        final Set<String> newErrors = new HashSet<>();
+        final long noneCount = params.get(ERROR_PARAM_KEY).stream().filter(e -> e.equals(NONE_VALUE)).count();
+
+        if(noneCount > 0) {
+            if (LOG.isInfoEnabled()) {
+                LOG.info(String.format("Found %s value contained. All validations will become warnings.", NONE_VALUE));
             }
 
-            PromotionReportTranslator.setErrorStrings(new ArrayList<>(newErrors));
+            PromotionReportTranslator.setErrorStrings(Collections.emptyList());
             printWriter.println("Done");
-        } else {
-            LOG.error("Invalid message to change the validation configuration");
+            return;
         }
+
+        final String[] providedErrors = params.get(ERROR_PARAM_KEY).toArray(new String[0]);
+        for (String provided : providedErrors) {
+            try {
+                PromotionValidation.valueOf(provided);
+                newErrors.add(provided);
+                if (LOG.isInfoEnabled()) {
+                    LOG.info(String.format("Validation treated as error: %s", provided));
+                }
+            } catch (IllegalArgumentException exc) {
+                LOG.info(String.format("Invalid validation provided: %s Ignoring.", provided));
+            }
+        }
+
+        PromotionReportTranslator.setErrorStrings(new ArrayList<>(newErrors));
+        printWriter.println("Done");
     }
 
 }
