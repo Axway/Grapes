@@ -1672,7 +1672,7 @@ function licenseSave(){
         contentType: 'application/json',
         data: '{ "name": "'+$('#inputName').val()+'", "longName": "'+$('#inputLongName').val()+'", "comments": "'+$('#inputComments').val()+'", "regexp": "'+$('#inputRegexp').val()+'", "url": "'+$('#inputURL').val()+'", "approved": false }',
         error: function(xhr, error){
-            alert("The action cannot be performed: status " + xhr.status);
+            alert("The action cannot be performed: " + xhr.status + " - " + xhr.responseText);
         }
     }).done(function(){
             cleanAction();
