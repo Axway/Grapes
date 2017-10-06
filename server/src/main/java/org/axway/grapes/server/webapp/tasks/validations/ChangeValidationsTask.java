@@ -3,6 +3,8 @@ package org.axway.grapes.server.webapp.tasks.validations;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.yammer.dropwizard.tasks.Task;
+import org.axway.grapes.server.core.CacheUtils;
+import org.axway.grapes.server.core.cache.CacheName;
 import org.axway.grapes.server.promo.validations.PromotionValidation;
 import org.axway.grapes.server.webapp.resources.PromotionReportTranslator;
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ public class ChangeValidationsTask extends Task {
     private static final String ERROR_PARAM_KEY = "error";
     private static final String NONE_VALUE = "NONE";
 
+    private final CacheUtils cacheUtils = new CacheUtils();
 
     public ChangeValidationsTask() {
         super("validations");
@@ -73,6 +76,8 @@ public class ChangeValidationsTask extends Task {
 
         PromotionReportTranslator.setErrorStrings(new ArrayList<>(newErrors));
         printWriter.println("Done");
+
+        cacheUtils.clear(CacheName.PROMOTION_REPORTS);
     }
 
 }
