@@ -1348,55 +1348,55 @@ function getModulePromotionReport(){
 
                     var html = "<div class=\"container\">" +
                     "<div class=\"row-fluid\" id=\"list\">";
-
-                    if(data.promotable == true){
-                        html += "<div id=\"promotion_ok\">The module can be promoted.<br/></div>";
-                    } else {
-                        if(data.errors != null && data.errors[0].search(/snapshot/i) != -1) {
-                            html += "<div id=\"promotion_ko\"><strong>Snapshot module cannot be promoted!!!</strong><br/></div>";
-                        } else if(data.errors != null) {
-                            html += "<div id=\"promotion_ko\"><strong>The module cannot be promoted!!!</strong><br/></div>" +
-                            "<h3>Module promotion problems</h3> <div id=\"dependencyProblems\"><table class=\"table table-bordered table-hover\" id=\"dependencyProblemsTable\">" +
-                            "<thead> <tr> <td><span><strong>Detected problem</strong></span></td> <td><span><strong>Dependencies</strong></span></td></tr></thead><tbody>";
-                            $.each(data.errors, function(key, val) {
-                                var errorDesc = val.substring(0, val.indexOf(":"));
-                                var depList = val.substring(val.indexOf(":") + 1).split(",");
-                                if(errorDesc.search(/miss.*(?=license)|license.*(?=miss)/i) != -1) {
-                                    html += "<tr><td>" + errorDesc + "</td><td>";
-                                    depList.forEach(function(dep, i){
-                                        // TODO: Turn this into a normal link on section artifacts
-                                        html += "<a href=\"/artifact/" + encodeURIComponent(dep) + "\">" + dep + "</a>";
-                                        if(i != (depList.length - 1)){
-                                           html += ", ";
-                                        }
-                                    });
-                                    html += "</td></tr>";
-                                } else if (errorDesc.search(/not.*(?=accepted)|accepted.*(?=not)/i) != -1) {
-                                    html += "<tr><td>" + errorDesc + "</td><td>";
-                                    depList.forEach(function(dep, i){
-                                        html += "<a href=\"/artifact/" + encodeURIComponent(dep) + "\">" + dep.substring(0, dep.indexOf("(")) + "</a>" +
-                                        // TODO: Turn this into a normal link on section artifacts
-                                        "<a class=\"licenseLink\" href=\"javascript:void(0)\" onclick=getLicenseDirectLink(this.text)>" + dep.substring(dep.indexOf("("), dep.indexOf(")") + 1) + "</a>";
-
-                                         if(i != (depList.length - 1)){
-                                            html += ", ";
-                                         }
-                                    });
-                                    html += "</td></tr>";
-                                } else {
-                                    html += "<tr><td>" + errorDesc + "</td><td>";
-                                    depList.forEach(function(dep, i){
-                                        html += dep;
-                                         if(i != (depList.length - 1)){
-                                            html += ", ";
-                                         }
-                                    });
-                                    html += "</td></tr>";
+                    if(data.promotable){
+                        html += "<div id=\"promotion_ok\"><h3>The module can be promoted.</h3></div><br/>"
+                   }else{
+                        html += "<div id=\"promotion_ko\"><h3>The module cannot be promoted</h3></div><br/>"
+                   }
+                   if(data.errors.length != 0){
+                        html += "<h3 style='color:red;'>Errors</h3>"
+                        $.each(data.warnings, function(key, val){
+                            var errorDescription = val.substring(0, val.indexOf(":")) === "" ? val : val.substring(0, val.indexOf(":"));
+                            var values = val.substring(val.indexOf(":") + 1) === errorDescription ? [] : val.substring(val.indexOf(":") + 1).split(/,\s*(?![^()]*\))/gm);
+                            html += "- <strong style='color:red;'>" + errorDescription +  "</strong>" + "<br/>";
+                            html += "<ul>"
+                            $.each(values, function(key, val){
+                                var link = val.substring(0, val.lastIndexOf(":") + 4).trim();
+                                var licenseLink = val.lastIndexOf("licensed as") != -1 ? val.substring(val.lastIndexOf("licensed as") + 11, val.length).trim() : "";
+                                if(link.indexOf("::") === -1){
+                                    var modified = val.substring(0, val.lastIndexOf(":") - 4).trim();
+                                    var modifiedLink = modified.substring(0, modified.lastIndexOf(":") + 1) + ":" + modified.substring(modified.lastIndexOf(":") + 1);
+                                    html += "<li>" + val.replace(modified, "<a href=\"/artifact/" + encodeURIComponent(modifiedLink) + "\">"+modifiedLink+"</a>") + "</li>";
+                                }else{
+                                   html += "<li>" + val.replace(link, "<a href=\"/artifact/" + encodeURIComponent(link) + "\">"+link+"</a>").replace(licenseLink, "<a href=\"/license/" + encodeURIComponent(licenseLink) + "\">"+licenseLink+"</a>") + "</li>";
                                 }
                             });
-                        }
+                            html += "</ul>";
+                        });
                    }
-                   html += "</tbody></div></div></div>"
+                   if(data.warnings.length != 0){
+                        html += "<h3 style='color:orange;'>Warnings</h3>"
+                        $.each(data.warnings, function(key, val){
+                            var errorDescription = val.substring(0, val.indexOf(":")) === "" ? val : val.substring(0, val.indexOf(":"));
+                            var values = val.substring(val.indexOf(":") + 1) === errorDescription ? [] : val.substring(val.indexOf(":") + 1).split(/,\s*(?![^()]*\))/gm);
+                            html += "- <strong style='color:orange;'>" + errorDescription +  "</strong>" + "<br/>";
+                            html += "<ul>"
+                            $.each(values, function(key, val){
+                               var link = val.substring(0, val.lastIndexOf(":") + 4).trim();
+                               var licenseLink = val.lastIndexOf("licensed as") != -1 ? val.substring(val.lastIndexOf("licensed as") + 11, val.length).trim() : "";
+                               if(link.indexOf("::") === -1){
+                                   var modified = val.substring(0, val.lastIndexOf(":") - 4).trim();
+                                   var modifiedLink = modified.substring(0, modified.lastIndexOf(":") + 1) + ":" + modified.substring(modified.lastIndexOf(":") + 1);
+                                   html += "<li>" + val.replace(modified, "<a href=\"/artifact/" + encodeURIComponent(modifiedLink) + "\">"+modifiedLink+"</a>") + "</li>";
+                               }else{
+                                   html += "<li>" + val.replace(link, "<a href=\"/artifact/" + encodeURIComponent(link) + "\">"+link+"</a>").replace(licenseLink, "<a href=\"/license/" + encodeURIComponent(licenseLink) + "\">"+licenseLink+"</a>") + "</li>";
+                               }
+                           });
+                            html += "</ul>";
+                        });
+                   }
+
+                   html += "</div></div>"
                    $("#results").empty().append(html);
             }
         });

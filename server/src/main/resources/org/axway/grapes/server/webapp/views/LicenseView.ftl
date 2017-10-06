@@ -71,11 +71,11 @@
                     <p>
                         <strong>Status: </strong>
                         <#if license.isPending()>
-                            <img class="license-img" src="assets/img/pending.png" title="This license is pending approval">
+                            <img class="license-img" src="/assets/img/pending.png" title="This license is pending approval">
                         <#elseif license.isApproved()>
-                            <img class="license-img" src="assets/img/approved.png" title="This license contains accepted terms">
+                            <img class="license-img" src="/assets/img/approved.png" title="This license contains accepted terms">
                         <#else>
-                            <img class="license-img" src="assets/img/rejected.png" title="This license is not accepted by legal department">
+                            <img class="license-img" src="/assets/img/rejected.png" title="This license is not accepted by legal department">
                         </#if>
                     </p>
                 </p>
