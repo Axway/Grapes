@@ -37,7 +37,7 @@ public class EmptyLicenseArtifactsReport implements Report {
 
     @Override
     public String getDescription() {
-        return "Displays the list of third party artifacts with not license string associated with them";
+        return "Displays the list of third party artifacts with no license string associated with them";
     }
 
     @Override
