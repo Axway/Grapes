@@ -369,17 +369,33 @@ public interface RepositoryHandler {
      */
     public void deleteProduct(final String name);
 
+    /**
+     * Executes an arbitrary query against a designated collection and returns zero or one result
+     * @param collectionName The name of the collection to query
+     * @param query The query string in <CODE>JSON </CODE> format
+     * @param c The result class
+     * @param <T> Imposed by the generic signature
+     * @return Either the result of an empty Optional of result
+     */
     public <T> Optional<T> getOneByQuery(final String collectionName, final String query, final Class<T> c);
 
+    /**
+     * Executes an arbitrary query against a designated collection and returns the list of results
+     * @param collectionName The name of the collection to query
+     * @param query The query string in <CODE>JSON </CODE> format
+     * @param c The result class
+     * @param <T> Imposed by the generic signature
+     * @return The list of results.
+     */
     public <T> List<T> getListByQuery(final String collectionName, final String query, final Class<T> c);
 
     /**
-     * Consume the query results without loading them all in memory
+     * Consume the query results without loading all of the results in memory
      * @param collectionName The name of the collection
      * @param query The query to select the records for
      * @param c The model class
      * @param consumer The model consumer
-     * @param <T>
+     * @param <T> Imposed by the generic signature
      */
     public <T> void consumeByQuery(final String collectionName,
                                    final String query,
