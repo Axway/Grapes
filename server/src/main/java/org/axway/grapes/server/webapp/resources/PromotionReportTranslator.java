@@ -77,7 +77,7 @@ public final class PromotionReportTranslator {
 
                 final Comment comment = entry.getValue();
                 if(comment != null) {
-                    mappedComments.append(String.format("%s. %s (%s on %s) %s", entry.getKey(),
+                    mappedComments.append(String.format("%s. %s (%s on %s) %s", entry.getValue().getEntityId(),
                             comment.getCommentedBy(),
                             comment.getAction(),
                             DATE_FORMAT.format(comment.getCreatedDateTime()),
