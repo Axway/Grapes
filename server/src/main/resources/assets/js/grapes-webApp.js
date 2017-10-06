@@ -1355,7 +1355,7 @@ function getModulePromotionReport(){
                    }
                    if(data.errors.length != 0){
                         html += "<h3 style='color:red;'>Errors</h3>"
-                        $.each(data.warnings, function(key, val){
+                        $.each(data.errors, function(key, val){
                             var errorDescription = val.substring(0, val.indexOf(":")) === "" ? val : val.substring(0, val.indexOf(":"));
                             var values = val.substring(val.indexOf(":") + 1) === errorDescription ? [] : val.substring(val.indexOf(":") + 1).split(/,\s*(?![^()]*\))/gm);
                             html += "- <strong style='color:red;'>" + errorDescription +  "</strong>" + "<br/>";
