@@ -1,3 +1,13 @@
+1.9.0
+-------------
+* [ECDDEV-868](https://techweb.axway.com/jira/browse/ECDDEV-858) - Promotion warnings and errors
+* [ECDDEV-849](https://techweb.axway.com/jira/browse/ECDDEV-849) - Add LICENSE_SETTER among existent privileges in Grapes
+* [ECDDEV-858](https://techweb.axway.com/jira/browse/ECDDEV-858) - Use promotion report to display Module / Promotion Report section
+* [ECDDEV-863](https://techweb.axway.com/jira/browse/ECDDEV-863) - Add artifact links inside commercial delivery details page
+* [ECDDEV-860](https://techweb.axway.com/jira/browse/ECDDEV-860) - Sanitize the values of regular expressions
+* [ECDDEV-861](https://techweb.axway.com/jira/browse/ECDDEV-861) - Don't allow multiple reports matching the same report id
+
+
 1.8.0
 -------------
 * [ECDDEV-813](https://techweb.axway.com/jira/browse/ECDDEV-813) Improve the search for modules and artifacts
