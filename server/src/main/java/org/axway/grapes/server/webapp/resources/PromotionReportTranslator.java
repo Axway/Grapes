@@ -44,7 +44,7 @@ public final class PromotionReportTranslator {
     public static void setErrorStrings(List<String> errors) {
         // Not calling this method would attract treating all the validations as warnings
         if(LOG.isInfoEnabled()) {
-            LOG.info(String.format("Initializing Errors %s", errors.toString()));
+            LOG.info(String.format("Setting validation errors %s", errors.toString()));
         }
 
         errorStrings.clear();
