@@ -1363,13 +1363,7 @@ function getModulePromotionReport(){
                             $.each(values, function(key, val){
                                 var link = val.substring(0, val.lastIndexOf(":") + 4).trim();
                                 var licenseLink = val.lastIndexOf("licensed as") != -1 ? val.substring(val.lastIndexOf("licensed as") + 11, val.length).trim() : "";
-                                if(link.indexOf("::") === -1){
-                                    var modified = val.substring(0, val.lastIndexOf(":") - 4).trim();
-                                    var modifiedLink = modified.substring(0, modified.lastIndexOf(":") + 1) + ":" + modified.substring(modified.lastIndexOf(":") + 1);
-                                    html += "<li>" + val.replace(modified, "<a href=\"/artifact/" + encodeURIComponent(modifiedLink) + "\">"+modifiedLink+"</a>") + "</li>";
-                                }else{
-                                   html += "<li>" + val.replace(link, "<a href=\"/artifact/" + encodeURIComponent(link) + "\">"+link+"</a>").replace(licenseLink, "<a href=\"/license/" + encodeURIComponent(licenseLink) + "\">"+licenseLink+"</a>") + "</li>";
-                                }
+                                html += "<li>" + val.replace(link, "<a href=\"/artifact/" + encodeURIComponent(link) + "\">"+link+"</a>").replace(licenseLink, "<a href=\"/license/" + encodeURIComponent(licenseLink) + "\">"+licenseLink+"</a>") + "</li>";
                             });
                             html += "</ul>";
                         });
@@ -1384,13 +1378,7 @@ function getModulePromotionReport(){
                             $.each(values, function(key, val){
                                var link = val.substring(0, val.lastIndexOf(":") + 4).trim();
                                var licenseLink = val.lastIndexOf("licensed as") != -1 ? val.substring(val.lastIndexOf("licensed as") + 11, val.length).trim() : "";
-                               if(link.indexOf("::") === -1){
-                                   var modified = val.substring(0, val.lastIndexOf(":") - 4).trim();
-                                   var modifiedLink = modified.substring(0, modified.lastIndexOf(":") + 1) + ":" + modified.substring(modified.lastIndexOf(":") + 1);
-                                   html += "<li>" + val.replace(modified, "<a href=\"/artifact/" + encodeURIComponent(modifiedLink) + "\">"+modifiedLink+"</a>") + "</li>";
-                               }else{
-                                   html += "<li>" + val.replace(link, "<a href=\"/artifact/" + encodeURIComponent(link) + "\">"+link+"</a>").replace(licenseLink, "<a href=\"/license/" + encodeURIComponent(licenseLink) + "\">"+licenseLink+"</a>") + "</li>";
-                               }
+                               html += "<li>" + val.replace(link, "<a href=\"/artifact/" + encodeURIComponent(link) + "\">"+link+"</a>").replace(licenseLink, "<a href=\"/license/" + encodeURIComponent(licenseLink) + "\">"+licenseLink+"</a>") + "</li>";
                            });
                             html += "</ul>";
                         });
