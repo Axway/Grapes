@@ -1,5 +1,6 @@
 package org.axway.grapes.server.reports.impl;
 
+import com.mongodb.DB;
 import org.axway.grapes.server.core.LicenseHandler;
 import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.db.RepositoryHandler;
@@ -71,26 +72,38 @@ public class MultipleMatchingReport implements Report {
         final Map<String, String> params = request.getParamValues();
         final String orgName = params.get("organization");
 
+        final String newValue = params.get("new_value") == null ? "" : params.get("new_value");
+
         final DataFetchingUtils dataUtils = new DataFetchingUtils();
         dataUtils.initCorporateIDs(repoHandler, orgName);
 
         final ReportExecution result = new ReportExecution(request, getColumnNames());
 
-        repoHandler.consumeByQuery(DbCollections.DB_ARTIFACTS, "", DbArtifact.class,
-                a -> {
-                    if (dataUtils.isThirdParty(a)) {
-                        a.getLicenses().forEach(licString -> {
-                            final Set<DbLicense> matchingLicenses = licenseMatcher.getMatchingLicenses(licString);
-                            if (matchingLicenses.size() > 1) {
-                                result.addResultRow(new String[]{a.getGavc(), licString, matchingLicenses
-                                        .stream()
-                                        .map(DbLicense::getName)
-                                        .collect(Collectors.toList())
-                                        .toString()});
-                            }
-                        });
-                    }
-                });
+        if (newValue.isEmpty()){
+            repoHandler.consumeByQuery(DbCollections.DB_ARTIFACTS, "", DbArtifact.class,
+                    a -> {
+                        if (dataUtils.isThirdParty(a)) {
+                            a.getLicenses().forEach(licString -> {
+                                final Set<DbLicense> matchingLicenses = licenseMatcher.getMatchingLicenses(licString);
+                                if (matchingLicenses.size() > 1) {
+                                    result.addResultRow(new String[]{a.getGavc(), licString, matchingLicenses
+                                            .stream()
+                                            .map(DbLicense::getName)
+                                            .collect(Collectors.toList())
+                                            .toString()});
+                                }
+                            });
+                        }
+                    });
+        } else {
+            repoHandler.consumeByQuery(DbCollections.DB_LICENSES, "", DbLicense.class,
+                    a -> {
+                        if (newValue.matches(String.format("(?i:%s)", a.getRegexp()))){
+                            result.addResultRow(new String[] {"Matching with license ", a.getName(), ""});
+                        }
+                    });
+        }
+
 
         if(result.getData().isEmpty()) {
             result.addResultRow(new String[] {"All OK. All regexp strings are disjoint", "", ""});

@@ -63,7 +63,7 @@ public class LicenseResource extends AbstractResource{
         DataValidator.validate(license);
 
         //Check if license is ok
-        DataValidator.validateLicensePattern(license, getLicenseHandler());
+        DataValidator.validateLicensePattern(license, getLicenseHandler(), getReportsHandler());
 
         // Save the license
         final DbLicense dbLicense = getModelMapper().getDbLicense(license);

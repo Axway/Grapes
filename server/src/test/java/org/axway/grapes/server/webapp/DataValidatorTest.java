@@ -7,6 +7,8 @@ import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.core.LicenseHandler;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbLicense;
+import org.axway.grapes.server.reports.ReportsHandler;
+import org.axway.grapes.server.reports.ReportsRegistry;
 import org.junit.Test;
 
 import javax.ws.rs.WebApplicationException;
@@ -504,15 +506,18 @@ public class DataValidatorTest {
         //Db license
         final DbLicense dbLicense = new DbLicense();
         dbLicense.setName("TestLicense2");
-        dbLicense.setRegexp("()");
+        dbLicense.setRegexp("((.*)(academic)(.*)|(AFL)+(.*))(3)(.*)");
 
         final RepositoryHandler repoHandler = mock(RepositoryHandler.class);
         when(repoHandler.getAllLicenses()).thenReturn(Collections.singletonList(dbLicense));
 
         final LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
 
+        final ReportsHandler reportsHandler = new ReportsHandler(repoHandler);
+
         try{
-            DataValidator.validateLicensePattern(license, licenseHandler);
+            ReportsRegistry.init();
+            DataValidator.validateLicensePattern(license, licenseHandler, reportsHandler);
         }
         catch (WebApplicationException e){
             exception = e;

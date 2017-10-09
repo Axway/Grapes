@@ -5,9 +5,20 @@ import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.core.LicenseHandler;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.datamodel.DbLicense;
+import org.axway.grapes.server.reports.Report;
+import org.axway.grapes.server.reports.ReportId;
+import org.axway.grapes.server.reports.ReportsHandler;
+import org.axway.grapes.server.reports.ReportsRegistry;
+import org.axway.grapes.server.reports.impl.MultipleMatchingReport;
+import org.axway.grapes.server.reports.models.ReportExecution;
+import org.axway.grapes.server.reports.models.ReportRequest;
+import org.axway.grapes.server.webapp.resources.LicenseResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -23,6 +34,8 @@ public final class DataValidator {
     private DataValidator(){
         // Hide utility class constructor
     }
+
+    private static final Logger LOG = LoggerFactory.getLogger(DataValidator.class);
 
     /**
      * Checks if the provided artifact is valid and could be stored into the database
@@ -111,7 +124,7 @@ public final class DataValidator {
             }
             catch (PatternSyntaxException e){
                 throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                        .entity("License regexp does not compile! " + e).build());
+                        .entity("License regexp does not compile!").build());
             }
 
             Pattern regex = Pattern.compile("[&%//]");
@@ -224,7 +237,7 @@ public final class DataValidator {
      * @param licenseHandler
      * @throws WebApplicationException if the data is corrupted
      */
-    public static void validateLicensePattern(License license, LicenseHandler licenseHandler){
+    public static void validateLicensePattern(License license, LicenseHandler licenseHandler, ReportsHandler reportsHandler){
 
         if(license.getRegexp() == null || license.getRegexp().isEmpty()) return;
         DbLicense dbLicense = null;
@@ -235,12 +248,25 @@ public final class DataValidator {
             //No license found
         }
 
-        if(dbLicense == null || !license.getRegexp().equals(dbLicense.getRegexp())){
-            Set<DbLicense> licenses = licenseHandler.getMatchingLicenses(license.getRegexp());
-            if(!licenses.isEmpty()){
-                throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Pattern conflict with other licenses")
-                        .build());
+        if(dbLicense == null || !license.getRegexp().equals(dbLicense.getRegexp())) {
+            int reportId = ReportId.MULTIPLE_LICENSE_MATCHING_STRINGS.getId();
+            final Optional<Report> reportOp = ReportsRegistry.findById(reportId);
+            if (reportOp.isPresent()) {
+                final Report reportDef = reportOp.get();
+                ReportRequest reportRequest = new ReportRequest();
+                reportRequest.setReportId(reportId);
+                Map<String, String> jsonParams = new HashMap<>();
+                jsonParams.put("organization", "Axway");
+                jsonParams.put("new_value", license.getRegexp());
+                reportRequest.setParamValues(jsonParams);
+                ReportExecution reportExecution = reportsHandler.execute(reportDef, reportRequest);
+                List<String[]> data = reportExecution.getData();
+                data.forEach(strings -> LOG.info(strings[0] + " " + strings[1]));
+                if(!data.isEmpty() && !data.get(0)[0].contains("All OK")) {
+                    throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                            .entity("Pattern conflict with other licenses")
+                            .build());
+                }
             }
         }
     }
