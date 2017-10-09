@@ -17,7 +17,7 @@ public class ReportsRegistry {
     //
     private static final String REPORTS_PACKAGE = "org.axway.grapes.server.reports";
 
-    private static final Set<Report> reports = new HashSet<>();
+    private static final Set<Report> reports = Collections.synchronizedSet(new HashSet<>());
     private static final Logger LOG = LoggerFactory.getLogger(ReportsRegistry.class);
 
     private ReportsRegistry() {};
@@ -26,6 +26,7 @@ public class ReportsRegistry {
      * Initializes the set of report implementation.
      */
     public static void init() {
+        reports.clear();
         Reflections reflections = new Reflections(REPORTS_PACKAGE);
         final Set<Class<? extends Report>> reportClasses = reflections.getSubTypesOf(Report.class);
 
