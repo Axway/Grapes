@@ -970,7 +970,7 @@ function getProductDeliveryOverview(delivery, product){
             html += "<tbody>\n";
            
             for(var index=0; index < delivery.dependencies.length; index++){
-                html += "<tr><td><a href=\"/artifact/" + encodeURIComponent(delivery.dependencies[index]) + "\">" + delivery.dependencies[index] + "</a></td></tr>";
+                html += "<tr><td><a href=\"/artifact/" + encodeURIComponent(delivery.dependencies[index] +  "::jar" ) + "\">" + delivery.dependencies[index] + "::jar" + "</a></td></tr>";
             }
 
             html += "</tbody>\n";
