@@ -15,6 +15,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
@@ -159,7 +160,6 @@ public class LicenseHandler implements LicenseMatcher {
         for (final DbLicense dbLicense : licensesRegexp.values()) {
             licenses.add(modelMapper.getLicense(dbLicense));
         }
-
         return licenses;
     }
 
@@ -194,5 +194,15 @@ public class LicenseHandler implements LicenseMatcher {
                                 )
                 )
                 .collect(Collectors.toSet());
+    }
+
+
+    //Matching license helpers
+    public List<DbLicense> allLicenses(){
+        return repoHandler.getAllLicenses();
+    }
+
+    public <T> void consumeByQuery(String collectionName, String query, Class<T> c, Consumer<T> consumer) {
+        repoHandler.consumeByQuery(collectionName, query, c, consumer);
     }
 }

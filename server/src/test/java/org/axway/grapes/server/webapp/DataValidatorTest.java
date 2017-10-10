@@ -500,7 +500,7 @@ public class DataValidatorTest {
         //Added license
         final License license = DataModelFactory.createLicense("TestLicense",
                 "TestLicense", "TestLicense",
-                "((.*)(academic)(.*)|(AFL)+(.*))(3)(.*)", "TestLicense");
+                "", "TestLicense");
         WebApplicationException exception = null;
 
         //Db license
@@ -513,11 +513,9 @@ public class DataValidatorTest {
 
         final LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
 
-        final ReportsHandler reportsHandler = new ReportsHandler(repoHandler);
-
         try{
             ReportsRegistry.init();
-            DataValidator.validateLicensePattern(license, licenseHandler, reportsHandler);
+            DataValidator.validateLicensePattern(license, licenseHandler);
         }
         catch (WebApplicationException e){
             exception = e;

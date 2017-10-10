@@ -3,24 +3,29 @@ package org.axway.grapes.server.webapp;
 
 import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.core.LicenseHandler;
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
+import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.DataUtils;
-import org.axway.grapes.server.db.datamodel.DbLicense;
+import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.reports.Report;
 import org.axway.grapes.server.reports.ReportId;
 import org.axway.grapes.server.reports.ReportsHandler;
 import org.axway.grapes.server.reports.ReportsRegistry;
-import org.axway.grapes.server.reports.impl.MultipleMatchingReport;
 import org.axway.grapes.server.reports.models.ReportExecution;
 import org.axway.grapes.server.reports.models.ReportRequest;
-import org.axway.grapes.server.webapp.resources.LicenseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
 
 /**
  * Data Validator
@@ -237,7 +242,7 @@ public final class DataValidator {
      * @param licenseHandler
      * @throws WebApplicationException if the data is corrupted
      */
-    public static void validateLicensePattern(License license, LicenseHandler licenseHandler, ReportsHandler reportsHandler){
+    public static void validateLicensePattern(License license, LicenseHandler licenseHandler){
 
         if(license.getRegexp() == null || license.getRegexp().isEmpty()) return;
         DbLicense dbLicense = null;
@@ -255,11 +260,291 @@ public final class DataValidator {
                 final Report reportDef = reportOp.get();
                 ReportRequest reportRequest = new ReportRequest();
                 reportRequest.setReportId(reportId);
-                Map<String, String> jsonParams = new HashMap<>();
-                jsonParams.put("organization", "Axway");
-                jsonParams.put("new_value", license.getRegexp());
-                reportRequest.setParamValues(jsonParams);
-                ReportExecution reportExecution = reportsHandler.execute(reportDef, reportRequest);
+
+                DbLicense addedLicense = new DbLicense();
+                addedLicense.setRegexp(license.getRegexp());
+                addedLicense.setName(license.getName());
+                addedLicense.setLongName(license.getLongName());
+
+                List<DbLicense> copy = new ArrayList<>(licenseHandler.allLicenses());
+                copy.add(addedLicense);
+
+                ReportExecution reportExecution = new ReportsHandler(new RepositoryHandler() {
+                    @Override
+                    public void store(DbCredential credential) {
+
+                    }
+
+                    @Override
+                    public DbCredential getCredential(String userId) {
+                        return null;
+                    }
+
+                    @Override
+                    public void addUserRole(String user, DbCredential.AvailableRoles role) {
+
+                    }
+
+                    @Override
+                    public void removeUserRole(String user, DbCredential.AvailableRoles role) {
+
+                    }
+
+                    @Override
+                    public void store(DbLicense license) {
+
+                    }
+
+                    @Override
+                    public List<String> getLicenseNames(FiltersHolder filters) {
+                        return null;
+                    }
+
+                    @Override
+                    public DbLicense getLicense(String name) {
+                        return null;
+                    }
+
+                    @Override
+                    public List<DbLicense> getAllLicenses() {
+                        return copy;
+                    }
+
+                    @Override
+                    public void deleteLicense(String name) {
+
+                    }
+
+                    @Override
+                    public List<DbArtifact> getArtifacts(FiltersHolder filters) {
+                        return null;
+                    }
+
+                    @Override
+                    public void addLicenseToArtifact(DbArtifact artifact, String licenseId) {
+
+                    }
+
+                    @Override
+                    public void removeLicenseFromArtifact(DbArtifact artifact, String name, LicenseMatcher licenseMatcher) {
+
+                    }
+
+                    @Override
+                    public void approveLicense(DbLicense license, Boolean approved) {
+
+                    }
+
+                    @Override
+                    public void store(DbArtifact dbArtifact) {
+
+                    }
+
+                    @Override
+                    public List<String> getGavcs(FiltersHolder filters) {
+                        return null;
+                    }
+
+                    @Override
+                    public List<String> getGroupIds(FiltersHolder filters) {
+                        return null;
+                    }
+
+                    @Override
+                    public List<String> getArtifactVersions(DbArtifact artifact) {
+                        return null;
+                    }
+
+                    @Override
+                    public DbArtifact getArtifact(String gavc) {
+                        return null;
+                    }
+
+                    @Override
+                    public DbArtifact getArtifactUsingSHA256(String sha256) {
+                        return null;
+                    }
+
+                    @Override
+                    public void deleteArtifact(String gavc) {
+
+                    }
+
+                    @Override
+                    public void updateDoNotUse(DbArtifact artifact, Boolean doNotUse) {
+
+                    }
+
+                    @Override
+                    public void updateDownloadUrl(DbArtifact artifact, String downLoadUrl) {
+
+                    }
+
+                    @Override
+                    public void updateProvider(DbArtifact artifact, String provider) {
+
+                    }
+
+                    @Override
+                    public List<DbModule> getAncestors(DbArtifact artifact, FiltersHolder filters) {
+                        return null;
+                    }
+
+                    @Override
+                    public void store(DbModule dbModule) {
+
+                    }
+
+                    @Override
+                    public List<String> getModuleNames(FiltersHolder filters) {
+                        return null;
+                    }
+
+                    @Override
+                    public List<String> getModuleVersions(String name, FiltersHolder filters) {
+                        return null;
+                    }
+
+                    @Override
+                    public DbModule getModule(String moduleId) {
+                        return null;
+                    }
+
+                    @Override
+                    public List<DbModule> getModules(FiltersHolder filters) {
+                        return null;
+                    }
+
+                    @Override
+                    public void deleteModule(String moduleId) {
+
+                    }
+
+                    @Override
+                    public void promoteModule(DbModule module) {
+
+                    }
+
+                    @Override
+                    public DbModule getRootModuleOf(String gavc) {
+                        return null;
+                    }
+
+                    @Override
+                    public DbModule getModuleOf(String gavc) {
+                        return null;
+                    }
+
+                    @Override
+                    public List<String> getOrganizationNames() {
+                        return null;
+                    }
+
+                    @Override
+                    public DbOrganization getOrganization(String name) {
+                        return null;
+                    }
+
+                    @Override
+                    public void deleteOrganization(String organizationId) {
+
+                    }
+
+                    @Override
+                    public void store(DbOrganization organization) {
+
+                    }
+
+                    @Override
+                    public void addModulesOrganization(String corporateGroupId, DbOrganization dbOrganization) {
+
+                    }
+
+                    @Override
+                    public void removeModulesOrganization(String corporateGroupId, DbOrganization dbOrganization) {
+
+                    }
+
+                    @Override
+                    public void removeModulesOrganization(DbOrganization dbOrganization) {
+
+                    }
+
+                    @Override
+                    public List<DbOrganization> getAllOrganizations() {
+                        return null;
+                    }
+
+                    @Override
+                    public void store(DbProduct dbProduct) {
+
+                    }
+
+                    @Override
+                    public DbProduct getProduct(String name) {
+                        return null;
+                    }
+
+                    @Override
+                    public List<String> getProductNames() {
+                        return null;
+                    }
+
+                    @Override
+                    public void deleteProduct(String name) {
+
+                    }
+
+                    @Override
+                    public <T> Optional<T> getOneByQuery(String collectionName, String query, Class<T> c) {
+                        return null;
+                    }
+
+                    @Override
+                    public <T> List<T> getListByQuery(String collectionName, String query, Class<T> c) {
+                        return new ArrayList<>();
+                    }
+
+                    @Override
+                    public <T> void consumeByQuery(String collectionName, String query, Class<T> c, Consumer<T> consumer) {
+//                        licenseHandler.consumeByQuery(collectionName, query, c, a -> {
+//
+//                        });
+                        //Faking a single artifact to check if license match
+                        DbArtifact temp = new DbArtifact();
+                        temp.setArtifactId("Temporary artifact");
+                        temp.setGroupId("Temporary artifact");
+                        temp.setVersion("Temporary artifact");
+                        temp.updateGavc();
+                        temp.setLicenses(Arrays.asList(license.getRegexp()));
+                        consumer.accept((T) temp);
+                    }
+
+                    @Override
+                    public long getResultCount(String collectionName, String query) {
+                        return 0;
+                    }
+
+                    @Override
+                    public void store(DbComment dbComment) {
+
+                    }
+
+                    @Override
+                    public List<DbComment> getComments(String entityId, String entityType) {
+                        return null;
+                    }
+
+                    @Override
+                    public DbComment getLatestComment(String entityId, String entityType) {
+                        return null;
+                    }
+
+                    @Override
+                    public DbSearch getSearchResult(String search, FiltersHolder filter) {
+                        return null;
+                    }
+                }).execute(reportDef, reportRequest);
                 List<String[]> data = reportExecution.getData();
                 data.forEach(strings -> LOG.info(strings[0] + " " + strings[1]));
                 if(!data.isEmpty() && !data.get(0)[0].contains("All OK")) {
@@ -270,4 +555,5 @@ public final class DataValidator {
             }
         }
     }
+
 }
