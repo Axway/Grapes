@@ -237,7 +237,7 @@ public final class DataValidator {
     }
 
     /**
-     * Check if license pattern is ok
+     * Check if new license pattern is valid and doesn't match any existing one
      * @param license
      * @param licenseHandler
      * @throws WebApplicationException if the data is corrupted
@@ -507,17 +507,7 @@ public final class DataValidator {
 
                     @Override
                     public <T> void consumeByQuery(String collectionName, String query, Class<T> c, Consumer<T> consumer) {
-//                        licenseHandler.consumeByQuery(collectionName, query, c, a -> {
-//
-//                        });
-                        //Faking a single artifact to check if license match
-                        DbArtifact temp = new DbArtifact();
-                        temp.setArtifactId("Temporary artifact");
-                        temp.setGroupId("Temporary artifact");
-                        temp.setVersion("Temporary artifact");
-                        temp.updateGavc();
-                        temp.setLicenses(Arrays.asList(license.getRegexp()));
-                        consumer.accept((T) temp);
+                        licenseHandler.consumeByQuery(collectionName, query, c, consumer);
                     }
 
                     @Override
@@ -546,12 +536,16 @@ public final class DataValidator {
                     }
                 }).execute(reportDef, reportRequest);
                 List<String[]> data = reportExecution.getData();
-                data.forEach(strings -> LOG.info(strings[0] + " " + strings[1]));
-                if(!data.isEmpty() && !data.get(0)[0].contains("All OK")) {
-                    throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                            .entity("Pattern conflict with other licenses")
-                            .build());
-                }
+                data.forEach(strings -> {
+                    boolean match = strings[2].contains(addedLicense.getName());
+                    if (match) {
+                        LOG.info("Pattern conflict: " + strings[1] + " matching " + strings[2]);
+                        String message = strings[2].replace(addedLicense.getName(), "");
+                        throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                                .entity("Pattern conflict matching: " +message)
+                                .build());
+                    }
+                });
             }
         }
     }
