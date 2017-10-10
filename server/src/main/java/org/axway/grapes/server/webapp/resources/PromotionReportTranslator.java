@@ -77,13 +77,13 @@ public final class PromotionReportTranslator {
 
                 final Comment comment = entry.getValue();
                 if(comment != null) {
-                    mappedComments.append(String.format("%s. %s (%s on %s) %s", entry.getValue().getEntityId(),
+                    mappedComments.append(String.format("%s. %s (%s on %s) %s", entry.getKey().getGavc(),
                             comment.getCommentedBy(),
                             comment.getAction(),
                             DATE_FORMAT.format(comment.getCreatedDateTime()),
                             comment.getCommentText()));
                 } else {
-                    mappedComments.append(entry.getKey());
+                    mappedComments.append(entry.getKey().getGavc());
                 }
                 isFirstElement = false;
             }

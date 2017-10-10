@@ -191,7 +191,7 @@ public class ModuleHandler {
             for (final Dependency dependency : deps) {
                 final DbModule depModule = repositoryHandler.getRootModuleOf(dependency.getTarget().getGavc());
                 if (depModule != null && !depModule.getId().equals(moduleId) && !depModule.isPromoted()) {
-                    report.addUnPromotedDependency(depModule.getId());
+                    report.addUnPromotedDependency(dependency.getTarget().getGavc());
                     report.addDependencyPromotionReport(depModule.getId(), getPromotionReport(depModule.getId()));
                 }
             }
