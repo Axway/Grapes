@@ -78,3 +78,26 @@ function resetURL(url) {
     var stripped = url.substring(0, url.indexOf('?'));
     window.history.pushState('', '', stripped);
 }
+
+
+function splitToArtifactParts(value) {
+    //  delivery.dependencies[index]
+    return value.split(':');
+}
+
+function getOnClickHandler(parts) {
+    if(parts.length === 0) {
+        return 'navigateToArtifact("", "", "")';
+    }
+
+    var result = "navigateToArtifact(";
+    result += '"';
+    result += parts[0];
+    result += '", "';
+    result += parts[1] !== null ? parts[1] : "";
+    result += '", "';
+    result += parts[2] !== null ? parts[2] : "";
+    result += '")';
+
+    return result;
+}

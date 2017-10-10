@@ -969,8 +969,15 @@ function getProductDeliveryOverview(delivery, product){
             html += "<thead><tr><th>Dependencies</th></tr></thead>\n";
             html += "<tbody>\n";
            
-            for(var index=0; index < delivery.dependencies.length; index++){
-                html += "<tr><td><a href=\"/artifact/" + encodeURIComponent(delivery.dependencies[index] +  "::jar" ) + "\">" + delivery.dependencies[index] + "::jar" + "</a></td></tr>";
+            for(var index=0; index < delivery.dependencies.length; index++) {
+                var artifactDetails = splitToArtifactParts(delivery.dependencies[index]);
+                html += "<tr><td>";
+                html += "<a href='#' onclick='";
+                html += getOnClickHandler(artifactDetails);
+                html += "'>";
+                html += delivery.dependencies[index];
+                html += "</a>";
+                html += "</td></tr>";
             }
 
             html += "</tbody>\n";
