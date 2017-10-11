@@ -33,8 +33,4 @@ public class ReportsHandler {
     public void refreshDelivery3rdParty(final DbProduct product) {
         artifactsPicker.work(repositoryHandler, product);
     }
-
-    public void refreshAllDeliveries3rdParty() {
-        artifactsPicker.work(repositoryHandler);
-    }
 }

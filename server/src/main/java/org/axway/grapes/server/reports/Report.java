@@ -1,7 +1,6 @@
 package org.axway.grapes.server.reports;
 
 import org.axway.grapes.server.db.RepositoryHandler;
-import org.axway.grapes.server.reports.ReportId;
 import org.axway.grapes.server.reports.models.ParameterDefinition;
 import org.axway.grapes.server.reports.models.ReportExecution;
 import org.axway.grapes.server.reports.models.ReportRequest;

@@ -20,7 +20,8 @@ public class ReportsRegistry {
     private static final Set<Report> reports = Collections.synchronizedSet(new HashSet<>());
     private static final Logger LOG = LoggerFactory.getLogger(ReportsRegistry.class);
 
-    private ReportsRegistry() {};
+    private ReportsRegistry() {
+    }
 
     /**
      * Initializes the set of report implementation.
@@ -48,7 +49,7 @@ public class ReportsRegistry {
         return Collections.unmodifiableSet(reports);
     }
 
-    public static Optional<Report> findById(int id) throws NoSuchElementException {
+    public static Optional<Report> findById(int id) {
         for(Report r : reports) {
             if(r.getId() == id) {
                 return Optional.of(r);

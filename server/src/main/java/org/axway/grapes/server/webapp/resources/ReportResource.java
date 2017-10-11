@@ -66,7 +66,7 @@ public class ReportResource extends AbstractResource {
             if(!req.getParamValues().containsKey(def.getName())) {
                 missing.add(def.getName());
             }
-        };
+        }
 
         if(!missing.isEmpty()) {
             throw new WebApplicationException(
