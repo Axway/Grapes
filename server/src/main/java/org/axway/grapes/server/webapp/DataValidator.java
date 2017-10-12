@@ -507,7 +507,7 @@ public final class DataValidator {
 
                     @Override
                     public <T> void consumeByQuery(String collectionName, String query, Class<T> c, Consumer<T> consumer) {
-                        licenseHandler.consumeByQuery(collectionName, query, c, consumer);
+                        licenseHandler.fakedQuery(collectionName, query, c, consumer);
                     }
 
                     @Override
@@ -537,6 +537,7 @@ public final class DataValidator {
                 }).execute(reportDef, reportRequest);
                 List<String[]> data = reportExecution.getData();
                 data.forEach(strings -> {
+                    LOG.info(strings[0] + "/" + strings[1] + "/" + strings[2]);
                     boolean match = strings[2].contains(addedLicense.getName());
                     if (match) {
                         LOG.info("Pattern conflict: " + strings[1] + " matching " + strings[2]);

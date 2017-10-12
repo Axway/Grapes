@@ -202,7 +202,7 @@ public class LicenseHandler implements LicenseMatcher {
         return repoHandler.getAllLicenses();
     }
 
-    public <T> void consumeByQuery(String collectionName, String query, Class<T> c, Consumer<T> consumer) {
+    public <T> void fakedQuery(String collectionName, String query, Class<T> c, Consumer<T> consumer) {
         repoHandler.consumeByQuery(collectionName, query, c, consumer);
     }
 }

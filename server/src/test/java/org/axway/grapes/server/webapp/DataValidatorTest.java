@@ -1,11 +1,17 @@
 package org.axway.grapes.server.webapp;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.core.LicenseHandler;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.db.datamodel.DbArtifact;
+import org.axway.grapes.server.db.datamodel.DbCollections;
 import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.axway.grapes.server.reports.ReportsHandler;
 import org.axway.grapes.server.reports.ReportsRegistry;
@@ -15,6 +21,9 @@ import javax.ws.rs.WebApplicationException;
 
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -495,21 +504,79 @@ public class DataValidatorTest {
     }
 
     @Test
-    public void validateLicenseRegex(){
+    public void conflictingLicenseRegex(){
 
         //Added license
-        final License license = DataModelFactory.createLicense("TestLicense",
-                "TestLicense", "TestLicense",
-                "", "TestLicense");
+        final License license = DataModelFactory.createLicense("AFL3",
+                "AFL3", "",
+                "((.*)(academic)(.*)|(AFL)+(.*))(3)(.*)", "");
         WebApplicationException exception = null;
 
         //Db license
         final DbLicense dbLicense = new DbLicense();
-        dbLicense.setName("TestLicense2");
+        dbLicense.setName("AFL-3.0");
         dbLicense.setRegexp("((.*)(academic)(.*)|(AFL)+(.*))(3)(.*)");
+
+        //fake artifact
+        final DbArtifact fakeArtifact = new DbArtifact();
+        fakeArtifact.setGroupId("Fake artifact");
+        fakeArtifact.setArtifactId("Fake artifact");
+        fakeArtifact.setVersion("1");
+        fakeArtifact.setLicenses(Arrays.asList("AFL-3.0"));
 
         final RepositoryHandler repoHandler = mock(RepositoryHandler.class);
         when(repoHandler.getAllLicenses()).thenReturn(Collections.singletonList(dbLicense));
+
+        doAnswer(invocation -> {
+            Consumer<DbArtifact> fakeConsumer = (Consumer<DbArtifact>) invocation.getArguments()[3];
+            fakeConsumer.accept(fakeArtifact);
+            return null;
+        }).when(repoHandler).consumeByQuery(anyString(), anyString(), any(Class.class), any(Consumer.class));
+
+
+        final LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
+
+        try{
+            ReportsRegistry.init();
+            DataValidator.validateLicensePattern(license, licenseHandler);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+
+        assertNotNull(exception);
+    }
+
+    @Test
+    public void validLicenseRegex(){
+
+        //Added license
+        final License license = DataModelFactory.createLicense("TEST",
+                "TEST", "",
+                "((.*)(TESTING)(.*)|(TEST)+(.*))(3)(.*)", "");
+        WebApplicationException exception = null;
+
+        //Db license
+        final DbLicense dbLicense = new DbLicense();
+        dbLicense.setName("AFL-3.0");
+        dbLicense.setRegexp("((.*)(academic)(.*)|(AFL)+(.*))(3)(.*)");
+
+        //fake artifact
+        final DbArtifact fakeArtifact = new DbArtifact();
+        fakeArtifact.setGroupId("Fake artifact");
+        fakeArtifact.setArtifactId("Fake artifact");
+        fakeArtifact.setVersion("1");
+        fakeArtifact.setLicenses(Arrays.asList("AFL-3.0"));
+
+        final RepositoryHandler repoHandler = mock(RepositoryHandler.class);
+        when(repoHandler.getAllLicenses()).thenReturn(Collections.singletonList(dbLicense));
+
+        doAnswer(invocation -> {
+            Consumer<DbArtifact> fakeConsumer = (Consumer<DbArtifact>) invocation.getArguments()[3];
+            fakeConsumer.accept(fakeArtifact);
+            return null;
+        }).when(repoHandler).consumeByQuery(anyString(), anyString(), any(Class.class), any(Consumer.class));
+
 
         final LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
 
@@ -523,6 +590,106 @@ public class DataValidatorTest {
 
         assertNull(exception);
     }
-    
-    
+
+
+    @Test
+    public void validLicenseRegexOnEdit(){
+
+        //Added license
+        final License license = DataModelFactory.createLicense("TEST",
+                "TEST", "",
+                "((.*)(TESTING)(.*)|(TEST)+(.*))(3)(.*)", "");
+        WebApplicationException exception = null;
+
+        //Db license
+        final DbLicense dbLicense = new DbLicense();
+        dbLicense.setName("TEST");
+        dbLicense.setLongName("TEST");
+        dbLicense.setRegexp("((.*)(academic)(.*)|(AFL)+(.*))(3)(.*)");
+
+        //fake artifact
+        final DbArtifact fakeArtifact = new DbArtifact();
+        fakeArtifact.setGroupId("Fake artifact");
+        fakeArtifact.setArtifactId("Fake artifact");
+        fakeArtifact.setVersion("1");
+        fakeArtifact.setLicenses(Arrays.asList("AFL-3.0"));
+
+        final RepositoryHandler repoHandler = mock(RepositoryHandler.class);
+        when(repoHandler.getAllLicenses()).thenReturn(Collections.singletonList(dbLicense));
+        when(repoHandler.getLicense(anyString())).thenReturn(dbLicense);
+
+        doAnswer(invocation -> {
+            Consumer<DbArtifact> fakeConsumer = (Consumer<DbArtifact>) invocation.getArguments()[3];
+            fakeConsumer.accept(fakeArtifact);
+            return null;
+        }).when(repoHandler).consumeByQuery(anyString(), anyString(), any(Class.class), any(Consumer.class));
+
+
+        final LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
+
+        try{
+            ReportsRegistry.init();
+            DataValidator.validateLicensePattern(license, licenseHandler);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+
+        assertNull(exception);
+    }
+
+    @Test
+    public void invalidLicenseRegexOnEdit(){
+
+        //Edit license
+        final License license = DataModelFactory.createLicense("TEST",
+                "TEST", "",
+                "((.*)(TEST)(.*)|(TEST)+(.*))(3)(.*)", "");
+        WebApplicationException exception = null;
+
+        //Db license
+        final DbLicense dbLicense = new DbLicense();
+        dbLicense.setName("TEST");
+        dbLicense.setLongName("TEST");
+        dbLicense.setRegexp("((.*)(academic)(.*)|(AFL)+(.*))(3)(.*)");
+
+        final DbLicense dbLicense2 = new DbLicense();
+        dbLicense2.setName("TEST2");
+        dbLicense2.setLongName("TEST2");
+        dbLicense2.setRegexp("((.*)(TEST)(.*)|(TEST)+(.*))(3)(.*)");
+
+
+        //fake artifact
+        final DbArtifact fakeArtifact = new DbArtifact();
+        fakeArtifact.setGroupId("Fake artifact");
+        fakeArtifact.setArtifactId("Fake artifact");
+        fakeArtifact.setVersion("1");
+        fakeArtifact.setLicenses(Arrays.asList("AFL-3.0", "TEST-3.0"));
+
+        final RepositoryHandler repoHandler = mock(RepositoryHandler.class);
+        when(repoHandler.getAllLicenses()).thenReturn(Arrays.asList(dbLicense,dbLicense2));
+        when(repoHandler.getLicense(anyString())).thenReturn(dbLicense);
+
+        doAnswer(invocation -> {
+            Consumer<DbArtifact> fakeConsumer = (Consumer<DbArtifact>) invocation.getArguments()[3];
+            fakeConsumer.accept(fakeArtifact);
+            return null;
+        }).when(repoHandler).consumeByQuery(anyString(), anyString(), any(Class.class), any(Consumer.class));
+
+
+        final LicenseHandler licenseHandler = new LicenseHandler(repoHandler);
+
+        try{
+            ReportsRegistry.init();
+            DataValidator.validateLicensePattern(license, licenseHandler);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+
+        assertNotNull(exception);
+    }
+
+
+
 }
