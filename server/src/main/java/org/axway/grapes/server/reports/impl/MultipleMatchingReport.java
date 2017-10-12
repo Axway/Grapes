@@ -1,6 +1,5 @@
 package org.axway.grapes.server.reports.impl;
 
-import com.mongodb.DB;
 import org.axway.grapes.server.core.LicenseHandler;
 import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.db.RepositoryHandler;

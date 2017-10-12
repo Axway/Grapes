@@ -59,14 +59,19 @@ public class LicenseResource extends AbstractResource{
 
 		LOG.info("Got a post license request.");
 
-        // Checks if the data is corrupted
+        //
+        // Checks if the data is corrupted, pattern can be compiled etc.
+        //
         DataValidator.validate(license);
-
-        //Check if license is ok
-        DataValidator.validateLicensePattern(license, getLicenseHandler());
 
         // Save the license
         final DbLicense dbLicense = getModelMapper().getDbLicense(license);
+
+        //
+        // The store method will deal with making sure there are no pattern conflicts
+        // The reason behind this move is the presence of the instance of RepositoryHandler
+        // and the imposibility to access that handler from here.
+        //
         getLicenseHandler().store(dbLicense);
         cacheUtils.clear(CacheName.PROMOTION_REPORTS);
 

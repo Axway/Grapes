@@ -5,17 +5,29 @@ import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
+import org.axway.grapes.server.db.datamodel.DbCollections;
 import org.axway.grapes.server.db.datamodel.DbLicense;
+import org.axway.grapes.server.db.datamodel.DbOrganization;
+import org.axway.grapes.server.reports.ReportsRegistry;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
+
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 public class LicenseHandlerTest {
+
 
     @Test
     public void checkStoreLicense(){
@@ -226,4 +238,5 @@ public class LicenseHandlerTest {
 
         assertEquals(1, licenseHandler.getMatchingLicenses("LGPL-3.0").size());
     }
+
 }

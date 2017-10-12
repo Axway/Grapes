@@ -8,6 +8,11 @@ import org.axway.grapes.server.db.ModelMapper;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbLicense;
+import org.axway.grapes.server.reports.Report;
+import org.axway.grapes.server.reports.ReportsRegistry;
+import org.axway.grapes.server.reports.models.ReportExecution;
+import org.axway.grapes.server.reports.models.ReportRequest;
+import org.axway.grapes.server.webapp.RepositoryHandlerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,9 +20,10 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
+
+import static org.axway.grapes.server.reports.ReportId.MULTIPLE_LICENSE_MATCHING_STRINGS;
 
 /**
  * License Handler
@@ -32,6 +38,8 @@ public class LicenseHandler implements LicenseMatcher {
 
     private final Map<String, DbLicense> licensesRegexp = new HashMap<>();
     private final RepositoryHandler repoHandler;
+
+    private final RepositoryHandlerBuilder wrapperBuilder = new RepositoryHandlerBuilder();
 
     public LicenseHandler(final RepositoryHandler repoHandler) {
         this.repoHandler = repoHandler;
@@ -62,6 +70,8 @@ public class LicenseHandler implements LicenseMatcher {
      * @param dbLicense DbLicense
      */
     public void store(final DbLicense dbLicense) {
+        verityLicenseIsConflictFree(dbLicense);
+
         repoHandler.store(dbLicense);
     }
 
@@ -196,13 +206,75 @@ public class LicenseHandler implements LicenseMatcher {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Check if new license pattern is valid and doesn't match any existing one
+     * @param newComer License being added or edited
+     * @throws WebApplicationException if conflicts involving the newComer are detected
+     */
+    private void verityLicenseIsConflictFree(final DbLicense newComer) {
+        if(newComer.getRegexp() == null || newComer.getRegexp().isEmpty()) {
+            return;
+        }
 
-    //Matching license helpers
-    public List<DbLicense> allLicenses(){
-        return repoHandler.getAllLicenses();
-    }
+        final DbLicense existing = repoHandler.getLicense(newComer.getName());
+        final List<DbLicense> licenses = repoHandler.getAllLicenses();
 
-    public <T> void fakedQuery(String collectionName, String query, Class<T> c, Consumer<T> consumer) {
-        repoHandler.consumeByQuery(collectionName, query, c, consumer);
+        if(null == existing) {
+            licenses.add(newComer);
+        } else {
+            existing.setRegexp(newComer.getRegexp());
+        }
+
+
+        final Optional<Report> reportOp = ReportsRegistry.findById(MULTIPLE_LICENSE_MATCHING_STRINGS);
+        if (reportOp.isPresent()) {
+            final Report reportDef = reportOp.get();
+            ReportRequest reportRequest = new ReportRequest();
+            reportRequest.setReportId(reportDef.getId());
+
+            Map<String, String> params = new HashMap<>();
+
+            //
+            // TODO: Make the organization come as an external parameter from the client side.
+            // This may have impact on the UI, as when the user will update a license he will
+            // have to specify which organization he's editing the license for (in case there
+            // are more organizations defined in the collection).
+            //
+            params.put("organization", "Axway");
+            reportRequest.setParamValues(params);
+
+            final RepositoryHandler wrapped = wrapperBuilder
+                    .start(repoHandler)
+                    .replaceGetMethod("getAllLicenses", licenses)
+                    .build();
+
+            final ReportExecution execution = reportDef.execute(wrapped, reportRequest);
+
+            List<String[]> data = execution.getData();
+
+            final Optional<String[]> first = data
+                    .stream()
+                    .filter(strings -> strings[2].contains(newComer.getName()))
+                    .findFirst();
+
+            if(first.isPresent()) {
+                final String[] strings = first.get();
+                final String message = String.format(
+                        "Pattern conflict for string entry %s matching multiple licenses: %s",
+                        strings[1], strings[2]);
+                LOG.info(message);
+                throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                        .entity(message)
+                        .build());
+            } else {
+                if(!data.isEmpty() && !data.get(0)[2].isEmpty()) {
+                    LOG.info("There are remote conflicts between existing licenses and artifact strings");
+                }
+            }
+        } else {
+            if(LOG.isWarnEnabled()) {
+                LOG.warn(String.format("Cannot find report by id %s", MULTIPLE_LICENSE_MATCHING_STRINGS));
+            }
+        }
     }
 }

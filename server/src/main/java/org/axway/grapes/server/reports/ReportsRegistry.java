@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 
 /**
@@ -49,13 +50,15 @@ public class ReportsRegistry {
         return Collections.unmodifiableSet(reports);
     }
 
-    public static Optional<Report> findById(int id) {
-        for(Report r : reports) {
-            if(r.getId() == id) {
-                return Optional.of(r);
-            }
-        }
+    public static Optional<Report> findById(final int id) {
+        return search(r -> (r.getId() == id));
+    }
 
-        return Optional.empty();
+    public static Optional<Report> findById(final ReportId reportId) {
+        return search(r -> (r.getId() == reportId.getId()));
+    }
+
+    private static Optional<Report> search(Predicate<Report> f) {
+        return reports.stream().filter(f).findFirst();
     }
 }
