@@ -63,18 +63,8 @@ public class DataModelFactoryTest {
     @Test
     public void checkUnsupportedScope() throws UnsupportedScopeException {
         Artifact artifact = DataModelFactory.createArtifact("com.my.company", "artifact", "1.0.0-SNAPSHOT", "win32", "jar", "jar");
-
         exc.expect(UnsupportedScopeException.class);
         DataModelFactory.createDependency(artifact, "wrongScope");
-//        Exception exception = null;
-//
-//        try {
-//            DataModelFactory.createDependency(artifact, "wrongScope");
-//        } catch (Exception e) {
-//            exception = e;
-//        }
-//        assertNotNull(exception);
-
     }
 
     @Test
