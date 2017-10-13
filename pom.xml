@@ -4,7 +4,7 @@
 
 	<groupId>org.axway.grapes</groupId>
 	<artifactId>grapes-parent</artifactId>
-	<version>1.9.0-5</version>
+	<version>1.9.1-1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Grapes</name>
@@ -22,7 +22,7 @@
 		<connection>scm:git:git@git.ecd.axway.int:ecd/java-legacy/Grapes.git</connection>
 		<url>git@git.ecd.axway.int:ecd/java-legacy/Grapes.git</url>
 		<developerConnection>scm:git:git@git.ecd.axway.int:ecd/java-legacy/Grapes.git</developerConnection>
-		<tag>1.9.0-5</tag>
+		<tag>1.9-1</tag>
 	</scm>
 
     <parent>
