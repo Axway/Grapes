@@ -59,6 +59,11 @@ public final class PromotionReportTranslator {
 
         final PromotionEvaluationReport result = new PromotionEvaluationReport();
 
+        if(null == promotionReportView) {
+            result.addWarning("Null argument");
+            return result;
+        }
+
         final List<PromotionValidation> errors = toPromotionValidations(errorStrings);
 
         if (promotionReportView.isSnapshot()) {

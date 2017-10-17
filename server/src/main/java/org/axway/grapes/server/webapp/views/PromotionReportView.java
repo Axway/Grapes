@@ -9,6 +9,8 @@ import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.commons.datamodel.PromotionEvaluationReport;
 import org.axway.grapes.server.webapp.resources.PromotionReportTranslator;
 import org.axway.grapes.server.webapp.views.serialization.PromotionReportSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -28,6 +30,9 @@ public class PromotionReportView extends View {
     private Map<String, List<String>> mismatchVersions = new HashMap<>();
     private List<Artifact> missingLicenses = new ArrayList<>();
     private Map<String, String> dependenciesWithNotAcceptedLicenses = new HashMap<>();
+
+    private static final Logger LOG = LoggerFactory.getLogger(PromotionReportView.class);
+
 
     public PromotionReportView() {
         super("PromotionReportView.ftl");
@@ -109,6 +114,12 @@ public class PromotionReportView extends View {
         // Collect all the modules names and versions
         for (final PromotionReportView promotionReport : getAllDependencyReport()) {
             final Module module = promotionReport.getRootModule();
+
+            if(null == module) {
+                LOG.warn("No root module found. Aborting compute().");
+                return;
+            }
+
             final List<String> versions = mismatchVersions.get(module.getName());
 
             if (versions == null) {
