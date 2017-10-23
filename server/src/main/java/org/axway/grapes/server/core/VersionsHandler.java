@@ -1,7 +1,6 @@
 package org.axway.grapes.server.core;
 
 import org.axway.grapes.server.core.version.IncomparableException;
-import org.axway.grapes.server.core.version.NotHandledVersionException;
 import org.axway.grapes.server.core.version.Version;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
@@ -10,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Versions Handler
@@ -60,93 +61,64 @@ public class VersionsHandler {
      *
      * @param versions
      * @return String
-     * @throws NotHandledVersionException
      * @throws IncomparableException
      */
     public String getLastRelease(final Collection<String> versions) {
-        Version lastRelease = null;
-
-        for(final String version: versions){
-            if(versionIsAcceptable(version)) {
-                try {
-                    final Version testedVersion = new Version(version);
-
-                    if (testedVersion.isRelease()) {
-                        if (lastRelease == null) {
-                            lastRelease = testedVersion;
-                        }
-
-                        if (lastRelease.compare(testedVersion) < 0) {
-                            lastRelease = testedVersion;
-                        }
+        final List<Version> sorted = versions.stream()
+                .filter(Version::isValid)               // filter invalid input values
+                .map(Version::make)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(Version::isRelease)
+                .sorted((v1, v2) -> {
+                    try {
+                        return v1.compare(v2);
+                    } catch (IncomparableException e) {
+                        return 0;
                     }
-                } catch(final NotHandledVersionException e) {
-                    LOG.error("Protection should have been in place", e);
-                } catch(final IncomparableException ie) {
-                    LOG.error(String.format("Cannot compare latest release [%s]. Details %s", lastRelease, ie));
-                }
-            }
-        }
+                })
+                .collect(Collectors.toList());
 
-        if(lastRelease == null) {
+        if(sorted.isEmpty()) {
+            if(LOG.isWarnEnabled()) {
+                LOG.warn(String.format("Cannot obtain last release from collection %s", versions.toString()));
+            }
             return null;
         }
 
-        return lastRelease.toString();
+        return sorted.get(sorted.size() - 1).toString();
     }
+
 
     /**
      * Find-out the last version in a list of version
      *
      * @param versions
      * @return String
-     * @throws NotHandledVersionException
      * @throws IncomparableException
      */
     public String getLastVersion(final Collection<String> versions) {
-        Version lastVersion = null;
-
-        for(final String version: versions){
-            if(versionIsAcceptable(version)) {
-
-                try {
-                    final Version testedVersion = new Version(version);
-
-                    if (lastVersion == null) {
-                        lastVersion = testedVersion;
+        final List<Version> sorted = versions.stream()
+                .filter(Version::isValid) // filter invalid input values
+                .map(Version::make)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .sorted((v1, v2) -> {
+                    try {
+                        return v1.compare(v2);
+                    } catch (IncomparableException e) {
+                        return 0;
                     }
+                })
+                .collect(Collectors.toList());
 
-                    if (lastVersion.compare(testedVersion) < 0) {
-                        lastVersion = testedVersion;
-                    }
-                } catch(final NotHandledVersionException e) {
-                    LOG.error("Protection should have been in place", e);
-                } catch(final IncomparableException ie) {
-                    LOG.error(String.format("Cannot compare latest version [%s]. Details %s", lastVersion, ie));
-                }
+        if(sorted.isEmpty()) {
+            if(LOG.isWarnEnabled()) {
+                LOG.warn(String.format("Cannot obtain last version from collection %s", versions.toString()));
             }
-        }
-
-        if(lastVersion == null){
             return null;
         }
 
-        return lastVersion.toString();
-    }
-
-    private boolean versionIsAcceptable(String version) {
-        if(version == null) {
-            return false;
-        }
-
-        try {
-            new Version(version);
-        } catch (NotHandledVersionException e) {
-            LOG.warn(String.format("Unsupported version [%s] %s", version, e.getMessage() == null ? "" : e.getMessage() ));
-            LOG.debug("Exception while building version", e);
-            return false;
-        }
-
-        return true;
+        return sorted.get(sorted.size() - 1).toString();
     }
 }

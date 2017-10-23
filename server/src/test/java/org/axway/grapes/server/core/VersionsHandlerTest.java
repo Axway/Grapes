@@ -1,7 +1,6 @@
 package org.axway.grapes.server.core;
 
 import org.axway.grapes.server.core.version.IncomparableException;
-import org.axway.grapes.server.core.version.NotHandledVersionException;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.junit.Test;
@@ -27,7 +26,7 @@ public class VersionsHandlerTest {
     }
 
     @Test
-    public void getTheLastVersionOfRegularVersions() throws IncomparableException, NotHandledVersionException {
+    public void getTheLastVersionOfRegularVersions() throws IncomparableException {
         final List<String> versions = new ArrayList<String>();
         // Release older than Snapshot
         versions.add("0.1.0-1");
@@ -44,7 +43,7 @@ public class VersionsHandlerTest {
     }
 
     @Test
-    public void testInvalidVersionDoesNotCauseStackTrace1() throws IncomparableException, NotHandledVersionException {
+    public void testInvalidVersionDoesNotCauseStackTrace1() throws IncomparableException {
         final List<String> versions = new ArrayList<String>();
         versions.add("1.0.0-aisstudio-4-SNAPSHOT");
         versions.add("1.2.0");
@@ -53,7 +52,7 @@ public class VersionsHandlerTest {
     }
 
     @Test
-    public void testInvalidVersionDoesNotCauseStackTrace2() throws IncomparableException, NotHandledVersionException {
+    public void testInvalidVersionDoesNotCauseStackTrace2() throws IncomparableException {
         final List<String> versions = new ArrayList<String>();
         versions.add(null);
         versions.add("1.2.0");
@@ -64,7 +63,7 @@ public class VersionsHandlerTest {
 
 
     @Test
-    public void getTheLastReleaseOfRegularVersions() throws IncomparableException, NotHandledVersionException {
+    public void getTheLastReleaseOfRegularVersions() throws IncomparableException {
         final List<String> versions = new ArrayList<String>();
         versions.add("0.1.0-1");
         versions.add("0.1.0-SNAPSHOT");
@@ -77,7 +76,7 @@ public class VersionsHandlerTest {
     }
 
     @Test
-    public void getTheLastReleaseIfNoRelease() throws IncomparableException, NotHandledVersionException {
+    public void getTheLastReleaseIfNoRelease() throws IncomparableException {
         final List<String> versions = new ArrayList<String>();
         versions.add("0.1.0-SNAPSHOT");
         versions.add("0.1.0-SNAPSHOT");
@@ -136,8 +135,8 @@ public class VersionsHandlerTest {
     }
 
     @Test
-    public void lastVersionDoesNotExist() throws UnknownHostException, IncomparableException, NotHandledVersionException {
-        String lastVersion = versionsHandler.getLastVersion(new ArrayList<String>());
+    public void lastVersionDoesNotExist() throws UnknownHostException, IncomparableException {
+        String lastVersion = versionsHandler.getLastVersion(new ArrayList<>());
         assertNull(lastVersion);
     }
 }

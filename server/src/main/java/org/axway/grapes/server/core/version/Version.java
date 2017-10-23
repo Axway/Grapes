@@ -1,9 +1,11 @@
 package org.axway.grapes.server.core.version;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Version Model Class
@@ -12,45 +14,24 @@ import java.util.List;
  */
 public class Version {
 
-	private final String stringVersion;
+    private static final Logger LOG = LoggerFactory.getLogger(Version.class);
+
+    private final String stringVersion;
 	private static final String SNAPSHOT = "SNAPSHOT";
+    private static final String SPLITTER_PATTERN = "(\\.|-)";
 
-	public Version(final String version) throws NotHandledVersionException {
-		this.stringVersion = version;
-		
-		// Checks if the version match the expectations
-		final String[] versionsParts = stringVersion.split("-");
-		if(versionsParts.length > 3){
-			throw new NotHandledVersionException();
-		}
 
-		final String[] validIntegerStrings = getIntegerParts(stringVersion);
+    public static Optional<Version> make(final String v) {
+	    if(!isValid(v)) {
+            return Optional.empty();
+        }
 
-		try {
-			for(final String entry : validIntegerStrings){
-				final int v = Integer.parseInt(entry);
-			}
-		} catch (NumberFormatException e) {
-			throw new NotHandledVersionException(e);
-		}
-	}
+        return Optional.of(new Version(v));
+    }
 
-	private String[] getIntegerParts(final String stringVersion) {
-		final List<String> resultList = new ArrayList<>();
-
-		resultList.addAll(Arrays.asList(getDigits().split("\\.")));
-
-		final String[] versionsParts = stringVersion.split("-");
-		if (versionsParts.length > 1 && !versionsParts[1].contains(SNAPSHOT)) {
-			resultList.add(versionsParts[1]);
-		}
-
-		if (versionsParts.length > 2 && !versionsParts[2].contains(SNAPSHOT)) {
-			resultList.add(versionsParts[2]);
-		}
-
-		return resultList.toArray(new String[0]);
-	}
+    private Version(final String version) {
+        this.stringVersion = version;
+    }
 
 	/**
 	 * Check if a version is a snapshot
@@ -187,4 +168,35 @@ public class Version {
 		return stringVersion;
 	}
 
+
+	public static boolean isValid(final String str) {
+        if(null == str) {
+            return false;
+        }
+
+        final String[] versionsParts = str.split("-");
+        if(versionsParts.length > 3) {
+            return false;
+        }
+
+        final String[] parts = str.split(SPLITTER_PATTERN);
+
+        final Set<String> badParts = Arrays.stream(parts)
+                .filter(part -> !part.equals(SNAPSHOT))
+                .filter(part -> {
+                    try {
+                        Integer.parseInt(part);
+                        return false;
+                    } catch (NumberFormatException e) {
+                        return true;
+                    }
+                })
+                .collect(Collectors.toSet());
+
+        if(!badParts.isEmpty() && LOG.isDebugEnabled()) {
+            badParts.forEach(badPart -> LOG.debug(String.format("Invalid version part identified \"%s\" in %s", badPart, str)));
+        }
+
+        return badParts.isEmpty();
+    }
 }
