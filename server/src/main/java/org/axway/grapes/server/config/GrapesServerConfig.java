@@ -25,7 +25,11 @@ import javax.validation.constraints.NotNull;
  */
 public class GrapesServerConfig extends Configuration{
 
-    @Valid
+	@Valid
+	@JsonProperty
+	private final String authenticationCachePolicy = "maximumSize=10000, expireAfterAccess=10m";
+
+	@Valid
     @JsonProperty
     private final CommunityConfig community = new CommunityConfig();
 
@@ -58,10 +62,6 @@ public class GrapesServerConfig extends Configuration{
     @JsonProperty
     private String[] artifactNotificationRecipients;
 
-	@Valid
-    @JsonProperty
-    private final String authenticationCachePolicy = "maximumSize=10000, expireAfterAccess=10m";
-	
     private boolean maintenanceModeActif = false;
 
     public DataBaseConfig getDataBaseConfig() {
@@ -78,7 +78,7 @@ public class GrapesServerConfig extends Configuration{
 
 	public List<String> getExternalValidatedTypes() {
 		if(externalValidatedTypes == null){
-			externalValidatedTypes = new ArrayList<String>();
+			externalValidatedTypes = new ArrayList<>();
 			externalValidatedTypes.add("program");
 			externalValidatedTypes.add("installer");
 			externalValidatedTypes.add("patch");
@@ -125,7 +125,7 @@ public class GrapesServerConfig extends Configuration{
         return community;
     }
 
-    public PromoValidationConfig getPromotionValidationConfiguration() {
+	public PromoValidationConfig getPromoValidationCfg() {
 		return promotionValidation;
 	}
 }

@@ -2,10 +2,10 @@ package org.axway.grapes.server.webapp.views;
 
 import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.PromotionEvaluationReport;
+import org.axway.grapes.commons.datamodel.ReportMessage;
 import org.axway.grapes.server.webapp.resources.PromotionReportTranslator;
 import org.junit.Test;
 
-import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -30,15 +30,17 @@ public class PromotionReportViewTest {
         // NO NPE being thrown
     }
 
+
     @Test
     public void testTranslatorAcceptsNullViews() {
         final PromotionEvaluationReport report = PromotionReportTranslator.toReport(null);
 
         assertNotNull(report);
         assertTrue(report.isPromotable());
-        assertEquals(1, report.getWarnings().size());
+        assertTrue(report.getMessages().size() == 1);
 
-        assertTrue(report.getWarnings().contains("Null argument"));
+        final ReportMessage msg = report.getMessages().iterator().next();
+        assertTrue(msg.getBody().contains("Null argument"));
     }
 
 

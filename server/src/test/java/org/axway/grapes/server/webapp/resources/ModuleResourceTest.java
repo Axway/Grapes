@@ -46,7 +46,8 @@ public class ModuleResourceTest extends ResourceTest {
         repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
         config = mock(GrapesServerConfig.class);
         PromoValidationConfig cfgMock = mock(PromoValidationConfig.class);
-        when(config.getPromotionValidationConfiguration()).thenReturn(cfgMock);
+
+        when(config.getPromoValidationCfg()).thenReturn(cfgMock);
         when(cfgMock.getErrors()).thenReturn(Collections.emptyList());
 
         final ModuleResource resource = new ModuleResource(repositoryHandler, config);
@@ -234,7 +235,6 @@ public class ModuleResourceTest extends ResourceTest {
         dbModule.setVersion("1.0.0-SNAPSHOT");
         when(repositoryHandler.getModule(dbModule.getId())).thenReturn(dbModule);
         withErrors(PromotionValidation.VERSION_IS_SNAPSHOT);
-        //PromotionReportTranslator.setErrorStrings(Arrays.asList(PromotionValidation.VERSION_IS_SNAPSHOT.name()));
 
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
         final WebResource resource = client().resource("/" + ServerAPI.MODULE_RESOURCE + "/" + dbModule.getName() + "/" + dbModule.getVersion() + ServerAPI.PROMOTION);
@@ -515,16 +515,18 @@ public class ModuleResourceTest extends ResourceTest {
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
     }
 
+
     //private void withErrors(final GrapesServerConfig serverConfig, PromotionValidation... validations) {
     private void withErrors(PromotionValidation... validations) {
-//        final PromoValidationConfig promoValidationMock = mock(PromoValidationConfig.class);
-//        final List<String> errors = Arrays.stream(validations).map(PromotionValidation::name).collect(Collectors.toList());
-//        when(promoValidationMock.getErrors()).thenReturn(errors);
-//
-//        when(serverConfig.getPromotionValidationConfiguration()).thenReturn(promoValidationMock);
-        PromotionReportTranslator.setErrorStrings(Arrays.stream(validations)
-                .map(PromotionValidation::name)
-                .collect(Collectors.toList()));
+        final PromoValidationConfig promoValidationMock = mock(PromoValidationConfig.class);
+        final List<String> errors = Arrays.stream(validations).map(PromotionValidation::name).collect(Collectors.toList());
+        when(promoValidationMock.getErrors()).thenReturn(errors);
+
+        when(config.getPromoValidationCfg()).thenReturn(promoValidationMock);
+        PromotionReportTranslator.setConfig(promoValidationMock);
+//        PromotionReportTranslator.setErrorStrings(Arrays.stream(validations)
+//                .map(PromotionValidation::name)
+//                .collect(Collectors.toList()));
     }
 
 }

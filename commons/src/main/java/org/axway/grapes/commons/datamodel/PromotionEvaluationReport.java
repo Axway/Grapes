@@ -10,31 +10,26 @@ import java.util.Set;
 public class PromotionEvaluationReport {
 
     //
-    //  By passing a simple set of error messages, further validation don't
+    //  By passing a simple set of error messages, further validations don't
     // require updating the client modules as well.
     //
-    private Set<String> errors = new HashSet<>();
-    private Set<String> warnings = new HashSet<>();
+    private Set<ReportMessage> messages = new HashSet<>();
     private boolean promotable = true;
 
-    public void addError(String error) {
-        this.errors.add(error);
-        promotable = false;
+    public void addMessage(final String message, final Tag tag) {
+        messages.add(new ReportMessage(message, tag));
     }
 
-    public void addWarning(String warning) {
-        this.warnings.add(warning);
-    }
 
     public boolean isPromotable() {
         return promotable;
     }
 
-    public Set<String> getErrors() {
-        return Collections.unmodifiableSet(errors);
+    public Set<ReportMessage> getMessages() {
+        return Collections.unmodifiableSet(messages);
     }
 
-    public Set<String> getWarnings() {
-        return Collections.unmodifiableSet(warnings);
+    public void setPromotable(boolean promotable) {
+        this.promotable = promotable;
     }
 }

@@ -6,14 +6,12 @@ import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.views.ViewBundle;
-
-
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.config.Messages;
 import org.axway.grapes.server.db.DBException;
 import org.axway.grapes.server.db.RepositoryHandler;
+import org.axway.grapes.server.promo.validations.PromoConfigPrinter;
 import org.axway.grapes.server.promo.validations.PromoConfigValidator;
-import org.axway.grapes.server.webapp.resources.ReportResource;
 import org.axway.grapes.server.reports.writer.CsvReportWriter;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.axway.grapes.server.webapp.healthcheck.DataBaseCheck;
@@ -76,9 +74,14 @@ public class GrapesServer extends Service<GrapesServerConfig> {
 
 	@Override
 	public void run(final GrapesServerConfig config, final Environment env) throws DBException, UnknownHostException {
-
         PromoConfigValidator v = new PromoConfigValidator();
-        v.testValidity(config.getPromotionValidationConfiguration());
+        v.testValidity(config.getPromoValidationCfg());
+        PromoConfigPrinter.display(config.getPromoValidationCfg(),
+                str -> {
+                    if (LOG.isInfoEnabled()) {
+                        LOG.info(str);
+                    }
+                });
 
         // init the repoHandler
         final RepositoryHandler repoHandler = getRepositoryHandler(config);

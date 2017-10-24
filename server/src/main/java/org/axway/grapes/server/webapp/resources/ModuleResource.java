@@ -44,7 +44,7 @@ public class ModuleResource extends AbstractResource {
 
     public ModuleResource(final RepositoryHandler repoHandler, final GrapesServerConfig dmConfig) {
         super(repoHandler, "ModuleResourceDocumentation.ftl", dmConfig);
-        PromotionReportTranslator.setErrorStrings(dmConfig.getPromotionValidationConfiguration().getErrors());
+        PromotionReportTranslator.setConfig(dmConfig.getPromoValidationCfg());
     }
 
     /**

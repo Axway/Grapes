@@ -1,5 +1,7 @@
 package org.axway.grapes.server.promo.validations;
 
+import java.util.Optional;
+
 public enum PromotionValidation {
 
         VERSION_IS_SNAPSHOT("Release version is SNAPSHOT"),
@@ -16,10 +18,19 @@ public enum PromotionValidation {
 
     @Override
     public String toString() {
-        return description;
+        return name();
     }
 
     public String getDescription() {
         return description;
+    }
+
+    public static Optional<PromotionValidation> byName(final String name) {
+        for(PromotionValidation v : values()) {
+            if(v.name().equalsIgnoreCase(name)) {
+                return Optional.of(v);
+            }
+        }
+        return Optional.empty();
     }
 }

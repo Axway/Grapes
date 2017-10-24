@@ -9,6 +9,7 @@ import com.yammer.dropwizard.views.ViewMessageBodyWriter;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.PromotionEvaluationReport;
 import org.axway.grapes.commons.datamodel.Scope;
+import org.axway.grapes.commons.datamodel.Tag;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.config.PromoValidationConfig;
@@ -29,8 +30,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.axway.grapes.commons.datamodel.Tag.CRITICAL;
+import static org.axway.grapes.commons.datamodel.Tag.MAJOR;
+import static org.axway.grapes.commons.datamodel.Tag.MINOR;
 import static org.axway.grapes.server.GrapesTestUtils.ARTIFACT_VERSION_4TEST;
 import static org.axway.grapes.server.GrapesTestUtils.MISSING_LICENSE_ARTIFACTID_4TEST;
+import static org.axway.grapes.server.promo.validations.PromotionValidation.DEPS_WITH_NO_LICENSES;
+import static org.axway.grapes.server.promo.validations.PromotionValidation.DO_NOT_USE_DEPS;
+import static org.axway.grapes.server.promo.validations.PromotionValidation.VERSION_IS_SNAPSHOT;
 import static org.axway.grapes.server.webapp.resources.PromotionReportTranslator.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
@@ -40,36 +47,37 @@ import static org.mockito.Mockito.when;
 @RunWith(Parameterized.class)
 public class PromoEvaluationTest extends ResourceTest {
 
-
-
     private RepositoryHandler repositoryHandler;
     private GrapesServerConfig config;
 
     private String testName;
     private DbModule module;
     private PromotionValidation[] validationOfTypeError;
+    private String[] validationEqualTags;
     private Function<PromoEvaluationTest, PromotionEvaluationReport> prepareAssert;
     private BiConsumer<PromoEvaluationTest, PromotionEvaluationReport> assertPart;
-    private int expectedErrorCount = 0;
-    private int expectedWarningCount = 0;
+    private boolean expectedPromotable = true;
+    private int expectedMessages = 0;
 
 
     public PromoEvaluationTest(
             final String theTestName,
             final DbModule module,
             final PromotionValidation[] validationOfTypeError,
+            final String[] validationEqualTags,
             final Function<PromoEvaluationTest, PromotionEvaluationReport> prepareAssert,
             final BiConsumer<PromoEvaluationTest, PromotionEvaluationReport> assertConsumer,
-            final int warnCount,
-            final int errCount) {
+            final boolean promotable,
+            final int msgCount) {
 
         this.testName = theTestName;
         this.module = module;
         this.validationOfTypeError = validationOfTypeError;
+        this.validationEqualTags = validationEqualTags;
         this.prepareAssert = prepareAssert;
         this.assertPart = assertConsumer;
-        this.expectedWarningCount = warnCount;
-        this.expectedErrorCount = errCount;
+        this.expectedPromotable = promotable;
+        this.expectedMessages = msgCount;
     }
 
     @Override
@@ -77,7 +85,21 @@ public class PromoEvaluationTest extends ResourceTest {
 
         repositoryHandler = GrapesTestUtils.getRepoHandlerMock();
         config = mock(GrapesServerConfig.class);
+
+        PromoValidationConfig promoCfg = new PromoValidationConfig();
+        when(config.getPromoValidationCfg()).thenReturn(promoCfg);
+
         withErrors(config, this.validationOfTypeError);
+
+        if(validationEqualTags.length > 0) {
+            Arrays.stream(validationEqualTags)
+                    .map(pairStr -> pairStr.split("="))
+                    .filter(pair -> pair.length == 2)
+                    .filter(pair -> PromotionValidation.byName(pair[0]).isPresent())
+                    .filter(pair -> Tag.byName(pair[1]) != null)
+                    .map(pair -> new AbstractMap.SimpleEntry<>(PromotionValidation.byName(pair[0]).get(), Tag.byName(pair[1]) ))
+                    .forEach(entry -> withTag(promoCfg, entry.getKey(), entry.getValue()));
+        }
 
         final ModuleResource resource = new ModuleResource(repositoryHandler, config);
         addProvider(new BasicAuthProvider<>(new GrapesAuthenticator(repositoryHandler), "test auth"));
@@ -91,129 +113,149 @@ public class PromoEvaluationTest extends ResourceTest {
                 {"No violations - Warnings Only",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{},
+                        new String[] {},
                         modulePrepare(),
                         countersAssert().andThen(matchesDoableResponse()),
-                        0,
+                        true,
                         0},
                 {"Snapshot version - allowed",
                         makeModule("a-module", "1.0.0-SNAPSHOT"),
                         new PromotionValidation[]{},
+                        new String[] {},
                         modulePrepare(),
                         countersAssert()
-                                .andThen(reportContainsWarning(PromotionReportTranslator.SNAPSHOT_VERSION_MSG))
+                                .andThen(reportContainsMsg(PromotionReportTranslator.SNAPSHOT_VERSION_MSG, Tag.MINOR))
                                 .andThen(matchesDoableResponse()),
-                        1,
-                        0},
-                {"Snapshot version - forbidden",
-                        makeModule("a-module", "1.0.1-SNAPSHOT"),
-                        new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT},
-                        modulePrepare(),
-                        countersAssert()
-                                .andThen(reportContainsError(PromotionReportTranslator.SNAPSHOT_VERSION_MSG))
-                                .andThen(matchesDoableResponse()),
-                        0,
+                        true,
                         1},
-                {"No License on Artifacts - allowed",
+                {"Snapshot version - forbidden, critical tag",
+                        makeModule("a-module", "1.0.1-SNAPSHOT"),
+                        new PromotionValidation[]{VERSION_IS_SNAPSHOT},
+                        new String[] {String.format("%s=%s", VERSION_IS_SNAPSHOT.name(), Tag.CRITICAL.name()) },
+                        modulePrepare(),
+                        countersAssert()
+                                .andThen(reportContainsMsg(PromotionReportTranslator.SNAPSHOT_VERSION_MSG, Tag.CRITICAL))
+                                .andThen(matchesDoableResponse()),
+                        false,
+                        1},
+                {"No License on Artifacts - allowed, major tags",
                         makeModule("a-module", UUID.randomUUID().toString()),
-                        new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT, PromotionValidation.DO_NOT_USE_DEPS},
+                        new PromotionValidation[]{VERSION_IS_SNAPSHOT, PromotionValidation.DO_NOT_USE_DEPS},
+                        new String[] {
+                                String.format("%s=%s", DEPS_WITH_NO_LICENSES, MAJOR),
+                                String.format("%s=%s", DO_NOT_USE_DEPS, CRITICAL)
+                        },
                         prepareNoLicenseOnArtifacts(),
                         countersAssert()
-                                .andThen(reportContainsWarning(MISSING_LICENSE_MSG))
-                                .andThen(reportContainsWarning(GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST))
-                                .andThen(reportContainsWarning(GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST))
+                                .andThen(reportContainsMsg(MISSING_LICENSE_MSG, MAJOR))
+                                .andThen(reportContainsMsg(GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST, MAJOR))
+                                .andThen(reportContainsMsg(GrapesTestUtils.ARTIFACT_CLASSIFIER_4TEST, MAJOR))
                                 .andThen(matchesDoableResponse()),
-                        1,
-                        0},
+                        true,
+                        1},
                 {"No License on Artifacts - forbidden",
                         makeModule("a-module", UUID.randomUUID().toString()),
-                        new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT, PromotionValidation.DEPS_WITH_NO_LICENSES},
+                        new PromotionValidation[]{VERSION_IS_SNAPSHOT, DEPS_WITH_NO_LICENSES},
+                        new String[] {},
                         prepareNoLicenseOnArtifacts(),
                         countersAssert()
-                                .andThen(reportContainsError(MISSING_LICENSE_MSG))
-                                .andThen(reportContainsError(GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST))
+                                .andThen(reportContainsMsg(MISSING_LICENSE_MSG, Tag.MINOR))
+                                .andThen(reportContainsMsg(GrapesTestUtils.MISSING_LICENSE_GROUPID_4TEST, Tag.MINOR))
                                 .andThen(matchesDoableResponse()),
-                        0,
+                        false,
                         1},
                 {"Unknown Licenses on Artifacts - allowed",
                         makeModule("a-module", UUID.randomUUID().toString()),
-                        new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT},
+                        new PromotionValidation[]{VERSION_IS_SNAPSHOT},
+                        new String[] {},
                         prepareUnknownLicenseOnArtifacts(),
                         countersAssert()
-                                .andThen(reportContainsWarning(MISSING_LICENSE_MSG))
+                                .andThen(reportContainsMsg(MISSING_LICENSE_MSG, Tag.MINOR))
                                 .andThen(matchesDoableResponse()),
-                        1,
-                        0},
-                {"Unknown Licenses on Artifacts - forbidden",
+                        true,
+                        1},
+                {"Unknown Licenses on Artifacts - forbidden, labeled with major tag",
                         makeModule("a-module", UUID.randomUUID().toString()),
-                        new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT, PromotionValidation.DEPS_WITH_NO_LICENSES},
+                        new PromotionValidation[]{VERSION_IS_SNAPSHOT, DEPS_WITH_NO_LICENSES},
+                        new String[] {
+                                String.format("%s=%s", VERSION_IS_SNAPSHOT, CRITICAL),
+                                String.format("%s=%s", DEPS_WITH_NO_LICENSES, MAJOR)
+                        },
                         prepareUnknownLicenseOnArtifacts(),
                         countersAssert()
-                                .andThen(reportContainsError(MISSING_LICENSE_MSG))
+                                .andThen(reportContainsMsg(MISSING_LICENSE_MSG, MAJOR))
                                 .andThen(matchesDoableResponse()),
-                        0,
+                        false,
                         1},
                 {"Unacceptable License Terms - allowed",
                         makeModule("a-module", UUID.randomUUID().toString()),
-                        new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT},
+                        new PromotionValidation[]{VERSION_IS_SNAPSHOT},
+                        new String[] {},
                         prepareUnacceptableLicenseTerms(),
                         countersAssert()
-                                .andThen(reportContainsWarning(UNACCEPTABLE_LICENSE_MSG))
+                                .andThen(reportContainsMsg(UNACCEPTABLE_LICENSE_MSG, Tag.MINOR))
                                 .andThen(matchesDoableResponse()),
-                        1,
-                        0},
+                        true,
+                        1},
                 {"Unacceptable License Terms - forbidden",
                         makeModule("a-module", UUID.randomUUID().toString()),
-                        new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT, PromotionValidation.DEPS_UNACCEPTABLE_LICENSE},
+                        new PromotionValidation[]{VERSION_IS_SNAPSHOT, PromotionValidation.DEPS_UNACCEPTABLE_LICENSE},
+                        new String[] {},
                         prepareUnacceptableLicenseTerms(),
                         countersAssert()
-                                .andThen(reportContainsError(UNACCEPTABLE_LICENSE_MSG))
+                                .andThen(reportContainsMsg(UNACCEPTABLE_LICENSE_MSG, Tag.MINOR))
                                 .andThen(matchesDoableResponse()),
-                        0,
+                        false,
                         1},
                 {"Un-promoted dependencies - allowed",
                         makeModule("a-module", UUID.randomUUID().toString()),
-                        new PromotionValidation[]{PromotionValidation.VERSION_IS_SNAPSHOT},
+                        new PromotionValidation[]{VERSION_IS_SNAPSHOT},
+                        new String[] {},
                         prepareUnpromotedDependencies(),
                         countersAssert()
-                                .andThen(reportContainsWarning(UNPROMOTED_MSG))
+                                .andThen(reportContainsMsg(UNPROMOTED_MSG, Tag.MINOR))
                                 .andThen(matchesDoableResponse()),
-                        1,
-                        0},
+                        true,
+                        1},
                 {"Un-promoted dependencies - forbidden",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{PromotionValidation.UNPROMOTED_DEPS},
+                        new String[] {},
                         prepareUnpromotedDependencies(),
                         countersAssert()
-                                .andThen(reportContainsError(UNPROMOTED_MSG))
+                                .andThen(reportContainsMsg(UNPROMOTED_MSG, Tag.MINOR))
                                 .andThen(matchesDoableResponse()),
-                        0,
+                        false,
                         1},
                 {"Do not use dependencies - allowed",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{},
+                        new String[] {},
                         prepareDoNotUseDependencies(),
                         countersAssert()
-                                .andThen(reportContainsWarning(DO_NOT_USE_MSG))
+                                .andThen(reportContainsMsg(DO_NOT_USE_MSG, Tag.MINOR))
                                 .andThen(matchesDoableResponse()),
-                        1,
-                        0},
+                        true,
+                        1},
                 {"Do not use dependencies - forbidden",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{PromotionValidation.DO_NOT_USE_DEPS},
+                        new String[] {},
                         prepareDoNotUseDependencies(),
                         countersAssert()
-                                .andThen(reportContainsError(DO_NOT_USE_MSG))
+                                .andThen(reportContainsMsg(DO_NOT_USE_MSG, Tag.MINOR))
                                 .andThen(matchesDoableResponse()),
-                        0,
+                        false,
                         1},
                 {"Snapshot dependencies - allowed",
                         makeModule("a-module", UUID.randomUUID().toString()),
                         new PromotionValidation[]{},
+                        new String[] {},
                         prepareSnapshotDependencies(),
                         countersAssert()
                                 .andThen(matchesDoableResponse()),
-                        1,
-                        0}
+                        true,
+                        1}
         });
     }
 
@@ -453,23 +495,31 @@ public class PromoEvaluationTest extends ResourceTest {
         assertPart.accept(this, report);
     }
 
-
     private static BiConsumer<PromoEvaluationTest, PromotionEvaluationReport> countersAssert() {
         return (parent, report) -> {
             assertNotNull(report);
-            assertEquals(parent.expectedWarningCount, report.getWarnings().size());
-            assertEquals(parent.expectedErrorCount, report.getErrors().size());
-            assertEquals(parent.expectedErrorCount == 0, report.isPromotable());
+            assertEquals(parent.expectedMessages, report.getMessages().size());
+            assertEquals(parent.expectedPromotable, report.isPromotable());
         };
     }
 
     private static void withErrors(final GrapesServerConfig serverConfig,
                                    final PromotionValidation... validations) {
-        final PromoValidationConfig promoValidationMock = mock(PromoValidationConfig.class);
-        final List<String> errors = Arrays.stream(validations).map(PromotionValidation::name).collect(Collectors.toList());
-        when(promoValidationMock.getErrors()).thenReturn(errors);
 
-        when(serverConfig.getPromotionValidationConfiguration()).thenReturn(promoValidationMock);
+        final PromoValidationConfig cfg = serverConfig.getPromoValidationCfg();
+        cfg.getErrors().clear();
+        cfg.getErrors().addAll(Arrays.stream(validations).map(PromotionValidation::name).collect(Collectors.toList()));
+    }
+
+    private static void withTag(final PromoValidationConfig cfg,
+                                final PromotionValidation v,
+                                final Tag tag) {
+
+        final List<String> listByTag = cfg.getTagConfig().getListByTag(tag);
+        if(null != listByTag) {
+            listByTag.add(v.name());
+        }
+
     }
 
     private static String promotionReportEndpoint(final DbModule module) {
@@ -487,12 +537,12 @@ public class PromoEvaluationTest extends ResourceTest {
         return result;
     }
 
-    private static BiConsumer<PromoEvaluationTest, PromotionEvaluationReport> reportContainsError(
-            final String msg) {
-        return (parent, report) -> {
-            assertSetContains(report.getErrors(), msg);
-        };
-    }
+//    private static BiConsumer<PromoEvaluationTest, PromotionEvaluationReport> reportContainsError(
+//            final String msg) {
+//        return (parent, report) -> {
+//            assertSetContains(report.getMessages(), msg, Tag.CRITICAL);
+//        };
+//    }
 
     private static BiConsumer<PromoEvaluationTest, PromotionEvaluationReport> matchesDoableResponse() {
         return (parent, report) -> {
@@ -501,16 +551,19 @@ public class PromoEvaluationTest extends ResourceTest {
         };
     }
 
-    private static void assertSetContains(final Set<String> msgs, final String msg) {
-        assertTrue(msgs.stream().filter(w -> w.contains(msg)).count() > 0);
-    }
+//    private static void assertSetContains(final Set<ReportMessage> msgs, final String msg, final Tag tag) {
+//        assertTrue(msgs.stream().filter(w -> w.getBody().contains(msg)).count() > 0);
+//    }
 
-    private static BiConsumer<PromoEvaluationTest, PromotionEvaluationReport> reportContainsWarning(final String msg) {
+    private static BiConsumer<PromoEvaluationTest, PromotionEvaluationReport> reportContainsMsg(final String msg, final Tag tag) {
         return (parent, report) -> {
-            assertSetContains(report.getWarnings(), msg);
+            assertTrue(report.getMessages()
+                    .stream()
+                    .filter(w -> w.getBody().contains(msg))
+                    .filter(w -> w.getTag().equals(tag))
+                    .count() > 0);
         };
     }
-
 
     /**
      * Executes the request and provides back the response entity

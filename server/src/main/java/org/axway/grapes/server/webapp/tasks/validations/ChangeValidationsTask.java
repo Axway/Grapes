@@ -56,7 +56,8 @@ public class ChangeValidationsTask extends Task {
                 LOG.info(String.format("Found %s value contained. All validations will become warnings.", NONE_VALUE));
             }
 
-            PromotionReportTranslator.setErrorStrings(Collections.emptyList());
+            // TODO: Implement here
+//            PromotionReportTranslator.setErrorStrings(Collections.emptyList());
             printWriter.println("Done");
             return;
         }
@@ -74,7 +75,8 @@ public class ChangeValidationsTask extends Task {
             }
         }
 
-        PromotionReportTranslator.setErrorStrings(new ArrayList<>(newErrors));
+        // TODO: Implement here
+        // PromotionReportTranslator.setErrorStrings(new ArrayList<>(newErrors));
         printWriter.println("Done");
 
         cacheUtils.clear(CacheName.PROMOTION_REPORTS);

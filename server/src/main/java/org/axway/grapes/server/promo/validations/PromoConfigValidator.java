@@ -1,5 +1,6 @@
 package org.axway.grapes.server.promo.validations;
 
+import org.axway.grapes.commons.datamodel.Tag;
 import org.axway.grapes.server.config.PromoValidationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,11 +13,31 @@ public class PromoConfigValidator {
 
     private static final Logger LOG = LoggerFactory.getLogger(PromoConfigValidator.class);
 
+
     public void testValidity(PromoValidationConfig cfg) {
-        final List<String> invalidEntries = cfg.getErrors()
+        toValidErrors(cfg);
+        toValidTags(cfg);
+    }
+
+    private void toValidTags(final PromoValidationConfig cfg) {
+        toValidTags(cfg, cfg.getTagConfig().getCritical(), Tag.CRITICAL);
+        toValidTags(cfg, cfg.getTagConfig().getMajor(), Tag.MAJOR);
+        toValidTags(cfg, cfg.getTagConfig().getMinor(), Tag.MINOR);
+    }
+
+    private void toValidTags(final PromoValidationConfig cfg, final List<String> inputs, Tag t) {
+        cfg.purgeFromTag(t, getInvalidValues(inputs));
+    }
+
+    private List<String> getInvalidValues(List<String> input) {
+        return input
                 .stream()
                 .filter(entry -> matchingCount(entry) == 0)
                 .collect(Collectors.toList());
+    }
+
+    private void toValidErrors(final PromoValidationConfig cfg) {
+        final List<String> invalidEntries = getInvalidValues(cfg.getErrors());
 
         if(!invalidEntries.isEmpty()) {
             invalidEntries.forEach(wrong -> LOG.warn(String.format("[%s] is not a valid promotion validation name. It will be ignored.", wrong)));
@@ -30,21 +51,6 @@ public class PromoConfigValidator {
             }
 
             cfg.purge(invalidEntries);
-        }
-
-        if(LOG.isInfoEnabled()) {
-            LOG.info("");
-            LOG.info("Promotion validation(s) considered errors");
-            cfg.getErrors().stream()
-                    .map(PromotionValidation::valueOf)
-                    .forEach(v -> LOG.info(String.format("%s (%s)", v.name(), v.getDescription())));
-
-            LOG.info("");
-            LOG.info("Promotion validation(s) considered warnings");
-            Arrays.stream(PromotionValidation.values())
-                    .filter(entry -> !cfg.getErrors().contains(entry.name()))
-                    .forEach(v -> LOG.info(String.format("%s (%s)", v.name(), v.getDescription())));
-            LOG.info("");
         }
 
     }

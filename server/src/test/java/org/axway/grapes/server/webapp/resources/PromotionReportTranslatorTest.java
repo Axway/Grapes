@@ -1,15 +1,14 @@
 package org.axway.grapes.server.webapp.resources;
 
 import org.axway.grapes.commons.datamodel.*;
+import org.axway.grapes.server.config.PromoValidationConfig;
 import org.axway.grapes.server.promo.validations.PromotionValidation;
 import org.axway.grapes.server.webapp.views.PromotionReportView;
 import org.junit.Test;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -50,22 +49,17 @@ public class PromotionReportTranslatorTest {
         promotionViewTest.addDoNotUseArtifact(artifactDoNotUse, comment);
         promotionViewTest.addUnPromotedDependency(artifactUnpromotedDependency.getGavc());
 
-        // pass data to the method
-        PromotionReportTranslator.setErrorStrings(Arrays.asList(
-                DO_NOT_USE_DEPS.name(),
-                UNPROMOTED_DEPS.name(),
-                DEPS_WITH_NO_LICENSES.name()));
+        PromotionReportTranslator.setConfig(cfgWithErrors(DO_NOT_USE_DEPS, UNPROMOTED_DEPS, DEPS_WITH_NO_LICENSES));
         final PromotionEvaluationReport report = PromotionReportTranslator.toReport(promotionViewTest);
 
         // assert if the output from the method equals to the expected data
         assertFalse(report.isPromotable());
 
-        assertEquals(0, report
-                .getErrors()
+        assertEquals(0, report.getMessages()
                 .stream()
+                .map(ReportMessage::getBody)
                 .filter(isPartOf(DO_NOT_USE_MSG, UNPROMOTED_MSG, MISSING_LICENSE_MSG))
                 .count());
-
     }
 
     @Test
@@ -85,14 +79,15 @@ public class PromotionReportTranslatorTest {
         promotionViewTest.addUnacceptedLicenseEntry(artifactNotApprovedLicense.getGavc(), notApprovedLicense.getName());
 
         // pass data to the method
-        PromotionReportTranslator.setErrorStrings(Arrays.asList(DEPS_UNACCEPTABLE_LICENSE.name()));
+        PromotionReportTranslator.setConfig(cfgWithErrors(DEPS_UNACCEPTABLE_LICENSE));
         final PromotionEvaluationReport report = PromotionReportTranslator.toReport(promotionViewTest);
 
         // create expected result data
         assertFalse(report.isPromotable());
         assertEquals(0,
-                report.getErrors()
+                report.getMessages()
                         .stream()
+                        .map(ReportMessage::getBody)
                         .filter(isPartOf(UNACCEPTABLE_LICENSE_MSG))
                         .count());
     }
@@ -107,22 +102,30 @@ public class PromotionReportTranslatorTest {
         final Artifact artifactMissingLicense = DataModelFactory.createArtifact("CheckPromotionWithoutErrors", "artifactId", "version", "classifier", "type", "extension");
 
         module.addArtifact(artifactMissingLicense);
-
         promotionViewTest.setRootModule(module);
 
-        // check promotion status
-        PromotionReportTranslator.setErrorStrings(Arrays.stream(PromotionValidation.values()).map(PromotionValidation::name).collect(Collectors.toList()));
+        PromotionReportTranslator.setConfig(cfgWithErrors(PromotionValidation.values()));
         final PromotionEvaluationReport report = PromotionReportTranslator.toReport(promotionViewTest);
 
         assertTrue(report.isPromotable());
-        assertTrue(report.getErrors().isEmpty());
+        assertTrue(report.getMessages().size() == 0);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testErrorSetIsImmutable() {
         PromotionEvaluationReport report = new PromotionEvaluationReport();
-        report.addError("Sample text");
-        report.getErrors().clear();
+        report.addMessage("Sample text", Tag.MAJOR);
+        report.getMessages().clear();
+    }
+
+    private PromoValidationConfig cfgWithErrors(PromotionValidation... validations) {
+        PromoValidationConfig result = new PromoValidationConfig();
+        result.setErrors(asList(validations));
+        return result;
+    }
+
+    private List<String> asList(PromotionValidation... validations) {
+        return Arrays.stream(validations).map(PromotionValidation::name).collect(Collectors.toList());
     }
 
     private Predicate<String> isPartOf(String... msgs) {

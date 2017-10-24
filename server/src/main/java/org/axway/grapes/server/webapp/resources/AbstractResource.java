@@ -1,11 +1,7 @@
 package org.axway.grapes.server.webapp.resources;
 
-import com.mongodb.util.JSON;
 import com.yammer.dropwizard.views.View;
-import org.axway.grapes.commons.datamodel.Artifact;
-import org.axway.grapes.commons.datamodel.DataModelFactory;
-import org.axway.grapes.commons.datamodel.PromotionEvaluationReport;
-import org.axway.grapes.commons.datamodel.Scope;
+import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.commons.utils.JsonUtils;
 import org.axway.grapes.server.config.CommunityConfig;
 import org.axway.grapes.server.config.GrapesServerConfig;
@@ -27,6 +23,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.axway.grapes.commons.datamodel.Tag.*;
+
 /**
  * Abstract resource
  * 
@@ -36,6 +34,7 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractResource extends View {
 
+    public static final String TWO_PLACES = "%s %s";
     private final RepositoryHandler repositoryHandler;
     private final GrapesServerConfig grapesConfig;
 
@@ -252,14 +251,15 @@ public abstract class AbstractResource extends View {
      */
     public String getPromotionDetailsJsonModel() throws IOException {
         final PromotionEvaluationReport sampleReport = new PromotionEvaluationReport();
-        sampleReport.addWarning(String.format("%s %s", PromotionReportTranslator.UNPROMOTED_MSG, "com.acme.secure-smh:core-relay:1.2.0"));
-        sampleReport.addWarning(String.format("%s %s", PromotionReportTranslator.DO_NOT_USE_MSG, "com.google.guava:guava:20.0"));
-        sampleReport.addWarning(String.format("%s %s", PromotionReportTranslator.MISSING_LICENSE_MSG, "org.apache.maven.wagon:wagon-webdav-jackrabbit:2.12"));
-        sampleReport.addWarning(String.format("%s %s", PromotionReportTranslator.UNACCEPTABLE_LICENSE_MSG,
+        sampleReport.addMessage(String.format(TWO_PLACES, PromotionReportTranslator.UNPROMOTED_MSG, "com.acme.secure-smh:core-relay:1.2.0"), MAJOR);
+        sampleReport.addMessage(String.format(TWO_PLACES, PromotionReportTranslator.DO_NOT_USE_MSG, "com.google.guava:guava:20.0"), MAJOR);
+        sampleReport.addMessage(String.format(TWO_PLACES, PromotionReportTranslator.MISSING_LICENSE_MSG, "org.apache.maven.wagon:wagon-webdav-jackrabbit:2.12"), MINOR);
+        sampleReport.addMessage(String.format(TWO_PLACES, PromotionReportTranslator.UNACCEPTABLE_LICENSE_MSG,
                 "aopaliance:aopaliance:1.0 licensed as Attribution-ShareAlike 2.5 Generic, " +
-                "org.polyjdbc:polyjdbc0.7.1 licensed as Creative Commons Attribution-ShareAlike 3.0 Unported License"));
+                "org.polyjdbc:polyjdbc0.7.1 licensed as Creative Commons Attribution-ShareAlike 3.0 Unported License"),
+                MINOR);
 
-        sampleReport.addError(PromotionReportTranslator.SNAPSHOT_VERSION_MSG);
+        sampleReport.addMessage(PromotionReportTranslator.SNAPSHOT_VERSION_MSG, Tag.CRITICAL);
         return JsonUtils.serialize(sampleReport);
     }
 
@@ -326,7 +326,7 @@ public abstract class AbstractResource extends View {
                             desc = byId.get().getDescription() + "<br/><br/>";
                          }
 
-                         return String.format("%s %s", desc, JsonUtils.serialize(request));
+                         return String.format(TWO_PLACES, desc, JsonUtils.serialize(request));
                      } catch(IOException e) {
                          return "Error " + e.getMessage();
                      }
