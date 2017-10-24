@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.naming.AuthenticationException;
 import javax.ws.rs.core.MediaType;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -366,6 +367,26 @@ public class GrapesClient {
         return response.getEntity(Boolean.class);
     }
 
+
+    public <T> T getModulePromotionReportRaw(final String name,
+                                             final String version,
+                                             final Class<T> entityClass) throws GrapesCommunicationException {
+        final Client client = getClient();
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.promoteModuleReportPath(name, version));
+        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+        client.destroy();
+        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
+            final String message = String.format(FAILED_TO_GET_MODULE, "get module promotion report", name, version);
+
+            if(LOG.isErrorEnabled()) {
+                LOG.error(String.format(HTTP_STATUS_TEMPLATE_MSG, message, response.getStatus()));
+            }
+            throw new GrapesCommunicationException(message, response.getStatus());
+        }
+
+        return response.getEntity(entityClass);
+    }
 
     /**
      * Check if a module can be promoted in the Grapes server

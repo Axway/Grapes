@@ -185,7 +185,7 @@ public class Version {
                 .filter(part -> !part.equals(SNAPSHOT))
                 .filter(part -> {
                     try {
-                        Integer.parseInt(part);
+                        int v = Integer.parseInt(part);
                         return false;
                     } catch (NumberFormatException e) {
                         return true;
