@@ -52,6 +52,18 @@ body {
     float: left;
 }
 
+.critical {
+    color : red;
+}
+
+.major {
+    color : orange;
+}
+
+.minor {
+    color : navy;
+}
+
 /*DO NOT USE modal comments textarea*/
 #doNotUseComment {
     width: 100%;

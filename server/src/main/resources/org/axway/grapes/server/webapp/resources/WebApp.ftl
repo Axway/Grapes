@@ -371,6 +371,7 @@
         <!-- All reports executions -->
         <script src="/assets/js/FileSaver.js"></script>
         <script src="/assets/js/reports.js"></script>
+        <script src="/assets/js/promotion.js"></script>
 
         <script>
             const fns = [

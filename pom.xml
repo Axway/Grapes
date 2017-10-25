@@ -132,6 +132,19 @@
 	<build>
 		<pluginManagement>
 			<plugins>
+                <plugin>
+                    <groupId>org.axway.grapes</groupId>
+                    <artifactId>grapes-maven-plugin</artifactId>
+                    <version>1.4.0-1</version>
+                    <executions>
+                        <execution>
+                            <phase>install</phase>
+                            <goals>
+                                <goal>generate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>

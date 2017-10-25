@@ -1351,47 +1351,40 @@ function getModulePromotionReport(){
             url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/promotion/report?fullRecursive=true" ,
             data: {},
             dataType: "json",
-            success: function(data, textStatus) {
+            success: function(report, textStatus) {
 
                     var html = "<div class=\"container\">" +
                     "<div class=\"row-fluid\" id=\"list\">";
-                    if(data.promotable){
+                    if(report.promotable){
                         html += "<div id=\"promotion_ok\"><h3>The module can be promoted.</h3></div><br/>"
-                   }else{
+                   } else{
                         html += "<div id=\"promotion_ko\"><h3>The module cannot be promoted</h3></div><br/>"
                    }
-                   if(data.errors.length != 0){
-                        html += "<h3 style='color:red;'>Errors</h3>"
-                        $.each(data.errors, function(key, val){
-                            var errorDescription = val.substring(0, val.indexOf(":")) === "" ? val : val.substring(0, val.indexOf(":"));
-                            var values = val.substring(val.indexOf(":") + 1) === errorDescription ? [] : val.substring(val.indexOf(":") + 1).split(/,\s*(?![^()]*\))/gm);
-                            html += "- <strong style='color:red;'>" + errorDescription +  "</strong>" + "<br/>";
-                            html += "<ul>"
-                            $.each(values, function(key, val){
-                                var link = val.substring(0, val.lastIndexOf(":") + 4).trim();
-                                var licenseLink = val.lastIndexOf("licensed as") != -1 ? val.substring(val.lastIndexOf("licensed as") + 11, val.length).trim() : "";
-                                html += "<li>" + val.replace(link, "<a href=\"/artifact/" + encodeURIComponent(link) + "\">"+link+"</a>").replace(licenseLink, "<a href=\"/license/" + encodeURIComponent(licenseLink) + "\">"+licenseLink+"</a>") + "</li>";
-                            });
-                            html += "</ul>";
-                        });
-                   }
-                   if(data.warnings.length != 0){
-                        html += "<h3 style='color:orange;'>Warnings</h3>"
-                        $.each(data.warnings, function(key, val){
-                            var errorDescription = val.substring(0, val.indexOf(":")) === "" ? val : val.substring(0, val.indexOf(":"));
-                            var values = val.substring(val.indexOf(":") + 1) === errorDescription ? [] : val.substring(val.indexOf(":") + 1).split(/,\s*(?![^()]*\))/gm);
-                            html += "- <strong style='color:orange;'>" + errorDescription +  "</strong>" + "<br/>";
-                            html += "<ul>"
-                            $.each(values, function(key, val){
-                               var link = val.substring(0, val.lastIndexOf(":") + 4).trim();
-                               var licenseLink = val.lastIndexOf("licensed as") != -1 ? val.substring(val.lastIndexOf("licensed as") + 11, val.length).trim() : "";
-                               html += "<li>" + val.replace(link, "<a href=\"/artifact/" + encodeURIComponent(link) + "\">"+link+"</a>").replace(licenseLink, "<a href=\"/license/" + encodeURIComponent(licenseLink) + "\">"+licenseLink+"</a>") + "</li>";
-                           });
-                            html += "</ul>";
-                        });
-                   }
+                   var tags = tagsInReport(report);
 
-                   html += "</div></div>"
+                   tags.forEach(function(tag) {
+                       html += "<h3 class='" + cssClassByTag(tag) + "'>";
+                       html += capitalizeFirstLetter(tag);
+                       html += "</h3>";
+
+                       var messages = messagesByTag(report, tag);
+
+                       messages.forEach(function(message) {
+                           var errDescription = errorDescription(message);
+                           html += "<div class='" + cssClassByTag(tag) + "'><strong>" + errDescription + "</strong></div>";
+
+                           var pieces = getPieces(message);
+                           if(pieces.length > 0) {
+                               html += "<ul>";
+                               pieces.forEach(function(piece) {
+                                   html += "<li>" + asLinks(piece) + "</li>";
+                               });
+                               html += "</ul>";
+                           }
+                       });
+                   });
+
+                   html += "</div></div>";
                    $("#results").empty().append(html);
             }
         });
