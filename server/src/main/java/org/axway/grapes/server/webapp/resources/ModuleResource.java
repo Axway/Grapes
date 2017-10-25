@@ -12,7 +12,6 @@ import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
-import org.axway.grapes.server.promo.validations.PromotionValidation;
 import org.axway.grapes.server.webapp.DataValidator;
 import org.axway.grapes.server.webapp.views.*;
 import org.eclipse.jetty.http.HttpStatus;

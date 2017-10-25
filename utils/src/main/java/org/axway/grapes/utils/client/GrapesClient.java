@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.naming.AuthenticationException;
 import javax.ws.rs.core.MediaType;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
