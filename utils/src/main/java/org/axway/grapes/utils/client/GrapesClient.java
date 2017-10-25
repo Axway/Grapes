@@ -370,9 +370,10 @@ public class GrapesClient {
 
     public <T> T getModulePromotionReportRaw(final String name,
                                              final String version,
+                                             final boolean excludeSnapshotValidation,
                                              final Class<T> entityClass) throws GrapesCommunicationException {
         final Client client = getClient();
-        final WebResource resource = client.resource(serverURL).path(RequestUtils.promoteModuleReportPath(name, version));
+        final WebResource resource = client.resource(serverURL).path(RequestUtils.promoteModuleReportPath(name, version, excludeSnapshotValidation));
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         client.destroy();
@@ -397,21 +398,7 @@ public class GrapesClient {
      * @throws GrapesCommunicationException
      */
     public PromotionEvaluationReport getModulePromotionReport(final String name, final String version) throws GrapesCommunicationException {
-        final Client client = getClient();
-        final WebResource resource = client.resource(serverURL).path(RequestUtils.promoteModuleReportPath(name, version));
-        final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-
-        client.destroy();
-        if(ClientResponse.Status.OK.getStatusCode() != response.getStatus()){
-            final String message = String.format(FAILED_TO_GET_MODULE, "promote module", name, version);
-
-            if(LOG.isErrorEnabled()) {
-                LOG.error(String.format(HTTP_STATUS_TEMPLATE_MSG, message, response.getStatus()));
-            }
-            throw new GrapesCommunicationException(message, response.getStatus());
-        }
-
-        return response.getEntity(PromotionEvaluationReport.class);
+        return getModulePromotionReportRaw(name, version, false, PromotionEvaluationReport.class);
     }
     
     /**

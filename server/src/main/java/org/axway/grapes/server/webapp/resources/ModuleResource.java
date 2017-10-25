@@ -12,6 +12,7 @@ import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
+import org.axway.grapes.server.promo.validations.PromotionValidation;
 import org.axway.grapes.server.webapp.DataValidator;
 import org.axway.grapes.server.webapp.views.*;
 import org.eclipse.jetty.http.HttpStatus;
@@ -25,6 +26,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URL;
 import java.util.*;
+
+import static org.axway.grapes.server.promo.validations.PromotionValidation.VERSION_IS_SNAPSHOT;
 
 /**
  * Module Resource
@@ -448,14 +451,17 @@ public class ModuleResource extends AbstractResource {
     @GET
     @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}" + ServerAPI.PROMOTION + ServerAPI.GET_REPORT)
-    public Response getPromotionStatusReport(@PathParam("name") final String name, @PathParam("version") final String version) {
+    public Response getPromotionStatusReport(@PathParam("name") final String name,
+                                             @PathParam("version") final String version,
+                                             @QueryParam(ServerAPI.EXCLUDE_SNAPSHOT_PARAM) boolean excludeSnapshot) {
         if (LOG.isInfoEnabled()) {
             LOG.info(String.format("Got a get promotion report request [%s] [%s]", name, version));
         }
         final String moduleId = DbModule.generateID(name, version);
         PromotionReportView promotionReportView = getModuleHandler().getPromotionReport(moduleId);
 
-        final PromotionEvaluationReport report =
+        final PromotionEvaluationReport report = excludeSnapshot ?
+                PromotionReportTranslator.toReport(promotionReportView, VERSION_IS_SNAPSHOT) :
                 PromotionReportTranslator.toReport(promotionReportView);
 
         return Response.ok().entity(report).build();

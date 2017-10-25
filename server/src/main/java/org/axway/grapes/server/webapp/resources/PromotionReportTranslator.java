@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,7 +57,8 @@ public final class PromotionReportTranslator {
         return promoValidationCfg;
     }
 
-    public static PromotionEvaluationReport toReport(final PromotionReportView promotionReportView) {
+    public static PromotionEvaluationReport toReport(final PromotionReportView promotionReportView,
+                                                     final PromotionValidation... excluded) {
 
         final PromotionEvaluationReport result = new PromotionEvaluationReport();
 
@@ -65,56 +67,69 @@ public final class PromotionReportTranslator {
             return result;
         }
 
-        if (promotionReportView.isSnapshot()) {
+        List<PromotionValidation> exclusions = Arrays.asList(excluded);
+
+        if (promotionReportView.isSnapshot() && !exclusions.contains(VERSION_IS_SNAPSHOT)) {
             append(result, VERSION_IS_SNAPSHOT, SNAPSHOT_VERSION_MSG);
         }
 
         // do not use dependency
-        if (!promotionReportView.getDoNotUseArtifacts().isEmpty()) {
-            boolean isFirstElement = true;
-            StringBuilder mappedComments = new StringBuilder();
-            for (Map.Entry<Artifact, Comment> entry : promotionReportView.getDoNotUseArtifacts().entrySet()) {
-                if (!isFirstElement) {
-                    mappedComments.append(", ");
-                }
+        if(!exclusions.contains(DO_NOT_USE_DEPS)) {
+            if (!promotionReportView.getDoNotUseArtifacts().isEmpty()) {
+                boolean isFirstElement = true;
+                StringBuilder mappedComments = new StringBuilder();
+                for (Map.Entry<Artifact, Comment> entry : promotionReportView.getDoNotUseArtifacts().entrySet()) {
+                    if (!isFirstElement) {
+                        mappedComments.append(", ");
+                    }
 
 
-                final Comment comment = entry.getValue();
-                if(comment != null) {
-                    mappedComments.append(String.format("%s. %s (%s on %s) %s", entry.getKey().getGavc(),
-                            comment.getCommentedBy(),
-                            comment.getAction(),
-                            DATE_FORMAT.format(comment.getCreatedDateTime()),
-                            comment.getCommentText()));
-                } else {
-                    mappedComments.append(entry.getKey().getGavc());
+                    final Comment comment = entry.getValue();
+                    if (comment != null) {
+                        mappedComments.append(String.format("%s. %s (%s on %s) %s", entry.getKey().getGavc(),
+                                comment.getCommentedBy(),
+                                comment.getAction(),
+                                DATE_FORMAT.format(comment.getCreatedDateTime()),
+                                comment.getCommentText()));
+                    } else {
+                        mappedComments.append(entry.getKey().getGavc());
+                    }
+                    isFirstElement = false;
                 }
-                isFirstElement = false;
+
+                append(result,
+                        DO_NOT_USE_DEPS,
+                        String.format("%s %s", DO_NOT_USE_MSG, mappedComments));
             }
-
-            append(result,
-                    DO_NOT_USE_DEPS,
-                    String.format("%s %s", DO_NOT_USE_MSG, mappedComments));
-        }
-        // unpromoted dependency
-        if (!promotionReportView.getUnPromotedDependencies().isEmpty()) {
-            String err = buildErrorMsg(promotionReportView.getUnPromotedDependencies(), UNPROMOTED_MSG + " %s");
-            append(result, UNPROMOTED_DEPS, err);
         }
 
-        // missing third party dependency license
-        if (!promotionReportView.getMissingLicenses().isEmpty()) {
-            String err = buildErrorMsg(
-                    promotionReportView.getMissingLicenses().stream().map(Artifact::getGavc).collect(Collectors.toList()),
-                    MISSING_LICENSE_MSG + "%s");
-            append(result, DEPS_WITH_NO_LICENSES, err);
+
+        if(!exclusions.contains(UNPROMOTED_DEPS)) {
+            // unpromoted dependency
+            if (!promotionReportView.getUnPromotedDependencies().isEmpty()) {
+                String err = buildErrorMsg(promotionReportView.getUnPromotedDependencies(), UNPROMOTED_MSG + " %s");
+                append(result, UNPROMOTED_DEPS, err);
+            }
         }
-        // third party dependency not accepted licenses
-        if (!promotionReportView.getDependenciesWithNotAcceptedLicenses().isEmpty()) {
-            String err = buildErrorMsg(promotionReportView.getDependenciesWithNotAcceptedLicenses(),
-                    " licensed as ",
-                    UNACCEPTABLE_LICENSE_MSG + " %s");
-            append(result, DEPS_UNACCEPTABLE_LICENSE, err);
+
+        if(!exclusions.contains(DEPS_WITH_NO_LICENSES)) {
+            // missing third party dependency license
+            if (!promotionReportView.getMissingLicenses().isEmpty()) {
+                String err = buildErrorMsg(
+                        promotionReportView.getMissingLicenses().stream().map(Artifact::getGavc).collect(Collectors.toList()),
+                        MISSING_LICENSE_MSG + "%s");
+                append(result, DEPS_WITH_NO_LICENSES, err);
+            }
+        }
+
+        if(!exclusions.contains(DEPS_UNACCEPTABLE_LICENSE)) {
+            // third party dependency not accepted licenses
+            if (!promotionReportView.getDependenciesWithNotAcceptedLicenses().isEmpty()) {
+                String err = buildErrorMsg(promotionReportView.getDependenciesWithNotAcceptedLicenses(),
+                        " licensed as ",
+                        UNACCEPTABLE_LICENSE_MSG + " %s");
+                append(result, DEPS_UNACCEPTABLE_LICENSE, err);
+            }
         }
 
         return result;

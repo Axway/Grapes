@@ -104,12 +104,16 @@ public final class RequestUtils {
         return path.toString();
     }
 
-    public static String promoteModuleReportPath(final String name, final String version) {
+    public static String promoteModuleReportPath(final String name, final String version, final boolean excludeSnapshot) {
         final StringBuilder path = new StringBuilder();
         path.append(getModulePath(name, version));
         path.append(ServerAPI.PROMOTION);
         path.append(ServerAPI.GET_REPORT);
-
+        if(excludeSnapshot) {
+            path.append("?");
+            path.append(ServerAPI.EXCLUDE_SNAPSHOT_PARAM);
+            path.append("=true");
+        }
         return path.toString();
     }
 

@@ -167,6 +167,9 @@ public class ServerAPI {
     /** Value - {@value}, boolean query parameter used to show the license long names in reports.*/
     public static final String SHOW_LICENSE_FULL_NAME_PARAM = "showLicenseFullNames";
 
+    /** Value - {@value}, boolean query parameter used to exclude the VERSION_IS_SNAPSHOT validation from the promotion report.*/
+    public static final String EXCLUDE_SNAPSHOT_PARAM = "excludeSNAPSHOT";
+
     /** Value - {@value}, boolean query parameter used to show the sizes in reports.*/
     public static final String SHOW_SIZE = "showSize";
 
