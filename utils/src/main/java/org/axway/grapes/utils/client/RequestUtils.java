@@ -109,11 +109,6 @@ public final class RequestUtils {
         path.append(getModulePath(name, version));
         path.append(ServerAPI.PROMOTION);
         path.append(ServerAPI.GET_REPORT);
-        if(excludeSnapshot) {
-            path.append("?");
-            path.append(ServerAPI.EXCLUDE_SNAPSHOT_PARAM);
-            path.append("=true");
-        }
         return path.toString();
     }
 

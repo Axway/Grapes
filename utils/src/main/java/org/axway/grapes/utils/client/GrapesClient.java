@@ -372,7 +372,13 @@ public class GrapesClient {
                                              final boolean excludeSnapshotValidation,
                                              final Class<T> entityClass) throws GrapesCommunicationException {
         final Client client = getClient();
-        final WebResource resource = client.resource(serverURL).path(RequestUtils.promoteModuleReportPath(name, version, excludeSnapshotValidation));
+
+        WebResource resource = client.resource(serverURL).path(RequestUtils.promoteModuleReportPath(name, version, excludeSnapshotValidation));
+
+        if(excludeSnapshotValidation) {
+            resource = resource.queryParam(ServerAPI.EXCLUDE_SNAPSHOT_PARAM, "true");
+        }
+
         final ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
         client.destroy();
