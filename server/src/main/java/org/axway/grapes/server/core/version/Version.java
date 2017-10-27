@@ -142,7 +142,6 @@ public class Version {
 			return getDigitsSize() > other.getDigitsSize()? 1: -1;
 		}
 
-        System.out.println(String.format("%s :: %s", this.toString(), other.toString()));
         if(isBranch() && !getBranchId().equals(other.getBranchId())){
 			return getBranchId().compareTo(other.getBranchId());
 		}
