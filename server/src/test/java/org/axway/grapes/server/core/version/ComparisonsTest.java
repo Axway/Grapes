@@ -82,6 +82,17 @@ public class ComparisonsTest {
         assertListIsInOrder(Arrays.asList(ordered));
 	}
 
+	@Test
+    public void compareVersionsWithBranchNumbersAsDouble() throws IncomparableException {
+        final Optional<Version> oV1 = Version.make("1.0.0-4.22-1");
+        final Optional<Version> oV2 = Version.make("1.0.0-4.22-1");
+
+        assertTrue(oV1.isPresent());
+        assertEquals(0, oV1.get().compare(oV2.get()));
+    }
+
+
+
 	private void assertListIsInOrder(final List<String> versionStrings) throws IncomparableException {
         for(int i = 0; i < versionStrings.size(); i++) {
             Optional<Version> v1 = Version.make(versionStrings.get(i));

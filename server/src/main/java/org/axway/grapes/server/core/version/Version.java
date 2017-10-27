@@ -111,8 +111,8 @@ public class Version {
 	 * 
 	 * @return branchId
 	 */
-	private Integer getBranchId() {
-		return Integer.valueOf(stringVersion.split("-")[1]);
+	private String getBranchId() {
+		return stringVersion.split("-")[1];
 	}
 
 	/**
@@ -141,8 +141,9 @@ public class Version {
 		if(!getDigitsSize().equals(other.getDigitsSize())){
 			return getDigitsSize() > other.getDigitsSize()? 1: -1;
 		}
-		
-		if(isBranch() && !getBranchId().equals(other.getBranchId())){
+
+        System.out.println(String.format("%s :: %s", this.toString(), other.toString()));
+        if(isBranch() && !getBranchId().equals(other.getBranchId())){
 			return getBranchId().compareTo(other.getBranchId());
 		}
 		
