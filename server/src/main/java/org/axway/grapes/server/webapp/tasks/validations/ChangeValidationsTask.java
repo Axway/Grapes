@@ -3,6 +3,7 @@ package org.axway.grapes.server.webapp.tasks.validations;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.yammer.dropwizard.tasks.Task;
+import org.axway.grapes.server.config.PromoValidationConfig;
 import org.axway.grapes.server.core.CacheUtils;
 import org.axway.grapes.server.core.cache.CacheName;
 import org.axway.grapes.server.promo.validations.PromotionValidation;
@@ -48,7 +49,6 @@ public class ChangeValidationsTask extends Task {
         }
 
 
-        final Set<String> newErrors = new HashSet<>();
         final long noneCount = params.get(ERROR_PARAM_KEY).stream().filter(e -> e.equals(NONE_VALUE)).count();
 
         if(noneCount > 0) {
@@ -56,12 +56,13 @@ public class ChangeValidationsTask extends Task {
                 LOG.info(String.format("Found %s value contained. All validations will become warnings.", NONE_VALUE));
             }
 
-            // TODO: Implement here
-//            PromotionReportTranslator.setErrorStrings(Collections.emptyList());
+            final PromoValidationConfig config = PromotionReportTranslator.getConfig();
+            config.setErrors(Collections.emptyList());
             printWriter.println("Done");
             return;
         }
 
+        final Set<String> newErrors = new HashSet<>();
         final String[] providedErrors = params.get(ERROR_PARAM_KEY).toArray(new String[0]);
         for (String provided : providedErrors) {
             try {
@@ -75,8 +76,7 @@ public class ChangeValidationsTask extends Task {
             }
         }
 
-        // TODO: Implement here
-        // PromotionReportTranslator.setErrorStrings(new ArrayList<>(newErrors));
+        PromotionReportTranslator.getConfig().setErrors(new ArrayList<>(newErrors));
         printWriter.println("Done");
 
         cacheUtils.clear(CacheName.PROMOTION_REPORTS);
