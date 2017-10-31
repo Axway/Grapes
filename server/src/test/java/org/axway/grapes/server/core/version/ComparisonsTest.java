@@ -22,6 +22,15 @@ public class ComparisonsTest {
 	}
 
 	@Test
+	public void testSnaphostBeatsRelease() throws IncomparableException {
+		Optional<Version> snapshotVer = Version.make("1.0.0-SNAPSHOT");
+		Optional<Version> releaseVer = Version.make("1.0.0-2");
+
+		assertTrue(snapshotVer.isPresent() && releaseVer.isPresent());
+		assertEquals(1, snapshotVer.get().compare(releaseVer.get()));
+	}
+
+	@Test
 	public void equalVersionsTestMaster() throws IncomparableException {
         Optional<Version> version1 = Version.make("1.0.0-SNAPSHOT");
         Optional<Version> version1Bis = Version.make("1.0.0-SNAPSHOT");

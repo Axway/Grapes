@@ -1,7 +1,5 @@
 package org.axway.grapes.commons.datamodel;
 
-import java.util.Optional;
-
 public enum Tag {
     CRITICAL("critical"),
     MAJOR("major"),

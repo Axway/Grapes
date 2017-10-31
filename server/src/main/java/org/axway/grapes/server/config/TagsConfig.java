@@ -59,10 +59,6 @@ public class TagsConfig {
         if(tagLists.containsKey(tag)) {
             final List<String> list = tagLists.get(tag);
             list.removeAll(invalidValues);
-        } else {
-            if(LOG.isWarnEnabled()) {
-                LOG.warn(String.format("Invalid tag %s", tag.toString()));
-            }
         }
     }
 
