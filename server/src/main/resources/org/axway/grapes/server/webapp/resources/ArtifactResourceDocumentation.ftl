@@ -532,6 +532,10 @@
                                         <td>doNotUse</td>
                                         <td>The boolean to set in the DO_NOT_USE flag of the artifact</td>
                                     </tr>
+                                    <tr>
+                                        <td>comment</td>
+                                        <td>Request body represents an optional user comment that may be added to the change flag operation.</td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </li>
