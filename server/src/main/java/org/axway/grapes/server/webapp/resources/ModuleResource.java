@@ -448,7 +448,7 @@ public class ModuleResource extends AbstractResource {
      * @return Response A promotion report
      */
     @GET
-    @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Path("/{name}/{version}" + ServerAPI.PROMOTION + ServerAPI.GET_REPORT)
     public Response getPromotionStatusReport(@PathParam("name") final String name,
                                              @PathParam("version") final String version,
