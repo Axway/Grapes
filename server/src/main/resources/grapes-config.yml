@@ -35,10 +35,15 @@ artifactNotificationRecipients: [user@axway.com]
 externalValidatedTypes: [Program, Installer, Patch, ServicePack, UpgradePack, Installer, AxwayJRE, JREUpdateTool]
 
 mailing:
-   host: smtp_host(mail.ptx.axway.int)
-   port: smtp_port(587)
-   user: smtp_user
-   pwd: paswword
-   sslTrust: mail.ptx.axway.int
-   smtpFrom: smtp_user
+   host: smtp_host(mail.axway.int)
+   port: smtp_port(25)
+   smtpFrom: grapes-notifier@axway.com
+   user: grapes-notifier@axway.com
    debug: false
+
+promotionValidation:
+  errors : [VERSION_IS_SNAPSHOT]
+  tags :
+    critical: [VERSION_IS_SNAPSHOT]
+    major : [DEPS_UNACCEPTABLE_LICENSE, DO_NOT_USE_DEPS, UNPROMOTED_DEPS]
+    minor : [DEPS_WITH_NO_LICENSES]

@@ -1,3 +1,12 @@
+1.9.1
+-------------
+* [ECDDEV-903](https://techweb.axway.com/jira/browse/ECDDEV-903) - Promotion report messages need to support tags
+* [ECDDEV-902](https://techweb.axway.com/jira/browse/ECDDEV-902) - Artifact version value with incorrect format generates too many verbose stack traces
+* [ECDDEV-897](https://techweb.axway.com/jira/browse/ECDDEV-897) - Artifact version value with incorrect format generates too many verbose stack traces
+* [ECDDEV-897](https://techweb.axway.com/jira/browse/ECDDEV-897) - Null PromotionReportView are generating NPE
+* minor updates on the logging of the configuration related to promotion validation 
+
+
 1.9.0
 -------------
 * [ECDDEV-868](https://techweb.axway.com/jira/browse/ECDDEV-858) - Promotion warnings and errors
