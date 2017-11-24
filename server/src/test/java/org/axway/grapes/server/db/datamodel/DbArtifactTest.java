@@ -2,9 +2,12 @@ package org.axway.grapes.server.db.datamodel;
 
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
+import org.axway.grapes.server.db.DataUtils;
 import org.junit.Test;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class DbArtifactTest {
 
@@ -17,6 +20,7 @@ public class DbArtifactTest {
         artifact.setClassifier("win");
         artifact.setType("jar");
         artifact.setExtension("jar");
+        artifact.setOrigin("maven");
         assertEquals("com.axway.test:UidTest:1.0.0-SNAPSHOT:win:jar", artifact.getGavc());
     }
 
@@ -28,7 +32,7 @@ public class DbArtifactTest {
         artifact.setVersion("1.0.0-SNAPSHOT");
         artifact.setClassifier("win");
         artifact.setType("jar");
-        assertEquals("GroupId: com.axway.test, ArtifactId: UidTest, Version: 1.0.0-SNAPSHOT", artifact.toString());
+        assertEquals("groupId: com.axway.test, artifactId: UidTest, version: 1.0.0-SNAPSHOT", artifact.toString());
 
     }
 
@@ -41,6 +45,7 @@ public class DbArtifactTest {
         dbArtifact.setClassifier("win");
         dbArtifact.setType("jar");
         dbArtifact.setExtension("jar");
+        dbArtifact.setOrigin("maven");
 
         Artifact artifact = DataModelFactory.createArtifact(
                 dbArtifact.getGroupId(),
@@ -54,4 +59,15 @@ public class DbArtifactTest {
         assertEquals(dbArtifact.getGavc(), DbArtifact.generateGAVC(dbArtifact.getGroupId(), dbArtifact.getArtifactId(), dbArtifact.getVersion(), dbArtifact.getClassifier(), dbArtifact.getExtension()));
 
     }
+
+    @Test
+    public void testNonFullGAVC() {
+        assertFalse(DataUtils.isFullGAVC("com.axway.webtrader:webtrader-userservices-installer:2.1.0-2"));
+    }
+
+    @Test
+    public void testFullGAVC() {
+        assertTrue(DataUtils.isFullGAVC("org.antlr:gunit:3.4::jar"));
+    }
+
 }

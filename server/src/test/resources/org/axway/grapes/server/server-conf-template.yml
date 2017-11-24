@@ -24,3 +24,12 @@ logging:
     archivedFileCount: 5
     timeZone: UTC
 authenticationCachePolicy: maximumSize=10000, expireAfterAccess=1m
+messagesBundle: target/all-messages.txt
+externalValidatedTypes: [program, installer, patch, servicepack, upgradepack, install, axwayjre, JREUpdateTool]
+artifactNotificationRecipients: [xyz@axway.com]
+mailing:
+   host: mail.axway.int
+   port: 25
+   smtpFrom: grapes-notifier@axway.com
+   user: grapes-notifier@axway.com
+   debug: false

@@ -8,7 +8,12 @@ import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.commons.utils.JsonUtils;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+
+
 
 import javax.naming.AuthenticationException;
 import javax.ws.rs.core.HttpHeaders;
@@ -24,6 +29,9 @@ public class GrapesClientTest {
 
     public static final String PROPERTY_PORT = "server.mock.http.port";
     private static final String DEFAULT_PORT = "8074";
+
+    @Rule
+    public ExpectedException exc = ExpectedException.none();
 
     @ClassRule
     public static WireMockRule wireMockRule = new WireMockRule(Integer.valueOf(System.getProperty(PROPERTY_PORT, DEFAULT_PORT)));
@@ -1264,4 +1272,108 @@ public class GrapesClientTest {
 
         assertNotNull(exception);
     }
+
+    @Test
+    public void testGetArtifactWith_DO_NOT_USE_Artifacts() throws IOException {
+        String gavc = "dummy";
+        List<String> names = new ArrayList<String>();
+        Boolean mockedReply = Boolean.TRUE;
+
+        stubFor(get(urlMatching("/" + ServerAPI.ARTIFACT_RESOURCE + "/" + gavc + ServerAPI.SET_DO_NOT_USE))
+                .willReturn(aResponse().withStatus(Status.OK.getStatusCode())
+                        .withBody(JsonUtils.serialize(mockedReply))
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
+
+        Exception exception = null;
+
+        try {
+            Boolean reply = client.isMarkedAsDoNotUse(gavc);
+            assertEquals(reply.booleanValue(), mockedReply);
+        } catch (Exception e) {
+            exception = e;
+        }
+
+        assertNull(exception);
+    }
+
+    @Test
+    public void testGetArtifactThrowsException() throws GrapesCommunicationException, AuthenticationException {
+        exc.expect(GrapesCommunicationException.class);
+        exc.expectMessage("Failed to check do not use artifact");
+        client.isMarkedAsDoNotUse("toto");
+    }
+    
+    @Test
+    public void getProductListTest() throws IOException {
+        final List<String> productDummyList = new ArrayList<String>();
+        productDummyList.add("product1");
+        productDummyList.add("product2");
+        
+        stubFor(get(urlMatching("/" + RequestUtils.getProductNames()))
+                .willReturn(aResponse().withStatus(Status.OK.getStatusCode())
+                		.withBody(JsonUtils.serialize(productDummyList))
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
+
+        List<String> productNameList = null;
+        Exception exception = null;
+
+        try {
+        	productNameList = client.getAllProductNames();
+        } catch (Exception e) {
+            exception = e;
+        }
+
+        // checks
+        assertNull(exception);
+        assertNotNull(productNameList);
+        assertEquals(2, productNameList.size());
+    }
+    
+    @Test
+    public void getProductDeliveriesTest() throws IOException {
+        final String product = "product";
+        
+        List<Delivery> deliverySet = new ArrayList<Delivery>();
+        
+        Delivery delivery1 = new Delivery();
+        delivery1.setCommercialName("commercialName1");
+        delivery1.setCommercialVersion("1.0.0");
+        delivery1.setVersion("1.0.0-1");
+        delivery1.setJenkinsBuildUrl("http://localhost:8080/job/20");
+        
+        Delivery delivery2 = new Delivery();
+        delivery2.setCommercialName("commercialName1");
+        delivery2.setCommercialVersion("1.0.0");
+        delivery2.setVersion("2.0.0-1");
+        delivery2.setJenkinsBuildUrl("http://localhost:8080/job/25");
+
+        deliverySet.add(delivery1);
+        deliverySet.add(delivery2);
+
+        stubFor(get(urlMatching("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product + ServerAPI.GET_DELIVERIES))
+                .willReturn(aResponse().withStatus(Status.OK.getStatusCode())
+                        .withBody(JsonUtils.serialize(deliverySet))
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
+
+        List<Delivery> deliveries = null;
+        Exception exception = null;
+
+        try {
+        	deliveries = client.getProductDeliveries(product);
+        } catch (Exception e) {
+            exception = e;
+            System.out.println(e);
+        }
+        
+        
+        // checks
+        assertNull(exception);
+        assertNotNull(deliveries.get(0));
+        assertNotNull(deliveries.get(1));
+        assertEquals(deliverySet.get(0).getCommercialName(), deliveries.get(0).getCommercialName());
+        assertEquals(deliverySet.get(1).getCommercialName(), deliveries.get(1).getCommercialName());
+        assertEquals(deliverySet.get(0).getCommercialVersion(), deliveries.get(0).getCommercialVersion());
+        assertEquals(deliverySet.get(1).getCommercialVersion(), deliveries.get(1).getCommercialVersion());
+    }
+
 }

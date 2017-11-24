@@ -28,7 +28,6 @@ public class SequoiaTest extends ResourceTest {
 
     private RepositoryHandler repositoryHandler;
 
-
     @Override
     protected void setUpResources() throws Exception {
         repositoryHandler = mock(RepositoryHandler.class);

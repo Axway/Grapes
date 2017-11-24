@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,6 +22,10 @@ public class Artifact {
     private String classifier = "";
     private String type = "";
     private String extension = "";
+    private String origin = "maven";
+    private String sha256 = "";
+    private String description = "";
+    private boolean doNotUse = false;
 
     private boolean promoted = false;
 
@@ -28,7 +33,12 @@ public class Artifact {
     private String downloadUrl;
     private String provider;
 
-    private List<String> licenses = new ArrayList<String>();
+    private List<String> licenses = new ArrayList<>();
+
+    @JsonIgnore
+    private Date createdDateTime = null;
+    @JsonIgnore
+    private Date updatedDateTime = null;
 
     protected Artifact() {
         // Should only be instantiated via the DataModelObjectFactory
@@ -66,6 +76,13 @@ public class Artifact {
         this.type = type;
     }
 
+    public String getSha256() {
+		return this.sha256;
+	}
+	public void setSha256(String sha256) {
+		this.sha256 = sha256;
+	}
+    
     public boolean isPromoted() {
         return promoted;
     }
@@ -126,6 +143,22 @@ public class Artifact {
         this.provider = provider;
     }
 
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(final String origin) {
+        this.origin = origin;
+    }
+
+    public Date getCreatedDateTime() {  return createdDateTime;  }
+
+    public void setCreatedDateTime(Date createdDateTime) { this.createdDateTime = createdDateTime;  }
+
+    public Date getUpdatedDateTime() {  return updatedDateTime;  }
+
+    public void setUpdatedDateTime(Date updatedDateTime) { this.updatedDateTime = updatedDateTime;  }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonIgnore
     public String getGavc(){
@@ -169,6 +202,7 @@ public class Artifact {
         sb.append(classifier);
         sb.append(type);
         sb.append(extension);
+        sb.append(origin);
 
         return sb.toString().hashCode();
     }
@@ -182,14 +216,37 @@ public class Artifact {
         sb.append(artifactId);
         sb.append(":");
         sb.append(version);
+        if (!(classifier == null || "".equals(classifier.trim()))){
+            sb.append(":");
+            sb.append(classifier);
+        }
+        if (!(type == null || "".equals(type.trim()))){
+            sb.append(":");
+            sb.append(type);
+        }
+        if (!(extension == null || "".equals(extension.trim()))){
+            sb.append(":");
+            sb.append(extension);
+        }
         sb.append(":");
-        sb.append(classifier);
-        sb.append(":");
-        sb.append(type);
-        sb.append(":");
-        sb.append(extension);
+        sb.append(origin);
 
         return sb.toString();
     }
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+    public boolean isDoNotUse() {
+        return doNotUse;
+    }
+
+    public void setDoNotUse(boolean doNotUse) {
+        this.doNotUse = doNotUse;
+    }
 }

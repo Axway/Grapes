@@ -1,11 +1,18 @@
 package org.axway.grapes.commons.datamodel;
 
 import org.axway.grapes.commons.exceptions.UnsupportedScopeException;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import java.util.Date;
 
 import static org.junit.Assert.*;
 
 public class DataModelFactoryTest {
+
+    @Rule
+    public ExpectedException exc = ExpectedException.none();
 
     @Test
     public void checkModuleGeneration(){
@@ -54,18 +61,27 @@ public class DataModelFactoryTest {
 
 
     @Test
-    public void checkUnsuportedScope(){
+    public void checkUnsupportedScope() throws UnsupportedScopeException {
         Artifact artifact = DataModelFactory.createArtifact("com.my.company", "artifact", "1.0.0-SNAPSHOT", "win32", "jar", "jar");
+        exc.expect(UnsupportedScopeException.class);
+        DataModelFactory.createDependency(artifact, "wrongScope");
+    }
 
-        Exception exception = null;
+    @Test
+    public void createComment() throws UnsupportedScopeException {
+        Comment comment = DataModelFactory.createComment("com.axway.test:1.0.0::jar",
+                "DbArtifact",
+                "Flag as DO_NOT_USE",
+                "test comment",
+                "testUser",
+                new Date());
 
-        try {
-            DataModelFactory.createDependency(artifact, "wrongScope");
-        } catch (Exception e) {
-            exception = e;
-        }
-        assertNotNull(exception);
-
+        assertNotNull(comment);
+        assertEquals("com.axway.test:1.0.0::jar", comment.getEntityId());
+        assertEquals("DbArtifact", comment.getEntityType());
+        assertEquals("test comment", comment.getCommentText());
+        assertEquals("testUser", comment.getCommentedBy());
+        assertEquals("Flag as DO_NOT_USE", comment.getAction());
     }
 
 }

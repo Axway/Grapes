@@ -12,11 +12,18 @@
 		<link href="/public/twitter-bootstrap-2.3.2/css/bootstrap-responsive.css" rel="stylesheet">
 		<link href="/public/twitter-bootstrap-2.3.2/css/docs.css" rel="stylesheet">
 
+
         <!-- Grapes css -->
         <link href="/assets/css/grapes.css" rel="stylesheet">
         <link href="/assets/css/grapes-table.css" rel="stylesheet">
 
         <link rel="shortcut icon" type="image/x-icon" href="assets/img/grapes_small.gif"/>
+
+        <script src="/public/jquery-1.9.1/jquery.js"></script>
+        <script src="/public/twitter-bootstrap-2.3.2/js/bootstrapValidator.js"></script>
+        <script src="/assets/js/grapes-commons.js"></script>
+        <script src="/assets/js/navigation.js"></script>
+
 
 	</head>
     <body>
@@ -36,6 +43,8 @@
                                         <li><a tabindex="-1" href="/module">Module API</a></li>
                                         <li><a tabindex="-1" href="/artifact">Artifact API</a></li>
                                         <li><a tabindex="-1" href="/license">License API</a></li>
+                                        <li><a tabindex="-1" href="/report">Report API</a></li>
+                                        <li><a tabindex="-1" href="/searchdoc">Search API</a></li>
                                     </ul>
                                 </li>
                                 <li class="">
@@ -43,6 +52,9 @@
                                 </li>
                                 <li class="">
                                     <a href="/webapp">Data Browser</a>
+                                </li>
+                                <li class="">
+                                    <a href="/search">Search</a>
                                 </li>
                             </ul>
                         </div>
@@ -60,6 +72,17 @@
         <div class="container" id="artifact_info">
             <div class="row-fluid"  id="artifact_overview">
                 <h3>Overview</h3>
+
+                <p>
+                    <button type="button"
+                            class="btn btn-inverse"
+                            aria-label="Left Align"
+                            onclick="navigateToArtifact('${artifact.getGroupId()}', '${artifact.getArtifactId()}', '${artifact.getVersion()}')">
+                        <span class="icon-white icon-list" aria-hidden="true"></span>
+                        Select in Data Browser
+                    </button>
+                </p>
+
                 <p>
                     <strong>GroupId: </strong>${artifact.getGroupId()}<br/>
                     <strong>ArtifactId: </strong>${artifact.getArtifactId()}<br/>
@@ -67,13 +90,51 @@
                     <strong>Classifier: </strong>${artifact.getClassifier()}<br/>
                     <strong>Type: </strong>${artifact.getType()}<br/>
                     <strong>Extension: </strong>${artifact.getExtension()}<br/>
+                    <strong>Origin: </strong>${artifact.getOrigin()}<br/>
+                    <strong>SHA-256: </strong>${artifact.getSha256()}<br/>
                     <strong>Provider: </strong>${artifact.getProvider()}<br/>
                     <strong>DownloadUrl: </strong>${artifact.getDownloadUrl()}<br/>
+                    <strong>Description: </strong>${artifact.getDescription()}<br/>
+                    <#if artifact.getCreatedDateTime()??>
+                        <strong>Created date: </strong>${artifact.getCreatedDateTime()?datetime}<br/>
+                    </#if>
+                    <#if artifact.getUpdatedDateTime()??>
+                        <strong>Last updated date: </strong>${artifact.getUpdatedDateTime()?datetime}<br/>
+                    </#if>
                     <#if isCorporate() && moduleName??>
                     <strong>Module: </strong>${moduleName} in version ${moduleVersion}<br/>
                     </#if>
+
                     <#if shouldNotBeUsed()>
-                    <strong>This artifact should not be used!!!</strong><br/>
+                        <strong style='color:red'>This artifact should not be used!!!</strong><br/>
+                    </#if>
+
+                    <#if comment??>
+                        <hr/>
+                        <p>
+                            <strong>Latest comment on this artifact</strong>
+                        </p>
+
+                        <p>
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>Comment</th>
+                                        <th>Author</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>${comment.getAction()}</td>
+                                        <td>${comment.getCommentText()}</td>
+                                        <td>${comment.getCommentedBy()}</td>
+                                        <td>${comment.getCreatedDateTime()?datetime}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </p>
                     </#if>
                 </p>
                 <br/>

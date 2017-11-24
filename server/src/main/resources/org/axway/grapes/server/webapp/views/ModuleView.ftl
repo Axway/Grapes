@@ -14,6 +14,11 @@
         <link href="/assets/css/grapes.css" rel="stylesheet">
         <link href="/assets/css/grapes-table.css" rel="stylesheet">
 
+        <script src="/public/jquery-1.9.1/jquery.js"></script>
+        <script src="/public/twitter-bootstrap-2.3.2/js/bootstrapValidator.js"></script>
+        <script src="/assets/js/grapes-commons.js"></script>
+        <script src="/assets/js/navigation.js"></script>
+
         <link rel="shortcut icon" type="image/x-icon" href="assets/img/grapes_small.gif"/>
 
 	</head>
@@ -33,6 +38,8 @@
                                         <li><a tabindex="-1" href="/module">Module API</a></li>
                                         <li><a tabindex="-1" href="/artifact">Artifact API</a></li>
                                         <li><a tabindex="-1" href="/license">License API</a></li>
+                                        <li><a tabindex="-1" href="/report">Report API</a></li>
+                                        <li><a tabindex="-1" href="/searchdoc">Search API</a></li>
                                     </ul>
                                 </li>
                                 <li class="">
@@ -40,6 +47,9 @@
                                 </li>
                                 <li class="">
                                     <a href="/webapp">Data Browser</a>
+                                </li>
+                                <li class="">
+                                    <a href="/search">Search</a>
                                 </li>
                             </ul>
                         </div>
@@ -57,6 +67,17 @@
         <div class="container" id="module_info">
             <div class="row-fluid" id="module_overview">
                 <h3>Overview</h3>
+
+                <p>
+                    <button type="button"
+                            class="btn btn-inverse"
+                            aria-label="Left Align"
+                            onclick="navigateToModule('${module.getName()}', '${module.getVersion()}')">
+                        <span class="icon-white icon-list" aria-hidden="true"></span>
+                        Select in Data Browser
+                    </button>
+                </p>
+
                 <p>
                     <strong>Name: </strong>${module.getName()}<br/>
                     <strong>Version: </strong>${module.getVersion()}<br/>
@@ -66,6 +87,12 @@
                     <strong>Not promoted</strong><br/>
                 </#if>
                 <strong>Organization: </strong><a href="/organization/${getOrganization()}">${getOrganization()}</a><br/>
+                <#if module.getCreatedDateTime()??>
+                    <strong>Created date: </strong>${module.getCreatedDateTime()?datetime}<br/>
+                </#if>
+                <#if module.getUpdatedDateTime()??>
+                    <strong>Last updated date: </strong>${module.getUpdatedDateTime()?datetime}<br/>
+                </#if>
                 </p>
                 <br/>
             </div>

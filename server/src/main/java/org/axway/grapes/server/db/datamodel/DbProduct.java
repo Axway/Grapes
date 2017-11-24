@@ -1,11 +1,10 @@
 package org.axway.grapes.server.db.datamodel;
 
+import org.axway.grapes.commons.datamodel.Delivery;
 import org.jongo.marshall.jackson.oid.Id;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Database Product
@@ -16,8 +15,8 @@ import java.util.Map;
  */
 public class DbProduct {
 
-    public static final String DATA_MODEL_VERSION = "datamodelVersion";
-    private String datamodelVersion = DbCollections.datamodelVersion;
+    public static final String DATA_MODEL_VERSION = "DATAMODEL_VERSION";
+    private String datamodelVersion = DbCollections.DATAMODEL_VERSION;
 
     @Id
     private String name;
@@ -29,7 +28,7 @@ public class DbProduct {
     private List<String> modules = new ArrayList<String>();
 
     public static final String DELIVERIES_DB_FIELD = "deliveries";
-    private Map<String, List<String>> deliveries = new HashMap<String, List<String>>();
+    private List<Delivery> deliveries = new ArrayList<Delivery>();
 
     public String getDatamodelVersion() {
         return datamodelVersion;
@@ -63,11 +62,31 @@ public class DbProduct {
         this.modules = modules;
     }
 
-    public Map<String, List<String>> getDeliveries() {
+    public List<Delivery> getDeliveries() {
         return deliveries;
     }
 
-    public void setDeliveries(Map<String, List<String>> deliveries) {
+    public void setDeliveries(List<Delivery> deliveries) {
         this.deliveries = deliveries;
+    }
+
+    public Delivery getDelivery(String commercialName, String commercialVersion) {
+    	for(final Delivery delivery : this.deliveries){
+    		if(delivery.getCommercialName().equals(commercialName) && delivery.getCommercialVersion().equals(commercialVersion)){
+    			return delivery;
+    		}
+    	}
+    	return null;
+    }
+
+    @Override
+    public String toString() {
+        return "DbProduct{" +
+                "DATAMODEL_VERSION='" + datamodelVersion + '\'' +
+                ", name='" + name + '\'' +
+                ", organization='" + organization + '\'' +
+                ", modules=" + modules +
+                ", deliveries=" + deliveries +
+                '}';
     }
 }

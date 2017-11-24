@@ -32,7 +32,7 @@ public class ArtifactTest {
 		assertFalse(artifact.equals(artifact2));
 
 		artifact2.setExtension("jar");
-		assertTrue(artifact.equals(artifact2));	
+		assertTrue(artifact.equals(artifact2));
 
 		assertFalse(artifact.equals("test"));
 	}
@@ -50,7 +50,7 @@ public class ArtifactTest {
 	@Test
 	public void testArtifactToString(){
 		Artifact artifact = DataModelFactory.createArtifact("com.my.company", "test", "1.0.0-SNAPSHOT", "lin64", "jar", "jar");
-		assertEquals("com.my.company:test:1.0.0-SNAPSHOT:lin64:jar:jar", artifact.toString());
+		assertEquals("com.my.company:test:1.0.0-SNAPSHOT:lin64:jar:jar:maven", artifact.toString());
 	}
 	
 	@Test

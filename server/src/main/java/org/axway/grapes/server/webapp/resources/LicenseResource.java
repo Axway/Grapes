@@ -5,6 +5,8 @@ import com.yammer.dropwizard.jersey.params.BooleanParam;
 import org.axway.grapes.commons.api.ServerAPI;
 import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.core.CacheUtils;
+import org.axway.grapes.server.core.cache.CacheName;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
@@ -37,7 +39,8 @@ import java.util.List;
 public class LicenseResource extends AbstractResource{
     
     private static final Logger LOG = LoggerFactory.getLogger(LicenseResource.class);
-    
+    private CacheUtils cacheUtils = new CacheUtils();
+
     public LicenseResource(final RepositoryHandler repoHandler, final GrapesServerConfig dmConfig){
         super(repoHandler, "LicenseResourceDocumentation.ftl", dmConfig);
     }
@@ -56,12 +59,21 @@ public class LicenseResource extends AbstractResource{
 
 		LOG.info("Got a post license request.");
 
-        // Checks if the data is corrupted
+        //
+        // Checks if the data is corrupted, pattern can be compiled etc.
+        //
         DataValidator.validate(license);
 
         // Save the license
         final DbLicense dbLicense = getModelMapper().getDbLicense(license);
+
+        //
+        // The store method will deal with making sure there are no pattern conflicts
+        // The reason behind this move is the presence of the instance of RepositoryHandler
+        // and the imposibility to access that handler from here.
+        //
         getLicenseHandler().store(dbLicense);
+        cacheUtils.clear(CacheName.PROMOTION_REPORTS);
 
 		return Response.ok().status(HttpStatus.CREATED_201).build();
 	}
@@ -128,7 +140,7 @@ public class LicenseResource extends AbstractResource{
 
         LOG.info("Got a delete license request.");
         getLicenseHandler().deleteLicense(name);
-
+        cacheUtils.clear(CacheName.PROMOTION_REPORTS);
         return Response.ok("done").build();
     }
 
@@ -156,7 +168,7 @@ public class LicenseResource extends AbstractResource{
         }
 
         getLicenseHandler().approveLicense(name, approved.get());
-
+        cacheUtils.clear(CacheName.PROMOTION_REPORTS);
         return Response.ok("done").build();
     }
 

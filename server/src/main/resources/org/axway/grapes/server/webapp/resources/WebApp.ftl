@@ -7,12 +7,14 @@
 		<link href="/public/twitter-bootstrap-2.3.2/css/bootstrap.css" rel="stylesheet">
 		<link href="/public/twitter-bootstrap-2.3.2/css/bootstrap-responsive.css" rel="stylesheet">
 		<link href="/public/twitter-bootstrap-2.3.2/css/docs.css" rel="stylesheet">
-		<link href="/assets/css/grapes-webapp.css" rel="stylesheet">
 
         <link rel="shortcut icon" type="image/x-icon" href="assets/img/grapes_small.gif"/>
 
-		<!-- Grapes css -->
-		<link href="/assets/css/grapes-table.css" rel="stylesheet">
+        <!-- Grapes css -->
+        <link href="/assets/css/grapes-table.css" rel="stylesheet">
+        <link href="/assets/css/grapes.css" rel="stylesheet">
+        <link href="/assets/css/grapes-webapp.css" rel="stylesheet">
+        <link href="/assets/css/axway-loader.css" rel="stylesheet">
 
 	</head>
 	<body>
@@ -34,6 +36,8 @@
                                         <li><a tabindex="-1" href="/module">Module API</a></li>
                                         <li><a tabindex="-1" href="/artifact">Artifact API</a></li>
                                         <li><a tabindex="-1" href="/license">License API</a></li>
+                                        <li><a tabindex="-1" href="/report">Report API</a></li>
+                                        <li><a tabindex="-1" href="/searchdoc">Search API</a></li>
                                     </ul>
                                 </li>
                                 <li class="">
@@ -41,6 +45,9 @@
                                 </li>
                                 <li class="active">
                                     <a href="#">Data Browser</a>
+                                </li>
+                                <li class="">
+                                    <a href="/search">Search</a>
                                 </li>
                                 <#if getIssueTrackerUrl()??>
                                 <li class="">
@@ -73,13 +80,13 @@
                                         <button type="button" class="btn btn-inverse" style="margin-left:8px;" onclick='displayProductOptions();'>Products</button>
                                     </div>
                                     <div class="row-fluid" style="padding:4px">
-                                        <button type="button" class="btn btn-inverse" style="margin-left:8px;" onclick='displayModuleOptions();'>Modules</button>
+                                        <button type="button" class="btn btn-inverse" style="margin-left:8px;" id="moduleButton" onclick='displayModuleOptions();'>Modules</button>
                                     </div>
                                     <div class="row-fluid" style="padding:4px">
-                                        <button type="button" class="btn btn-inverse" style="margin-left:8px;" onclick='displayArtifactOptions();'>Artifacts</button>
+                                        <button type="button" id="artifactButton" class="btn btn-inverse" style="margin-left:8px;" onclick='displayArtifactOptions();'>Artifacts</button>
                                     </div>
                                     <div class="row-fluid" style="padding:4px">
-                                        <button type="button" class="btn btn-inverse" style="margin-left:8px;" onclick='displayLicenseOptions();'>Licenses</button>
+                                        <button type="button" id="licenseButton" class="btn btn-inverse" style="margin-left:8px;" onclick='displayLicenseOptions();'>Licenses</button>
                                     </div>
                                 </div>
                             </div>
@@ -142,7 +149,7 @@
                 <h3 id="myModalLabel">Delete Element</h3>
             </div>
             <div class="modal-body">
-                <strong>Warning:</strong> This operation cannot be undone! Are you really sure you want te delete this element?
+                <strong>Warning:</strong> This operation cannot be undone! Are you really sure you want to delete this element?
                 <div id="toDelete"></div>
                 <br/>
                 <div id="impactedElements"></div>
@@ -153,6 +160,67 @@
             </div>
         </div>
 
+        <!-- Modal new Artifact Edition -->
+        <div id="newArtifactEdition" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">×</button>
+                <h3 id="myModalLabel">Create Artifact</h3>
+            </div>
+            <div class="modal-body">
+            	<span id="artifactError"></span>
+                <form class="form-horizontal">
+                    <label class="control-label" for="inputDownloadUrl">Artifact ID (Name)*</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputArtifactId" placeholder="artifact-name">
+                    </div>
+                    <!-- add buildArtifactValidationBody.g. -->
+                    <label class="control-label" for="inputDownloadUrl">File Checksum*</label>
+                    <div class="controls">
+                    	<textarea class="input-large" rows="2" id="inputArtifactSHA" placeholder="SHA-256 code" spellcheck="false"></textarea>
+                    </div>
+                    <label class="control-label" for="inputDownloadUrl">Group ID*</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputArtifactGroupId" placeholder="com.axway.project">
+                    </div>
+                    <label class="control-label" for="inputDownloadUrl">Version*</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputArtifactVersion" placeholder="1.0.0-1">
+                    </div>
+                    <label class="control-label" for="inputArtifactClassifier">Classifier</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputArtifactClassifier" placeholder="debug, site">
+                    </div>
+                    <label class="control-label" for="inputArtifactType">Type</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputArtifactType" placeholder="jar,pdf">
+                    </div>
+                    <label class="control-label" for="inputArtifactOrigin">Origin</label>
+                    <div class="controls">
+                    	<span style="display:block">
+	                        <input type="radio" id="inputArtifactOrigin" name="origin" checked>&nbsp;Maven &nbsp;&nbsp;&nbsp;
+	                        <input type="radio" id="inputArtifactOriginN" name="origin">&nbsp;NPM
+                        </span><br>
+                    </div>
+                    <label class="control-label" for="inputArtifactExtension">Extension*</label>
+                    <div class="controls">
+                        <input class="input-large" type="text" id="inputArtifactExtension" placeholder="jar, xml">
+                    </div>
+                    <label class="control-label" for="inputArtifactDescription">Description</label>
+                    <div class="controls">
+                    	<textarea class="input-large" id="inputArtifactDescription"></textarea>
+                    </div>   
+                    <label class="control-label" for="inputArtifactPromotion">Promoted</label>
+                    <div class="controls">
+                    	<input class="input-large" type="checkbox" id="inputArtifactPromotion" checked>
+                    </div>                 
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true" onclick="cleanAction()">Cancel</button>
+                <button class="btn btn-primary" id="saveArtifact" onclick='artifactSave();'>Save changes</button>
+            </div>
+        </div>
+        
         <!-- Modal Artifact Edition -->
         <div id="artifactEdition" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-header">
@@ -287,16 +355,33 @@
             </div>
         </div>
 
-       	<script src="/public/jquery-1.9.1/jquery.js"></script>
- 		<script src="/public/twitter-bootstrap-2.3.2/js/bootstrap.min.js"></script>
- 		<script src="/assets/js/grapes-webApp.js"></script>
- 		<script src="/assets/js/grapes-commons.js"></script>
+        <script src="/public/jquery-1.9.1/jquery.js"></script>
+        <script src="/public/twitter-bootstrap-2.3.2/js/bootstrap.min.js"></script>
+        <script src="/public/twitter-bootstrap-2.3.2/js/bootstrapValidator.js"></script>
+        <script src="/assets/js/grapes-webApp.js"></script>
+        <script src="/assets/js/grapes-commons.js"></script>
+        <script src="/assets/js/navigation.js"></script>
 
  		<!-- Make the table sortable -->
         <script src="/public/jquery-tablesorter-1.10.2/jquery.tablesorter.min.js"></script>
 
  		<!-- Handle CSV exports -->
         <script src="/assets/js/export-csv.js"></script>
+
+        <!-- All reports executions -->
+        <script src="/assets/js/FileSaver.js"></script>
+        <script src="/assets/js/reports.js"></script>
+        <script src="/assets/js/promotion.js"></script>
+
+        <script>
+            const fns = [
+                {section: 'artifacts', btn: 'artifactButton', fn: displayArtifactOptions, args: ['groupId', 'artifactId', 'version']},
+                {section: 'modules', btn: 'moduleButton', fn: displayModuleOptions, args: ['moduleName', 'version']}
+            ];
+
+            displayByQueryParams(window.location.href, fns);
+
+        </script>
 
 	</body>
 </html>

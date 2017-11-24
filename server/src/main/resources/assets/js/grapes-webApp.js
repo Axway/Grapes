@@ -19,24 +19,26 @@ function displayOrganizationOptions(){
     loadOrganizationNames("organizationName");
 
     $("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getOrganizationList(\"organizationName\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+    resetURL();
 }
 
 function displayProductOptions(){
     $("#targets").empty();
     cleanAction();
     var productIds = "<div class=\"control-group\">\n";
-    productIds += "   <label class=\"control-label\" for=\"productName\" style=\"width: auto;\">name: </label>\n";
-    productIds += "      <div class=\"controls\"  style=\"margin-left: 75px;\"><select id=\"productName\"></select></div>\n";
+    productIds += "   <label class=\"control-label\" for=\"productName\" style=\"width: auto;\">Product Name: </label>\n";
+    productIds += "      <div class=\"controls\"  style=\"margin-left: 165px;\"><select id=\"productName\"></select></div>\n";
     productIds += "</div>\n";
     productIds += "<div class=\"control-group\">\n";
-    productIds += "   <label class=\"control-label\" for=\"productDelivery\" style=\"width: auto;\">delivery: </label>\n";
-    productIds += "      <div class=\"controls\"  style=\"margin-left: 75px;\"><select id=\"productDelivery\"></select></div>\n";
+    productIds += "   <label class=\"control-label\" for=\"productDelivery\" style=\"width: auto;\">Commercial Releases: </label>\n";
+    productIds += "      <div class=\"controls\"  style=\"margin-left: 165px;\"><select id=\"productDelivery\"></select></div>\n";
     productIds += "</div>\n";
     $("#ids").empty().append(productIds);
     $("#filters").empty();
     var productActions = "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
     productActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='createProduct();'>New Product</button>\n";
     productActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='getProductOverview();'>Overview</button>\n";
+    productActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='compareLicenses();'>Compare Licenses</button>\n";
     productActions += "   <button type=\"button\" class=\"btn btn-danger action-button\" style=\"margin:2px;\" onclick='deleteProduct();'>Delete</button>\n";
     productActions += "</div>\n";
     $("#action").empty().append(productActions);
@@ -48,9 +50,10 @@ function displayProductOptions(){
     });
 
     $("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getProductList(\"productName\", \"productDelivery\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+    resetURL();
 }
 
-function displayModuleOptions(){
+function displayModuleOptions(moduleName, version){
     $("#targets").empty();
     cleanAction();
 	var moduleIds = "<div class=\"control-group\">\n";
@@ -60,6 +63,9 @@ function displayModuleOptions(){
 	moduleIds += "<div class=\"control-group\">\n";
 	moduleIds += "   <label class=\"control-label\" for=\"moduleVersion\" style=\"width: auto;\">version: </label>\n";
 	moduleIds += "   <div class=\"controls\" style=\"margin-left: 75px;\"><select id=\"moduleVersion\"></select></div>\n";
+	moduleIds += "</div>\n";
+	moduleIds += "<div class=\"control-group\">\n";
+	moduleIds += "   <label class=\"control-label\" style=\"width: auto;\">Having troubles finding your modules? Try <a id=\"searchModules\" href=\"javascript:void(0);\" onclick=\"navigateToSearch(this); return false;\">advanced search</a> </label>\n";
 	moduleIds += "</div>\n";
 	$("#ids").empty().append(moduleIds);
 	var moduleFilters = "<div class=\"row-fluid\">\n";
@@ -72,25 +78,40 @@ function displayModuleOptions(){
 	moduleActions += "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
 	moduleActions += "   <div id=\"moduleActions\" class=\"row-fluid\">\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleOverview();' id=\"overviewButton\">Overview</button>\n";
-	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleDependencies();'>Dependencies</button>\n";
-	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleThirdParty();'>Third Party</button>\n";
+	moduleActions += "      <button type=\"button\" id=\"internalDependenciesButton\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleDependencies();'>Internal Dependencies</button>\n";
+	moduleActions += "      <button type=\"button\" id=\"thirdPartyButton\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleThirdParty();'>Third Party</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleAncestors();'>Ancestors</button>\n";
 	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModulePromotionReport();'>Promotion Report</button>\n";
-	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='displayModuleLicenseOptions();'>Licenses</button>\n";
+	moduleActions += "      <button type=\"button\" class=\"btn btn-info action-button\" style=\"margin:2px;\" onclick='getModuleLicenses();'>Licenses</button>\n";
 	moduleActions += "   </div>\n";
 	moduleActions += "</div>\n";
 	$("#action").empty().append(moduleActions);
 	$("#action-perform").empty();
-	loadModuleNames("moduleName");
 
-	$("#moduleName").change(function () {
-		loadModuleVersions($("#moduleName").val(), "moduleVersion");
-	});
+	if(undefined === moduleName) {
+        loadModuleNames("moduleName");
+    } else {
+        setFixedSelectOption('moduleName', moduleName);
+    }
 
-	$("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getModuleList(\"moduleName\", \"moduleVersion\", \"promoted\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+    if(undefined === version) {
+        $("#moduleName").change(function () {
+            loadModuleVersions($("#moduleName").val(), "moduleVersion");
+        });
+    } else {
+	    setFixedSelectOption('moduleVersion', version);
+    }
+
+	$("#search").empty().append("<button id=\"searchModuleRadioButton\" type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getModuleList(\"moduleName\", \"moduleVersion\", \"promoted\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+
+	if(undefined !== moduleName && undefined !== version) {
+	    $('#searchModuleRadioButton').click();
+    } else {
+        resetURL();
+    }
 }
 
-function displayArtifactOptions(){
+function displayArtifactOptions(groupId, artifactId, version){
     $("#targets").empty();
     cleanAction();
 	var artifactIds = "<div class=\"control-group\">\n";
@@ -105,6 +126,9 @@ function displayArtifactOptions(){
 	artifactIds += "   <label class=\"control-label\" for=\"artifactArtifactId\" style=\"width: auto;\">artifactId: </label>\n";
 	artifactIds += "   <div class=\"controls\"  style=\"margin-left: 75px;\"><select id=\"artifactId\"></select></div>\n";
 	artifactIds += "</div>\n";
+	artifactIds += "<div class=\"control-group\">\n";
+    artifactIds += "   <label class=\"control-label\" style=\"width: auto;\">Having troubles finding artifacts? Try <a id=\"searchArtifacts\" href=\"javascript:void(0);\" onclick=\"navigateToSearch(this); return false;\">advanced search</a> </label>\n";
+    artifactIds += "</div>\n";
     $("#ids").empty().append(artifactIds);
 	var artifactFilters = "<div class=\"row-fluid\">\n";
 	artifactFilters += "   <label>\n";
@@ -113,25 +137,45 @@ function displayArtifactOptions(){
 	artifactFilters += "</div>\n";
 	$("#filters").empty().append(artifactFilters);
 	var artifactActions = "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
-	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='getArtifactOverview();'>Overview</button>\n";
+	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='createArtifact();'>New Artifact</button>\n";
+	artifactActions += "   <button type=\"button\" id=\"artifactOverviewButton\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='getArtifactOverview();'>Overview</button>\n";
 	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='getArtifactAncestors();'>Ancestors</button>\n";
 	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='doNotUseArtifact();'>Do not use</button>\n";
-	artifactActions += "   <button type=\"button\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='getArtifactLicenses();'>Licenses</button>\n";
+	artifactActions += "   <button type=\"button\" id=\"licensesButton\" class=\"btn btn-success action-button\" style=\"margin:2px;\" onclick='getArtifactLicenses();'>Licenses</button>\n";
 	artifactActions += "</div>\n";
 	$("#action").empty().append(artifactActions);
 	$("#action-perform").empty();
-	loadArtifactGroupIds("groupId");
 
-	$("#groupId").change(function () {
-		loadArtifactVersions($("#groupId").val(), "version");
-		$("#artifactId").empty();
-	});
+	if(undefined === groupId) {
+        loadArtifactGroupIds("groupId");
+    } else {
+        setFixedSelectOption('groupId', groupId);
+    }
 
-	$("#version").change(function () {
-		loadArtifactArtifactId($("#groupId").val(),$("#version").val(), "artifactId");
-	});
+	if(undefined === artifactId) {
+        $("#groupId").change(function () {
+            loadArtifactVersions($("#groupId").val(), "version");
+            $("#artifactId").empty();
+        });
+    } else {
+        setFixedSelectOption('artifactId', artifactId);
+    }
 
-	$("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getArtifactList(\"groupId\", \"artifactId\", \"version\", \"doNotUse\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+    if(undefined === version) {
+        $("#version").change(function () {
+            loadArtifactArtifactId($("#groupId").val(),$("#version").val(), "artifactId");
+        });
+    } else {
+        setFixedSelectOption('version', version);
+    }
+
+	$("#search").empty().append("<button id=\"searchArtifactRadio\" type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getArtifactList(\"groupId\", \"artifactId\", \"version\", \"doNotUse\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+
+    if(undefined !== groupId && undefined !== artifactId && undefined !== version) {
+        $("#searchArtifactRadio").click();
+    } else {
+        resetURL();
+    }
 }
 
 function displayLicenseOptions(){
@@ -156,7 +200,8 @@ function displayLicenseOptions(){
 	$("#filters").empty().append(licenseFilters);
 	var licenseActions = "<div class=\"btn-group\" data-toggle=\"buttons-radio\">\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='createLicense();'>New</button>\n";
-	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='getLicenseOverview();'>Overview</button>\n";
+	licenseActions += "   <button id=\"licenseOverview\" type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='getLicenseOverview();'>Overview</button>\n";
+	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='getLicenseUsage();'>Used in Products</button>\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='approveLicense();'>Approve</button>\n";
 	licenseActions += "   <button type=\"button\" class=\"btn btn-warning action-button\" style=\"margin:2px;\" onclick='rejectLicense();'>Reject</button>\n";
 	licenseActions += "</div>\n";
@@ -165,26 +210,15 @@ function displayLicenseOptions(){
 	loadLicensesNames("licenseName");
 
 	$("#search").empty().append("<button type=\"button\" class=\"btn btn-primary\" style=\"margin:2px;\"  onclick='getLicenseList(\"licenseName\", \"toBeValidated\", \"validated\", \"unvalidated\", \"targets\");'><i class=\"icon-search icon-white\"></i></button>");
+    resetURL();
 }
 /**************************************************************************************************/
 /*             Add optional actions to the web-app regarding the selected action                  */
 /**************************************************************************************************/
-function displayModuleLicenseOptions(){
-	var moduleLicenseOptionalActions = ""
-	moduleLicenseOptionalActions += "<button id=\"fullRecursive\" type=\"button\" class=\"btn btn-primary action-button\" data-toggle=\"button\" onclick='updateLicenseReport();' >On full corporate tree</button>\n";
-	moduleLicenseOptionalActions += "<a href=\"#\" class=\"btn btn-primary action-button export\">CSV export</a>\n";
-	$("#optional-action").empty().append(moduleLicenseOptionalActions);
 
-	getModuleLicenses();
-
-	$(".export").on('click', function (event) {
-        exportTableToCSV.apply(this, [$('#table'), 'export.csv']);
-    });
-
-}
 
 /********************************************************************/
-/*          Fill web-app targets regarding the filters               */
+/*          Fill web-app targets regarding the filters              */
 /********************************************************************/
 function getOrganizationList(organizationNameFieldId, targetedFieldId){
     $("#" + targetedFieldId).empty();
@@ -231,7 +265,7 @@ function getProductList(productNameFieldId, productDeliveryFieldId, targetedFiel
     if(productDelivery != '-' && productDelivery != null){
         html += "<label class=\"radio\">"
         html += "<input type=\"radio\" name=\"productRadio\" value=\""+ productDelivery+ "\" onclick=\"cleanAction()\">";
-        html += productDelivery;
+        html += productDelivery.replace('/',' ');
         html += "</label>";
         $("#" + targetedFieldId).append(html);
         $("input:radio:first").attr('checked', true);
@@ -240,33 +274,11 @@ function getProductList(productNameFieldId, productDeliveryFieldId, targetedFiel
 
 
     html += "<label class=\"radio\">"
-    html += "<input type=\"radio\" name=\"productRadio\" value=\""+ productName+ "\" onclick=\"cleanAction()\">";
+    html += "<input type=\"radio\" name=\"productRadio\" value=\""+ productName+ "\" onclick=\"cleanAction()\" checked=\"true\">";
     html += productName;
     html += "</label>";
 
-    $.ajax({
-        type: "GET",
-        accept: {
-            json: 'application/json'
-        },
-        url: "/product/" + productName + "/deliveries",
-        data: {},
-        dataType: "json",
-        success: function(data, textStatus) {
-            $.each(data, function(i, delivery) {
-                html += "<label class=\"radio\">"
-                html += "<input type=\"radio\" name=\"productRadio\" value=\""+ delivery+ "\" onclick=\"cleanAction()\">";
-                html += delivery;
-                html += "</label>";
-            });
-
-            $("#" + targetedFieldId).append(html);
-        }
-    }).done(function(){
-        setTimeout(function(){
-            $("input:radio:first").attr('checked', true);
-        }, 500);
-    });
+    $("#" + targetedFieldId).append(html);
 }
 
 function getModuleList(moduleNameFieldId, moduleVersionFieldId, promotedFieldId, targetedFieldId){
@@ -310,6 +322,11 @@ function getModuleList(moduleNameFieldId, moduleVersionFieldId, promotedFieldId,
     }).done(function(){
         setTimeout(function(){
             $("input:radio[name=moduleId]:first").attr('checked', true);
+
+            let size = $("#" + targetedFieldId).html().length;
+            if(size > 1) {
+                $("#overviewButton").click();
+            }
         }, 500);
     });
 }
@@ -355,7 +372,7 @@ function getArtifactList(groupIdFieldId, artifactIdFieldId, versionFieldId, doNo
     			    if(typeof artifact.extension!='undefined'){
                         gavc+= artifact.extension;
     			    }
-
+    			    
     			    html += "<label class=\"radio\">"
     				html += "<input type=\"radio\" name=\"gavc\" value=\""+ gavc+ "\" onclick=\"cleanAction()\">";
     				html += gavc;
@@ -364,11 +381,16 @@ function getArtifactList(groupIdFieldId, artifactIdFieldId, versionFieldId, doNo
 
     			$("#" + targetedFieldId).append(html);
     		}
-    }).done(function(){
-          setTimeout(function(){
-                $("input:radio[name=gavc]:first").attr('checked', true);
-              }, 500);
-      });
+    }).done(function () {
+        setTimeout(function () {
+            $("input:radio[name=gavc]:first").attr('checked', true);
+
+            let size = $("#" + targetedFieldId).html().length;
+            if (size > 1) {
+                $("#artifactOverviewButton").click();
+            }
+        }, 500);
+    });
 }
 
 function getLicenseList(licenseNameFieldId, toBeValidatedFieldId, validatedFieldId, unvalidatedFieldId, targetedFieldId){
@@ -545,10 +567,173 @@ function deleteOrganization(organizationId){
     );
  }
 
-function createProduct(){
-    $('#productEdition').find('#inputProductName').val("");
-    $("#productEdition").modal('show');
-}
+ function createProduct(){
+     $('#productEdition').find('#inputProductName').val("");
+     $("#productEdition").modal('show');
+ }
+
+ function createArtifact(){
+     $('#newArtifactEdition').find('#inputArtifactId').val("");
+     $("#newArtifactEdition").modal('show');
+ }
+
+ function artifactSave(){
+     var artifactId = $("#inputArtifactId").val();
+     var artifactSHA = $("#inputArtifactSHA").val();
+     var artifactGroupId = $("#inputArtifactGroupId").val();
+     var artifactVersion = $("#inputArtifactVersion").val();
+     var artifactClassifier = $("#inputArtifactClassifier").val();
+     var artifactType = $("#inputArtifactType").val();
+     var artifactExtension = $("#inputArtifactExtension").val();
+     var artifactOrigin = "maven";
+     var artifactDescription = $("#inputArtifactDescription").val();
+     var promoted = "false";
+     
+     if(artifactId == null || artifactId == ''){
+         $('#artifactError').html("Please provide artifact id");
+    	 return;
+     }
+     if(artifactSHA == null || artifactSHA == ''){
+         $('#artifactError').html("Please provide artifact checksum");
+    	 return;
+     }
+     if(artifactSHA.length != 64){
+         $('#artifactError').html("Artifact checksum length should be 64");
+    	 return;
+     }
+     if(artifactGroupId == null || artifactGroupId == ''){
+         $('#artifactError').html("Please provide artifact groupId");
+    	 return;
+     }
+     if(artifactVersion == null || artifactVersion == ''){
+         $('#artifactError').html("Please provide artifact version");
+    	 return;
+     }
+     if(artifactExtension == null || artifactExtension == ''){
+         $('#artifactError').html("Please provide artifact extension");
+    	 return;
+     }
+     if($("#inputArtifactPromotion").is(':checked')){
+    	 promoted = "true";
+     }
+     if($("#inputArtifactOriginN").is(':checked')){
+    	 artifactOrigin = "npm";
+     }
+	 $('#saveArtifact').attr("data-dismiss", "modal");
+     $.ajax({
+         url: "/artifact",
+         method: 'POST',
+         data: '{"artifactId": "' + artifactId + '","groupId": "' + artifactGroupId + '","version": "' + artifactVersion + '", "classifier": "' + artifactClassifier + '","type": "' + artifactType + '", "extension": "' + artifactExtension + '","origin": "' + artifactOrigin + '","sha256": "' + artifactSHA + '", "promoted": ' + promoted + ', "description": "'  + artifactDescription + '","size": "", "downloadUrl": "","provider": ""}',
+         contentType: 'application/json',
+         error: function(xhr, error){
+             alert("The action cannot be performed: status " + xhr.status + "\nError: " + xhr.responseText);
+         }
+     }).done(function(){
+    	 $('#artifactError').html("");
+         cleanAction();
+     });
+
+     cleanCreateArtifact();
+ }
+
+ function compareLicenses() {
+     if($('input:checked', '#targets').size() == 0){
+         $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
+         $("#anyAlert").show();
+         return;
+     }
+
+     var html = "<h3>License Comparison Between Commercial Releases</h3>";
+
+     var deliveries = $("#productDelivery")[0];
+     var count = deliveries.children.length;
+
+     //
+     // The first entry is empty, so it must be at least couple of different commercial releases
+     // for the comparison to make sense
+     //
+     if(count < 3) {
+         html = "You need at least two commercial release to perform the comparison";
+     } else {
+          html += "Compare: ";
+          // first dropdown
+          html += "<select id='version1'>";
+
+          var target = $('input:checked', '#targets').val();
+
+          for(var i = 0; i < count; i++) {
+            var option = deliveries.childNodes[i];
+            if(option.innerText !== ''){
+                html += "<option value='";
+                html += option.value;
+                html += "'>";
+                html += option.innerText;
+                html += "</option>";
+            }
+          }
+
+         html += "</select>";
+
+         html += " with ";
+
+         // second dropdown
+         html += "<select id='version2'>";
+
+         for(var i = 0; i < count; i++) {
+            var option = deliveries.childNodes[i];
+            if(option.innerText !== ''){
+                html += "<option value='";
+                html += option.value;
+                html += "'>";
+                html += option.innerText;
+                html += "</option>";
+            }
+         }
+
+         html += "</select>";
+
+         html +="<button type='button' class='btn' id='execute-report' style='margin-left:10px; margin-bottom: 12px;' onclick='getLicensesComparisonsReport()'>Compare Licenses</button>";
+     }
+
+     $("#results").empty().append(html);
+
+     //set first dropdown value to selected target
+      $("#version1").val(target);
+      // disabled first dropdown selection showing up in second dropdown
+      $("#version2 option[value='" + $("#version1").val() + "']").css("display","none");
+      $("#version1").on("change", function(){
+         $("#version2 option").css("display","block");
+         $("#version2 option[value='" + $(this).val() + "']").css("display","none");
+      });
+ }
+
+ function getLicensesComparisonsReport() {
+
+     var target = $('#version1').val();
+
+     var cn1 = getCommercialName(target);
+     var cv1 = getCommercialVersion(target);
+
+     target = $('#version2').val();
+     var cn2 = getCommercialName(target);
+     var cv2 = getCommercialVersion(target);
+
+     $('#execute-report').prop("disabled", "disabled");
+     $("#results").append('<br/><img src="/assets/img/spinner.gif" alt="" id="loader-indicator" />');
+
+     runComparisonReport(cn1, cv1, cn2, cv2, function(result) {
+         var html = '';
+         if(result instanceof Error) {
+            html = "<div style='color:red'>";
+            html += result;
+            html += "</div>";
+         } else {
+            html = reportJSONToUI('License Comparison Between Commercial Releases', result);
+         }
+
+         $("#results").empty().append(html);
+     });
+ }
 
 function getProductOverview(){
     var target = $('input:checked', '#targets').val();
@@ -565,7 +750,7 @@ function getProductOverview(){
         return;
     }
 
-    var html = "<h3>Project Overview</h3><br/>\n";
+    var html = "<h3>Product Overview</h3><br/>\n";
     html += "<p><strong>Name:</strong> "+productName+"</p>\n";
 
 
@@ -587,7 +772,7 @@ function getProductOverview(){
             html += "<div id=\"moduleAddDiv\"/>\n";
 
             html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
-            html += "<thead><tr><th>Deliveries</th></tr></thead>\n";
+            html += "<thead><tr><th>Commercial Deliveries</th></tr></thead>\n";
             html += "<tbody>\n";
             $.ajax({
                 type: "GET",
@@ -596,12 +781,11 @@ function getProductOverview(){
                 dataType: "json",
                 success: function(data, textStatus) {
                     $.each(data, function(i, delivery) {
-                        html += "<tr id=\""+delivery+"-row\"><td>" + delivery + "</td></tr>\n";
+                        html += "<tr id=\""+delivery.commercialVersion+"-row\"><td>" + delivery.commercialName + " " + delivery.commercialVersion + "</td></tr>\n";
                     });
 
                     html += "</tbody>\n<br/>\n";
                     html += "</table>\n";
-                    html +="<button type=\"button\" class=\"btn\" style=\"margin:2px;\" onclick=\"createDelivery();\">New Delivery</button>\n";
                     $("#results").empty().append(html);
                     addProjectModuleAction(productName);
                 }
@@ -728,10 +912,10 @@ function getProductDeliveryOverview(delivery, product){
 
     var html = "<h3>Delivery Overview</h3><br/>\n";
     html += "<p><strong>Product Name:</strong> "+product+"</p>\n";
-    html += "<p><strong>Delivery Name:</strong> "+delivery+"</p>\n";
+    html += "<p><strong>Delivery Name:</strong> "+delivery.replace('/',' ')+"</p>\n";
 
     html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
-    html += "<thead><tr><th>Module Names</th></tr></thead>\n";
+    html += "<thead><tr><th>Commercial Information</th><th>Release Date</th></tr></thead>\n";
     html += "<tbody>\n";
 
     $.ajax({
@@ -739,18 +923,95 @@ function getProductDeliveryOverview(delivery, product){
         url: "/product/"+ product + "/deliveries/" + delivery,
         data: {},
         dataType: "json",
-        success: function(data, textStatus) {
-            $.each(data, function(i, moduleId) {
-                html += "<tr id=\""+moduleId+"-row\"><td name=\"moduleRow\" id=\""+moduleId+"\" onclick=\"removeDeliveryModuleAction('"+moduleId+"');\">" + moduleId + "</td></tr>\n";
-            });
+        success: function(delivery, textStatus) {
+            html += "<tr id=\""+delivery.commercialVersion+"-row\"><td name=\"moduleRow\" id=\""+delivery.commercialVersion+"\">" + delivery.commercialName + " " + delivery.commercialVersion + "</td>";
+            html += "<td>" + delivery.releaseDate + "</td>";
+            html += "</tr>\n";
+            html += "</tbody>\n";
+            html += "</table>\n";
+            
+            if(delivery.version != null && delivery.jenkinsBuildUrl != null){
+                html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
+                html += "<thead><tr><th>Release Technical Version</th><th>Jenkins Build</th></tr></thead>\n";
+                html += "<tbody>\n";
+                html += "<tr id=\""+delivery.version+"-row\"><td name=\"moduleRow\" id=\""+delivery.version+"\">" + delivery.version + "</td>";
+                html += "<td>";
+                html += "<a href=\"" + delivery.jenkinsBuildUrl + "\" target=\"_blank\" \">" + getBuildFromJenkinsURL(delivery.jenkinsBuildUrl) + "</a>";
+                html +="</td>";
+                html += "</tr>\n";
+                html += "</tbody>\n";
+                html += "</table>\n";
+            }
+            
+            if(delivery.moduleName != null){
+            	 var moduleName = delivery.moduleName;
+            	 html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
+                 html += "<thead><tr><th>Module Link</th></tr></thead>\n";
+                 html += "<tbody>\n";
+                 html += "<tr><td>";
+                 html += "<a href=\"" + getModuleLink(moduleName) + "\" target=\"_blank\">";
+                 html += moduleName + "</a></td></tr>";
+                 html += "</tbody>\n";
+                 html += "</table>\n";
+            }
+
+
+            if(delivery.dependencies.length > 0) {
+                var arguments = [delivery.commercialName, delivery.commercialVersion]
+                    .map(function (e) {
+                        return "'" + e + "'";
+                    })
+                    .join(',');
+                html += "<div id='exportLicensesDiv'> <a href=\"javascript:commercialDeliveriesReport(" + arguments + ")\">Export All Licenses</a> </div>";
+            }
+
+            html += "<table class=\"table table-bordered table-hover\" id=\"table-of-result\">\n";
+            html += "<thead><tr><th>Dependencies</th></tr></thead>\n";
+            html += "<tbody>\n";
+           
+            for(var index=0; index < delivery.dependencies.length; index++) {
+                var artifactDetails = splitToArtifactParts(delivery.dependencies[index]);
+                html += "<tr><td>";
+                html += "<a href='#' onclick='";
+                html += getOnClickHandler(artifactDetails);
+                html += "'>";
+                html += delivery.dependencies[index];
+                html += "</a>";
+                html += "</td></tr>";
+            }
 
             html += "</tbody>\n";
             html += "</table>\n";
+
             html += "<div id=\"moduleAddDiv\"/>\n";
             $("#results").empty().append(html);
-            addDeliveryModuleAction(delivery, product);
         }
     })
+}
+
+function getModuleLink(moduleName){
+	var lastIndexKey = moduleName.lastIndexOf(':');
+	var name = moduleName.substring(0, lastIndexKey);
+	var version = moduleName.substring(lastIndexKey + 1);	
+	return "/webapp?moduleName=" + name + "&moduleVersion=" + version;
+}
+
+function getLicenseLink(licenseId) {
+    jQuery(function(){
+        jQuery('#licenseButton').click();
+    });
+    getLicenseTarget(licenseId, 'targets');
+}
+
+function getLicenseDirectLink(dependencyLicense) {
+    dependencyLicense = dependencyLicense.trim();
+    var licenseName = dependencyLicense.substring(dependencyLicense.indexOf("(") + 1, dependencyLicense.indexOf(")"));
+    getLicenseLink(licenseName);
+}
+
+function getBuildFromJenkinsURL(jenkinsBuildUrl){
+	var urlElements = jenkinsBuildUrl.split("/");
+	return "#" + urlElements[urlElements.length - 2];
 }
 
 function addDeliveryModuleAction(delivery, product){
@@ -769,7 +1030,7 @@ function addDeliveryModuleAction(delivery, product){
             $.each(data, function(i, moduleNames) {
                 $.ajax({
                     type: "GET",
-                    url: "/module/all?name=" + moduleNames,
+                    url: "/module/all?name=" + encodeURIComponent(moduleNames),
                     data: {},
                     dataType: "json",
                     success: function(data, textStatus) {
@@ -921,7 +1182,6 @@ function productSave(){
     });
 }
 
-
 function getModuleOverview(){
     $("#optional-action").empty();
 
@@ -937,7 +1197,7 @@ function getModuleOverview(){
 
 	$.ajax({
             type: "GET",
-            url: "/module/"+ moduleName + "/" + moduleVersion ,
+            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -948,6 +1208,7 @@ function getModuleOverview(){
 }
 
 function getModuleDependencies(){
+    // Clear previous section attachments from other tabs
     $("#optional-action").empty();
 
     if($('input[name=moduleId]:checked', '#targets').size() == 0){
@@ -964,12 +1225,15 @@ function getModuleDependencies(){
 
 	$.ajax({
             type: "GET",
-            url: "/module/"+ moduleName + "/" + moduleVersion + "/dependencies?scopeTest=true&scopeRuntime=true&showSources=false" ,
+            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/dependencies?scopeTest=true&scopeRuntime=true&showSources=false" ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).find("#table_div"));
+                var table = $(data).find("#table_div");
+                $("#results").empty().append(table);
                 $('.sortable').tablesorter();
+                // Check if the module has module dependencies and if it does - show the csv export button
+                showCSVExportLink($(table).find("tbody"));
             }
         })
 }
@@ -991,12 +1255,15 @@ function getModuleThirdParty(){
 
 	$.ajax({
             type: "GET",
-            url: "/module/"+ moduleName + "/" + moduleVersion + "/dependencies?scopeTest=true&scopeRuntime=true&showThirdparty=true&showCorporate=false&showSources=false&showLicenses=true" ,
+            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/dependencies?scopeTest=true&scopeRuntime=true&showThirdparty=true&showCorporate=false&showSources=false&showLicenses=true" ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).find("#table_div"));
+                var table = $(data).find("#table_div");
+                $("#results").empty().append(table);
                 $('.sortable').tablesorter();
+                // Check if the module has third party dependencies and if it does - show the csv export button
+                showCSVExportLink($(table).find("tbody"));
             }
         })
 }
@@ -1018,7 +1285,7 @@ function getModuleAncestors(){
 
 	$.ajax({
             type: "GET",
-            url: "/module/"+ moduleName + "/" + moduleVersion + "/ancestors" ,
+            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/ancestors" ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -1029,6 +1296,8 @@ function getModuleAncestors(){
 }
 
 function getModuleLicenses(){
+    $("#optional-action").empty();
+
     if($('input[name=moduleId]:checked', '#targets').size() == 0){
         $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
         $("#anyAlert").show();
@@ -1050,12 +1319,14 @@ function getModuleLicenses(){
 
 	$.ajax({
             type: "GET",
-            url: "/module/"+ moduleName + "/" + moduleVersion + "/dependencies?" + queryParams ,
+            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/dependencies?" + queryParams ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
-                $("#results").empty().append($(data).find("#table_div"));
+                var table = $(data).find("#table_div");
+                $("#results").empty().append(table);
                 $('.sortable').tablesorter();
+                showCSVExportLink($(table).find("tbody"), "<a href=\"javascript:void(0)\" class=\"fullRecursiveLink\" id=\"fullRecursive\" onclick='updateLicenseReport();' >On full corporate tree</a>\n");
             }
         })
 }
@@ -1077,13 +1348,46 @@ function getModulePromotionReport(){
 
 	$.ajax({
             type: "GET",
-            url: "/module/"+ moduleName + "/" + moduleVersion + "/promotion/report?fullRecursive=true" ,
+            url: "/module/" + encodeURIComponent(moduleName) + "/" + moduleVersion + "/promotion/report?fullRecursive=true" ,
             data: {},
-            dataType: "html",
-            success: function(data, textStatus) {
-                $("#results").empty().append($(data).find("#list"));
+            dataType: "json",
+            success: function(report, textStatus) {
+
+                    var html = "<div class=\"container\">" +
+                    "<div class=\"row-fluid\" id=\"list\">";
+                    if(report.promotable){
+                        html += "<div id=\"promotion_ok\"><h3>The module can be promoted.</h3></div><br/>"
+                   } else{
+                        html += "<div id=\"promotion_ko\"><h3>The module cannot be promoted</h3></div><br/>"
+                   }
+                   var tags = tagsInReport(report);
+
+                   tags.forEach(function(tag) {
+                       html += "<h3 class='" + cssClassByTag(tag) + "'>";
+                       html += capitalizeFirstLetter(tag);
+                       html += "</h3>";
+
+                       var messages = messagesByTag(report, tag);
+
+                       messages.forEach(function(message) {
+                           var errDescription = errorDescription(message);
+                           html += "<div class='" + cssClassByTag(tag) + "'><strong>" + errDescription + "</strong></div>";
+
+                           var pieces = getPieces(message);
+                           if(pieces.length > 0) {
+                               html += "<ul>";
+                               pieces.forEach(function(piece) {
+                                   html += "<li>" + asLinks(piece) + "</li>";
+                               });
+                               html += "</ul>";
+                           }
+                       });
+                   });
+
+                   html += "</div></div>";
+                   $("#results").empty().append(html);
             }
-        })
+        });
 }
 
 function getArtifactOverview(){
@@ -1096,7 +1400,7 @@ function getArtifactOverview(){
 
 	$.ajax({
             type: "GET",
-            url: "/artifact/"+ gavc,
+            url: "/artifact/" + encodeURIComponent(gavc),
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -1111,7 +1415,7 @@ function changeArtifactAction(){
 
 	$.ajax({
             type: "GET",
-            url: "/artifact/"+ gavc,
+            url: "/artifact/" + encodeURIComponent(gavc),
             data: {},
             dataType: "json",
             success: function(data, textStatus) {
@@ -1132,7 +1436,7 @@ function updateArtifact(){
     var downloadUrl = $('#artifactEdition').find('#inputDownloadUrl').val();
 	$.ajax({
             type: "POST",
-            url: "/artifact/"+ gavc + "/downloadurl?url="+ downloadUrl,
+            url: "/artifact/" + encodeURIComponent(gavc) + "/downloadurl?url="+ downloadUrl,
             data: {},
             dataType: "html",
             error: function(xhr, error){
@@ -1144,7 +1448,7 @@ function updateArtifact(){
     var provider = $('#artifactEdition').find('#inputProvider').val();
 	$.ajax({
             type: "POST",
-            url: "/artifact/"+ gavc + "/provider?provider="+ provider,
+            url: "/artifact/" + encodeURIComponent(gavc) + "/provider?provider="+ provider,
             data: {},
             dataType: "html",
             error: function(xhr, error){
@@ -1165,7 +1469,7 @@ function getArtifactAncestors(){
 
 	$.ajax({
             type: "GET",
-            url: "/artifact/"+ gavc + "/ancestors",
+            url: "/artifact/" + encodeURIComponent(gavc) + "/ancestors",
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -1186,15 +1490,17 @@ function doNotUseArtifact(){
 
 	$.ajax({
             type: "GET",
-            url: "/artifact/"+ gavc + "/donotuse",
+            url: "/artifact/" + encodeURIComponent(gavc) + "/donotuse",
             data: {},
             dataType: "html",
             success: function(donotUse, textStatus) {
                 if(donotUse == "true"){
-                    $("#doNotUseArtifactModal-text").empty().append(gavc + " is currently flagged with \"DO_NOT_USE\", do you want to un-flagged it?")
+                    $("#doNotUseArtifactModal-text").empty().append(gavc + " is currently flagged with \"DO_NOT_USE\", do you want to un-flagged it?"
+                      + "<br /><div class=\"textareaLabel\">Comment</div><textarea rows=\"3\" placeholder='Please state the reason for clearing the artifact flag \"DO_NOT_USE\"!' name='doNotUseComment' id='doNotUseComment'></textarea><br />");
                 }
                 else{
-                    $("#doNotUseArtifactModal-text").empty().append("Do you want to flag " + gavc + " with \"DO_NOT_USE\"")
+                    $("#doNotUseArtifactModal-text").empty().append("Do you want to flag " + gavc + " with \"DO_NOT_USE\""
+                    + "<br /><div class=\"textareaLabel\">Comment</div><textarea rows=\"3\" placeholder='Please state the reason for marking the artifact flag to \"DO_NOT_USE\"!' name='doNotUseComment' id='doNotUseComment'></textarea><br />");
                 }
                 $('#doNotUseArtifactModal').modal('show');
             }
@@ -1205,10 +1511,11 @@ function doNotUseArtifact(){
 function postDoNotUse(){
     var gavc = $('input[name=gavc]:checked', '#targets').val();
     var doNotUse = $("#doNotUseArtifactModal-text").text().indexOf("you want to flag") >= 0;
+    var commentText = $("#doNotUseComment").val();
     $.ajax({
             type: "POST",
-            url: "/artifact/"+ gavc + "/donotuse?doNotUse=" + doNotUse,
-            data: {},
+            url: "/artifact/" + encodeURIComponent(gavc) + "/donotuse?doNotUse=" + doNotUse,
+            data: commentText,
             dataType: "html",
             error: function(xhr, error){
                 alert("The action cannot be performed: status " + xhr.status);
@@ -1232,7 +1539,7 @@ function getArtifactLicenses(){
     
 	$.ajax({
             type: "GET",
-            url: "/artifact/"+ gavc + "/licenses",
+            url: "/artifact/" + encodeURIComponent(gavc) + "/licenses",
             data: {},
             dataType: "json",
             success: function(data, textStatus) {
@@ -1311,7 +1618,7 @@ function addLicense(){
 
     $.ajax({
             type: "POST",
-            url: "/artifact/" + gavc + "/licenses?licenseId=" + licenseId ,
+            url: "/artifact/" + encodeURIComponent(gavc) + "/licenses?licenseId=" + licenseId ,
             data: {},
             dataType: "html",
             error: function(xhr, error){
@@ -1325,7 +1632,7 @@ function removeLicense(licenseId){
 
     $.ajax({
             type: "DELETE",
-            url: "/artifact/" + gavc + "/licenses?licenseId=" + licenseId ,
+            url: "/artifact/" + encodeURIComponent(gavc) + "/licenses?licenseId=" + licenseId ,
             data: {},
             dataType: "html",
             success: function(data, textStatus) {
@@ -1353,7 +1660,7 @@ function licenseSave(){
         contentType: 'application/json',
         data: '{ "name": "'+$('#inputName').val()+'", "longName": "'+$('#inputLongName').val()+'", "comments": "'+$('#inputComments').val()+'", "regexp": "'+$('#inputRegexp').val()+'", "url": "'+$('#inputURL').val()+'", "approved": false }',
         error: function(xhr, error){
-            alert("The action cannot be performed: status " + xhr.status);
+            alert("The action cannot be performed: " + xhr.status + " - " + xhr.responseText);
         }
     }).done(function(){
             cleanAction();
@@ -1382,6 +1689,23 @@ function getLicenseOverview(){
     $("#extra-action").empty().append("<button type=\"button\" class=\"btn btn-danger\" style=\"margin:2px;\" onclick=\"deleteLicense('"+licenseId+"');\">Delete</button>\n");
     $("#extra-action").append("<button type=\"button\" class=\"btn\" style=\"margin:2px;\" onclick=\"editLicense('"+licenseId+"');\">Edit</button>\n");
 }
+
+function getLicenseUsage() {
+    $("#extra-action").empty();
+
+    if($('input[name=licenseId]:checked', '#targets').size() == 0){
+        $("#messageAlert").empty().append("<strong>Warning!</strong> You must select a target before performing an action.");
+        $("#anyAlert").show();
+        return;
+    }
+    var licenseId = $('input[name=licenseId]:checked', '#targets').val();
+
+    $("#results").empty().append('<img src="/assets/img/spinner.gif" alt="" id="loader-indicator" />');
+    runLicenseUsageReport(licenseId, function(results) {
+        $("#results").empty().append(reportJSONToUI("Products using " + licenseId, results));
+    });
+}
+
 
 function deleteLicense(licenseId){
     $("#toDelete").text(licenseId);
@@ -1511,6 +1835,18 @@ function cleanAction(){
     $("#extra-action").empty();
 }
 
+function cleanCreateArtifact(){
+	$("#inputArtifactId").val('');
+    $("#inputArtifactSHA").val('');
+    $("#inputArtifactGroupId").val('');
+    $("#inputArtifactVersion").val('');
+    $("#inputArtifactClassifier").val('');
+    $("#inputArtifactType").val('');
+    $("#inputArtifactExtension").val('');
+    $("#inputArtifactOrigin").val('');
+    $("#inputArtifactDescription").val('');
+}
+
 /*WorkAround*/
 function updateOrganization(){
     setTimeout(function(){
@@ -1572,4 +1908,190 @@ function updateProduct(){
     setTimeout(function(){
         getProductOverview();
     }, 500);
+}
+
+/** *********************************************************************************************** */
+/* Display Overview report of the targeted module */
+/** *********************************************************************************************** */		
+
+var moduleName=getNameAndVersion('moduleName');
+var moduleVersion=getNameAndVersion('moduleVersion');		
+var str = window.location.href;		
+var strval = str.indexOf(moduleName);
+if (strval > 0) {
+	jQuery(function(){
+		jQuery('#moduleButton').click();
+	});
+
+	getModuleTarget(moduleName,moduleVersion,'false','targets');
+}
+
+<!-- gets targeted module name and version from the url -->
+function getNameAndVersion(val) {
+	var result = "Not found",
+	tmp = [];
+	var items = location.search.substr(1).split("&");
+		for (var index = 0; index < items.length; index++) {
+		tmp = items[index].split("=");
+			if (tmp[0] === val) result = decodeURIComponent(tmp[1]);
+		}
+	return result;
+}
+
+<!-- gets targets -->
+function getModuleTarget(moduleNameFieldValue, moduleVersionFieldValue, promotedFieldValue, targetedFieldValue){
+	$("#" + targetedFieldValue).empty();
+	$('.alert').hide();
+	cleanAction();
+	var moduleName = moduleNameFieldValue;
+	var moduleVersion = moduleVersionFieldValue;
+
+	var promise = asyncDeferred();
+        promise.then(function() {
+            $("#moduleName").val(moduleName);
+            loadModuleVersions(moduleName, "moduleVersion");
+            return asyncDeferred();
+        }).then(function() {
+            $("#moduleVersion").val(moduleVersion);
+            return asyncDeferred();
+        }).then(function(){
+            $("#searchModuleRadioButton").click();
+            return asyncDeferred();
+        }).then(function() {
+            $("input:radio[name=moduleId]:first").attr('checked', true);
+            $("#overviewButton").click();
+        });
+}
+
+function loadTargetedModuleVersion(moduleName, mVersion){
+	return $.ajax({
+		type: "GET",
+		accept: {
+				json: 'application/json'
+		},
+		url: "/module/" + encodeURIComponent(moduleName) + "/versions",
+		data: {},
+		dataType: "json",
+		success: function(data, textStatus) {
+			var html = "<option value=\"-\"></option>";
+
+
+		$.each(data, function(i, version) {
+			if(version==mVersion){
+ 				html += "<option value=\"";
+ 				html += version + "\" selected>";
+ 				html += version + "</option>";
+ 			}
+			else{
+			html += "<option value=\"";
+			html += version + "\">";
+			html += version + "</option>";
+			}
+		});
+
+		$("#" + "moduleVersion").empty().append(html);
+		
+	},
+	error: function (xhr, ajaxOptions, thrownError){
+	    $("#" + "moduleVersion").empty();
+	}
+}); 
+}
+
+function getArtifactTarget(artifactGroupIdFieldValue, artifactIdFieldValue, artifactVersionFieldValue, targetedFieldValue, actionButton){
+	$("#" + targetedFieldValue).empty();
+	$('.alert').hide();
+	cleanAction();
+	var groupId = artifactGroupIdFieldValue;
+	var artifactId = artifactIdFieldValue;
+	var version = artifactVersionFieldValue;
+
+    var promise = asyncDeferred();
+        promise.then(function() {
+            $("#groupId").val(groupId);
+            loadArtifactVersions(groupId, "version");
+            return asyncDeferred();
+        }).then(function() {
+            $("#version").val(version);
+            loadArtifactArtifactId(groupId, version, "artifactId");
+            return asyncDeferred();
+        }).then(function(){
+            $("#artifactId").val(artifactId);
+            return asyncDeferred();
+        }).then(function(){
+            $("#searchArtifactRadio").click();
+            return asyncDeferred();
+        }).then(function() {
+            $("input:radio[name=gavc]:first").attr('checked', true);
+            $(actionButton).click();
+        });
+}
+
+function asyncDeferred(elId, elVal) {
+    var deferredObject = $.Deferred();
+    setTimeout(function() {
+        deferredObject.resolve();
+    }, 400);
+ 	return deferredObject.promise();
+}
+
+function getLicenseTarget(licenseIdFieldValue, targetedFieldValue){
+	$("#" + targetedFieldValue).empty();
+	$('.alert').hide();
+	cleanAction();
+	var licenseId = licenseIdFieldValue;
+
+	var queryParams = "";
+	if(licenseId != '-' && licenseId != null){
+		queryParams += "licenseId=" + licenseId
+	}
+
+	$.ajax({
+            type: "GET",
+            accept: {
+                json: 'application/json'
+            },
+            url: "/license/names?" + queryParams,
+            data: {},
+            dataType: "json",
+            success: function(data, textStatus) {
+                var html = "";
+                $.each(data, function(i, licenseName) {
+                    html += "<label class=\"radio\">"
+                    html += "<input type=\"radio\" name=\"licenseId\" value=\""+ licenseName + "\" onclick=\"cleanAction()\">";
+                    html += licenseName;
+                    html += "</label>"
+                });
+
+                $("#" + targetedFieldValue).append(html);
+            }
+    }).done(function(){
+        setTimeout(function(){
+              $('#licenseName').val(licenseId);
+              $("input:radio[name=licenseId]:first").attr('checked', true);
+               jQuery(function(){
+                  jQuery('#licenseOverview').click();
+               });
+            }, 500);
+    });
+}
+
+// Check if an html element is empty ignoring whitespaces
+function isEmpty( el ){
+    return !$.trim(el.html());
+}
+
+function showCSVExportLink(element, additionalActions) {
+    if(!isEmpty(element)) {
+        var moduleOptionalActions = ""
+        moduleOptionalActions += "<a href=\"#\" class=\"export\">CSV export</a>\n";
+        if(additionalActions != null) {
+            moduleOptionalActions += additionalActions;
+        }
+        $("#optional-action").empty().append(moduleOptionalActions);
+
+        $("a.export").on('click', function (event) {
+            exportTableToCSV.apply(this, [$('#table_div>table'), 'export.csv']);
+        });
+    }
 }

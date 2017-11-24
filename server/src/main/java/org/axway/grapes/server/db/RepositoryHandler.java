@@ -1,10 +1,13 @@
 package org.axway.grapes.server.db;
 
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.db.datamodel.DbCredential.AvailableRoles;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Repository Handler Interface
@@ -102,10 +105,13 @@ public interface RepositoryHandler {
     /**
      * Remove a license from an existing artifact
      *
-     * @param artifact DbArtifact
+     * @param artifact DbArtifact The artifact entity
      * @param name String
+     * @param licenseMatcher LicenseMatcher
      */
-    public void removeLicenseFromArtifact(final DbArtifact artifact, final String name);
+    public void removeLicenseFromArtifact(final DbArtifact artifact,
+                                          final String name,
+                                          final LicenseMatcher licenseMatcher);
 
     /**
      * Approve or reject a license
@@ -153,6 +159,14 @@ public interface RepositoryHandler {
      * @return DbArtifact
      */
     public DbArtifact getArtifact(final String gavc);
+
+    /**
+     * Return the targeted artifact
+     *
+     * @param sha256 String
+     * @return DbArtifact
+     */
+    public DbArtifact getArtifactUsingSHA256(final String sha256);
 
     /**
      * Delete the targeted artifact
@@ -354,4 +368,77 @@ public interface RepositoryHandler {
      * @param name String
      */
     public void deleteProduct(final String name);
+
+    /**
+     * Executes an arbitrary query against a designated collection and returns zero or one result
+     * @param collectionName The name of the collection to query
+     * @param query The query string in <CODE>JSON </CODE> format
+     * @param c The result class
+     * @param <T> Imposed by the generic signature
+     * @return Either the result of an empty Optional of result
+     */
+    public <T> Optional<T> getOneByQuery(final String collectionName, final String query, final Class<T> c);
+
+    /**
+     * Executes an arbitrary query against a designated collection and returns the list of results
+     * @param collectionName The name of the collection to query
+     * @param query The query string in <CODE>JSON </CODE> format
+     * @param c The result class
+     * @param <T> Imposed by the generic signature
+     * @return The list of results.
+     */
+    public <T> List<T> getListByQuery(final String collectionName, final String query, final Class<T> c);
+
+    /**
+     * Consume the query results without loading all of the results in memory
+     * @param collectionName The name of the collection
+     * @param query The query to select the records for
+     * @param c The model class
+     * @param consumer The model consumer
+     * @param <T> Imposed by the generic signature
+     */
+    public <T> void consumeByQuery(final String collectionName,
+                                   final String query,
+                                   final Class<T> c,
+                                   final Consumer<T> consumer);
+
+
+    /**
+     * Gets the count of the query results
+     * @param collectionName The collection name to query against
+     * @param query The query part
+     * @return Number of results
+     */
+    public long getResultCount(final String collectionName, final String query);
+
+    /**
+     * Create a new comment or update an existing one into the database
+     * @param dbComment
+     */
+    public void store(final DbComment dbComment);
+
+    /**
+     * Returns the comments for a particular entity
+     * @param entityId - the id of the entity which has comments
+     * @param entityType - the type of the entity (e.g. module, artifact, license)
+     * @return - list of comments
+     */
+    public List<DbComment> getComments(String entityId, String entityType);
+
+    /**
+     * Returns the latest comment for do not use flag
+     * @param entityId - id of the artifact
+     * @param entityType - type of the entity
+     * @return - String comment text
+     */
+    public DbComment getLatestComment(String entityId, String entityType);
+
+    /**
+     *
+     * Returns the search result for modules and artifacts
+     * @param search - the searched keyword
+     * @param filter - filter modules and/or artifacts
+     * @return - list of ids for modules and/or artifacts
+     */
+    public DbSearch getSearchResult(String search, FiltersHolder filter);
 }

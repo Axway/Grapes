@@ -1,5 +1,6 @@
 package org.axway.grapes.server.db;
 
+import org.apache.commons.lang3.StringUtils;
 import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.Dependency;
@@ -8,6 +9,7 @@ import org.axway.grapes.server.db.datamodel.DbArtifact;
 import org.axway.grapes.server.db.datamodel.DbDependency;
 import org.axway.grapes.server.db.datamodel.DbModule;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -32,7 +34,7 @@ public final class DataUtils {
     public static List<String> getAllArtifacts(final DbModule module) {
         final List<String> gavcs = module.getArtifacts();
 
-        for(DbModule submodule: module.getSubmodules()){
+        for(final DbModule submodule: module.getSubmodules()){
             gavcs.addAll(getAllArtifacts(submodule));
         }
 
@@ -49,7 +51,7 @@ public final class DataUtils {
         final Set<Artifact> artifacts = new HashSet<Artifact>();
         artifacts.addAll(module.getArtifacts());
 
-        for(Module submodule: module.getSubmodules()){
+        for(final Module submodule: module.getSubmodules()){
             artifacts.addAll(getAllArtifacts(submodule));
         }
 
@@ -66,7 +68,7 @@ public final class DataUtils {
         final Set<Dependency> dependencies = new HashSet<Dependency>();
         dependencies.addAll(module.getDependencies());
 
-        for(Module submodule: module.getSubmodules()){
+        for(final Module submodule: module.getSubmodules()){
             dependencies.addAll(getAllDependencies(submodule));
         }
 
@@ -83,7 +85,7 @@ public final class DataUtils {
         final List<DbDependency> dependencies = new ArrayList<DbDependency>();
         dependencies.addAll(module.getDependencies());
 
-        for(DbModule submodule: module.getSubmodules()){
+        for(final DbModule submodule: module.getSubmodules()){
             dependencies.addAll(getAllDbDependencies(submodule));
         }
 
@@ -161,6 +163,10 @@ public final class DataUtils {
             artifact.setExtension(artifactInfo[4]);
         }
 
+        if(artifactInfo.length > 5){
+            artifact.setOrigin(artifactInfo[5]);
+        }
+
         return artifact;
     }
 
@@ -173,7 +179,7 @@ public final class DataUtils {
      * @return DbArtifact
      */
     public static Artifact createArtifact(final String gavc) {
-        String groupId = null, artifactId = null, version = null, classifier = null, extension = null;
+        String groupId = null, artifactId = null, version = null, classifier = null, extension = null, origin = null;
         final String[] artifactInfo = gavc.split(":");
 
         if(artifactInfo.length > 0){
@@ -185,18 +191,22 @@ public final class DataUtils {
         }
 
         if(artifactInfo.length > 2){
-            version= artifactInfo[2];
+            version = artifactInfo[2];
         }
 
         if(artifactInfo.length > 3){
-            classifier= artifactInfo[3];
+            classifier = artifactInfo[3];
         }
 
         if(artifactInfo.length > 4){
-            extension= artifactInfo[4];
+            extension = artifactInfo[4];
         }
 
-        return DataModelFactory.createArtifact(groupId, artifactId, version, classifier, null, extension);
+        if(artifactInfo.length > 5){
+            origin = artifactInfo[5];
+        }
+
+        return DataModelFactory.createArtifact(groupId, artifactId, version, classifier, null, extension, origin);
     }
 
     /**
@@ -209,11 +219,34 @@ public final class DataUtils {
         final List<DbModule> submodules = new ArrayList<DbModule>();
         submodules.addAll(module.getSubmodules());
 
-        for(DbModule submodule: module.getSubmodules()){
+        for(final DbModule submodule: module.getSubmodules()){
             submodules.addAll(getAllSubmodules(submodule));
         }
 
         return submodules;
+    }
+
+    public static boolean isFullGAVC(final String entry) {
+        return entry.split(":").length > 3;
+    }
+
+    public static String strip(final String gavc, final int stripCount) {
+        if(gavc == null) {
+            throw new IllegalArgumentException("Input must not be null");
+        }
+
+        if(stripCount <= 0) {
+            throw new IllegalArgumentException("Strip count must be > 0");
+        }
+
+        final String[] parts = gavc.split(":");
+        if(parts.length <= stripCount) {
+            return gavc;
+        }
+
+        int limit = parts.length - stripCount;
+        final String[] ts = Arrays.copyOfRange(parts, 0, limit);
+        return StringUtils.join(ts, ":");
     }
 
     /**

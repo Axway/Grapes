@@ -2,6 +2,7 @@ package org.axway.grapes.server.core;
 
 
 import org.axway.grapes.commons.datamodel.Scope;
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
@@ -10,9 +11,7 @@ import org.axway.grapes.server.db.datamodel.DbModule;
 import org.junit.Test;
 
 import javax.ws.rs.WebApplicationException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
@@ -226,6 +225,7 @@ public class ModuleHandlerTest {
 
     @Test
     public void getModuleLicenses(){
+        // Arrange
         final DbModule module = new DbModule();
         module.setName("module");
         module.setVersion("1.0.0-SNAPSHOT");
@@ -243,15 +243,20 @@ public class ModuleHandlerTest {
         final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
         when(repositoryHandler.getModule(module.getId())).thenReturn(module);
         when(repositoryHandler.getArtifact(artifact1.getGavc())).thenReturn(artifact1);
-        when(repositoryHandler.getLicense(license.getName())).thenReturn(license);
+        // when(repositoryHandler.getMatchingLicenses(license.getName())).thenReturn(asSet(license));
 
-        final ModuleHandler handler = new ModuleHandler(repositoryHandler);
-        final List<DbLicense> licenses = handler.getModuleLicenses(module.getId());
+        final ModuleHandler sut = new ModuleHandler(repositoryHandler);
 
+        LicenseMatcher licenseMatcherMock = mock(LicenseMatcher.class);
+        when(licenseMatcherMock.getMatchingLicenses(license.getName())).thenReturn(asSet(license));
+
+        // Act
+        final List<DbLicense> licenses = sut.getModuleLicenses(module.getId(), licenseMatcherMock);
+
+        // Assert
         assertNotNull(licenses);
         assertEquals(1, licenses.size());
         assertEquals(license, licenses.get(0));
-
     }
 
     @Test
@@ -263,5 +268,11 @@ public class ModuleHandlerTest {
         handler.getModules(filters);
 
         verify(repositoryHandler, times(1)).getModules(filters);
+    }
+
+    private <T> Set<T> asSet(T... entries) {
+        Set<T> set = new HashSet<>();
+        set.addAll(Arrays.asList(entries));
+        return set;
     }
 }

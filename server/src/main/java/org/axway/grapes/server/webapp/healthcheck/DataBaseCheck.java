@@ -34,7 +34,7 @@ public class DataBaseCheck extends HealthCheck{
             sb.append("MogoDb version " + mongo.getVersion() + '\n');
 
             sb.append("  Available databases: ");
-            for(String dbName: mongo.getDatabaseNames()){
+            for(final String dbName: mongo.getDatabaseNames()){
                 sb.append(dbName);
                 sb.append(' ');
             }

@@ -1,8 +1,11 @@
 package org.axway.grapes.server.core.version;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Version Model Class
@@ -11,35 +14,24 @@ package org.axway.grapes.server.core.version;
  */
 public class Version {
 
-	private final String stringVersion;
+    private static final Logger LOG = LoggerFactory.getLogger(Version.class);
 
-	public Version(final String version) throws NotHandledVersionException {
-		this.stringVersion = version;
-		
-		// Checks if the version match the expectations
-		final String[] versionsParts = stringVersion.split("-");
-		if(versionsParts.length > 3){
-			throw new NotHandledVersionException();
-		}
-		
-		try {
-			for(String digit: getDigits().split("\\.")){
-				Integer.parseInt(digit);
-			}
-			
-			if (versionsParts.length > 1 && !versionsParts[1].contains("SNAPSHOT")) {
-				Integer.parseInt(versionsParts[1]);
-			}
-			
-			if (versionsParts.length > 2 && !versionsParts[2].contains("SNAPSHOT")) {
-				Integer.parseInt(versionsParts[2]);
-			}
-			
-		} catch (NumberFormatException e) {
-			throw new NotHandledVersionException(e);
-		}
-		
-	}
+    private final String stringVersion;
+	private static final String SNAPSHOT = "SNAPSHOT";
+    private static final String SPLITTER_PATTERN = "(\\.|-)";
+
+
+    public static Optional<Version> make(final String v) {
+	    if(!isValid(v)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new Version(v));
+    }
+
+    private Version(final String version) {
+        this.stringVersion = version;
+    }
 
 	/**
 	 * Check if a version is a snapshot
@@ -119,8 +111,8 @@ public class Version {
 	 * 
 	 * @return branchId
 	 */
-	private Integer getBranchId() {
-		return Integer.valueOf(stringVersion.split("-")[1]);
+	private String getBranchId() {
+		return stringVersion.split("-")[1];
 	}
 
 	/**
@@ -149,8 +141,8 @@ public class Version {
 		if(!getDigitsSize().equals(other.getDigitsSize())){
 			return getDigitsSize() > other.getDigitsSize()? 1: -1;
 		}
-		
-		if(isBranch() && !getBranchId().equals(other.getBranchId())){
+
+        if(isBranch() && !getBranchId().equals(other.getBranchId())){
 			return getBranchId().compareTo(other.getBranchId());
 		}
 		
@@ -176,4 +168,35 @@ public class Version {
 		return stringVersion;
 	}
 
+
+	public static boolean isValid(final String str) {
+        if(null == str) {
+            return false;
+        }
+
+        final String[] versionsParts = str.split("-");
+        if(versionsParts.length > 3) {
+            return false;
+        }
+
+        final String[] parts = str.split(SPLITTER_PATTERN);
+
+        final Set<String> badParts = Arrays.stream(parts)
+                .filter(part -> !part.equals(SNAPSHOT))
+                .filter(part -> {
+                    try {
+                        int v = Integer.parseInt(part);
+                        return false;
+                    } catch (NumberFormatException e) {
+                        return true;
+                    }
+                })
+                .collect(Collectors.toSet());
+
+        if(!badParts.isEmpty() && LOG.isDebugEnabled()) {
+            badParts.forEach(badPart -> LOG.debug(String.format("Invalid version part identified \"%s\" in %s", badPart, str)));
+        }
+
+        return badParts.isEmpty();
+    }
 }

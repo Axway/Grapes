@@ -2,17 +2,23 @@ package org.axway.grapes.server.webapp.views;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.yammer.dropwizard.views.View;
+import org.axway.grapes.commons.datamodel.Artifact;
 import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.Dependency;
 import org.axway.grapes.commons.datamodel.License;
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.Decorator;
+import org.axway.grapes.server.db.ModelMapper;
+import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.axway.grapes.server.webapp.views.serialization.DependencyListSerializer;
 import org.axway.grapes.server.webapp.views.utils.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Dependency List View
@@ -25,8 +31,13 @@ import java.util.Map;
 @JsonSerialize(using=DependencyListSerializer.class)
 public class DependencyListView extends View {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DependencyListView.class);
+
+    public static final String NOT_IDENTIFIED_YET = "not identified yet";
     // Title of the HTML page
     private final String title;
+    private final ModelMapper mapper;
+    private LicenseMatcher licenseMatcher;
 
     // Gathers all the display options
     private Decorator decorator;
@@ -62,15 +73,17 @@ public class DependencyListView extends View {
     public static final String LICENSE_COMMENT_FIELD = "License Comment";
 
     // The dependency list to display
-    private final List<Dependency> dependencies = new ArrayList<Dependency>();
+    private final List<Dependency> dependencies = new ArrayList<>();
 
-    // The available licenses to complete dependencies' information
-    private Map<String, License> licenseDictionary = new HashMap<String, License>();
-
-    public DependencyListView(final String title, final List<License> licenses, final Decorator decorator) {
-        super("DependencyListView.ftl");
+    public DependencyListView(final String title,
+                              final Decorator decorator,
+                              final LicenseMatcher licenseMatcher,
+                              final ModelMapper mapper,
+                              final String templateName) {
+        super(templateName);
         this.title = title;
-        setLicenses(licenses);
+        this.licenseMatcher = licenseMatcher;
+        this.mapper = mapper;
         this.decorator = decorator;
     }
 
@@ -100,7 +113,7 @@ public class DependencyListView extends View {
      * @param dependencies List<Dependency>
      */
     public void addAll(final List<Dependency> dependencies) {
-        for(Dependency dependency: dependencies){
+        for(final Dependency dependency: dependencies){
             addDependency(dependency);
         }
     }
@@ -123,18 +136,18 @@ public class DependencyListView extends View {
         final Table table = new Table(getHeaders());
 
         // Create row(s) per dependency
-        for(Dependency dependency: dependencies){
+        for(final Dependency dependency: dependencies){
             final List<String> licenseIds = dependency.getTarget().getLicenses();
 
             // A dependency can have many rows if it has many licenses
-            if(!licenseIds.isEmpty()){
-                for(String licenseId: dependency.getTarget().getLicenses()){
+            if(licenseIds.isEmpty()){
+                table.addRow(getDependencyCells(dependency, DataModelFactory.createLicense("","","","","")));
+            }
+            else{
+                for(final String licenseId: dependency.getTarget().getLicenses()){
                     final License license = getLicense(licenseId);
                     table.addRow(getDependencyCells(dependency, license));
                 }
-            }
-            else{
-                table.addRow(getDependencyCells(dependency, DataModelFactory.createLicense("","","","","")));
             }
         }
 
@@ -148,14 +161,23 @@ public class DependencyListView extends View {
      * @return License
      */
     private License getLicense(final String licenseId) {
-        License license = licenseDictionary.get(licenseId);
+        License result = null;
+        final Set<DbLicense> matchingLicenses = licenseMatcher.getMatchingLicenses(licenseId);
 
-        if(license == null){
-            license = DataModelFactory.createLicense("#" + licenseId + "# (to be identified)", "not identified yet", "not identified yet", "not identified yet", "not identified yet" );
-            license.setUnknown(true);
+        if (matchingLicenses.isEmpty()) {
+            result = DataModelFactory.createLicense("#" + licenseId + "# (to be identified)", NOT_IDENTIFIED_YET, NOT_IDENTIFIED_YET, NOT_IDENTIFIED_YET, NOT_IDENTIFIED_YET);
+            result.setUnknown(true);
+        } else {
+            if (matchingLicenses.size() > 1 && LOG.isWarnEnabled()) {
+                LOG.warn(String.format("%s matches multiple licenses %s. " +
+                                "Please run the report showing multiple matching on licenses",
+                        licenseId, matchingLicenses.toString()));
+            }
+            result = mapper.getLicense(matchingLicenses.iterator().next());
+
         }
 
-        return license;
+        return result;
     }
 
     /**
@@ -164,7 +186,7 @@ public class DependencyListView extends View {
      * @return String[]
      */
     private String[] getHeaders() {
-        final List<String> headers = new ArrayList<String>();
+        final List<String> headers = new ArrayList<>();
 
         if(decorator.getShowSources()){
             headers.add(SOURCE_FIELD);
@@ -217,7 +239,7 @@ public class DependencyListView extends View {
      * @return String[]
      */
     private String[] getDependencyCells(final Dependency dependency, final License license) {
-        final List<String> cells = new ArrayList<String>();
+        final List<String> cells = new ArrayList<>();
 
         if(decorator.getShowSources()){
             cells.add(dependency.getSourceName());
@@ -262,10 +284,15 @@ public class DependencyListView extends View {
         return cells.toArray(new String[cells.size()]);
     }
 
-    private void setLicenses(final List<License> licenses) {
-        licenseDictionary.clear();
-        for(License license: licenses){
-            licenseDictionary.put(license.getName(), license);
+    public String getArtifactLink(String gavc) {
+        final Optional<Dependency> first = dependencies.stream().filter(dep -> dep.getTarget().getGavc().equalsIgnoreCase(gavc)).findFirst();
+
+        if(first.isPresent()) {
+            final Artifact a = first.get().getTarget();
+            return String.format("/webapp?section=artifacts&groupId=%s&artifactId=%s&version=%s",
+                    a.getGroupId(), a.getArtifactId(), a.getVersion());
         }
+
+        return "/webapp/section=artifacts";
     }
 }

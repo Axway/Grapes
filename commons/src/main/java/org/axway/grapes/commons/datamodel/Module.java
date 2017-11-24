@@ -1,5 +1,6 @@
 package org.axway.grapes.commons.datamodel;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,13 @@ public class Module {
     private Set<Dependency> dependencies = new HashSet<Dependency>();
     private Set<Module> submodules = new HashSet<Module>();
 
+    private Date createdDateTime = null;
+    private Date updatedDateTime = null;
+
+    // productLogicalName and deliveries are used in case of commercial delivery
+    private String productLogicalName;
+    private Delivery deliveries;
+    
     protected Module() {
         // Must be instantiated via the DataModelObjectFactory
     }
@@ -68,6 +76,14 @@ public class Module {
         this.isSubmodule = isSubmodule;
     }
 
+    public Date getCreatedDateTime() { return createdDateTime; }
+
+    public void setCreatedDateTime(Date createdDateTime) { this.createdDateTime = createdDateTime; }
+
+    public Date getUpdatedDateTime() { return updatedDateTime; }
+
+    public void setUpdatedDateTime(Date updatedDateTime) { this.updatedDateTime = updatedDateTime; }
+
     /**
      * Sets the promotion state.
      *
@@ -78,11 +94,11 @@ public class Module {
     public void setPromoted(final boolean promoted) {
         this.promoted = promoted;
 
-        for (Artifact artifact : artifacts) {
+        for (final Artifact artifact : artifacts) {
             artifact.setPromoted(promoted);
         }
 
-        for (Module suModule : submodules) {
+        for (final Module suModule : submodules) {
             suModule.setPromoted(promoted);
         }
     }
@@ -145,7 +161,7 @@ public class Module {
      * @param artifacts Listof Artifact
      */
     public void addAllArtifacts(final List<Artifact> artifacts) {
-        for (Artifact artifact : artifacts) {
+        for (final Artifact artifact : artifacts) {
             addArtifact(artifact);
         }
     }
@@ -174,5 +190,42 @@ public class Module {
 
         return sb.toString().hashCode();
     }
+    
+
+    /**
+     * 
+     * @return <tt>0</tt> if delivery info doesn't exist.
+     * @return <tt>1</tt> if wrong delivery info entered.
+     * @return <tt>2</tt> if delivery info exist.
+     */
+    
+	public int deliveryStatusCount() {
+		if(this.deliveries==null){
+			return 0;
+		}
+		int count = 0;
+		if(this.deliveries.getCommercialName()!=null && !this.deliveries.getCommercialName().isEmpty()){
+			count++;
+        }
+        if(this.deliveries.getCommercialVersion()!=null && !this.deliveries.getCommercialVersion().isEmpty()){
+        	count++;
+        }        
+	    return count;
+	    
+	 }
+
+	public String getProductLogicalName() {
+		return productLogicalName;
+	}
+	public void setProductLogicalName(String productLogicalName) {
+		this.productLogicalName = productLogicalName;
+	}
+	
+	public Delivery getDeliveries() {
+		return deliveries;
+	}
+	public void setDeliveries(Delivery deliveries) {
+		this.deliveries = deliveries;
+	}
 
 }

@@ -36,6 +36,8 @@
                                         <li><a tabindex="-1" href="/module">Module API</a></li>
                                         <li><a tabindex="-1" href="/artifact">Artifact API</a></li>
                                         <li><a tabindex="-1" href="/license">License API</a></li>
+                                        <li><a tabindex="-1" href="/report">Report API</a></li>
+                                        <li><a tabindex="-1" href="/searchdoc">Search API</a></li>
                                     </ul>
                                 </li>
                                 <li class="">
@@ -43,6 +45,9 @@
                                 </li>
                                 <li class="">
                                     <a href="/webapp">Data Browser</a>
+                                </li>
+                                <li class="">
+                                    <a href="/search">Search</a>
                                 </li>
                             </ul>
                         </div>
@@ -60,6 +65,7 @@
         <#assign table = getTable()>
         <#assign headers = table.getHeaders()>
         <#assign rows = table.getRows()>
+
         <div class="container" style="">
             <div class="row-fluid" id='table_div'>
                 <table class="table table-bordered table-hover sortable">
@@ -73,8 +79,14 @@
                     <tbody>
                         <#list rows as row>
                             <tr>
-                                <#list row as cell>
-                                    <td>${cell}</td>
+                                <#list 0..row?size-1 as cell>
+                                    <#if cell == 0>
+                                        <td>
+                                            <a href="${getArtifactLink(row[0])}">${row[cell]}</a>
+                                        </td>
+                                    <#else>
+                                        <td>${row[cell]}</td>
+                                    </#if>
                                 </#list>
                             </tr>
                         </#list>
@@ -82,7 +94,6 @@
                 </table>
             </div>
         </div>
-	    
 	 </body>
 
     <!-- Make the table sortable -->

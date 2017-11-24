@@ -5,7 +5,7 @@
 }
 /* Makes alert close to navigation bar*/
 .navbar {
-margin-bottom: 0px;
+    margin-bottom: 0px;
 }
 
 /* Background design*/
@@ -29,4 +29,51 @@ body {
 
     /* W3C Markup, IE10 Release Preview */
     background-image: linear-gradient(to right, #FFFFFF 0%, #C9CFEF 100%);
+}
+
+#inputArtifactSHA{
+	font-size: 11px;
+	resize: none;
+}
+
+#artifactError{
+	color:red; 
+	font-style:italic;
+}
+
+.licenseLink {
+    color:red;
+}
+
+/*export link align*/
+.export, .fullRecursiveLink {
+    margin-left: 1%;
+    margin-top: 1%;
+    float: left;
+}
+
+.critical {
+    color : red;
+}
+
+.major {
+    color : orange;
+}
+
+.minor {
+    color : navy;
+}
+
+/*DO NOT USE modal comments textarea*/
+#doNotUseComment {
+    width: 100%;
+    resize:vertical;
+    overflow: auto;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.textareaLabel {
+    padding-top: 10px;
+    padding-bottom: 5px;
 }

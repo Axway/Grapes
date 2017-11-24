@@ -3,21 +3,37 @@ package org.axway.grapes.server.webapp.views;
 
 import com.google.common.collect.Lists;
 import org.axway.grapes.commons.datamodel.*;
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.Decorator;
+import org.axway.grapes.server.db.ModelMapper;
+import org.axway.grapes.server.db.datamodel.DbLicense;
 import org.axway.grapes.server.webapp.views.utils.Row;
 import org.axway.grapes.server.webapp.views.utils.Table;
 import org.junit.Test;
 
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DependencyListViewTest {
 
     @Test
     public void checkEmptyDependencyList(){
-        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST, new Decorator());
+        final DependencyListView depList = new DependencyListView("test",
+                new Decorator(),
+                mock(LicenseMatcher.class),
+                mock(ModelMapper.class),
+                "DependencyListView.ftl");
         final Table results = depList.getTable();
 
         assertNotNull(results);
@@ -38,7 +54,11 @@ public class DependencyListViewTest {
         decorator.setShowLicensesLongName(false);
         decorator.setShowLicensesUrl(false);
 
-        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST, decorator);
+        final DependencyListView depList = new DependencyListView("test",
+                decorator,
+                mock(LicenseMatcher.class),
+                mock(ModelMapper.class),
+                "DependencyListView.ftl");
         Table results = depList.getTable();
 
         assertNotNull(results);
@@ -87,7 +107,17 @@ public class DependencyListViewTest {
         decorator.setShowLicensesUrl(true);
 
         final License license = DataModelFactory.createLicense("name", "long name", "comment", "", "url");
-        final DependencyListView depList = new DependencyListView("test", Collections.singletonList(license), decorator);
+
+        final ModelMapper mapper = mapperWithLicenses(license);
+        final LicenseMatcher licenseMatcher = mock(LicenseMatcher.class);
+        when(licenseMatcher.getMatchingLicenses(eq(license.getName()))).thenReturn(toSet(license));
+
+        final DependencyListView depList = new DependencyListView(
+                "test",
+                decorator,
+                licenseMatcher,
+                mapper,
+                "DependencyListView.ftl");
 
         final Artifact artifact = DataModelFactory.createArtifact("com.my.company", "test", "1", null, "jar", "jar");
         artifact.setDownloadUrl("http://");
@@ -132,7 +162,12 @@ public class DependencyListViewTest {
         decorator.setShowLicensesLongName(true);
         decorator.setShowLicensesUrl(true);
 
-        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST, decorator);
+        final DependencyListView depList = new DependencyListView(
+                "test",
+                decorator,
+                mock(LicenseMatcher.class),
+                mock(ModelMapper.class),
+                "DependencyListView.ftl");
 
         final Artifact artifact = DataModelFactory.createArtifact("com.my.company", "test", "1", null, "jar", "jar");
         artifact.setDownloadUrl("http://");
@@ -176,7 +211,11 @@ public class DependencyListViewTest {
         decorator.setShowLicensesLongName(true);
         decorator.setShowLicensesUrl(true);
 
-        final DependencyListView depList = new DependencyListView("test", Collections.EMPTY_LIST, decorator);
+        final DependencyListView depList = new DependencyListView("test",
+                decorator,
+                mock(LicenseMatcher.class),
+                mock(ModelMapper.class),
+                "DependencyListView.ftl");
 
         final Artifact artifact = DataModelFactory.createArtifact("com.my.company", "test", "1", null, "jar", "jar");
         artifact.setDownloadUrl("http://");
@@ -210,10 +249,21 @@ public class DependencyListViewTest {
 
     @Test
     public void checkThatIfAnArtifactHasManyLicensesItAppearsAsManyTimesThatItHasLicense(){
-        final License license1 = DataModelFactory.createLicense("name1", "long name1", "comment1", "", "url1");
-        final License license2 = DataModelFactory.createLicense("name2", "long name2", "comment2", "", "url2");
+        final License license1 = DataModelFactory.createLicense("name1", "long name1", "comment1", "name1", "url1");
+        final License license2 = DataModelFactory.createLicense("name2", "long name2", "comment2", "name2", "url2");
 
-        final DependencyListView depList = new DependencyListView("test", Lists.newArrayList(license1, license2), new Decorator());
+        final LicenseMatcher matcherMock = mock(LicenseMatcher.class);
+        when(matcherMock.getMatchingLicenses(eq(license1.getName()))).thenReturn(toSet(license1));
+        when(matcherMock.getMatchingLicenses(eq(license2.getName()))).thenReturn(toSet(license2));
+
+        final ModelMapper modelMapper = mapperWithLicenses(license1, license2);
+
+        final DependencyListView depList = new DependencyListView(
+                "test",
+                new Decorator(),
+                matcherMock,
+                modelMapper,
+                "DependencyListView.ftl");
 
         final Artifact artifact = DataModelFactory.createArtifact("com.my.company", "test", "1", null, "jar", "jar");
         artifact.setDownloadUrl("http://");
@@ -234,4 +284,30 @@ public class DependencyListViewTest {
 
     }
 
+
+    private Set<DbLicense> toSet(License... licenses) {
+        Set<DbLicense> result = new HashSet<>();
+        result.addAll(Arrays.stream(licenses).map(toDbLicense()).collect(Collectors.toSet()));
+        return result;
+    }
+
+    private Function<License, DbLicense> toDbLicense() {
+        return (lic) -> {
+            DbLicense dbLic = new DbLicense();
+            dbLic.setName(lic.getName());
+            return dbLic;
+        };
+    }
+
+    private ModelMapper mapperWithLicenses(License... lics) {
+        ModelMapper modelMapper = mock(ModelMapper.class);
+
+        for(License lic : lics) {
+            final DbLicense dbLic = toDbLicense().apply(lic);
+            when(modelMapper.getDbLicense(eq(lic))).thenReturn(dbLic);
+            when(modelMapper.getLicense(eq(dbLic))).thenReturn(lic);
+        }
+
+        return modelMapper;
+    }
 }

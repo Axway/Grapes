@@ -68,7 +68,7 @@ public class Organization {
 
         Collections.sort(corporateGroupIdPrefixes);
         sb.append(", corporateGroupIds:");
-        for(String corporateGroupId : corporateGroupIdPrefixes){
+        for(final String corporateGroupId : corporateGroupIdPrefixes){
             sb.append(" ");
             sb.append(corporateGroupId);
         }

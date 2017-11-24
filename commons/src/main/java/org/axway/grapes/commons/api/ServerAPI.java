@@ -9,7 +9,10 @@ package org.axway.grapes.commons.api;
  *
  * @author jdcoffre
  */
-public interface ServerAPI {
+public class ServerAPI {
+
+    private ServerAPI() {}
+    
 
     //RESSOURCES
     /** Value - {@value}, Organization is a Grapes server resource that handles the information about organization.*/
@@ -27,11 +30,20 @@ public interface ServerAPI {
     /** Value - {@value}, License is a Grapes server resource that handles the information about license.*/
     public static final String LICENSE_RESOURCE = "license";
 
+    /** Value - {@value}, Report is a custom Grapes server report allowing dissemination of the stored information.*/
+    public static final String REPORT_RESOURCE = "report";
+
     /** Value - {@value}, Sequoia is a Grapes server provides graphs.*/
     public static final String SEQUOIA_RESOURCE = "sequoia";
 
     /** Value - {@value}, Webapp is an UI that is over Grapes server server REST API.*/
     public static final String WEBAPP_RESOURCE = "webapp";
+
+    /** Value = {@value}, Search is a Grapes server resource for searching modules and artifacts*/
+    public static final String SEARCH_RESOURCE = "search";
+
+    /** Value = {@value}, Search is a Grapes server resource for searching modules and artifacts*/
+    public static final String SEARCH_DOC_RESOURCE = "searchdoc";
 
     //METHODS
     /** Value - {@value}, GET methods that returns the deliveries of a product. Usually used as /product/{name}/<GET_DELIVERIES>.*/
@@ -84,12 +96,15 @@ public interface ServerAPI {
 
     /** Value - {@value}, GET methods a report of regarding the promotion or the dependencies. Usually used as /resourceName/{resourceUID}<GET_DEPENDENCIES><GET_DEPENDENCIES_REPORT>.*/
     public static final String GET_REPORT = "/report";
-
+    
     /** Value - {@value}, GET methods that returns the licenses of the targeted resource. Usually used as /resourceName/{resourceUID}<GET_LICENSES>.*/
     public static final String GET_LICENSES = "/licenses";
 
     /** Value - {@value}, GET methods that returns the organization of an Artifact or a Module.*/
     public static final String GET_ORGANIZATION = "/organization";
+
+    /** Value - {@value}, GET methods that returns the list of available reports.*/
+    public static final String GET_REPORTS = "/reports";
 
     /** Value - {@value}, POST/GET flag "DO_NOT_USE" for the targeted artifact. Usually used as /<ARTIFACT_RESOURCE>/{gavc}/<SET_DO_NOT_USE>?<DO_NOT_USE>=<Boolean></></>.*/
     public static final String SET_DO_NOT_USE = "/donotuse";
@@ -152,6 +167,9 @@ public interface ServerAPI {
     /** Value - {@value}, boolean query parameter used to show the license long names in reports.*/
     public static final String SHOW_LICENSE_FULL_NAME_PARAM = "showLicenseFullNames";
 
+    /** Value - {@value}, boolean query parameter used to exclude the VERSION_IS_SNAPSHOT validation from the promotion report.*/
+    public static final String EXCLUDE_SNAPSHOT_PARAM = "excludeSNAPSHOT";
+
     /** Value - {@value}, boolean query parameter used to show the sizes in reports.*/
     public static final String SHOW_SIZE = "showSize";
 
@@ -200,6 +218,9 @@ public interface ServerAPI {
     /** Value - {@value}, String query parameter used to filter artifacts.*/
     public static final String EXTENSION_PARAM = "extension";
 
+    /** Value - {@value}, String query parameter used to filter artifacts.*/
+    public static final String ORIGIN_PARAM = "origin";
+
     /** Value - {@value}, String query parameter used to add credentials.*/
     public static final String USER_PARAM = "user";
 
@@ -220,4 +241,10 @@ public interface ServerAPI {
 
     /** Value - {@value}, String query parameter used to filter artifacts.*/
     public static final String PROVIDER_PARAM = "provider";
+
+    /** Value - {@value}, String query parameter used to filter modules while searching.*/
+    public static final String MODULES_PARAM = "modules";
+
+    /** Value - {@value}, String query parameter used to filter artifacts while searching.*/
+    public static final String ARTIFACTS_PARAM = "artifacts";
 }

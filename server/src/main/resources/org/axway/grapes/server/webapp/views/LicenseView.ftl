@@ -33,6 +33,8 @@
                                         <li><a tabindex="-1" href="/module">Module API</a></li>
                                         <li><a tabindex="-1" href="/artifact">Artifact API</a></li>
                                         <li><a tabindex="-1" href="/license">License API</a></li>
+                                        <li><a tabindex="-1" href="/report">Report API</a></li>
+                                        <li><a tabindex="-1" href="/searchdoc">Search API</a></li>
                                     </ul>
                                 </li>
                                 <li class="">
@@ -40,6 +42,9 @@
                                 </li>
                                 <li class="">
                                     <a href="/webapp">Data Browser</a>
+                                </li>
+                                <li class="">
+                                    <a href="/search">Search</a>
                                 </li>
                             </ul>
                         </div>
@@ -62,11 +67,17 @@
                     <strong>Comments: </strong>${license.getComments()}<br/>
                     <strong>Regular Expression: </strong>${license.getRegexp()}<br/>
                     <strong>Url: </strong>${license.getUrl()}<br/>
-                    <#if license.isApproved()??>
-                        <strong>Accepted: </strong>${license.isApproved()?string("yes", "refused")}<br/>
-                    <#else>
-                        <strong>To be validated.</strong><br/>
-                    </#if>
+
+                    <p>
+                        <strong>Status: </strong>
+                        <#if license.isPending()>
+                            <img class="license-img" src="/assets/img/pending.png" title="This license is pending approval">
+                        <#elseif license.isApproved()>
+                            <img class="license-img" src="/assets/img/approved.png" title="This license contains accepted terms">
+                        <#else>
+                            <img class="license-img" src="/assets/img/rejected.png" title="This license is not accepted by legal department">
+                        </#if>
+                    </p>
                 </p>
                 <br/>
             </div>

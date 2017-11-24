@@ -1,0 +1,49 @@
+# To run Grapes server, a YAML configuration file is needed with following information
+# Grapes server
+http:
+  bindHost: localhost
+  port: 8081
+  adminPort: 8082
+  adminUsername: admin
+  adminPassword: admin-password
+database:
+  host: localhost
+  port: db-port (27017)
+  user:
+  pwd:
+  datastore: grapes
+  dbsystem: mongodb
+logging:
+  level: INFO
+  file:
+    enabled: true
+    threshold: ALL
+    currentLogFilename: target/logs/grapes.out
+    archivedLogFilenamePattern: target/archive/grapes_archive-%d.log.gz
+    archivedFileCount: 5
+    timeZone: UTC
+community:
+  issueTracker: https://github.com/Axway/Grapes/issues
+  onlineHelp: https://github.com/Axway/Grapes/wiki
+
+# file containing important messages
+messagesBundle: ./messages.properties
+
+# user intended to receive notification from Grapes
+artifactNotificationRecipients: [user@axway.com]
+
+externalValidatedTypes: [Program, Installer, Patch, ServicePack, UpgradePack, Installer, AxwayJRE, JREUpdateTool]
+
+mailing:
+   host: smtp_host(mail.axway.int)
+   port: smtp_port(25)
+   smtpFrom: grapes-notifier@axway.com
+   user: grapes-notifier@axway.com
+   debug: false
+
+promotionValidation:
+  errors : [VERSION_IS_SNAPSHOT]
+  tags :
+    critical: [VERSION_IS_SNAPSHOT]
+    major : [DEPS_UNACCEPTABLE_LICENSE, DO_NOT_USE_DEPS, UNPROMOTED_DEPS]
+    minor : [DEPS_WITH_NO_LICENSES]

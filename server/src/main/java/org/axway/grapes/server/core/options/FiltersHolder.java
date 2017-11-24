@@ -50,7 +50,7 @@ public class FiltersHolder {
     public void addFilter(final Filter newFilter) {
         Filter toRemove = null;
 
-        for(Filter filter: filters){
+        for(final Filter filter: filters){
             if(filter.getClass().equals(newFilter.getClass())){
                 toRemove = filter;
             }
@@ -113,6 +113,11 @@ public class FiltersHolder {
             filters.add(new ExtensionFilter(extension));
         }
 
+        final String origin = queryParameters.getFirst(ServerAPI.ORIGIN_PARAM);
+        if(extension != null){
+            filters.add(new OriginFilter(origin));
+        }
+
         final String type = queryParameters.getFirst(ServerAPI.TYPE_PARAM);
         if(type != null){
             filters.add(new TypeFilter(type));
@@ -142,10 +147,20 @@ public class FiltersHolder {
         if(organization != null){
             filters.add(new OrganizationFilter(organization));
         }
+
+        final String modules = queryParameters.getFirst(ServerAPI.MODULES_PARAM);
+        final String artifacts = queryParameters.getFirst(ServerAPI.ARTIFACTS_PARAM);
+        if (modules != null && artifacts == null) {
+            filters.add(new SearchFilter(Boolean.valueOf(modules), Boolean.FALSE));
+        } else if (modules == null && artifacts != null) {
+            filters.add(new SearchFilter(Boolean.FALSE, Boolean.valueOf(artifacts)));
+        } else if (modules != null && artifacts != null){
+            filters.add(new SearchFilter(Boolean.valueOf(modules), Boolean.valueOf(artifacts)));
+        }
 	}
 
     public boolean shouldBeInReport(final DbLicense license) {
-        for(Filter filter: filters){
+        for(final Filter filter: filters){
             if(!filter.filter(license)){
                 return false;
             }
@@ -192,7 +207,7 @@ public class FiltersHolder {
 	public Map<String, Object> getArtifactFieldsFilters() {
 		final Map<String, Object> params = new HashMap<String, Object>();
 
-        for(Filter filter: filters){
+        for(final Filter filter: filters){
             params.putAll(filter.artifactFilterFields());
         }
 
@@ -207,7 +222,7 @@ public class FiltersHolder {
     public Map<String, Object> getModuleFieldsFilters() {
         final Map<String, Object> params = new HashMap<String, Object>();
 
-        for(Filter filter: filters){
+        for(final Filter filter: filters){
             params.putAll(filter.moduleFilterFields());
         }
 

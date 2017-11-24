@@ -26,6 +26,10 @@ public class License {
     // in the database of the server
     private boolean unknown = false;
 
+	// This field is never taken into account by the server
+	// it provides an extra information to clients to warn them if the licenses is pending for approval
+	private boolean pending = false;
+
 
     protected License() {
 		// Should only be instantiated via the DataModelObjectFactory
@@ -87,7 +91,15 @@ public class License {
     public void setUnknown(boolean unknown) {
         this.unknown = unknown;
     }
-	
+
+	public boolean isPending() {
+		return pending;
+	}
+
+	public void setPending(boolean pending) {
+		this.pending = pending;
+	}
+
 	/**
 	 * Checks if the dependency is the same than an other one.
 	 * 
@@ -112,8 +124,20 @@ public class License {
 		sb.append(url);
 		sb.append(comments);
 		sb.append(regexp);
-		
+
         return sb.toString().hashCode();
     }
 
+	@Override
+	public String toString() {
+		return "License{" +
+				"name='" + name + '\'' +
+				", longName='" + longName + '\'' +
+				", url='" + url + '\'' +
+				", comments='" + comments + '\'' +
+				", regexp='" + regexp + '\'' +
+				", approved=" + approved +
+				", unknown=" + unknown +
+				'}';
+	}
 }

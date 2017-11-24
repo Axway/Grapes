@@ -1,5 +1,6 @@
 package org.axway.grapes.server;
 
+import org.apache.commons.io.FileUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.db.DBException;
 import org.axway.grapes.server.db.RepositoryHandler;
@@ -56,8 +57,16 @@ public class GrapesServerTest extends GrapesServer{
         
         final String templatePath = getClass().getResource("server-conf-template.yml").getPath();
         final String confPath = overrideConfiguration(templatePath, portProperty, adminPortProperty);
-        
-        
+
+
+        try {
+            File templates = new File(templatePath).getParentFile();
+            FileUtils.copyFileToDirectory(new File(templates, "all-messages.txt"), new File("target"));
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+
         final GrapesServerTest grapesServer = new GrapesServerTest();
         final String[] args = {"server",confPath};
         

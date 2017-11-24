@@ -13,7 +13,7 @@ public class Row extends ArrayList<Object>{
 
 
     public Row(final Object... cells) {
-        for(Object cell: cells){
+        for(final Object cell: cells){
             add(cell);
         }
     }
@@ -21,7 +21,7 @@ public class Row extends ArrayList<Object>{
     @Override
     public int hashCode() {
         final StringBuilder sb = new StringBuilder();
-        for(Object cell: this){
+        for(final Object cell: this){
             sb.append(String.valueOf(cell));
         }
 

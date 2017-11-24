@@ -40,7 +40,7 @@ public class LicenseIdFilter implements Filter {
 
     @Override
     public Map<String, Object> artifactFilterFields() {
-        final Map<String, Object> queryParams = new HashMap<String, Object>();
+        final Map<String, Object> queryParams = new HashMap<>();
         queryParams.put(DbArtifact.LICENCES_DB_FIELD, licenseId);
 
         return queryParams;

@@ -1,13 +1,16 @@
 package org.axway.grapes.server.webapp;
 
+import java.io.IOException;
+
 import org.axway.grapes.commons.datamodel.*;
 import org.junit.Test;
-
 import javax.ws.rs.WebApplicationException;
-
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 
+/**
+ * Tests related to data validations
+ */
 public class DataValidatorTest {
 
     @Test
@@ -96,7 +99,7 @@ public class DataValidatorTest {
         catch (WebApplicationException e){
             exception = e;
         }
-
+        
         assertNotNull(exception);
     }
 
@@ -107,6 +110,51 @@ public class DataValidatorTest {
 
         try{
             DataValidator.validate(artifact);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+
+        assertNotNull(exception);
+    }
+
+    @Test
+    public void artifactWithExtensionNullIsNotValid(){
+        final Artifact artifact = DataModelFactory.createArtifact("groupId", "artifactId", "version", "classifier" , null , null);
+        WebApplicationException exception = null;
+
+        try{
+            DataValidator.validatePostArtifact(artifact);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+
+        assertNotNull(exception);
+    }
+    
+    @Test
+    public void artifactWithExtensionEmptyIsNotValid(){
+        final Artifact artifact = DataModelFactory.createArtifact("groupId", "artifactId", "version", "classifier" , null , "");
+        WebApplicationException exception = null;
+
+        try{
+            DataValidator.validatePostArtifact(artifact);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+
+        assertNotNull(exception);
+    }
+    
+    @Test
+    public void artifactWithNoSha256IsNotValid(){
+        final Artifact artifact = DataModelFactory.createArtifact("groupId", "artifactId", "version", "classifier" , "type" , "extension");
+        WebApplicationException exception = null;
+
+        try{
+            DataValidator.validatePostArtifact(artifact);
         }
         catch (WebApplicationException e){
             exception = e;
@@ -341,5 +389,101 @@ public class DataValidatorTest {
 
         assertNotNull(exception);
     }
+    @Test
+    public void validateArtifactQuery() throws IOException{
+        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", 0 , "file.jar", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "ServicePack", "");
+        WebApplicationException exception = null;
 
+        try{
+            DataValidator.validate(artifactQuery);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+        assertNull(exception);
+    }
+    
+    @Test
+    public void artifactQueryWithMissingUser() throws IOException{
+        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery(null, 0 , "file.jar", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "ServicePack", "");
+        WebApplicationException exception = null;
+
+        try{
+            DataValidator.validate(artifactQuery);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+        assertNotNull(exception);
+    }
+    
+    @Test
+    public void artifactQueryWithInvalidStage() throws IOException{
+        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", -1 , "file.jar", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "ServicePack", "");
+        WebApplicationException exception = null;
+
+        try{
+            DataValidator.validate(artifactQuery);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+        assertNotNull(exception);
+    }
+    
+    @Test
+    public void artifactQueryWithMissingChecksum() throws IOException{
+        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", 0 , "file.jar", null, "ServicePack", "");
+        WebApplicationException exception = null;
+
+        try{
+            DataValidator.validate(artifactQuery);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+        assertNotNull(exception);
+    }
+    
+    @Test
+    public void artifactQueryWithMissingFilename() throws IOException{
+        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", 0 , null, "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", "ServicePack", "");
+        WebApplicationException exception = null;
+
+        try{
+            DataValidator.validate(artifactQuery);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+        assertNotNull(exception);
+    }
+    
+    @Test
+    public void artifactQueryWithInvalidChecksum() throws IOException{
+        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", 0 , "file.jar", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821Y", "ServicePack", "");
+        WebApplicationException exception = null;
+
+        try{
+            DataValidator.validate(artifactQuery);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+        assertNotNull(exception);
+    }
+    
+    @Test
+    public void artifactQueryWithMissingFiletype() throws IOException{
+        final ArtifactQuery artifactQuery = DataModelFactory.createArtifactQuery("toto", 0 , "file.jar", "6554ed3d1ab007bd81d3d57ee27027510753d905277d5b5b8813e5bd516e821c", null, "");
+        WebApplicationException exception = null;
+
+        try{
+            DataValidator.validate(artifactQuery);
+        }
+        catch (WebApplicationException e){
+            exception = e;
+        }
+        assertNotNull(exception);
+    }
 }

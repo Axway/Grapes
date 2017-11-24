@@ -11,11 +11,11 @@ import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.testing.ResourceTest;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
 import org.axway.grapes.commons.api.ServerAPI;
+import org.axway.grapes.commons.datamodel.Delivery;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbCredential;
-import org.axway.grapes.server.db.datamodel.DbModule;
 import org.axway.grapes.server.db.datamodel.DbProduct;
 import org.axway.grapes.server.webapp.auth.GrapesAuthenticator;
 import org.eclipse.jetty.http.HttpStatus;
@@ -25,7 +25,6 @@ import org.mockito.ArgumentCaptor;
 import javax.ws.rs.core.MediaType;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -44,7 +43,6 @@ public class ProductResourceTest extends ResourceTest {
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repositoryHandler), "test auth"));
         addProvider(ViewMessageBodyWriter.class);
         addResource(resource);
-
     }
 
     @Test
@@ -88,7 +86,7 @@ public class ProductResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArrayList<String> productNames = response.getEntity(ArrayList.class);
+        List<?> productNames = (List<?>)response.getEntity(ArrayList.class);
         assertNotNull(productNames);
         assertEquals(3, productNames.size());
     }
@@ -227,18 +225,34 @@ public class ProductResourceTest extends ResourceTest {
     public void getDeliveries(){
         final DbProduct product = new DbProduct();
         product.setName("product1");
-        product.getDeliveries().put("delivery1", Collections.<String>emptyList());
+        
+        // creating delivery
+        Delivery delivery = new Delivery();
+        delivery.setCommercialName("delivery1");
+        delivery.setCommercialVersion("1.0.0");
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
+        
+        product.getDeliveries().add(delivery);
+        
+        // creating delivery in storage
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
         WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES);
         ClientResponse response = resource.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+ 
+        // checking response status
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArrayList<String> deliveries = response.getEntity(ArrayList.class);
+        List<Delivery> deliveries = response.getEntity(new GenericType<List<Delivery>>(){});
+        
+        // checks
         assertNotNull(deliveries);
         assertEquals(1, deliveries.size());
-        assertEquals("delivery1", deliveries.get(0));
+        assertEquals("delivery1", deliveries.get(0).getCommercialName());
+        assertEquals("1.0.0-1", deliveries.get(0).getVersion());
+        assertEquals("http://localhost:8080/job/20", deliveries.get(0).getJenkinsBuildUrl());
     }
 
     @Test
@@ -253,33 +267,47 @@ public class ProductResourceTest extends ResourceTest {
     public void createANewDelivery(){
         final DbProduct product = new DbProduct();
         product.setName("product1");
+        
+        // creating a dummy delivery
+        Delivery delivery = new Delivery();
+        delivery.setCommercialName("delivery1");
+        delivery.setCommercialVersion("1.0.0");
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
+        
+        // creating product in storage
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
-
+ 
+        // sending request
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
         WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES);
-        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, "delivery1");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, delivery);
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED_201, response.getStatus());
 
         ArgumentCaptor<DbProduct> captor = ArgumentCaptor.forClass(DbProduct.class);
-        verify(repositoryHandler).store(captor.capture());
+        
+        // checks
+        verify(repositoryHandler, atLeast(1)).store(captor.capture());
         assertEquals(1, captor.getValue().getDeliveries().size());
-        assertEquals("delivery1", captor.getValue().getDeliveries().keySet().iterator().next());
+        assertEquals("delivery1", captor.getValue().getDeliveries().get(0).getCommercialName());
+        assertEquals("1.0.0-1", captor.getValue().getDeliveries().get(0).getVersion());
+        assertEquals("http://localhost:8080/job/20", captor.getValue().getDeliveries().get(0).getJenkinsBuildUrl());
     }
 
     @Test
     public void createADeliveryButForgottingTheName(){
         final DbProduct product = new DbProduct();
         product.setName("product1");
+        
+        // creating a dummy product in storage
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
         WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES);
         ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, null);
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
-
-        response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, "");
+        
+        // checks
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST_400, response.getStatus());
     }
@@ -288,12 +316,22 @@ public class ProductResourceTest extends ResourceTest {
     public void createADeliveryThatAlreadyExist(){
         final DbProduct product = new DbProduct();
         product.setName("product1");
-        product.getDeliveries().put("delivery1", Collections.<String>emptyList());
+        
+        Delivery delivery = new Delivery();
+        delivery.setCommercialName("delivery1");
+        delivery.setCommercialVersion("1.0.0");        
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
+        product.getDeliveries().add(delivery);
+
+        // creating a dummy product in storage with delivery
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
         WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES);
-        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, "delivery1");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, delivery);
+        
+        // checks
         assertNotNull(response);
         assertEquals(HttpStatus.CONFLICT_409, response.getStatus());
     }
@@ -302,11 +340,21 @@ public class ProductResourceTest extends ResourceTest {
     public void createANewDeliveryButWithoutEditionRights(){
         final DbProduct product = new DbProduct();
         product.setName("product1");
+
+        Delivery delivery = new Delivery();
+        delivery.setCommercialName("delivery1");
+        delivery.setCommercialVersion("1.0.0");
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
+
+        // creating a dummy product in storage with delivery
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.WRONG_USER_4TEST, GrapesTestUtils.WRONG_PASSWORD_4TEST));
         WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES);
-        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, "delivery1");
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, delivery);
+        
+        // checks
         assertNotNull(response);
         assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
     }
@@ -315,23 +363,37 @@ public class ProductResourceTest extends ResourceTest {
     public void getDelivery(){
         final DbProduct product = new DbProduct();
         product.setName("product1");
-        product.getDeliveries().put("delivery1", Lists.newArrayList("module1:1.0.0", "module2:1.0.0"));
+        
+        Delivery delivery = new Delivery();
+        delivery.setCommercialName("delivery1");
+        delivery.setCommercialVersion("1.0.0");     
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
+        delivery.setDependencies(Lists.newArrayList("module1:1.0.0", "module2:1.0.0"));
+        product.getDeliveries().add(delivery);
+        
+
+        // creating a dummy product in storage with delivery and its dependencies
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
-        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES + "/delivery1");
+        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES + "/delivery1/1.0.0");
         ClientResponse response = resource.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArrayList<String> deliveries = response.getEntity(ArrayList.class);
+        Delivery deliveries = response.getEntity(Delivery.class);
+        
+        //checks
         assertNotNull(deliveries);
-        assertEquals(2, deliveries.size());
+        assertEquals(2, deliveries.getDependencies().size());
+        assertEquals("1.0.0-1", deliveries.getVersion());
+        assertEquals("http://localhost:8080/job/20", deliveries.getJenkinsBuildUrl());
 
     }
 
     @Test
     public void getDeliveryOfAProductThatDoesNotExist(){
-        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/doesNotExist" + ServerAPI.GET_DELIVERIES+ "/delivery1");
+        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/doesNotExist" + ServerAPI.GET_DELIVERIES+ "/delivery1/1.0.0");
         ClientResponse response = resource.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
@@ -342,10 +404,15 @@ public class ProductResourceTest extends ResourceTest {
     public void getDeliveryThatDoesNotExistOnAProductThatExist(){
         final DbProduct product = new DbProduct();
         product.setName("product1");
+
+        // creating a dummy product in storage
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
-        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES+ "/doesNotExist");
+        // request
+        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES+ "/doesNotExist/1.0.0");
         ClientResponse response = resource.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        
+        // checks
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
 
@@ -355,49 +422,36 @@ public class ProductResourceTest extends ResourceTest {
     public void setModulesDelivery(){
         final DbProduct product = new DbProduct();
         product.setName("product1");
-        product.getDeliveries().put("delivery1", Collections.<String>emptyList());
+        
+        Delivery delivery = new Delivery();
+        delivery.setCommercialName("delivery1");
+        delivery.setCommercialVersion("1.0.0");   
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
+        product.getDeliveries().add(delivery);
+        
+        List<String> modules = new ArrayList<String>();
+        modules.add("module1:1.0.0");
+        modules.add("module2:1.0.0");
+        
+        // creating a dummy product in storage with delivery and its dependencies
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
-        final DbModule module = new DbModule();
-        module.setName("module1");
-        module.setVersion("1.0.0-SNAPSHOT");
-        when(repositoryHandler.getModule(module.getId())).thenReturn(module);
-
-
+        // request
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
-        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES + "/delivery1" );
-        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, Collections.singletonList(module.getId()));
+        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES + "/delivery1/1.0.0" );
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, modules);
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED_201, response.getStatus());
 
         ArgumentCaptor<DbProduct> captor = ArgumentCaptor.forClass(DbProduct.class);
+        
+        // checks
         verify(repositoryHandler).store(captor.capture());
         assertEquals(1, captor.getValue().getDeliveries().size());
-        assertEquals("delivery1", captor.getValue().getDeliveries().keySet().iterator().next());
-        assertEquals(1, captor.getValue().getDeliveries().values().size());
-        assertNotNull(captor.getValue().getDeliveries().get("delivery1"));
-        assertEquals(1, captor.getValue().getDeliveries().get("delivery1").size());
-        assertEquals(module.getId(), captor.getValue().getDeliveries().get("delivery1").get(0));
-
-    }
-
-    @Test
-    public void setModulesDeliveryWithModulesThatDoesNotExist(){
-        final DbProduct product = new DbProduct();
-        product.setName("product1");
-        product.getDeliveries().put("delivery1", Collections.<String>emptyList());
-        when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
-
-        final DbModule module = new DbModule();
-        module.setName("module1");
-        module.setVersion("1.0.0-SNAPSHOT");
-
-
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
-        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES + "/delivery1" );
-        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, Collections.singletonList(module.getId()));
-        assertNotNull(response);
-        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
+        assertEquals("delivery1", captor.getValue().getDeliveries().get(0).getCommercialName());
+        assertNotNull(captor.getValue().getDeliveries().get(0));
+        assertEquals(modules, captor.getValue().getDeliveries().get(0).getDependencies());
 
     }
 
@@ -405,17 +459,20 @@ public class ProductResourceTest extends ResourceTest {
     public void setModulesDeliveryWithDeliveryThatDoesNotExist(){
         final DbProduct product = new DbProduct();
         product.setName("product1");
+        
+        List<String> modules = new ArrayList<String>();
+        modules.add("module1:1.0.0");
+        modules.add("module2:1.0.0");
+
+        // creating a dummy product in storage with delivery
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
-        final DbModule module = new DbModule();
-        module.setName("module1");
-        module.setVersion("1.0.0-SNAPSHOT");
-        when(repositoryHandler.getModule(module.getId())).thenReturn(module);
-
-
+        // request
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
         WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES + "/doesNotExist" );
-        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, Collections.singletonList(module.getId()));
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, modules);
+        
+        // checks
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
 
@@ -423,15 +480,16 @@ public class ProductResourceTest extends ResourceTest {
 
     @Test
     public void setModulesDeliveryWithProductThatDoesNotExist(){
-        final DbModule module = new DbModule();
-        module.setName("module1");
-        module.setVersion("1.0.0-SNAPSHOT");
-        when(repositoryHandler.getModule(module.getId())).thenReturn(module);
+        List<String> modules = new ArrayList<String>();
+        modules.add("module1:1.0.0");
+        modules.add("module2:1.0.0");
 
-
+        // request
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
         WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/doesNotExist" + ServerAPI.GET_DELIVERIES + "/delivery1");
-        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, Collections.singletonList(module.getId()));
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, modules);
+        
+        // checks
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
 
@@ -441,18 +499,27 @@ public class ProductResourceTest extends ResourceTest {
     public void setModulesDeliveryWithoutEditionRights(){
         final DbProduct product = new DbProduct();
         product.setName("product1");
-        product.getDeliveries().put("delivery1", Collections.<String>emptyList());
+        
+        Delivery delivery = new Delivery();
+        delivery.setCommercialName("delivery1");
+        delivery.setCommercialVersion("1.0.0");   
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
+        product.getDeliveries().add(delivery);
+        
+        List<String> modules = new ArrayList<String>();
+        modules.add("module1:1.0.0");
+        modules.add("module2:1.0.0");
+        
+        // creating a dummy product in storage with delivery
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
-        final DbModule module = new DbModule();
-        module.setName("module1");
-        module.setVersion("1.0.0-SNAPSHOT");
-        when(repositoryHandler.getModule(module.getId())).thenReturn(module);
-
-
+        // request
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.WRONG_USER_4TEST, GrapesTestUtils.WRONG_PASSWORD_4TEST));
-        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES + "/delivery1" );
-        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, Collections.singletonList(module.getId()));
+        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES + "/delivery1/1.0.0" );
+        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, modules);
+
+        // checks
         assertNotNull(response);
         assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
     }
@@ -461,16 +528,29 @@ public class ProductResourceTest extends ResourceTest {
     public void deleteDelivery(){
         final DbProduct product = new DbProduct();
         product.setName("product1");
-        product.getDeliveries().put("delivery1", Collections.<String>emptyList());
+        
+        Delivery delivery = new Delivery();
+        delivery.setCommercialName("delivery1");
+        delivery.setCommercialVersion("1.0.0");   
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
+        product.getDeliveries().add(delivery);
+
+        // creating a dummy product in storage with delivery
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
+        // request
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
-        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES + "/delivery1" );
+        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES + "/delivery1/1.0.0" );
         ClientResponse response = resource.type(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
+        
+        // check response
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
         ArgumentCaptor<DbProduct> captor = ArgumentCaptor.forClass(DbProduct.class);
+        
+        // checks
         verify(repositoryHandler).store(captor.capture());
         assertEquals(0, captor.getValue().getDeliveries().size());
     }
@@ -479,20 +559,28 @@ public class ProductResourceTest extends ResourceTest {
     public void deleteDeliveryThatDoesNotExist(){
         final DbProduct product = new DbProduct();
         product.setName("product1");
+
+        // creating a dummy product in storage with delivery
         when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
+        // request
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
-        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES + "/delivery1" );
+        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES + "/delivery1/1.0.0" );
         ClientResponse response = resource.type(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
+        
+        // checks
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
     }
 
     @Test
     public void deleteDeliveryFromProductThatDoesNotExist(){
-        client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
-        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/doesNotExist" + ServerAPI.GET_DELIVERIES + "/delivery1" );
+        // request
+    	client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.USER_4TEST, GrapesTestUtils.PASSWORD_4TEST));
+        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/doesNotExist" + ServerAPI.GET_DELIVERIES + "/delivery1/1.0.0" );
         ClientResponse response = resource.type(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
+        
+        // checks
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
     }
@@ -501,12 +589,24 @@ public class ProductResourceTest extends ResourceTest {
     public void deleteDeliveryWithoutDeletionRights(){
         final DbProduct product = new DbProduct();
         product.setName("product1");
-        product.getDeliveries().put("delivery1", Collections.<String>emptyList());
-        when(repositoryHandler.getProduct(product.getName())).thenReturn(product);
 
+        Delivery delivery = new Delivery();
+        delivery.setCommercialName("delivery1");
+        delivery.setCommercialVersion("1.0.0");   
+        delivery.setVersion("1.0.0-1");
+        delivery.setJenkinsBuildUrl("http://localhost:8080/job/20");
+        product.getDeliveries().add(delivery);
+        
+
+        // creating a dummy product in storage with delivery
+        when(repositoryHandler.getProduct(product.getName())).thenReturn(product);    
+        
+        // request
         client().addFilter(new HTTPBasicAuthFilter(GrapesTestUtils.WRONG_USER_4TEST, GrapesTestUtils.WRONG_PASSWORD_4TEST));
-        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES + "/delivery1" );
+        WebResource resource = client().resource("/" + ServerAPI.PRODUCT_RESOURCE + "/" + product.getName() + ServerAPI.GET_DELIVERIES + "/delivery1/1.0.0" );
         ClientResponse response = resource.type(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
+        
+        // checks
         assertNotNull(response);
         assertEquals(HttpStatus.UNAUTHORIZED_401, response.getStatus());
     }

@@ -9,6 +9,7 @@ import javax.ws.rs.core.Response;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+
 /**
  * Data Validator
  *
@@ -29,8 +30,8 @@ public final class DataValidator {
      * @throws WebApplicationException if the data is corrupted
      */
     public static void validate(final Artifact artifact) {
-        if(artifact.getGroupId() == null ||
-                artifact.getGroupId().isEmpty()){
+        if((artifact.getOrigin()== null || "maven".equals(artifact.getOrigin()))
+                && (artifact.getGroupId() == null || artifact.getGroupId().isEmpty())){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
                     .entity("Artifact groupId should not be null or empty")
                     .build());
@@ -48,6 +49,35 @@ public final class DataValidator {
                     .build());
         }
     }
+
+    /**
+     * Checks if the provided artifact is valid and could be stored into the database
+     *
+     * @param artifact the artifact to test
+     * @throws WebApplicationException if the data is corrupted
+     */
+    public static void validatePostArtifact(final Artifact artifact) {
+    	validate(artifact);
+    	
+        if(artifact.getExtension() == null ||
+                artifact.getExtension().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Artifact extension should not be null or empty")
+                    .build());
+        }
+        if(artifact.getSha256() == null ||
+                artifact.getSha256().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Artifact SHA256 checksum should not be null or empty")
+                    .build());
+        }
+        if(artifact.getSha256().length() != 64){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Artifact SHA256 checksum length should be 64")
+                    .build());
+        }
+    }
+
 
     /**
      * Checks if the provided license is valid and could be stored into the database
@@ -80,9 +110,15 @@ public final class DataValidator {
             }
             catch (PatternSyntaxException e){
                 throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                        .entity("License regexp does not compile!")
-                        .build());
+                        .entity("License regexp does not compile!").build());
             }
+
+            Pattern regex = Pattern.compile("[&%//]");
+            if(regex.matcher(license.getRegexp()).find()){
+                throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                        .entity("License regexp does not compile!").build());
+            }
+
         }
     }
 
@@ -93,6 +129,11 @@ public final class DataValidator {
      * @throws WebApplicationException if the data is corrupted
      */
     public static void validate(final Module module) {
+        if (null == module) {
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                .entity("Module cannot be null!")
+                .build());
+        }
         if(module.getName() == null ||
                 module.getName().isEmpty()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
@@ -107,12 +148,12 @@ public final class DataValidator {
         }
 
         // Check artifacts
-        for(Artifact artifact: DataUtils.getAllArtifacts(module)){
+        for(final Artifact artifact: DataUtils.getAllArtifacts(module)){
             validate(artifact);
         }
 
         // Check dependencies
-        for(Dependency dependency: DataUtils.getAllDependencies(module)){
+        for(final Dependency dependency: DataUtils.getAllDependencies(module)){
             validate(dependency.getTarget());
         }
     }
@@ -128,6 +169,50 @@ public final class DataValidator {
                 organization.getName().isEmpty()){
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
                     .entity("Organization name cannot be null or empty!")
+                    .build());
+        }
+    }
+
+    /**
+     * Checks if the provided artifactQuery is valid
+     *
+     * @param artifactQuery ArtifactQuery
+     * @throws WebApplicationException if the data is corrupted
+     */
+    public static void validate(final ArtifactQuery artifactQuery) {
+        final Pattern invalidChars = Pattern.compile("[^A-Fa-f0-9]");
+        if(artifactQuery.getUser() == null ||
+        		artifactQuery.getUser().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Mandatory field [user] missing")
+                    .build());
+        }
+        if( artifactQuery.getStage() != 0 && artifactQuery.getStage() !=1 ){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid [stage] value (supported 0 | 1)")
+                    .build());
+        }
+        if(artifactQuery.getName() == null ||
+        		artifactQuery.getName().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Mandatory field [name] missing, it should be the file name")
+                    .build());
+        }
+        if(artifactQuery.getSha256() == null ||
+                artifactQuery.getSha256().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Mandatory field [sha256] missing")
+                    .build());
+        }
+        if(artifactQuery.getSha256().length() < 64 || invalidChars.matcher(artifactQuery.getSha256()).find()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid file checksum value")
+                    .build());
+        }
+        if(artifactQuery.getType() == null ||
+        		artifactQuery.getType().isEmpty()){
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Mandatory field [type] missing")
                     .build());
         }
     }

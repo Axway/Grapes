@@ -5,6 +5,8 @@ import org.axway.grapes.commons.datamodel.*;
 import org.axway.grapes.server.db.datamodel.*;
 import org.junit.Test;
 
+import java.util.Date;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -58,6 +60,23 @@ public class ModelMapperTest {
         final License license = modelMapper.getLicense(dbLicense);
 
         assertEquals(true, license.isUnknown());
+
+    }
+
+    @Test
+    public void testGetPendingLicense() throws Exception {
+        final DbLicense dbLicense = new DbLicense() ;
+        dbLicense.setName("name");
+        dbLicense.setLongName("longName");
+        dbLicense.setComments("comments");
+        dbLicense.setRegexp("regexp");
+        dbLicense.setUrl("url");
+        //dbLicense.setApproved(false);
+
+        final ModelMapper modelMapper = new ModelMapper(mock(RepositoryHandler.class));
+        final License license = modelMapper.getLicense(dbLicense);
+
+        assertEquals(true, license.isPending());
 
     }
 
@@ -288,5 +307,45 @@ public class ModelMapperTest {
         assertEquals(dbDependency.getScope(), dependency.getScope());
         assertEquals("sourceName", dependency.getSourceName());
         assertEquals("123456", dependency.getSourceVersion());
+    }
+
+    @Test
+    public void getCommentFromDbComment() throws Exception {
+        final String entityId = "com.axway.test:1.0.0::jar";
+        final String entityType = "DbArtifact";
+        DbComment dbComment = new DbComment();
+        dbComment.setEntityId(entityId);
+        dbComment.setEntityType(entityType);
+        dbComment.setDbCommentText("test comment");
+        dbComment.setDbCommentedBy("testUser");
+        dbComment.setDbCreatedDateTime(new Date());
+
+        final RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
+        final ModelMapper modelMapper = new ModelMapper(repositoryHandler);
+
+        final Comment comment = modelMapper.getComment(dbComment);
+
+        assertEquals(entityId, comment.getEntityId());
+        assertEquals(entityType, comment.getEntityType());
+        assertEquals("test comment", comment.getCommentText());
+        assertEquals("testUser", comment.getCommentedBy());
+
+    }
+
+    @Test
+    public void getDbCommentFromComment() throws Exception {
+        final String entityId = "com.axway.test:1.0.0::jar";
+        final String entityType = "DbArtifact";
+        final Comment comment = DataModelFactory.createComment(entityId, entityType,
+                "test action","test comment", "testUser", new Date());
+
+        final ModelMapper modelMapper = new ModelMapper(mock(RepositoryHandler.class));
+        final DbComment dbComment = modelMapper.getDbComment(comment);
+
+        assertEquals(entityId, dbComment.getEntityId());
+        assertEquals(entityType, dbComment.getEntityType());
+        assertEquals("test comment", dbComment.getDbCommentText());
+        assertEquals("test action", dbComment.getAction());
+        assertEquals("testUser", dbComment.getDbCommentedBy());
     }
 }

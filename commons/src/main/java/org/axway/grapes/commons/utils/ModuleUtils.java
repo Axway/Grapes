@@ -30,7 +30,7 @@ public final class ModuleUtils {
     public static List<Artifact> getAllArtifacts(final Module module){
         final List<Artifact> artifacts = new ArrayList<Artifact>();
 
-        for(Module subModule: module.getSubmodules()){
+        for(final Module subModule: module.getSubmodules()){
             artifacts.addAll(getAllArtifacts(subModule));
         }
 
@@ -48,7 +48,7 @@ public final class ModuleUtils {
     public static List<Dependency> getAllDependencies(final Module module) {
         final Set<Dependency> dependencies = new HashSet<Dependency>();
         final List<String> producedArtifacts = new ArrayList<String>();
-        for(Artifact artifact: getAllArtifacts(module)){
+        for(final Artifact artifact: getAllArtifacts(module)){
             producedArtifacts.add(artifact.getGavc());
         }
 
@@ -67,13 +67,13 @@ public final class ModuleUtils {
     public static Set<Dependency> getAllDependencies(final Module module, final List<String> producedArtifacts) {
         final Set<Dependency> dependencies = new HashSet<Dependency>();
 
-        for(Dependency dependency: module.getDependencies()){
+        for(final Dependency dependency: module.getDependencies()){
             if(!producedArtifacts.contains(dependency.getTarget().getGavc())){
                 dependencies.add(dependency);
             }
         }
 
-        for(Module subModule: module.getSubmodules()){
+        for(final Module subModule: module.getSubmodules()){
             dependencies.addAll(getAllDependencies(subModule, producedArtifacts));
         }
 
@@ -92,7 +92,7 @@ public final class ModuleUtils {
         final List<Dependency> corporateDependencies = new ArrayList<Dependency>();
         final Pattern corporatePattern = generateCorporatePattern(corporateFilters);
 
-        for(Dependency dependency: getAllDependencies(module)){
+        for(final Dependency dependency: getAllDependencies(module)){
             if(dependency.getTarget().getGavc().matches(corporatePattern.pattern())){
                 corporateDependencies.add(dependency);
             }
@@ -113,7 +113,7 @@ public final class ModuleUtils {
         final List<Dependency> thirdParty = new ArrayList<Dependency>();
         final Pattern corporatePattern = generateCorporatePattern(corporateFilters);
 
-        for(Dependency dependency: getAllDependencies(module)){
+        for(final Dependency dependency: getAllDependencies(module)){
             if(!dependency.getTarget().getGavc().matches(corporatePattern.pattern())){
                 thirdParty.add(dependency);
             }

@@ -1,0 +1,61 @@
+/* MENU BAR */
+/* MENU BAR HIGHLIGHT */
+/* ACTION HOVER */
+/* ACTION */
+/* line 69, C:/Users/Administrator/Documents/StyleGuide/170625/styleguide-2016/framework/sass/colors.scss */
+body {
+  color: #10181F; }
+
+/* line 16, C:/Users/Administrator/Documents/StyleGuide/170625/styleguide-2016/framework/sass/spinner.scss */
+.loader {
+  display: inline-block;
+  width: 1.875rem;
+  margin-left: 0.625rem;
+  height: 0.625rem; }
+  /* line 22, C:/Users/Administrator/Documents/StyleGuide/170625/styleguide-2016/framework/sass/spinner.scss */
+  .loader.big {
+    width: 3.75rem;
+    margin-left: 0.3125rem;
+    height: 1.25rem; }
+  /* line 28, C:/Users/Administrator/Documents/StyleGuide/170625/styleguide-2016/framework/sass/spinner.scss */
+  .loader.linecentered {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-left: 0; }
+  /* line 35, C:/Users/Administrator/Documents/StyleGuide/170625/styleguide-2016/framework/sass/spinner.scss */
+  .loader span, .loader:before, .loader:after {
+    display: inline-block;
+    float: left;
+    width: 33%;
+    height: 99%;
+    border-radius: 50%;
+    margin: 0%;
+    opacity: 0; }
+  /* line 45, C:/Users/Administrator/Documents/StyleGuide/170625/styleguide-2016/framework/sass/spinner.scss */
+  .loader span {
+    display: block;
+    background: #3D4051;
+    text-indent: -9000px;
+    overflow: hidden; }
+  /* line 52, C:/Users/Administrator/Documents/StyleGuide/170625/styleguide-2016/framework/sass/spinner.scss */
+  .loader:before, .loader:after, .loader span:before, .loader span:after {
+    content: '';
+    background: #407CA0; }
+  /* line 57, C:/Users/Administrator/Documents/StyleGuide/170625/styleguide-2016/framework/sass/spinner.scss */
+  .loader:before {
+    animation: loader-dot-animation 1.125s ease infinite 0s; }
+  /* line 60, C:/Users/Administrator/Documents/StyleGuide/170625/styleguide-2016/framework/sass/spinner.scss */
+  .loader span {
+    animation: loader-dot-animation 1.125s ease infinite 0.37463s; }
+  /* line 63, C:/Users/Administrator/Documents/StyleGuide/170625/styleguide-2016/framework/sass/spinner.scss */
+  .loader:after {
+    animation: loader-dot-animation 1.125s ease infinite 0.75038s; }
+
+@keyframes loader-dot-animation {
+  0% {
+    transform: scale(0);
+    opacity: 0; }
+  50% {
+    transform: scale(1);
+    opacity: 1; } }

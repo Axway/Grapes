@@ -1,14 +1,15 @@
 package org.axway.grapes.server.materials;
 
 import org.axway.grapes.server.GrapesTestUtils;
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.DataUtils;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.*;
 import org.axway.grapes.server.materials.cases.DependencyCase;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Repository Handler
@@ -25,6 +26,7 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     private final List<DbModule> modules = new ArrayList<DbModule>();
     private final List<DbArtifact> artifacts = new ArrayList<DbArtifact>();
     private final List<DbLicense> licenses = new ArrayList<DbLicense>();
+    private final List<DbComment> comments = new ArrayList<>();
 
     @Override
     public void store(final DbCredential credential) {
@@ -100,7 +102,7 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
-    public void removeLicenseFromArtifact(DbArtifact artifact, String name) {
+    public void removeLicenseFromArtifact(DbArtifact artifact, String name, LicenseMatcher m) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -133,6 +135,17 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     public DbArtifact getArtifact(final String gavc) {
         for(DbArtifact artifact: artifacts){
             if(artifact.getGavc().equals(gavc)){
+                return artifact;
+            }
+        }
+
+        return null;
+    }
+	
+    @Override
+    public DbArtifact getArtifactUsingSHA256(final String sha256) {
+        for(DbArtifact artifact: artifacts){
+            if(artifact.getSha256().equals(sha256)){
                 return artifact;
             }
         }
@@ -307,6 +320,79 @@ public class TestingRepositoryHandler implements RepositoryHandler {
     }
 
     @Override
+    public <T> Optional<T> getOneByQuery(String collectionName, String query, Class<T> c) {
+        return Optional.empty();
+    }
+
+    @Override
+    public <T> List<T> getListByQuery(String collectionName, String query, Class<T> c) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public <T> void consumeByQuery(String collectionName, String query, Class<T> c, Consumer<T> consumer) {
+
+    }
+
+    @Override
+    public long getResultCount(String collectionName, String query) {
+        return 0;
+    }
+
+    @Override
+    public void store(DbComment dbComment) {
+        comments.add(dbComment);
+    }
+
+    @Override
+    public List<DbComment> getComments(String entityId, String entityType) {
+        List<DbComment> innerList = new ArrayList<>();
+        for (DbComment dbComment : comments) {
+            if(dbComment.getEntityId().equals(entityId) && dbComment.getEntityType().equals(entityType)){
+                innerList.add(dbComment);
+            }
+        }
+        return innerList;
+    }
+
+    @Override
+    public DbComment getLatestComment(String entityId, String entityType) {
+        List<DbComment> commentsList = getComments(entityId, entityType);
+        DbComment latest;
+        int index = 0;
+        for (int i = 0; i < commentsList.size(); i++) {
+            if (commentsList.get(i).getDbCreatedDateTime().after(commentsList.get(index).getDbCreatedDateTime())) {
+                index = i;
+            }
+        }
+
+        latest = commentsList.get(index);
+        return latest;
+    }
+
+    @Override
+    public DbSearch getSearchResult(String keyword, FiltersHolder filter) {
+        List<String> resultModules = new ArrayList<>();
+        List<String> resultArtifact = new ArrayList<>();
+        for (DbModule module : modules) {
+            if (module.getId().contains(keyword)){
+                resultModules.add(module.getId());
+            }
+        }
+
+        for (DbArtifact artifact : artifacts) {
+            if (artifact.getArtifactId().contains(keyword)){
+                resultArtifact.add(artifact.getArtifactId());
+            }
+        }
+
+        DbSearch result = new DbSearch();
+        result.setModules(resultModules);
+        result.setArtifacts(resultArtifact);
+        return result;
+    }
+
+    @Override
     public List<String> getLicenseNames(final FiltersHolder filters) {
         final List<String> names = new ArrayList<String>();
 
@@ -352,4 +438,5 @@ public class TestingRepositoryHandler implements RepositoryHandler {
             store(license);
         }
     }
+
 }

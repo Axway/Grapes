@@ -12,6 +12,7 @@ import org.axway.grapes.commons.datamodel.DataModelFactory;
 import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.server.GrapesTestUtils;
 import org.axway.grapes.server.config.GrapesServerConfig;
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
@@ -42,6 +43,7 @@ public class LicenseResourceTest extends ResourceTest {
 		repositoryHandler = mock(RepositoryHandler.class);
 
         final RepositoryHandler repoHandler = GrapesTestUtils.getRepoHandlerMock();
+
         LicenseResource resource = new LicenseResource(repositoryHandler, mock(GrapesServerConfig.class));
         addProvider(new BasicAuthProvider<DbCredential>(new GrapesAuthenticator(repoHandler), "test auth"));
 		addProvider(ViewMessageBodyWriter.class);
@@ -102,7 +104,7 @@ public class LicenseResourceTest extends ResourceTest {
 		assertNotNull(response);
 		assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArrayList<String> licenses = response.getEntity(ArrayList.class);
+        List<?> licenses = (List<?>)response.getEntity(List.class);
 		assertNotNull(licenses);
 		assertEquals(1, licenses.size());
 		assertEquals("licenseId", licenses.get(0));
@@ -159,9 +161,10 @@ public class LicenseResourceTest extends ResourceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK_200, response.getStatus());
 
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(repositoryHandler, times(1)).removeLicenseFromArtifact( (DbArtifact)any() , captor.capture());
-        assertEquals(licenseName, captor.getValue());
+        ArgumentCaptor<String> strCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<LicenseMatcher> matcherCaptor = ArgumentCaptor.forClass(LicenseMatcher.class);
+        verify(repositoryHandler, times(1)).removeLicenseFromArtifact( (DbArtifact)any(), strCaptor.capture(), matcherCaptor.capture());
+        assertEquals(licenseName, strCaptor.getValue());
     }
 
     @Test

@@ -104,6 +104,14 @@ public final class RequestUtils {
         return path.toString();
     }
 
+    public static String promoteModuleReportPath(final String name, final String version, final boolean excludeSnapshot) {
+        final StringBuilder path = new StringBuilder();
+        path.append(getModulePath(name, version));
+        path.append(ServerAPI.PROMOTION);
+        path.append(ServerAPI.GET_REPORT);
+        return path.toString();
+    }
+
     public static String canBePromotedModulePath(final String name, final String version) {
         final StringBuilder path = new StringBuilder();
         path.append(getModulePath(name, version));
@@ -202,5 +210,37 @@ public final class RequestUtils {
 
         return path.toString();
     }
+
+	public static String getProductNames() {
+		final StringBuilder path = new StringBuilder();
+        path.append(ServerAPI.PRODUCT_RESOURCE);
+        path.append("/names");
+
+        return path.toString();
+	}
+	
+	public static String getProductDelivery(final String name) {
+		final StringBuilder path = new StringBuilder();
+        path.append(ServerAPI.PRODUCT_RESOURCE);
+        path.append("/");
+        path.append(name);
+        path.append(ServerAPI.GET_DELIVERIES);
+
+        return path.toString();
+	}
+
+	public static String getProductDelivery(final String name, final String commercialName, final String commercialVersion) {
+		final StringBuilder path = new StringBuilder();
+        path.append(ServerAPI.PRODUCT_RESOURCE);
+        path.append("/");
+        path.append(name);
+        path.append(ServerAPI.GET_DELIVERIES);
+        path.append("/");
+        path.append(commercialName);
+        path.append("/");
+        path.append(commercialVersion);
+
+        return path.toString();
+	}
 
 }

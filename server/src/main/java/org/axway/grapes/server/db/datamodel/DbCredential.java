@@ -15,8 +15,8 @@ import java.util.List;
  */
 public class DbCredential {
 
-    public static final String DATA_MODEL_VERSION = "datamodelVersion";
-    private String datamodelVersion = DbCollections.datamodelVersion;
+    public static final String DATA_MODEL_VERSION = "DATAMODEL_VERSION";
+    private String datamodelVersion = DbCollections.DATAMODEL_VERSION;
 
     /**
      * All the available role for Grapes
@@ -31,7 +31,9 @@ public class DbCredential {
         // Approve or reject artifacts
         ARTIFACT_CHECKER,
         // Approve or reject licenses
-        LICENSE_CHECKER
+        LICENSE_CHECKER,
+        // Associate an artifact with a license or a series of licenses
+        LICENSE_SETTER
     }
 
     @Id
@@ -102,6 +104,9 @@ public class DbCredential {
         }
         if(AvailableRoles.ARTIFACT_CHECKER.toString().equalsIgnoreCase(roleParam)){
             return AvailableRoles.ARTIFACT_CHECKER;
+        }
+        if(AvailableRoles.LICENSE_SETTER.toString().equalsIgnoreCase(roleParam)){
+            return AvailableRoles.LICENSE_SETTER;
         }
 
         return null;

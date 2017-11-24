@@ -1,6 +1,8 @@
 package org.axway.grapes.commons.utils;
 
 import java.io.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * FileUtils
@@ -21,25 +23,19 @@ public final class FileUtils {
      * @param fileName String
      */
     public static void serialize(final File folder, final String content, final String fileName) throws IOException {
-        if(!folder.exists()){
+        if (!folder.exists()) {
             folder.mkdirs();
         }
 
         final File output = new File(folder, fileName);
-        FileWriter writer = null;
 
-        try {
-            writer = new FileWriter(output);
+        try (
+                final FileWriter writer = new FileWriter(output);
+        ) {
             writer.write(content);
             writer.flush();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new IOException("Failed to serialize the notification in folder " + folder.getPath(), e);
-        }
-        finally {
-            if(writer != null){
-                writer.close();
-            }
         }
     }
 
@@ -52,25 +48,22 @@ public final class FileUtils {
      */
     public static String read(final File file) throws IOException {
         final StringBuilder sb = new StringBuilder();
-        BufferedReader br = null;
 
-        try {
+        try (
+                final FileReader fr = new FileReader(file);
+                final BufferedReader br = new BufferedReader(fr);
+        ) {
+
             String sCurrentLine;
-
-            br = new BufferedReader(new FileReader(file));
 
             while ((sCurrentLine = br.readLine()) != null) {
                 sb.append(sCurrentLine);
             }
-
-        } catch (IOException e) {
-            throw new IOException("Failed to read file: " + file.getAbsolutePath(), e);
-        } finally {
-            if (br != null){br.close();}
         }
 
         return sb.toString();
     }
+
 
     /**
      * Get file size
@@ -102,19 +95,44 @@ public final class FileUtils {
         // FileOutputStream instance for the file in question.
         // You don't actually write any data to the file through
         // the FileOutputStream.  Just instantiate it and close it.
-        FileOutputStream doneFOS = null;
 
-        try {
-            doneFOS = new FileOutputStream(touchedFile);
+        try (
+            FileOutputStream doneFOS = new FileOutputStream(touchedFile);
+        ) {
+            // Touching the file
         }
         catch (FileNotFoundException e) {
-            // Handle error
-        }
-        finally {
-            if(doneFOS != null){
-                doneFOS.close();
-            }
+            throw new FileNotFoundException("Failed to the find file." + e);
         }
     }
 
+    public static String getFileChecksumSHA256(final File artifactFile) throws IOException {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IOException(e);
+        }
+
+        try (final FileInputStream fis = new FileInputStream(artifactFile)) {
+
+            final byte[] byteArray = new byte[1024];
+            int bytesCount = 0;
+
+            while ((bytesCount = fis.read(byteArray)) != -1) {
+                digest.update(byteArray, 0, bytesCount);
+            }
+
+        }
+
+        final byte[] bytes = digest.digest();
+        final StringBuilder sb = new StringBuilder();
+
+        for (int counter = 0; counter < bytes.length; counter++) {
+            sb.append(Integer.toString((bytes[counter] & 0xff) + 0x100, 16).substring(1));
+        }
+
+        return sb.toString();
+    }
+    
 }

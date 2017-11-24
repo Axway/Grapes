@@ -28,5 +28,6 @@ public class DbCredentialTest {
         assertEquals(AvailableRoles.DATA_UPDATER, DbCredential.getRole("DATA_updater"));
         assertEquals(AvailableRoles.DEPENDENCY_NOTIFIER, DbCredential.getRole("dependency_NOTIFIER"));
         assertEquals(AvailableRoles.LICENSE_CHECKER, DbCredential.getRole("license_checker"));
+        assertEquals(AvailableRoles.LICENSE_SETTER, DbCredential.getRole("license_setter"));
     }
 }

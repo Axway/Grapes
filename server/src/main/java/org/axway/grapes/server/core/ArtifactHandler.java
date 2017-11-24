@@ -1,6 +1,7 @@
 package org.axway.grapes.server.core;
 
 
+import org.axway.grapes.server.core.interfaces.LicenseMatcher;
 import org.axway.grapes.server.core.options.FiltersHolder;
 import org.axway.grapes.server.db.RepositoryHandler;
 import org.axway.grapes.server.db.datamodel.DbArtifact;
@@ -15,6 +16,7 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Artifact Handler
@@ -28,9 +30,12 @@ public class ArtifactHandler {
     private static final Logger LOG = LoggerFactory.getLogger(ArtifactHandler.class);
 
     private final RepositoryHandler repositoryHandler;
+    private final LicenseMatcher licenseMatcher;
 
-    public ArtifactHandler(final RepositoryHandler repositoryHandler) {
+    public ArtifactHandler(final RepositoryHandler repositoryHandler,
+                           final LicenseMatcher matcher) {
         this.repositoryHandler = repositoryHandler;
+        this.licenseMatcher = matcher;
     }
 
     /**
@@ -45,11 +50,18 @@ public class ArtifactHandler {
     /**
      * If the Artifact does not exist, it will add it to the database. Nothing if it already exit.
      *
-     * @param dbArtifact DbArtifact
+     * @param fromClient DbArtifact
      */
-    public void storeIfNew(final DbArtifact dbArtifact) {
-        if(repositoryHandler.getArtifact(dbArtifact.getGavc()) == null){
-            store(dbArtifact);
+    public void storeIfNew(final DbArtifact fromClient) {
+        final DbArtifact existing = repositoryHandler.getArtifact(fromClient.getGavc());
+
+        if(existing != null){
+            existing.setLicenses(fromClient.getLicenses());
+            store(existing);
+        }
+
+        if(existing == null){
+	        store(fromClient);
         }
     }
 
@@ -113,7 +125,7 @@ public class ArtifactHandler {
     }
 
     /**
-     * Returns a the last available version of an artifact
+     * Returns the last available version of an artifact
      *
      * @param gavc String
      * @return String
@@ -121,14 +133,21 @@ public class ArtifactHandler {
     public String getArtifactLastVersion(final String gavc) {
         final List<String> versions = getArtifactVersions(gavc);
 
-        try{
-            final VersionsHandler versionHandler = new VersionsHandler(repositoryHandler);
-            return versionHandler.getLastVersion(versions);
-        } catch (Exception e) {
-            // These versions cannot be compared
-            // Let's use the Collection.max() method by default
-            return Collections.max(versions);
+        final VersionsHandler versionHandler = new VersionsHandler(repositoryHandler);
+        final String viaCompare = versionHandler.getLastVersion(versions);
+
+        if (viaCompare != null) {
+            return viaCompare;
         }
+
+        //
+        // These versions cannot be compared
+        // Let's use the Collection.max() method by default, so goingo for a fallback
+        // mechanism.
+        //
+        LOG.info("The versions cannot be compared");
+        return Collections.max(versions);
+
     }
 
     /**
@@ -146,6 +165,16 @@ public class ArtifactHandler {
         }
 
         return artifact;
+    }   
+
+    /**
+     * Return an artifact regarding its gavc
+     *
+     * @param sha256 String
+     * @return DbArtifact
+     */
+    public DbArtifact getArtifactUsingSHA256(final String sha256) {
+        return repositoryHandler.getArtifactUsingSHA256(sha256);
     }
 
     /**
@@ -238,20 +267,20 @@ public class ArtifactHandler {
      */
     public List<DbLicense> getArtifactLicenses(final String gavc, final FiltersHolder filters) {
         final DbArtifact artifact = getArtifact(gavc);
-        final List<DbLicense> licenses = new ArrayList<DbLicense>();
+        final List<DbLicense> licenses = new ArrayList<>();
 
-        for(String name: artifact.getLicenses()){
-            final DbLicense dbLicense = repositoryHandler.getLicense(name);
+        for(final String name: artifact.getLicenses()){
+            final Set<DbLicense> matchingLicenses = licenseMatcher.getMatchingLicenses(name);
 
             // Here is a license to identify
-            if(dbLicense == null){
+            if(matchingLicenses.isEmpty()){
                 final DbLicense notIdentifiedLicense = new DbLicense();
                 notIdentifiedLicense.setName(name);
                 licenses.add(notIdentifiedLicense);
-            }
-            // The license has to be validated
-            else if(filters.shouldBeInReport(dbLicense)){
-                licenses.add(dbLicense);
+            } else {
+                matchingLicenses.stream()
+                        .filter(filters::shouldBeInReport)
+                        .forEach(licenses::add);
             }
         }
 
@@ -284,19 +313,17 @@ public class ArtifactHandler {
     /**
      * Remove a license from an artifact
      *
-     * @param gavc String
-     * @param licenseId String
+     * @param gavc String The artifact GAVC
+     * @param licenseId String The license id to be removed.
      */
     public void removeLicenseFromArtifact(final String gavc, final String licenseId) {
         final DbArtifact dbArtifact = getArtifact(gavc);
 
-        // Don't need to access the DB if the job is already done
-        if(!dbArtifact.getLicenses().contains(licenseId)){
-            return;
-        }
-
-        repositoryHandler.removeLicenseFromArtifact(dbArtifact, licenseId);
-
+        //
+        // The artifact may not have the exact string associated with it, but rather one
+        // matching license regexp expression.
+        //
+        repositoryHandler.removeLicenseFromArtifact(dbArtifact, licenseId, licenseMatcher);
     }
 
     /**
@@ -308,4 +335,24 @@ public class ArtifactHandler {
     public List<DbArtifact> getArtifacts(final FiltersHolder filters) {
         return repositoryHandler.getArtifacts(filters);
     }
+
+    /**k
+     * Returns a list of artifact regarding the filters
+     *
+     * @return List<DbArtifact>
+     */
+	public String getModuleJenkinsJobInfo(final DbArtifact dbArtifact) {
+		final DbModule module = getModule(dbArtifact);
+		if(module == null){
+			return "";
+		}
+		
+		final String jenkinsJobUrl = module.getBuildInfo().get("jenkins-job-url");
+		
+		if(jenkinsJobUrl == null){
+			return "";			
+		}
+
+		return jenkinsJobUrl;
+	}
 }

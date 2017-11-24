@@ -1,0 +1,25 @@
+# DEFAULT CACHE REGION
+
+jcs.default=
+jcs.default.cacheattributes=org.apache.commons.jcs.engine.CompositeCacheAttributes
+jcs.default.cacheattributes.MaxObjects=1000
+jcs.default.cacheattributes.MemoryCacheName=org.apache.commons.jcs.engine.memory.lru.LRUMemoryCache
+
+jcs.default.cacheattributes.UseMemoryShrinker=true
+jcs.default.cacheattributes.MaxMemoryIdleTimeSeconds=180
+jcs.default.cacheattributes.ShrinkerIntervalSeconds=60
+jcs.default.cacheattributes.MaxSpoolPerRun=500
+jcs.default.elementattributes=org.apache.commons.jcs.engine.ElementAttributes
+jcs.default.elementattributes.IsEternal=false
+
+jcs.PROMOTION_REPORTS=
+jcs.PROMOTION_REPORTS.cacheattributes=org.apache.commons.jcs.engine.CompositeCacheAttributes
+jcs.PROMOTION_REPORTS.cacheattributes.MaxObjects=1000
+jcs.PROMOTION_REPORTS.cacheattributes.MemoryCacheName=org.apache.commons.jcs.engine.memory.lru.LRUMemoryCache
+
+jcs.PROMOTION_REPORTS.cacheattributes.UseMemoryShrinker=true
+jcs.PROMOTION_REPORTS.cacheattributes.MaxMemoryIdleTimeSeconds=3600
+jcs.PROMOTION_REPORTS.cacheattributes.ShrinkerIntervalSeconds=60
+jcs.PROMOTION_REPORTS.cacheattributes.MaxSpoolPerRun=500
+jcs.PROMOTION_REPORTS.elementattributes=org.apache.commons.jcs.engine.ElementAttributes
+jcs.PROMOTION_REPORTS.elementattributes.IsEternal=false

@@ -69,6 +69,14 @@ public class Decorator {
      * Default value: true. */
     private Boolean showCorporate = true;
 
+    /** Value - {@value}, boolean query parameter used to include modules in search result.
+     * Default value: true. */
+    private Boolean includeModules = true;
+
+    /** Value - {@value}, boolean query parameter used to include artifacts in search result.
+     * Default value: true. */
+    private Boolean includeArtifacts = true;
+
 
     public Boolean getShowLicenses() {
         return showLicenses;
@@ -294,6 +302,38 @@ public class Decorator {
         }
     }
 
+    public Boolean getIncludeModules() {
+        return includeModules;
+    }
+
+    public void setIncludeModules(final Boolean includeModules) {
+        if (includeModules != null) {
+            this.includeModules = includeModules;
+        }
+    }
+
+    public void setIncludeModules(final String includeModules) {
+        if (includeModules != null) {
+            this.includeModules = Boolean.valueOf(includeModules);
+        }
+    }
+
+    public Boolean getIncludeArtifacts() {
+        return includeArtifacts;
+    }
+
+    public void setIncludeArtifacts(final Boolean includeArtifacts) {
+        if (includeArtifacts != null) {
+            this.includeArtifacts = includeArtifacts;
+        }
+    }
+
+    public void setIncludeArtefacts(final String includeArtefacts) {
+        if (includeArtefacts != null) {
+            this.includeArtifacts = Boolean.valueOf(includeArtefacts);
+        }
+    }
+
     public void init(final MultivaluedMap<String, String> queryParameters){
         setShowScopes(queryParameters.getFirst(ServerAPI.SHOW_SCOPE_PARAM));
         setShowLicenses(queryParameters.getFirst(ServerAPI.SHOW_LICENSE_PARAM));
@@ -309,5 +349,7 @@ public class Decorator {
         setShowLicensesLongName(queryParameters.getFirst(ServerAPI.SHOW_LICENSE_FULL_NAME_PARAM));
         setShowLicensesComment(queryParameters.getFirst(ServerAPI.SHOW_LICENSE_COMMENT_PARAM));
         setShowLicensesUrl(queryParameters.getFirst(ServerAPI.SHOW_LICENSE_URL_PARAM));
+        setIncludeModules(queryParameters.getFirst(ServerAPI.MODULES_PARAM));
+        setIncludeArtefacts(queryParameters.getFirst(ServerAPI.ARTIFACTS_PARAM));
     }
 }

@@ -32,7 +32,9 @@ public class Sequoia extends AbstractResource{
 
 
     public Sequoia(final RepositoryHandler repoHandler, final GrapesServerConfig dmConfig) {
+    	
         super(repoHandler, "Sequoia.ftl",dmConfig);
+
     }
 
 

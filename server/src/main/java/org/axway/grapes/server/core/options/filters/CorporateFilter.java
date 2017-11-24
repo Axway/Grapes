@@ -74,7 +74,7 @@ public class CorporateFilter implements Filter {
     }
 
     private boolean evaluate(final String id){
-        for(String corporateGroupId: organization.getCorporateGroupIdPrefixes()){
+        for(final String corporateGroupId: organization.getCorporateGroupIdPrefixes()){
             if(id.startsWith(corporateGroupId)){
                 return true;
             }

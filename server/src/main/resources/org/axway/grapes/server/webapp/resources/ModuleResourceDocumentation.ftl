@@ -34,6 +34,8 @@
                                     <li><a tabindex="-1" href="/module">Module API</a></li>
                                     <li><a tabindex="-1" href="/artifact">Artifact API</a></li>
                                     <li><a tabindex="-1" href="/license">License API</a></li>
+                                    <li><a tabindex="-1" href="/report">Report API</a></li>
+                                    <li><a tabindex="-1" href="searchdoc">Search API</a></li>
                                 </ul>
                             </li>
                             <li class="">
@@ -41,6 +43,9 @@
                             </li>
                             <li class="">
                                 <a href="/webapp">Data Browser</a>
+                            </li>
+                            <li class="">
+                                <a href="/search">Search</a>
                             </li>
                         <#if getIssueTrackerUrl()??>
                             <li class="">
@@ -80,6 +85,7 @@
                         <li class=""><a data-toggle="collapse" data-target="#accordion9" href="#module-promotion"><i class="icon-chevron-right"></i> Promote a module</a></li>
                         <li class=""><a data-toggle="collapse" data-target="#accordion10" href="#module-promotion-doable"><i class="icon-chevron-right"></i> Can it be promoted?</a></li>
                         <li class=""><a data-toggle="collapse" data-target="#accordion11" href="#module-buildinfo"><i class="icon-chevron-right"></i> Get/Update build info</a></li>
+                        <li class=""><a data-toggle="collapse" data-target="#accordion12" href="#module-promotion-report"><i class="icon-chevron-right"></i> Get validation report</a></li>
                     </ul>
                 </div>
                 <div class="span8">
@@ -434,7 +440,11 @@
                                     <h3>POST</h3>
                                     <ul>
                                         <li>Promote a module</li>
-                                        <li>Return status 200 if ok</li>
+                                        <li>Return status 200 if the module is promoted successfully</li>
+                                        <li>Return status 400 if the module fails validations configured as errors. The response
+                                            payload will contain the promotion report JSON containing warnings and errors
+                                            <pre>${getPromotionDetailsJsonModel()}</pre>
+                                        </li>
                                     </ul>
                                 </li>
                             </ul>
@@ -457,7 +467,7 @@
                         </div>
                     </section>
                     <section id="module-buildinfo">
-                        <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion11">
+                        <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion12">
                             <h2>@ /module/{name}/{version}/buildinfo</h2>
                         </a>
                         <div id="accordion11" class="collapse">
@@ -475,6 +485,26 @@
                                         <li>Update a build info</li>
                                         <li>If existing information are posted, they will be overrided</li>
                                         <li>Return status 200 if ok</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </section>
+                    <section id="module-promotion-report">
+                        <a class="page-header btn-link" data-toggle="collapse" data-target="#accordion12">
+                            <h2>@ /module/{name}/{version}/promotion/report</h2>
+                        </a>
+                        <div id="accordion12" class="collapse">
+                            <ul>
+                                <li>
+                                    <h3>GET</h3>
+                                    <ul>
+                                        <li>Get a module promotion report</li>
+                                        <li>
+                                            Returns a JSON structure containing the module validation result. It contains
+                                            warnings and errors displayed as strings without doing a promotion.
+                                            <pre>${getPromotionDetailsJsonModel()}</pre>
+                                        </li>
                                     </ul>
                                 </li>
                             </ul>

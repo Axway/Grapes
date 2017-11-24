@@ -3,8 +3,12 @@ package org.axway.grapes.server.config;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yammer.dropwizard.config.Configuration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 
 /**
  * @author jdcoffre
@@ -21,7 +25,11 @@ import javax.validation.constraints.NotNull;
  */
 public class GrapesServerConfig extends Configuration{
 
-    @Valid
+	@Valid
+	@JsonProperty
+	private final String authenticationCachePolicy = "maximumSize=10000, expireAfterAccess=10m";
+
+	@Valid
     @JsonProperty
     private final CommunityConfig community = new CommunityConfig();
 
@@ -29,17 +37,63 @@ public class GrapesServerConfig extends Configuration{
     @NotNull
     @JsonProperty
     private final DataBaseConfig database = new DataBaseConfig();
-	
-	@Valid
+    
+    @Valid
+    @NotNull
     @JsonProperty
-    private final String authenticationCachePolicy = "maximumSize=10000, expireAfterAccess=10m";
+    private final GrapesEmailConfig mailing = new GrapesEmailConfig();
+
+    @Valid
+	@NotNull
+	@JsonProperty
+	private final PromoValidationConfig promotionValidation = new PromoValidationConfig();
+
+	@Valid
+    @NotNull
+    @JsonProperty
+    private String messagesBundle;
+    
+    @Valid
+    @JsonProperty
+    private ArrayList<String> externalValidatedTypes;
+    
+    @Valid
+    @NotNull
+    @JsonProperty
+    private String[] artifactNotificationRecipients;
 
     private boolean maintenanceModeActif = false;
 
     public DataBaseConfig getDataBaseConfig() {
 		return database;
 	}
+    
+    public GrapesEmailConfig getGrapesEmailConfig() {
+        return mailing;
+    }
 	
+	public String getMsgBundle(){
+		return messagesBundle;
+	}
+
+	public List<String> getExternalValidatedTypes() {
+		if(externalValidatedTypes == null){
+			externalValidatedTypes = new ArrayList<>();
+			externalValidatedTypes.add("program");
+			externalValidatedTypes.add("installer");
+			externalValidatedTypes.add("patch");
+			externalValidatedTypes.add("servicepack");
+			externalValidatedTypes.add("upgradepack");
+			externalValidatedTypes.add("install");
+			externalValidatedTypes.add("axwayjre");
+			externalValidatedTypes.add("JREUpdateTool");
+		}
+		return externalValidatedTypes;
+	}	
+	
+	public String[] getArtifactNotificationRecipients() {
+		return artifactNotificationRecipients;
+	}
 	/**
 	 * Returns the complete Grapes root URL
 	 * 
@@ -70,4 +124,8 @@ public class GrapesServerConfig extends Configuration{
     public CommunityConfig getCommunityConfiguration() {
         return community;
     }
+
+	public PromoValidationConfig getPromoValidationCfg() {
+		return promotionValidation;
+	}
 }

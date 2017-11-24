@@ -1,3 +1,40 @@
+1.9.1
+-------------
+* [ECDDEV-903](https://techweb.axway.com/jira/browse/ECDDEV-903) - Promotion report messages need to support tags
+* [ECDDEV-902](https://techweb.axway.com/jira/browse/ECDDEV-902) - Artifact version value with incorrect format generates too many verbose stack traces
+* [ECDDEV-897](https://techweb.axway.com/jira/browse/ECDDEV-897) - Artifact version value with incorrect format generates too many verbose stack traces
+* [ECDDEV-897](https://techweb.axway.com/jira/browse/ECDDEV-897) - Null PromotionReportView are generating NPE
+* minor updates on the logging of the configuration related to promotion validation 
+
+
+1.9.0
+-------------
+* [ECDDEV-868](https://techweb.axway.com/jira/browse/ECDDEV-858) - Promotion warnings and errors
+* [ECDDEV-849](https://techweb.axway.com/jira/browse/ECDDEV-849) - Add LICENSE_SETTER among existent privileges in Grapes
+* [ECDDEV-858](https://techweb.axway.com/jira/browse/ECDDEV-858) - Use promotion report to display Module / Promotion Report section
+* [ECDDEV-863](https://techweb.axway.com/jira/browse/ECDDEV-863) - Add artifact links inside commercial delivery details page
+* [ECDDEV-860](https://techweb.axway.com/jira/browse/ECDDEV-860) - Sanitize the values of regular expressions
+* [ECDDEV-861](https://techweb.axway.com/jira/browse/ECDDEV-861) - Don't allow multiple reports matching the same report id
+
+
+1.8.0
+-------------
+* [ECDDEV-813](https://techweb.axway.com/jira/browse/ECDDEV-813) Improve the search for modules and artifacts
+* [ECDDEV-509](https://techweb.axway.com/jira/browse/ECDDEV-509) Add links to artifact details for module dependencies
+* [ECDDEV-840](https://techweb.axway.com/jira/browse/ECDDEV-840) Enhance the detection of the artifact license association
+* [ECDDEV-852](https://techweb.axway.com/jira/browse/ECDDEV-852) Include administrative reports on license management
+
+
+1.5.0
+-------------
+* [ECDDEV-434](https://techweb.axway.com/jira/browse/ECDDEV-434) Allow external systems to check if an arbitrary artifact is promoted.
+
+1.4.4
+-------------
+* [ECDDEV-391](https://techweb.axway.com/jira/browse/ECDDEV-391) Allow module page to directly display details of a module
+* [ECDDEV-452](https://techweb.axway.com/jira/browse/ECDDEV-452) Verification against product existing in Grapes should be case insensitive
+* [ECDDEV-469](https://techweb.axway.com/jira/browse/ECDDEV-469) Include the technical version inside the project release
+
 1.4.3
 -------------
 * [Github issue #34](https://github.com/Axway/Grapes/issues/34) Fix potential NPE while performing module deletion

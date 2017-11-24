@@ -14,7 +14,7 @@ public class DependencyReportSerializer extends JsonSerializer<DependencyReport>
     public void serialize(final DependencyReport report, final JsonGenerator json,	final SerializerProvider serializer) throws IOException {
         json.writeStartArray();
 
-        for(Artifact target: report.getDependencyTargets()){
+        for(final Artifact target: report.getDependencyTargets()){
             json.writeStartObject();
 
             json.writeStringField("groupId", target.getGroupId());
@@ -24,13 +24,13 @@ public class DependencyReportSerializer extends JsonSerializer<DependencyReport>
             json.writeFieldName("occurences");
             json.writeStartArray();
 
-            for(String version: report.getVersions(target)){
+            for(final String version: report.getVersions(target)){
                 json.writeStartObject();
                 json.writeStringField("version", version);
 
                 json.writeFieldName("sources");
                 json.writeStartArray();
-                for(Dependency dep: report.getDependencies(target, version)){
+                for(final Dependency dep: report.getDependencies(target, version)){
                     json.writeStartObject();
                     json.writeStringField("scope", dep.getScope().toString());
                     json.writeStringField("gavc", dep.getSourceName());

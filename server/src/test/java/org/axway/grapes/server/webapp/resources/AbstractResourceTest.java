@@ -1,6 +1,7 @@
 package org.axway.grapes.server.webapp.resources;
 
 import org.axway.grapes.commons.datamodel.Artifact;
+import org.axway.grapes.commons.datamodel.ArtifactQuery;
 import org.axway.grapes.commons.datamodel.License;
 import org.axway.grapes.commons.datamodel.Module;
 import org.axway.grapes.commons.datamodel.Organization;
@@ -57,6 +58,19 @@ public class AbstractResourceTest {
             exception = e;
         }
 
+        assertNull(exception);
+    }
+    
+    @Test
+    public void checkArtifactPromtotionResponseMessage(){
+        final FakeResource resource = new FakeResource();
+        Exception exception = null;
+        try {
+            final String inputMessage = JsonUtils.serialize(resource.getArtifactPromtotionResponseMessage());
+            assertNotNull(inputMessage);
+        }catch (Exception e){
+            exception = e;
+        }
         assertNull(exception);
     }
 
